@@ -41,7 +41,7 @@ export default function LayoutMobile({ children }: { children: React.ReactNode }
                 <div className="flex justify-end items-start mb-4 pt-2 pr-0">
                     <SearchIcon fontSize="medium" className='mr-4' />
                     <NotificationsNoneIcon fontSize="medium" className='mr-4' />
-                    <ForumOutlinedIcon fontSize="medium" className='mr-0' />
+                    <ForumOutlinedIcon fontSize="medium" className='mr-4' />
                 </div>
                 <div className="flex flex-col items-center">
                     <AnimatePresence mode='wait' initial={false}>
