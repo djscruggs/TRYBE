@@ -19,7 +19,6 @@ import PortraitOutlinedIcon from '@mui/icons-material/PortraitOutlined';
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  
   return (
     <>
       <CssBaseline enableColorScheme />

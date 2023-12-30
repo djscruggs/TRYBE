@@ -3,6 +3,14 @@ import type { MetaFunction } from '@remix-run/node';
 import { Link as RemixLink } from '@remix-run/react';
 import Typography from '@mui/material/Typography';
 import Link from '@mui/material/Link';
+import { LoaderFunction } from '@remix-run/node'
+import { requireUserId } from '~/src/utils/auth.server'
+
+export const loader: LoaderFunction = async ({ request }) => {
+  await requireUserId(request)
+  return null
+}
+
 
 
 // https://remix.run/docs/en/main/route/meta
