@@ -11,11 +11,11 @@
   },
   "dependencies": {
     "@emotion/cache": "latest",
-    "@emotion/react": "latest",
+    "@emotion/react": "^11.11.3",
     "@emotion/server": "latest",
-    "@emotion/styled": "latest",
-    "@mui/icons-material": "^5.15.2",
-    "@mui/material": "latest",
+    "@emotion/styled": "^11.11.0",
+    "@heroicons/react": "^2.1.1",
+    "@material-tailwind/react": "^2.1.8",
     "@prisma/client": "^5.7.1",
     "@remix-run/css-bundle": "latest",
     "@remix-run/node": "^2.4.1",
@@ -28,6 +28,7 @@
     "framer-motion": "^10.16.16",
     "isbot": "^3.7.1-deprecated",
     "react": "^18.2.0",
+    "react-device-detect": "^2.2.3",
     "react-dom": "^18.2.0"
   },
   "devDependencies": {

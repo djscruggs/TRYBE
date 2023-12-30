@@ -1,15 +1,13 @@
 import * as React from 'react';
-import Typography from '@mui/material/Typography';
-import Link from '@mui/material/Link';
-
+import { Link } from '@remix-run/react';
 export default function Copyright() {
   return (
-    <Typography variant="body2" color="text.secondary" align="center">
+    <h1>
       {'Copyright © '}
-      <Link color="inherit" href="https://www.jointhetrybe.com/">
+      <Link color="inherit" to="https://www.jointhetrybe.com/">
         Trybe
       </Link>{' '}
       2023-{new Date().getFullYear()}.
-    </Typography>
+    </h1>
   );
 }

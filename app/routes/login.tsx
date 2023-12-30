@@ -1,11 +1,12 @@
-import Button from '@mui/material/Button';
-import { FormField } from '~/src/components/form-field';
+
 import { useState } from 'react';
 import { ActionFunction, json, LoaderFunction, redirect } from '@remix-run/node'
 import { login, register, getUser } from '~/src/utils/auth.server'
 import { validateEmail, validateName, validatePassword } from '~/src/utils/validators.server'
 import { useActionData } from '@remix-run/react'
 import { useRef, useEffect } from 'react'
+import * as React from 'react';
+import { FormField } from '~/src/components/form-field';
 
 
 export const loader: LoaderFunction = async ({ request }) => {
@@ -98,13 +99,12 @@ export default function Login() {
       
         <h2 className="text-5xl font-extrabold text-yellow-300">Welcome to Trybe!</h2>
         <p className="font-semibold text-slate-300">Please Log In!</p>
-        <Button
-          variant="outlined"
+        <button
           onClick={() => setAction(action == 'login' ? 'register' : 'login')}
-          className="absolute top-8 right-8 rounded-xl bg-yellow-300 font-semibold text-blue-600 px-3 py-2 transition duration-300 ease-in-out hover:bg-yellow-400 hover:-translate-y-1"
+          className="absolute top-8 right-8 rounded-xl bg-primary px-3 py-2 transition duration-300 ease-in-out hover:bg-yellow-400 hover:-translate-y-1"
         >
           {action === 'login' ? 'Sign Up' : 'Sign In'}
-        </Button>
+        </button>
 
         <form method="post" className="rounded-2xl bg-gray-200 p-6 w-96">
         {action === 'register' && (
@@ -141,16 +141,16 @@ export default function Login() {
             onChange={e => handleInputChange(e, 'password')}
           />
           
-          <Button
+          <button
             name="_action"
             type="submit"
             value={action}
-            variant="contained"
+            
           >
              
           
             {action === 'login' ? "Sign In" : "Sign Up"}
-          </Button>
+          </button>
         </form>
       </div>
   )

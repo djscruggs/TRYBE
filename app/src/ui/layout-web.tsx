@@ -1,9 +1,5 @@
 import * as React from 'react';
 import { useLocation } from 'react-router-dom';
-import Container from '@mui/material/Container';
-import Box from '@mui/material/Box';
-import { CssBaseline, ThemeProvider, useMediaQuery } from '@mui/material';
-import {theme} from './theme';
 import NavLinks from './navlinks';
 import {AnimatePresence, motion} from 'framer-motion'
 
@@ -13,8 +9,7 @@ import {AnimatePresence, motion} from 'framer-motion'
 export default function LayoutWeb({ children }: { children: React.ReactNode }) {
   const isAuthenticated = true
   return (
-      <Container maxWidth="xl">
-        <Box sx={{ m: 0}}>
+        
           <div className='flex px-2 pt-2 min-h-screen'>
               <div className="flex flex-col justify-start items-start mr-8">
                   <div className="flex items-center mb-4 mt-10">
@@ -40,7 +35,6 @@ export default function LayoutWeb({ children }: { children: React.ReactNode }) {
                   </AnimatePresence>
                 </div>
           </div>
-        </Box>
-      </Container>
-);
+        
+        );
 }
