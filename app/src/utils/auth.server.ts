@@ -1,6 +1,3 @@
-// app/utils/auth.server.ts
-
-
 import { prisma } from './prisma.server'
 import { createUser } from './user.server'
 import { RegisterForm, LoginForm } from './types.server'
@@ -62,8 +59,6 @@ if (!user || !(await bcrypt.compare(password, user.password)))
   return createUserSession(user.id, '/');
 }
 
-// app/utils/auth.server.ts
-// ...
 
 export async function requireUserId(request: Request, redirectTo: string = new URL(request.url).pathname) {
   const session = await getUserSession(request)

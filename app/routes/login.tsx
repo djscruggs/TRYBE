@@ -7,6 +7,7 @@ import { validateEmail, validateName, validatePassword } from '~/src/utils/valid
 import { useActionData } from '@remix-run/react'
 import { useRef, useEffect } from 'react'
 
+
 export const loader: LoaderFunction = async ({ request }) => {
   // If there's already a user in the session, redirect to the home page
   return (await getUser(request)) ? redirect('/') : null
