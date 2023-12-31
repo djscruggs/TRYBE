@@ -189,7 +189,6 @@ export default function Login({ type='login' }: LoginProps): JSX.Element {
             <ShowPasswordButton passwordVisible={passwordVisible} clickHandler={togglePasswordVisibility} />
             <div className="text-xs font-semibold text-center tracking-wide text-red w-full">
                 {errors?.password || ''}
-
             </div>
           </div>
           

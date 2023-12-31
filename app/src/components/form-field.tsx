@@ -28,7 +28,7 @@ export function FormField({
           onChange(e)
           setErrorText('')
       }} type={type} id={htmlFor} name={htmlFor} className="w-full p-2 rounded-xl my-2" value={value} />
-      <div className="text-xs font-semibold text-center tracking-wide text-red-500 w-full">
+      <div className="text-xs font-semibold text-center tracking-wide text-red w-full">
           {errorText || ''}
       </div>
   </>
