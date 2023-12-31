@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import { ActionFunction, json, LoaderFunction, redirect } from '@remix-run/node'
-import { Form } from "@remix-run/react";
+import { Form, Link } from "@remix-run/react";
 import { login, register, getUser } from '~/src/utils/auth.server'
 import { validateEmail, validateName, validatePassword } from '~/src/utils/validators.server'
 import { useActionData } from '@remix-run/react'
@@ -207,6 +207,9 @@ export default function Login({ type='login' }: LoginProps): JSX.Element {
             {_action === 'login' ? "Sign In" : "Sign Up"}
           </Button>
         </Form>
+        <div className="relative">
+          Don't have an account? <Link to="/register" className="underline text-blue">Register</Link>
+        </div>
       </div>
   )
 }
