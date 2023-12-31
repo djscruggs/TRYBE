@@ -208,7 +208,7 @@ export default function Login({ type='login' }: LoginProps): JSX.Element {
           </Button>
         </Form>
         <div className="relative">
-          Don't have an account? <Link to="/register" className="underline text-blue">Register</Link>
+          Don't have an account? <Link to="/register" state={{ animate: false }} className="underline text-blue">Register</Link>
         </div>
       </div>
   )

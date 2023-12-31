@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation } from '@remix-run/react';
+import { useState, useEffect } from 'react';
 import NavLinks from './navlinks';
 import {AnimatePresence, motion} from 'framer-motion'
 
@@ -7,6 +8,28 @@ import {AnimatePresence, motion} from 'framer-motion'
 
 
 export default function LayoutWeb({ children }: { children: React.ReactNode }) {
+  
+  
+  const location = useLocation();
+  const [animate,setAnimate] = useState(true)
+  
+  //turn off animation on login and register OR if Link to includes animate state
+  useEffect(() => {
+    console.log('location effect path is', location.pathname)
+    // Check if the key exists in location.state
+    if (location.state && 'animate' in location.state) {
+      // If the key exists, use its value to set animateIt
+      setAnimate(location.state.animate);
+    } else if(['/register','/login'].includes(location.pathname)){
+        setAnimate(false)
+    } else {
+      // If the key doesn't exist, set animateIt to true
+        setAnimate(true);
+    }
+    
+  }, [location.pathname]);
+  
+
   const isAuthenticated = true
   return (
         
@@ -21,17 +44,28 @@ export default function LayoutWeb({ children }: { children: React.ReactNode }) {
                 </div>
               </div>
                 <div className="flex-grow pt-4">
-                  <AnimatePresence mode='wait' initial={false}>
-                      <motion.main
-                      key={useLocation().pathname}
-                      initial={{opacity: 0}}
-                      animate={{opacity: 1}}
-                      // exit={{opacity: 0}}
-                      transition={{duration: 0.3}}
-                      >
-                      {children}
-                      </motion.main>
-                  </AnimatePresence>
+                  
+                      <AnimatePresence mode='wait' initial={false}>
+                          {animate &&
+                          <motion.main
+                          key={useLocation().pathname}
+                          initial={{opacity: 0}}
+                          animate={{opacity: 1}}
+                          // exit={{opacity: 0}}
+                          transition={{duration: 0.3}}
+                          >
+                          {children}
+                          </motion.main>
+                          }
+                          {!animate &&
+                          <motion.main>
+                          {children}
+                          </motion.main>
+                          }
+                      </AnimatePresence>
+                    
+                    
+
                 </div>
           </div>
         

@@ -10,6 +10,7 @@ import { FormField } from '~/src/components/form-field';
 import { Button } from "@material-tailwind/react";
 import ShowPasswordButton from '../src/components/show-password-button';
 
+
 export const loader: LoaderFunction = async ({ request }) => {
   // If there's already a user in the session, redirect to the home page
   return (await getUser(request)) ? redirect('/') : null
@@ -22,13 +23,6 @@ export const action: ActionFunction = async ({ request }) => {
   const passwordMatch = form.get('passwordMatch')
   const firstName = String.prototype.trim(form.get('firstName') as string)
   const lastName = String.prototype.trim(form.get('lastName') as string)
-  if (typeof email !== 'string' || 
-      typeof password !== 'string' || 
-      typeof passwordMatch !== 'string' ||
-      typeof firstName !== 'string' || 
-      typeof lastName !== 'string') {
-      return json({ error: `Invalid Form Data`, form: action }, { status: 400 })
-  }
   const errors = {
     email: validateEmail(email),  
     firstName: validateName((firstName as string) || ''),
@@ -43,13 +37,8 @@ export const action: ActionFunction = async ({ request }) => {
 
 export default function Register(): JSX.Element {
   const actionData = useActionData()
-  console.log('actionData at top')
-  console.log(actionData)
   
   
-  const [errors, setErrors] = useState(actionData?.errors)
-  const [formError, setFormError] = useState(actionData?.error)
-  console.log('afer setFormError', formError)
   const [formData, setFormData] = useState({
     email: actionData?.fields?.email || '',
     password: actionData?.fields?.password || '',
@@ -69,8 +58,6 @@ export default function Register(): JSX.Element {
   function togglePasswordVisibility() {
     setPasswordVisible((prevState) => !prevState);
   }
-  console.log('before return, formError')
-  console.log(formError)
   return (
     <div className="h-full justify-center items-center flex flex-col gap-y-4">
       
@@ -154,7 +141,7 @@ export default function Register(): JSX.Element {
            
         </Form>
         <div className="relative">
-          Already have an account? <Link to="/login" className="underline text-blue">Login </Link>
+          Already have an account? <Link to="/login" state={{ animate: false }} className="underline text-blue">Login </Link>
         </div>
       </div>
   )
