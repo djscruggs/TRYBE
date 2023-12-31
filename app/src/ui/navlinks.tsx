@@ -30,37 +30,37 @@ const NavLinks: React.FC<NavLinksProps> = ({ isAuthenticated = true }) => {
   
   return (
     <div className="flex flex-col justify-start items-center min-h-full">
-      <div className={`w-24 flex items-center flex-col text-center mb-4 p-2 rounded-lg ${location.pathname === '/' ? 'bg-gray-100' : 'hover:bg-gray-300'}`}>
+      <div className={`w-24 flex items-center flex-col text-grey text-center mb-4 p-2 rounded-lg ${location.pathname === '/' ? 'bg-gray-100' : 'hover:bg-gray-300'}`}>
         <Link to="/" className='flex items-center flex-col' >
           <HomeIcon className='className="h-8 w-8 cursor-pointer mb-1' />
           <span className="cursor-pointer ">Home</span>
         </Link>
       </div>
-      <div className={`w-24 flex items-center flex-col text-center mb-4 p-2 rounded-lg ${location.pathname === '/challenges' ? 'bg-gray-100' : 'hover:bg-gray-300'}`}>
+      <div className={`w-24 h-20 flex items-center justify-center flex-col text-grey text-center mb-4 p-2 rounded-lg ${location.pathname === '/challenges' ? 'bg-gray-100' : 'hover:bg-gray-300'}`}>
         <Link to="/challenges" className='flex items-center flex-col'>
-          <TrophyIcon className='h-8 w-8 cursor-pointer mb-1' />
-          <span className="cursor-pointer">Challenges</span>
+          <TrophyIcon className='h-8 w-8 cursor-pointer mb-1 text-grey' />
+          <span className="cursor-pointer text-grey">Challenges</span>
         </Link>
       </div>
-      <div className={`w-24 flex items-center flex-col text-center mb-4 p-2 rounded-lg ${location.pathname === '/community' ? 'bg-gray-100' : 'hover:bg-gray-300'}`}>
+      <div className={`w-24 h-20 flex items-center justify-center flex-col text-grey text-center mb-4 p-2 rounded-lg ${location.pathname === '/community' ? 'bg-gray-100' : 'hover:bg-gray-300'}`}>
         <Link to="/community" className='flex items-center flex-col'>
           <UsersIcon className='h-8 w-8 cursor-pointer mb-1' />
           <span className="cursor-pointer">Community</span>
         </Link>
       </div>
-      <div className={`w-24 flex items-center flex-col text-center mb-4 p-2 rounded-lg ${location.pathname === '/groups' ? 'bg-gray-100' : 'hover:bg-gray-300'}`}>
+      <div className={`w-24 h-20 flex items-center justify-center flex-col  text-grey text-center mb-4 p-2 rounded-lg ${location.pathname === '/groups' ? 'bg-gray-100' : 'hover:bg-gray-300'}`}>
         <Link to="/groups" className='flex items-center flex-col'>
           <UserGroupIcon className='h-8 w-8 cursor-pointer mb-1' />
           <span className="cursor-pointer">Groups</span>
         </Link>
       </div>
-      <div className={`w-24 flex items-center flex-col text-center mb-4 p-2 rounded-lg ${location.pathname === '/messages' ? 'bg-gray-100' : 'hover:bg-gray-300'}`}>
+      <div className={`w-24 h-20 flex items-center justify-center flex-col text-grey text-center mb-4 p-2 rounded-lg ${location.pathname === '/messages' ? 'bg-gray-100' : 'hover:bg-gray-300'}`}>
         <Link to="/messages" className='flex items-center flex-col'>
           <EnvelopeIcon className='h-8 w-8 cursor-pointer mb-1' />
           <span className="cursor-pointer">Messages</span>
         </Link>
       </div>
-      <div className={`w-24 flex items-center flex-col text-center mb-4 p-2 rounded-lg ${location.pathname === '/profile' ? 'bg-gray-100' : 'hover:bg-gray-300'}`}>
+      <div className={`w-24 h-20 flex items-center justify-center flex-col text-grey text-center mb-4 p-2 rounded-lg ${location.pathname === '/profile' ? 'bg-gray-100' : 'hover:bg-gray-300'}`}>
         <Link to="/profile" className='flex items-center flex-col'>
           <IdentificationIcon className='h-8 w-8 cursor-pointer mb-1' />
           <span className="cursor-pointer">Profile</span>
@@ -71,7 +71,7 @@ const NavLinks: React.FC<NavLinksProps> = ({ isAuthenticated = true }) => {
       <>
         
 
-        <div className="w-24 absolute bottom-0 flex items-center flex-col text-center mb-4 hover:bg-gray-300 p-2 rounded-lg">
+        <div className="w-24 h-20 flex items-center justify-center flex-col text-grey text-center mb-4 hover:bg-gray-300 p-2 rounded-lg">
           <Link to="/signout" className='flex items-center flex-col'>
             <PowerIcon className='h-8 w-8 cursor-pointer' />
             <span className="cursor-pointer">Sign Out</span>
