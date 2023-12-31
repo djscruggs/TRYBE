@@ -26,10 +26,10 @@ const NavLinks: React.FC<NavLinksProps> = ({ isAuthenticated = true }) => {
     document.location = "/";
   }
   const location = useLocation()
-  console.log(location.pathname)
+
   
   return (
-    <div className="flex flex-col justify-start items-center ">
+    <div className="flex flex-col justify-start items-center min-h-full">
       <div className={`w-24 flex items-center flex-col text-center mb-4 p-2 rounded-lg ${location.pathname === '/' ? 'bg-gray-100' : 'hover:bg-gray-300'}`}>
         <Link to="/" className='flex items-center flex-col' >
           <HomeIcon className='className="h-8 w-8 cursor-pointer mb-1' />
@@ -66,14 +66,18 @@ const NavLinks: React.FC<NavLinksProps> = ({ isAuthenticated = true }) => {
           <span className="cursor-pointer">Profile</span>
         </Link>
       </div>
-      
+      <div className="flex-grow flex-shrink-0" >&nbsp;</div>
       {isAuthenticated &&
-        <div className="w-24 flex items-center flex-col text-center mb-4 hover:bg-gray-300 p-2 rounded-lg">
+      <>
+        
+
+        <div className="w-24 absolute bottom-0 flex items-center flex-col text-center mb-4 hover:bg-gray-300 p-2 rounded-lg">
           <Link to="/signout" className='flex items-center flex-col'>
             <PowerIcon className='h-8 w-8 cursor-pointer' />
             <span className="cursor-pointer">Sign Out</span>
           </Link>
         </div>
+        </>
       }
   </div>
 

@@ -27,7 +27,6 @@ export const links: LinksFunction = () => [
 const Document = withEmotionCache(({ children, title }: DocumentProps, emotionCache) => {
   const clientStyleData = React.useContext(ClientStyleContext);
 
-  console.log(links)
   return (
     <html lang="en">
       <head>

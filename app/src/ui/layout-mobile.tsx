@@ -20,7 +20,7 @@ export default function LayoutMobile({ children }: { children: React.ReactNode }
   
   const [newOpen, setNewOpen] = React.useState(false)
   const outlet = useOutlet()
-  const btnColor = theme.palette.primary.main;
+  
   const handlePlusClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     event.stopPropagation()
     setNewOpen(!newOpen)
@@ -35,13 +35,13 @@ export default function LayoutMobile({ children }: { children: React.ReactNode }
     hideMenu();
   };
   return (
-            <div className="flex flex-col justify-between h-full p-0" onClick={hideMenu}>
+            <div className="max-w-screen flex flex-col justify-between h-screen p-0" onClick={hideMenu}>
                 <div className="flex justify-end items-start mb-4 pt-2 pr-0">
-                    <MagnifyingGlassIcon className='mr-4' />
-                    <BellIcon className='mr-4' />
-                    <ChatBubbleLeftRightIcon className='mr-4' />
+                    <MagnifyingGlassIcon className='w-6 mr-4' />
+                    <BellIcon className='w-6 mr-4' />
+                    <ChatBubbleLeftRightIcon className='w-6 mr-4' />
                 </div>
-                <div className="flex flex-col items-center">
+                <div className="flex flex-col items-center min-h-fit ">
                     <AnimatePresence mode='wait' initial={false}>
                         <motion.main
                          key={useLocation().pathname}
@@ -54,16 +54,16 @@ export default function LayoutMobile({ children }: { children: React.ReactNode }
                         </motion.main>
                     </AnimatePresence>
                 </div>
-                <div className="flex w-full justify-between  m-0 p-0 px-2 py-1 bg-gray-50 border-2 border-slate-200 min-h-12">
-                    <Link to="/" >
+                <div className="max-w-screen flex w-full justify-between  m-0 p-0 px-2 py-1 bg-gray-50 border-2 border-slate-200">
+                    <Link to="/" className='min-w-8'>
                     <HomeIcon className='cursor-pointer' />
                     </Link>
-                    <Link to="/challenges" >
+                    <Link to="/challenges" className='min-w-8'>
                     <TrophyIcon className='cursor-pointer' />
                     </Link>
-                    <div className="flex items-center justify-center relative" onClick={(event) => handlePlusClick(event)}>
+                    <div className="flex items-center justify-center relative min-w-8" onClick={(event) => handlePlusClick(event)}>
                         {/* Your plus sign */}
-                        <PlusCircleIcon className='color-main cursor-pointer text-6xl -mt-10' />
+                        <PlusCircleIcon className='min-w-12 text-white rounded-full bg-red-500 text-color-white cursor-pointer text-6xl -mt-10' />
                         <AnimatePresence mode='wait' initial={false}>
                         {newOpen && (
                             <motion.main
@@ -74,15 +74,15 @@ export default function LayoutMobile({ children }: { children: React.ReactNode }
                             transition={{duration: 0.4}}
                             >
                             <div className="flex absolute top-[-100px] left-1/2 transform -translate-x-1/2">
-                               <div onClick={(event) => handleNewOpt('/groups/new', event)} className="flex flex-col items-center justify-center w-20 h-20 rounded-full bg-[#FDC94C] mx-2 cursor-pointer">
+                               <div onClick={(event) => handleNewOpt('/groups/new', event)} className="flex flex-col items-center justify-center w-12 h-12 rounded-full bg-[#FDC94C] mx-2 cursor-pointer text-sm p-1">
                                     <UsersIcon />
                                     <span className="cursor-pointer text-xs">Group</span>
                                 </div>
-                                <div onClick={(event) => handleNewOpt('/posts/new', event)} className="flex flex-col items-center justify-center w-20 h-20  rounded-full bg-[#FDC94C] mx-2  cursor-pointer" style={{ marginTop: '-24px' }}>
+                                <div onClick={(event) => handleNewOpt('/posts/new', event)} className="flex flex-col items-center justify-center w-12 h-12 rounded-full bg-[#FDC94C] mx-2  cursor-pointer text-sm p-1" style={{ marginTop: '-24px' }}>
                                     <ChatBubbleLeftEllipsisIcon className='-scale-x-100' />
                                     <span className="cursor-pointer text-xs">Post</span>
                                 </div>
-                                <div onClick={(event) => handleNewOpt('/challenges/new', event)} className="flex flex-col items-center justify-center w-20 h-20  rounded-full bg-[#FDC94C] mx-2 cursor-pointer">
+                                <div onClick={(event) => handleNewOpt('/challenges/new', event)} className="flex flex-col items-center justify-center w-12 h-12 rounded-full bg-[#FDC94C] mx-2 cursor-pointer text-sm p-1">
                                     <TrophyIcon />
                                     <span className="cursor-pointer text-xs mt-0">Challenge</span>
                                 </div>
@@ -92,10 +92,10 @@ export default function LayoutMobile({ children }: { children: React.ReactNode }
                         </AnimatePresence>
                     </div>
                     
-                    <Link to="/groups" >
+                    <Link to="/groups" className='min-w-8'>
                     <UserGroupIcon className='cursor-pointer' />
                     </Link>
-                    <Link to="/profile" >
+                    <Link to="/profile" className='min-w-8'>
                     <IdentificationIcon className='cursor-pointer' />
                     </Link>
                 </div>
