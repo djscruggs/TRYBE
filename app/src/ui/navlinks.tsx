@@ -1,6 +1,8 @@
 // NavLinks.tsx
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { Form } from "@remix-run/react";
+import { Button } from "@material-tailwind/react";
 import { 
         BellIcon,
         HomeIcon,
@@ -72,10 +74,16 @@ const NavLinks: React.FC<NavLinksProps> = ({ isAuthenticated = true }) => {
         
 
         <div className="absolute bottom-0 w-24 h-20 flex items-center justify-center flex-col text-darkgrey text-center mb-4 hover:bg-gray-300 p-2 rounded-lg">
-          <Link to="/signout" className='flex items-center flex-col'>
+          {/* <Link to="/signout" className='flex items-center flex-col'>
             <PowerIcon className='h-8 w-8 cursor-pointer' />
             <span className="cursor-pointer">Sign Out</span>
-          </Link>
+          </Link> */}
+          <Form action="/signout" method="post">
+            <Button type="submit" className='flex items-center flex-col bg-inherit shadow-none hover:shadow-none'>
+              <PowerIcon className='h-8 w-8 cursor-pointer text-darkgrey' />
+              <span className='bg-inherit text-darkgrey font-normal text-base mt-2 normal-case'>Logout</span>
+            </Button>
+          </Form>
         </div>
         </>
       }
