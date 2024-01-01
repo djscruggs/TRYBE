@@ -47,7 +47,7 @@ export function FormField({
           type={localType} 
           id={htmlFor} 
           name={htmlFor} 
-          className={`w-full p-2 rounded-full my-2 ${errorText ? 'border border-2 border-red' : ''}`}
+          className={`w-full p-2 px-4 rounded-full my-2 ${errorText ? 'border border-2 border-red' : ''}`}
           value={value} 
           autoComplete={autoComplete}
       />
