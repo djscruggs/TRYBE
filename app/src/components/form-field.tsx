@@ -1,5 +1,6 @@
 // app/components/form-field.tsx
 import { useEffect, useState } from "react"
+import ShowPasswordButton from './show-password-button';
 
 interface FormFieldProps {
   htmlFor: string
@@ -16,18 +17,39 @@ export function FormField({
   type = "text",
   value,
   onChange = () => { },
-  error = ""
+  error = "",
 }: FormFieldProps) {
+  
+  
   const [errorText, setErrorText] = useState(error)
   useEffect(() => {
       setErrorText(error)
   }, [error])
+  const [passwordVisible, setPasswordVisible] = useState(false)
+  let localType = type //flag to track wheter password has been set visible
+  if(type == 'password' && passwordVisible){
+    localType='text'
+  }
+  
+  function togglePasswordVisibility() {
+    setPasswordVisible((prevState) => !prevState);
+  }
   return <>
       <label htmlFor={htmlFor} className="text-blue-600 font-semibold">{label}</label>
-      <input onChange={e => {
-          onChange(e)
-          setErrorText('')
-      }} type={type} id={htmlFor} name={htmlFor} className="w-full p-2 rounded-xl my-2" value={value} />
+      <input 
+          onChange={e => {
+                        onChange(e)
+                        setErrorText('')
+                    }} 
+          type={localType} 
+          id={htmlFor} 
+          name={htmlFor} 
+          className="w-full p-2 rounded-full my-2" 
+          value={value} 
+      />
+      {type == 'password' &&
+        <ShowPasswordButton passwordVisible={passwordVisible} clickHandler={togglePasswordVisibility} />
+      }
       {errorText &&
         <div className="text-xs font-semibold text-left tracking-wide text-red w-full mb-4">
             {errorText || ''}

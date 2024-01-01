@@ -8,7 +8,6 @@ import { useActionData } from '@remix-run/react'
 import * as React from 'react';
 import { FormField } from '~/src/components/form-field';
 import { Button } from "@material-tailwind/react";
-import ShowPasswordButton from '../src/components/show-password-button';
 
 
 export const loader: LoaderFunction = async ({ request }) => {
@@ -55,9 +54,7 @@ export default function Register(): JSX.Element {
   
 
   
-  function togglePasswordVisibility() {
-    setPasswordVisible((prevState) => !prevState);
-  }
+  
   return (
     <div className="h-full justify-center items-center flex flex-col gap-y-4">
       
@@ -92,17 +89,13 @@ export default function Register(): JSX.Element {
             onChange={e => handleInputChange(e, 'email')}
           />
           <div className="relative">
-            <label htmlFor='password' className="text-blue-600 font-semibold">Password</label>
-            <input
-              name="password"
-              className="w-full p-2 rounded-xl my-2"
-              id="password"
-              
+            <FormField
+              htmlFor="password"
+              label="Password"
               value={formData.password}
               onChange={e => handleInputChange(e, 'password')}
-              type={passwordVisible ? "text" : "password"}
+              type="password"
             />
-            <ShowPasswordButton passwordVisible={passwordVisible} clickHandler={togglePasswordVisibility} />
             {actionData?.errors?.password &&
               <div className="text-xs font-semibold text-left tracking-wide text-red w-full mb-4">
                 {actionData?.errors?.password || ''}
@@ -111,17 +104,14 @@ export default function Register(): JSX.Element {
             
           </div>
           <div className="relative">
-            <label htmlFor='passwordMatch' className="text-blue-600 font-semibold">Password</label>
-            <input
-              name="passwordMatch"
-              className="w-full p-2 rounded-xl my-2"
-              id="passwordMatch"
-              
+            <FormField
+              htmlFor="password_match"
+              label="Repeat password"
               value={formData.passwordMatch}
               onChange={e => handleInputChange(e, 'passwordMatch')}
-              type={passwordVisible ? "text" : "password"}
+              type="password"
             />
-            <ShowPasswordButton passwordVisible={passwordVisible} clickHandler={togglePasswordVisibility} />
+            
             {actionData?.errors?.passwordMatch &&
               <div className="text-xs font-semibold text-left tracking-wide text-red w-full mb-4">
                 {actionData?.errors?.passwordMatch || ''}

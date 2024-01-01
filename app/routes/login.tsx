@@ -132,7 +132,7 @@ export default function Login({ type='login' }: LoginProps): JSX.Element {
   return (
     <div className="h-full justify-center items-center flex flex-col gap-y-4">
       
-        <h2 className="text-5xl font-extrabold text-yellow-300">Welcome to Trybe!</h2>
+        <h2 className="font-san text-5xl font-extrabold text-yellow-300">Welcome to Trybe!</h2>
         <p className="font-semibold text-slate-300">Please Log In!</p>
         <button
           onClick={() => setAction(_action == 'login' ? 'register' : 'login')}

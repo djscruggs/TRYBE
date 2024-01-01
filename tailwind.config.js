@@ -2,7 +2,9 @@
 const withMT = require("@material-tailwind/react/utils/withMT");
 module.exports = withMT({
   content: ["./app/**/*.{js,jsx,ts,tsx}"],
+  darkMode: ['class', '[data-mode="dark"]'],
   theme: {
+    
     extend: {},
     colors: {
       red: '#EC5F5C',
