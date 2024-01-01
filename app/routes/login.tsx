@@ -2,14 +2,12 @@
 import { useState } from 'react';
 import { ActionFunction, json, LoaderFunction, redirect } from '@remix-run/node'
 import { Form, Link } from "@remix-run/react";
-import { login, register, getUser } from '~/src/utils/auth.server'
-import { validateEmail, validateName, validatePassword } from '~/src/utils/validators.server'
+import { login, getUser } from '~/src/utils/auth.server'
+import { validateEmail } from '~/src/utils/validators.server'
 import { useActionData } from '@remix-run/react'
-import { useRef, useEffect } from 'react'
 import * as React from 'react';
 import { FormField } from '~/src/components/form-field';
 import { Button } from "@material-tailwind/react";
-import ShowPasswordButton from '../src/components/show-password-button';
 
 export const loader: LoaderFunction = async ({ request }) => {
   // If there's already a user in the session, redirect to the home page

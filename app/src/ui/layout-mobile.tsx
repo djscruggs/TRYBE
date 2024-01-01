@@ -13,13 +13,17 @@ import { BellIcon,
         ChatBubbleLeftEllipsisIcon
                     } from '@heroicons/react/24/outline'
 import {AnimatePresence, motion} from 'framer-motion'
+import type {User, Profile} from '../utils/types.client'
 
+type LayoutMobileProps = {
+    children: React.ReactNode;
+    user: User | null; 
+  };
 
-
-export default function LayoutMobile({ children }: { children: React.ReactNode }) {
+  const LayoutMobile: React.FC<LayoutMobileProps> = ({ children, user = null}) => {
+    console.log('layout mobile, user is', user)
   
   const [newOpen, setNewOpen] = React.useState(false)
-  const outlet = useOutlet()
   
   const handlePlusClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     event.stopPropagation()
@@ -102,3 +106,4 @@ export default function LayoutMobile({ children }: { children: React.ReactNode }
             </div>
   );
 }
+export default LayoutMobile;

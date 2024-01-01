@@ -3,9 +3,37 @@ import { useEffect, useState } from 'react';
 import LayoutWeb from './layout-web';
 import LayoutMobile from './layout-mobile'
 import {isMobile} from 'react-device-detect';
-import { LoaderFunction } from '@remix-run/node'
+import { useFetcher } from "@remix-run/react";
+import { useLocation } from '@remix-run/react';
 
+import type {User, Profile} from '../utils/types.client'
 export default function Layout({ children }: { children: React.ReactNode }) {
+  const [user, setUser] = useState<User | null>(null);
+  const location = useLocation()
+  useEffect(() => {
+    const fetchData = async () => {
+      console.log('fetching')
+      try {
+        const response = await fetch('/authCheck');
+        if (response.ok) {
+          const data = await response.json();
+          setUser(data);
+        } else {
+          // Handle error cases here if needed
+          console.error('Failed to fetch data');
+        }
+      } catch (error) {
+        // Handle fetch errors
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchData();
+  }, [location.pathname]);
+  
+  
+  
+  
   const isBrowser = () => typeof window !== "undefined"
   const [windowSize, setWindowSize] = useState({
     width: isBrowser() ? window.innerWidth : null,
@@ -23,6 +51,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     }
     return () => window.removeEventListener('resize', updateSize);
   }, [])
+  
   const useMobile = isMobile || windowSize?.width < 400
   if(!windowSize?.width){
     return (
@@ -31,10 +60,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       </div>
     )
   }
+  console.log('user is ', user)
   return (
     <>
-       {useMobile && <LayoutMobile children={children} />}
-       {!useMobile && <LayoutWeb children={children} />}
+       {useMobile && <LayoutMobile user={user} children={children} />}
+       {!useMobile && <LayoutWeb user={user} children={children} />}
     </>
   );
 }

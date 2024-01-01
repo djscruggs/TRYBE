@@ -3,8 +3,14 @@ import { useLocation } from '@remix-run/react';
 import { useState, useEffect } from 'react';
 import NavLinks from './navlinks';
 import {AnimatePresence, motion} from 'framer-motion'
+import type {User, Profile} from '../utils/types.client'
 
-export default function LayoutWeb({ children }: { children: React.ReactNode }) {
+type LayoutWebProps = {
+  children: React.ReactNode;
+  user: User | null; 
+};
+const LayoutWeb: React.FC<LayoutWebProps> = ({ children, user=null }) => {
+  console.log('layout web, user is', user)
   const location = useLocation();
   const [animate,setAnimate] = useState(true)
   //turn off animation on login and register OR if Link to includes animate state
@@ -20,15 +26,15 @@ export default function LayoutWeb({ children }: { children: React.ReactNode }) {
         setAnimate(true);
     }
   }, [location.pathname]);
-  const isAuthenticated = true
+  
   return (
           <div className='flex px-2 pt-2 min-h-screen'>
             <div className="flex flex-col justify-start items-start mr-8 ">
               <div className="flex items-center mb-4 mt-10">
                 <div className="flex h-full flex-col px-3 py-4 md:px-2">
                   <div className="flex grow flex-row justify-between space-x-2 md:flex-col md:space-x-0 md:space-y-2 h-full">
-                    <NavLinks isAuthenticated={isAuthenticated}/>
-                  </div>
+                    <NavLinks user={user}/>
+                </div>
                 </div>
               </div>
             </div>
@@ -55,3 +61,4 @@ export default function LayoutWeb({ children }: { children: React.ReactNode }) {
           </div>
         );
 }
+export default LayoutWeb;
