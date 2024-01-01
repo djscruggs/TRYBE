@@ -73,6 +73,7 @@ export default function Register(): JSX.Element {
             onChange={e => handleInputChange(e, 'firstName')}
             error={actionData?.errors?.firstName}
             value={formData.firstName}
+            autoComplete="given-name"
           />
           <FormField
             htmlFor="lastName"
@@ -80,6 +81,7 @@ export default function Register(): JSX.Element {
             error={actionData?.errors?.lastName}
             onChange={e => handleInputChange(e, 'lastName')}
             value={formData.lastName}
+            autoComplete="family-name"
           />
           <FormField
             htmlFor="email"
@@ -87,6 +89,7 @@ export default function Register(): JSX.Element {
             value={formData.email}
             error={actionData?.errors?.email}
             onChange={e => handleInputChange(e, 'email')}
+            autoComplete="email"
           />
           <div className="relative">
             <FormField
@@ -95,6 +98,7 @@ export default function Register(): JSX.Element {
               value={formData.password}
               onChange={e => handleInputChange(e, 'password')}
               type="password"
+              autoComplete="new-password"
             />
             {actionData?.errors?.password &&
               <div className="text-xs font-semibold text-left tracking-wide text-red w-full mb-4">
@@ -110,6 +114,7 @@ export default function Register(): JSX.Element {
               value={formData.passwordMatch}
               onChange={e => handleInputChange(e, 'passwordMatch')}
               type="password"
+              autoComplete="new-password"
             />
             
             {actionData?.errors?.passwordMatch &&

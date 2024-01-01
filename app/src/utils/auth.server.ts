@@ -12,7 +12,7 @@ if (!sessionSecret) {
 
 const storage = createCookieSessionStorage({
   cookie: {
-    name: 'kudos-session',
+    name: 'trybe-session',
     secure: process.env.NODE_ENV === 'production',
     secrets: [sessionSecret],
     sameSite: 'lax',
@@ -63,27 +63,27 @@ if (!user || !(await bcrypt.compare(password, user.password)))
 export async function requireUserId(request: Request, redirectTo: string = new URL(request.url).pathname) {
   const session = await getUserSession(request)
   const userId = session.get('userId')
-  if (!userId || typeof userId !== 'string') {
+  if (!userId) {
     const searchParams = new URLSearchParams([['redirectTo', redirectTo]])
     throw redirect(`/login?${searchParams}`)
   }
   return userId
 }
 
-function getUserSession(request: Request) {
-  return storage.getSession(request.headers.get('Cookie'))
+export function getUserSession(request: Request) {
+  return storage.getSession(request?.headers.get('Cookie'))
 }
 
 async function getUserId(request: Request) {
   const session = await getUserSession(request)
   const userId = session.get('userId')
-  if (!userId || typeof userId !== 'string') return null
+  if (!userId) return null
   return userId
 }
 
 export async function getUser(request: Request) {
   const userId = await getUserId(request)
-  if (typeof userId !== 'string') {
+  if (!userId) {
     return null
   }
 

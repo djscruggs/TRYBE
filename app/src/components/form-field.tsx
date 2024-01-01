@@ -9,6 +9,7 @@ interface FormFieldProps {
   value: any
   onChange?: (...args: any) => any
   error?: string
+  autoComplete?: string
 }
 
 export function FormField({
@@ -18,6 +19,8 @@ export function FormField({
   value,
   onChange = () => { },
   error = "",
+  autoComplete=""
+
 }: FormFieldProps) {
   
   
@@ -44,14 +47,15 @@ export function FormField({
           type={localType} 
           id={htmlFor} 
           name={htmlFor} 
-          className="w-full p-2 rounded-full my-2" 
+          className={`w-full p-2 rounded-full my-2 ${errorText ? 'border border-2 border-red' : ''}`}
           value={value} 
+          autoComplete={autoComplete}
       />
       {type == 'password' &&
         <ShowPasswordButton passwordVisible={passwordVisible} clickHandler={togglePasswordVisibility} />
       }
       {errorText &&
-        <div className="text-xs font-semibold text-left tracking-wide text-red w-full mb-4">
+        <div className="text-xs font-semibold text-left tracking-wide text-red w-full mb-4 ml-4">
             {errorText || ''}
         </div>
       }
