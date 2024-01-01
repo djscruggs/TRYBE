@@ -5,3 +5,5 @@ node_modules
 /public/build
 .env
 !/app/routes/**/.DS_Store
+app/routes/.DS_Store
+ **/.DS_Store.
