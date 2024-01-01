@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import LayoutWeb from './layout-web';
 import LayoutMobile from './layout-mobile'
 import {isMobile} from 'react-device-detect';
+import { LoaderFunction } from '@remix-run/node'
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const isBrowser = () => typeof window !== "undefined"

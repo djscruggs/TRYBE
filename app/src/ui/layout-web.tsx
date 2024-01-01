@@ -4,18 +4,11 @@ import { useState, useEffect } from 'react';
 import NavLinks from './navlinks';
 import {AnimatePresence, motion} from 'framer-motion'
 
-
-
-
 export default function LayoutWeb({ children }: { children: React.ReactNode }) {
-  
-  
   const location = useLocation();
   const [animate,setAnimate] = useState(true)
-  
   //turn off animation on login and register OR if Link to includes animate state
   useEffect(() => {
-    console.log('location effect path is', location.pathname)
     // Check if the key exists in location.state
     if (location.state && 'animate' in location.state) {
       // If the key exists, use its value to set animateIt
@@ -26,48 +19,39 @@ export default function LayoutWeb({ children }: { children: React.ReactNode }) {
       // If the key doesn't exist, set animateIt to true
         setAnimate(true);
     }
-    
   }, [location.pathname]);
-  
-
   const isAuthenticated = true
   return (
-        
           <div className='flex px-2 pt-2 min-h-screen'>
-              <div className="flex flex-col justify-start items-start mr-8 ">
-                <div className="flex items-center mb-4 mt-10">
-                  <div className="flex h-full flex-col px-3 py-4 md:px-2">
-                    <div className="flex grow flex-row justify-between space-x-2 md:flex-col md:space-x-0 md:space-y-2 h-full">
-                      <NavLinks isAuthenticated={isAuthenticated}/>
-                    </div>
+            <div className="flex flex-col justify-start items-start mr-8 ">
+              <div className="flex items-center mb-4 mt-10">
+                <div className="flex h-full flex-col px-3 py-4 md:px-2">
+                  <div className="flex grow flex-row justify-between space-x-2 md:flex-col md:space-x-0 md:space-y-2 h-full">
+                    <NavLinks isAuthenticated={isAuthenticated}/>
                   </div>
                 </div>
               </div>
-                <div className="flex-grow pt-4">
-                  
-                      <AnimatePresence mode='wait' initial={false}>
-                          {animate &&
-                          <motion.main
-                          key={useLocation().pathname}
-                          initial={{opacity: 0}}
-                          animate={{opacity: 1}}
-                          // exit={{opacity: 0}}
-                          transition={{duration: 0.3}}
-                          >
-                          {children}
-                          </motion.main>
-                          }
-                          {!animate &&
-                          <motion.main>
-                          {children}
-                          </motion.main>
-                          }
-                      </AnimatePresence>
-                    
-                    
-
-                </div>
+            </div>
+            <div className="flex-grow pt-4">
+              <AnimatePresence mode='wait' initial={false}>
+                  {animate &&
+                  <motion.main
+                  key={useLocation().pathname}
+                  initial={{opacity: 0}}
+                  animate={{opacity: 1}}
+                  // exit={{opacity: 0}}
+                  transition={{duration: 0.3}}
+                  >
+                  {children}
+                  </motion.main>
+                  }
+                  {!animate &&
+                  <motion.main>
+                  {children}
+                  </motion.main>
+                  }
+              </AnimatePresence>
+            </div>
           </div>
-        
         );
 }
