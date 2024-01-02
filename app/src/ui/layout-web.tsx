@@ -3,7 +3,7 @@ import { useLocation } from '@remix-run/react';
 import { useState, useEffect } from 'react';
 import NavLinks from './navlinks';
 import {AnimatePresence, motion} from 'framer-motion'
-import { Avatar } from "@material-tailwind/react";
+import UserAvatar from '../components/useravatar'
 import { Outlet } from '@remix-run/react';
 
 
@@ -39,7 +39,7 @@ const LayoutWeb = () => {
             </div>
             <div className="flex-grow pt-4">
               <div className='float-right mr-4'>
-                <Avatar src="/favicon.png" alt="avatar" className='cursor-pointer'/>
+                <UserAvatar className='cursor-pointer'/>
               </div>
                 
               <AnimatePresence mode='wait' initial={false}>
