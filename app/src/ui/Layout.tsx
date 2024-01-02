@@ -63,7 +63,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   }
   
   //flag to detect wether they should redirect to hone if not loggd in
-  const openRoutes = ['/','login','logout'] //array to track wich routes are allowed for non-logged-in users
+  const openRoutes = ['/','/login','/logout'] //array to track wich routes are allowed for non-logged-in users
   if(!user){
     if(!openRoutes.includes(location.pathname)){
       return <Navigate to={"/"} />
