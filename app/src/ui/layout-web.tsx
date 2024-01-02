@@ -3,15 +3,13 @@ import { useLocation } from '@remix-run/react';
 import { useState, useEffect } from 'react';
 import NavLinks from './navlinks';
 import {AnimatePresence, motion} from 'framer-motion'
-import type {User, Profile} from '../utils/types.client'
+import { Avatar } from "@material-tailwind/react";
+import { Outlet } from '@remix-run/react';
 
-type LayoutWebProps = {
-  children: React.ReactNode;
-  user: User | null; 
-};
-const LayoutWeb: React.FC<LayoutWebProps> = ({ children, user=null }) => {
-  console.log('layout web, user is', user)
+
+const LayoutWeb = () => {
   const location = useLocation();
+  
   const [animate,setAnimate] = useState(true)
   //turn off animation on login and register OR if Link to includes animate state
   useEffect(() => {
@@ -33,12 +31,17 @@ const LayoutWeb: React.FC<LayoutWebProps> = ({ children, user=null }) => {
               <div className="flex items-center mb-4 mt-10">
                 <div className="flex h-full flex-col px-3 py-4 md:px-2">
                   <div className="flex grow flex-row justify-between space-x-2 md:flex-col md:space-x-0 md:space-y-2 h-full">
-                    <NavLinks user={user}/>
-                </div>
+                    
+                    <NavLinks />
+                  </div>
                 </div>
               </div>
             </div>
             <div className="flex-grow pt-4">
+              <div className='float-right mr-4'>
+                <Avatar src="/favicon.png" alt="avatar" className='cursor-pointer'/>
+              </div>
+                
               <AnimatePresence mode='wait' initial={false}>
                   {animate &&
                   <motion.main
@@ -48,12 +51,12 @@ const LayoutWeb: React.FC<LayoutWebProps> = ({ children, user=null }) => {
                   // exit={{opacity: 0}}
                   transition={{duration: 0.3}}
                   >
-                  {children}
+                  <Outlet />
                   </motion.main>
                   }
                   {!animate &&
                   <motion.main>
-                  {children}
+                  <Outlet />
                   </motion.main>
                   }
               </AnimatePresence>

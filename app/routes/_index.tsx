@@ -1,29 +1,21 @@
-import * as React from 'react';
 import type { MetaFunction } from '@remix-run/node';
-import { Link as RemixLink } from '@remix-run/react';
 
-import { LoaderFunction } from '@remix-run/node'
-import { requireUserId } from '~/src/utils/auth.server'
+
+import { LoaderFunction, redirect } from '@remix-run/node'
+import { getUser } from '~/src/utils/auth.server'
 
 export const loader: LoaderFunction = async ({ request }) => {
-  await requireUserId(request)
-  return null
+  return (await getUser(request)) ? redirect('/home') : null
 }
 
-
-
-// https://remix.run/docs/en/main/route/meta
 export const meta: MetaFunction = () => [
   { title: 'Trybe' },
   { name: 'description', content: 'Build new habits. Join challenges. Meet your Trybe.' },
 ];
-
-// https://remix.run/docs/en/main/file-conventions/routes#basic-routes
 export default function Index() {
   return (
-    <React.Fragment>
-        <h1>Trybe Home Screen</h1>
-      
-    </React.Fragment>
+    <>
+          <h1>I will be the welcome screen for non logged in users</h1>
+    </>
   );
 }

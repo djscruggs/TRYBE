@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import {useOutlet, useLocation} from '@remix-run/react';
+import {Outlet, useLocation} from '@remix-run/react';
 import { BellIcon,
         HomeIcon,
         MagnifyingGlassIcon,
@@ -13,16 +13,9 @@ import { BellIcon,
         ChatBubbleLeftEllipsisIcon
                     } from '@heroicons/react/24/outline'
 import {AnimatePresence, motion} from 'framer-motion'
-import type {User, Profile} from '../utils/types.client'
 
-type LayoutMobileProps = {
-    children: React.ReactNode;
-    user: User | null; 
-  };
 
-  const LayoutMobile: React.FC<LayoutMobileProps> = ({ children, user = null}) => {
-    console.log('layout mobile, user is', user)
-  
+  const LayoutMobile = () => {
   const [newOpen, setNewOpen] = React.useState(false)
   
   const handlePlusClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
@@ -32,10 +25,10 @@ type LayoutMobileProps = {
   const hideMenu = () => {
     setNewOpen(false)
   }
-  const nav = useNavigate()
+  const navigate = useNavigate()
   const handleNewOpt = (action: string, event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     event.stopPropagation();
-    nav(action)
+    navigate(action)
     hideMenu();
   };
   return (
@@ -54,7 +47,7 @@ type LayoutMobileProps = {
                          // exit={{opacity: 0}}
                          transition={{duration: 0.3}}
                         >
-                        {children}
+                        <Outlet />
                         </motion.main>
                     </AnimatePresence>
                 </div>

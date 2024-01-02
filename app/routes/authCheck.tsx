@@ -10,8 +10,6 @@ export const loader = async ({
   .then((response) => {
     return response
   }).then((data) => {
-    console.log('returning data now')
-    console.log(data); // this will be a string
     return data
   });
   

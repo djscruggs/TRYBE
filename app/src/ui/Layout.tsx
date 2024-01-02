@@ -3,16 +3,18 @@ import { useEffect, useState } from 'react';
 import LayoutWeb from './layout-web';
 import LayoutMobile from './layout-mobile'
 import {isMobile} from 'react-device-detect';
-import { useFetcher } from "@remix-run/react";
+import { Navigate } from 'react-router-dom';
 import { useLocation } from '@remix-run/react';
+import { UserContext } from '../utils/usercontext';
 
-import type {User, Profile} from '../utils/types.client'
+
 export default function Layout({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const location = useLocation()
+  
+  
   useEffect(() => {
     const fetchData = async () => {
-      console.log('fetching')
       try {
         const response = await fetch('/authCheck');
         if (response.ok) {
@@ -30,7 +32,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
     fetchData();
   }, [location.pathname]);
-  
   
   
   
@@ -60,11 +61,21 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       </div>
     )
   }
-  console.log('user is ', user)
+  
+  //flag to detect wether they should redirect to hone if not loggd in
+  const openRoutes = ['/','login','logout'] //array to track wich routes are allowed for non-logged-in users
+  if(!user){
+    if(!openRoutes.includes(location.pathname)){
+      return <Navigate to={"/"} />
+    }
+  }
+
   return (
     <>
-       {useMobile && <LayoutMobile user={user} children={children} />}
-       {!useMobile && <LayoutWeb user={user} children={children} />}
+    <UserContext.Provider value={user}>
+       {useMobile && <LayoutMobile />}
+       {!useMobile && <LayoutWeb />}
+    </UserContext.Provider>
     </>
   );
 }
