@@ -18,6 +18,9 @@ The database piece has not been hooked up yet, but we will be using [Supabase](h
 **Installation**
 
 Download the rep and do the following.
+
 `cd [path to download directory]`
+
 `npm install`
+
 `npm run dev`
