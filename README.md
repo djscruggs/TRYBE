@@ -10,11 +10,13 @@
 
 
 **Development Info**
+
 We are building this with [RemixJS](https://remix.run/)
 
 The database piece has not been hooked up yet, but we will be using [Supabase](https://supabase.com/) and [Fly.io](https://fly.io/) for deployment.
 
 **Installation**
+
 Download the rep and do the following.
 `cd [path to download directory]`
 `npm install`
