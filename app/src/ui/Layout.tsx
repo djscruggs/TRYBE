@@ -11,7 +11,7 @@ import { UserContext } from '../utils/usercontext';
 export default function Layout({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const location = useLocation()
-  
+  const [fetchCount, setFetchCount] = useState(0)
   
   useEffect(() => {
     const fetchData = async () => {
@@ -21,6 +21,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           const data = await response.json();
           setUser(data);
         } else {
+            
           // Handle error cases here if needed
           console.error('Failed to fetch data');
         }
@@ -29,8 +30,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         console.error('Error fetching data:', error);
       }
     };
-
-    fetchData();
+    if(fetchCount == 0) {
+      fetchData();
+      setFetchCount(1)
+    }
   }, [location.pathname]);
   
   

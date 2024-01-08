@@ -4,9 +4,9 @@
   "private": true,
   "scripts": {
     "setup": "prisma generate && prisma migrate deploy",
-    "build": "remix build",
-    "dev": "remix dev --manual",
-    "start": "remix-serve ./build/index.js",
+    "build": "find ./ -name \".DS_Store\" -print -delete; remix build",
+    "dev": "find ./ -name \".DS_Store\" -print -delete; remix dev --manual",
+    "start": "find ./ -name \".DS_Store\" -print -delete; remix-serve ./build/index.js",
     "typecheck": "tsc",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
@@ -31,7 +31,8 @@
     "isbot": "^3.7.1-deprecated",
     "react": "^18.2.0",
     "react-device-detect": "^2.2.3",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-icons": "^4.12.0"
   },
   "devDependencies": {
     "@flydotio/dockerfile": "^0.5.0",
