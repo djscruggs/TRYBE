@@ -1,4 +1,3 @@
-import * as Sentry from "@sentry/remix";
 import React, { useEffect } from 'react';
 import * as ReactDOM from 'react-dom/client';
 import { RemixBrowser, useLocation, useMatches } from '@remix-run/react';
@@ -8,18 +7,6 @@ import ClientStyleContext from './src/ClientStyleContext';
 import createEmotionCache from './src/createEmotionCache';
 import { ThemeProvider } from "@material-tailwind/react";
 
-
-
-Sentry.init({
-    dsn: "https://4f3a1762974e77da7b1e347738080185@o4506538845929472.ingest.sentry.io/4506538846126080",
-    tracesSampleRate: 1,
-    replaysSessionSampleRate: 0.1,
-    replaysOnErrorSampleRate: 1,
-
-    integrations: [new Sentry.BrowserTracing({
-        routingInstrumentation: Sentry.remixRouterInstrumentation(useEffect, useLocation, useMatches)
-    }), new Sentry.Replay()]
-})
 
 
 

@@ -1,4 +1,3 @@
-import * as Sentry from "@sentry/remix";
 import * as ReactDOMServer from 'react-dom/server';
 import { RemixServer } from '@remix-run/react';
 import type { EntryContext } from '@remix-run/node';
@@ -6,14 +5,6 @@ import createEmotionCache from './src/createEmotionCache';
 import { CacheProvider } from '@emotion/react';
 import createEmotionServer from '@emotion/server/create-instance';
 
-export function handleError(error, { request }) {
-  Sentry.captureRemixServerException(error, 'remix.server', request);
-}
-
-Sentry.init({
-    dsn: "https://4f3a1762974e77da7b1e347738080185@o4506538845929472.ingest.sentry.io/4506538846126080",
-    tracesSampleRate: 1
-})
 
 export default function handleRequest(
   request: Request,
