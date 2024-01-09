@@ -11,8 +11,9 @@ type UserAvatarProps = {
 }
 const RandomAvatar = ({ variant='circular', size='md', color='gray', className='', withBorder=false }: UserAvatarProps) => {
   const images = [
+    'dj',
     'jigarr',
-    'jigarr',
+    'libby',
     'milly',
     'rocco',
     'tameem'

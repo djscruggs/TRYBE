@@ -2,7 +2,6 @@ import {
   Card,
   CardBody,
   CardFooter,
-  Typography,
   Button,
 } from "@material-tailwind/react";
 import { GiShinyApple } from 'react-icons/gi';
@@ -14,14 +13,14 @@ import RandomAvatar from "./randomavatar";
  
 export default function FeedChallengeCard() {
   return (
-    <div className="mt-2 w-md border-0 drop-shadow-none">
+    <div className="mt-2 w-md border-0 drop-shadow-none mr-2">
       <div className="drop-shadow-none">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="md:col-span-2 flex items-center">
             <RandomAvatar size='xl' className="mr-4" />
-            <Typography variant="h6" className="mb-2">
+            <div className="mb-2 text-base">
               Three more spots available in this challenge! Any takers?
-            </Typography>
+            </div>
           </div>
           <Card className="md:col-span-2 bg-[#FBF18D] p-2 border-1 drop-shadow-lg border-gray rounded-md">
             <div className="grid grid-cols-3 gap-4">

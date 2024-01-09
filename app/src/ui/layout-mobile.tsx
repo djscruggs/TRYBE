@@ -38,7 +38,7 @@ import {AnimatePresence, motion} from 'framer-motion'
                     <BellIcon className='w-6 mr-4' />
                     <ChatBubbleLeftRightIcon className='w-6 mr-4' />
                 </div>
-                <div className="flex flex-col items-center min-h-fit ">
+                <div className="flex flex-col items-center min-h-fit pb-16">
                     <AnimatePresence mode='wait' initial={false}>
                         <motion.main
                          key={useLocation().pathname}
@@ -51,7 +51,8 @@ import {AnimatePresence, motion} from 'framer-motion'
                         </motion.main>
                     </AnimatePresence>
                 </div>
-                <div className="max-w-screen flex w-full justify-between  m-0 p-0 px-2 py-1 bg-gray-50 border-2 border-slate-200">
+                {/* <div className="max-w-screen flex w-full justify-between  m-0 p-0 px-2 py-1 bg-gray-50 border-2 border-slate-200"> */}
+                <div className="fixed bottom-0 left-0 right-0 max-w-screen flex w-full justify-between m-0 p-0 px-2 py-1 bg-gray-50 border-2 border-slate-200 z-10">
                     <Link to="/" className='min-w-8'>
                     <HomeIcon className='cursor-pointer' />
                     </Link>
@@ -60,7 +61,7 @@ import {AnimatePresence, motion} from 'framer-motion'
                     </Link>
                     <div className="flex items-center justify-center relative min-w-8" onClick={(event) => handlePlusClick(event)}>
                         {/* Your plus sign */}
-                        <PlusCircleIcon className='min-w-12 text-white rounded-full bg-red-500 text-color-white cursor-pointer text-6xl -mt-10' />
+                        <PlusCircleIcon className='min-w-12 text-white rounded-full bg-red text-color-white cursor-pointer text-6xl -mt-10' />
                         <AnimatePresence mode='wait' initial={false}>
                         {newOpen && (
                             <motion.main

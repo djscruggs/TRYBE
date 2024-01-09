@@ -16,7 +16,6 @@ const UserAvatar = ({ variant='circular', size='md', color='gray', className='',
     <Avatar 
       src="/avatars/dj.jpeg" 
       alt={name}
-      className={className} 
       variant={variant}
       size={size} 
       color={color}

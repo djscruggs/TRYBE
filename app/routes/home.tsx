@@ -5,14 +5,15 @@ import { useContext } from 'react';
 import UserAvatar from '../src/components/useravatar'
 import RandomAvatar from '../src/components/randomavatar'
 import FeedChallengeCard from '../src/components/feedchallengecard'
+import FeedCommunityCard from '~/src/components/feedcommunitycard';
+import FeedPostCard from '~/src/components/feedpostcard';
 
 export default function Home() {
    const user = useContext(UserContext)
    if(!user) {return 'Loading...'}
    return (
       <> 
-            {/* <Nav /> */}
-            <div className='max-w-lg'>
+            <div className='max-w-lg px-2'>
                <div className="flex items-center pl-0 mt-10 max-w-lg">
                   <div className="flex-grow-0 justify-self-start">
                      <UserAvatar size='xxl' />
@@ -28,7 +29,8 @@ export default function Home() {
                   <div className="flex-grow-0">
                      <select>
                         <option>Filter</option>
-                        {/* Other options */}
+                        <option>Challenges</option>
+                        <option>Events</option>
                      </select>
                   </div>
                </div>
@@ -37,8 +39,17 @@ export default function Home() {
                <div className="ml-4 flex-grow text-2xl ">
                   <FeedChallengeCard />
                </div>
-               
             </div>
+            <div className="flex items-center pl-0 mt-10 max-w-lg">
+               <div className="ml-4 flex-grow text-2xl ">
+                  <FeedCommunityCard />
+               </div>
+            </div>
+            <div className="flex items-center pl-0 mt-10 max-w-lg">
+               <div className="ml-4 flex-grow text-2xl ">
+                  <FeedPostCard />
+               </div>
+            </div>            
       </>
    );
 }
