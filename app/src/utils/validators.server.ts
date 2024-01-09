@@ -7,8 +7,8 @@ export const validateEmail = (email: string): string | undefined => {
   }
 }
 
-export const validatePassword = (password: string, password_match: string): string | undefined => {
-  if (password.length < 5) {
+export const validatePassword = (password: string | null, password_match: string | null): string | undefined => {
+  if (!password || password.length < 5) {
     return "Please enter a password that is at least 5 characters long"
   }
   if(password != password_match){

@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { useLocation } from '@remix-run/react';
 import { useState, useEffect } from 'react';
 import NavLinks from './navlinks';

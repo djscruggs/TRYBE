@@ -15,18 +15,17 @@ export const loader: LoaderFunction = async ({ request }) => {
   return (await getUser(request)) ? redirect('/') : null
 }
 export const action: ActionFunction = async ({ request }) => {
-  
-  const form = await request.formData()
-  const email = String.prototype.trim(form.get('email') as string)
-  const password = form.get('password')
-  const passwordMatch = form.get('passwordMatch')
-  const firstName = String.prototype.trim(form.get('firstName') as string)
-  const lastName = String.prototype.trim(form.get('lastName') as string)
+  const form = await request.formData();
+  const email = form.get('email')?.toString().trim() || '';
+  const password = form.get('password')?.toString() || '';
+  const passwordMatch = form.get('passwordMatch')?.toString() || '';
+  const firstName = form.get('firstName')?.toString().trim() || '';
+  const lastName = form.get('lastName')?.toString().trim() || '';
   const errors = {
     email: validateEmail(email),  
     firstName: validateName((firstName as string) || ''),
     lastName: validateName((lastName as string) || ''),
-    password: validatePassword(password, passwordMatch)
+    password: validatePassword(password as string, passwordMatch as string)
   }
   if (Object.values(errors).some(Boolean)) {
     return json({ errors, fields: { email, password, passwordMatch, firstName, lastName }, form: action }, { status: 400 })
@@ -36,15 +35,13 @@ export const action: ActionFunction = async ({ request }) => {
 
 export default function Register(): JSX.Element {
   const actionData = useActionData()
-  
-  
   const [formData, setFormData] = useState({
     email: actionData?.fields?.email || '',
     password: actionData?.fields?.password || '',
-    firstName: actionData?.fields?.lastName || '',
-    lastName: actionData?.fields?.firstName || '',
-    passwordMatch:  actionData?.fields?.passwordMatch || '',
-  })
+    firstName: actionData?.fields?.firstName || '', // Corrected
+    lastName: actionData?.fields?.lastName || '', // Corrected
+    passwordMatch: actionData?.fields?.passwordMatch || '',
+  });
   const [passwordVisible, setPasswordVisible] = useState(false)
   
   // Updates the form data when an input changes
@@ -59,10 +56,14 @@ export default function Register(): JSX.Element {
     <div className="h-full justify-center items-center flex flex-col gap-y-4">
       
         <h2 className="text-5xl font-extrabold text-yellow-300">Welcome to Trybe!</h2>
-        <p className="font-semibold text-slate-300">Please Log In!</p>
         
         
-        <Form  method="post" className="rounded-2xl bg-gray-200 p-6 w-96">
+        
+        <Form  
+          method="post" 
+          className="rounded-2xl bg-gray-200 p-6 w-96"
+          
+        >
           <div className="text-xs font-semibold text-center tracking-wide text-red w-full">
             {actionData?.error}
           </div>
@@ -109,7 +110,7 @@ export default function Register(): JSX.Element {
           </div>
           <div className="relative">
             <FormField
-              htmlFor="password_match"
+              htmlFor="passwordMatch"
               label="Repeat password"
               value={formData.passwordMatch}
               onChange={e => handleInputChange(e, 'passwordMatch')}

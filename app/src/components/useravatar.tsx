@@ -11,10 +11,10 @@ type UserAvatarProps = {
 }
 const UserAvatar = ({ variant='circular', size='md', color='gray', className='', withBorder=false }: UserAvatarProps) => {
   const user = useContext(UserContext)
-  const name = user.profile.firstName + ' ' + user.profile.lastName
+  const name = user ? user.profile.firstName + ' ' + user.profile.lastName : 'Anonymous'
   return(
     <Avatar 
-      src="/avatars/dj.jpeg" 
+      src={user.profile.firstName == 'DJ' ? "/avatars/dj.jpeg" : "/avatars/tameem.jpeg"}
       alt={name}
       variant={variant}
       size={size} 

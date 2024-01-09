@@ -10,6 +10,8 @@ import FeedPostCard from '~/src/components/feedpostcard';
 
 export default function Home() {
    const user = useContext(UserContext)
+   console.log("user")
+   console.log(user)
    if(!user) {return 'Loading...'}
    return (
       <> 

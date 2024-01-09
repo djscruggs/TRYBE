@@ -12,6 +12,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const location = useLocation()
   const [fetchCount, setFetchCount] = useState(0)
+  const openRoutes = ['/landing','/login','/logout','/register'] 
   
   useEffect(() => {
     const fetchData = async () => {
@@ -30,9 +31,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         console.error('Error fetching data:', error);
       }
     };
-    if(fetchCount == 0) {
-      fetchData();
-      setFetchCount(1)
+    if(!openRoutes.includes(location.pathname)){
+      if(fetchCount == 0) {
+        fetchData();
+        setFetchCount(1)
+      }
     }
   }, [location.pathname]);
   
@@ -67,12 +70,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   
   //detect wether they should redirect to honme if not loggd in
   //array to track available routes for non-logged in users
-  const openRoutes = ['/','/login','/logout'] 
   if(!user){
     if(!openRoutes.includes(location.pathname)){
-      return <Navigate to={"/"} />
+      return <Navigate to={"/login"} />
     }
   }
+  
 
   return (
     <>
