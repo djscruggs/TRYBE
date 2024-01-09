@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "setup": "prisma generate && prisma migrate deploy",
-    "build": "find ./ -name \".DS_Store\" -print -delete; remix build --sourcemap && sentry-upload-sourcemaps --org dj-scruggs --project trybe-icy-smoke-8833",
+    "build": "find ./ -name \".DS_Store\" -print -delete; remix build",
     "dev": "find ./ -name \".DS_Store\" -print -delete; remix dev --manual",
     "start": "find ./ -name \".DS_Store\" -print -delete; remix-serve ./build/index.js",
     "typecheck": "tsc",
@@ -24,7 +24,6 @@
     "@remix-run/react": "^2.4.1",
     "@remix-run/serve": "^2.4.1",
     "@remix-run/server-runtime": "latest",
-    "@sentry/remix": "^7.92.0",
     "@supabase/auth-helpers-remix": "^0.2.6",
     "@supabase/supabase-js": "^2.39.1",
     "bcryptjs": "^2.4.3",
