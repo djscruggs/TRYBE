@@ -10,3 +10,4 @@ app/routes/.DS_Store
 
 # Sentry Config File
 .sentryclirc
+fly-postgres

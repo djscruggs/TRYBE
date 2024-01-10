@@ -1,11 +1,12 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
-import LayoutWeb from './layout-web';
-import LayoutMobile from './layout-mobile'
 import {isMobile} from 'react-device-detect';
 import { Navigate } from 'react-router-dom';
 import { useLocation } from '@remix-run/react';
 import { UserContext } from '../utils/usercontext';
+import LayoutWeb from './layout-web'
+import LayoutMobile from './layout-mobile'
+import {ClientOnly} from 'remix-utils/client-only'
 
 
 export default function Layout({ children }: { children: React.ReactNode }) {
@@ -60,13 +61,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   }, [])
   
   const useMobile = isMobile || windowSize?.width < 400
-  if(!windowSize?.width){
-    return (
-      <div className="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-black bg-opacity-50">
-        <div className="text-white text-2xl font-bold">Loading...</div>
-      </div>
-    )
-  }
   
   //detect wether they should redirect to honme if not loggd in
   //array to track available routes for non-logged in users
@@ -79,10 +73,23 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   return (
     <>
-    <UserContext.Provider value={user}>
-       {useMobile && <LayoutMobile />}
-       {!useMobile && <LayoutWeb />}
-    </UserContext.Provider>
+      <UserContext.Provider value={user}>
+      
+      <ClientOnly fallback={<Loading />}>
+        {()=> useMobile ? <LayoutMobile /> : <LayoutWeb />}
+      </ClientOnly>
+      
+      </UserContext.Provider>
+      
+      
     </>
   );
+}
+
+function Loading(){
+  return (
+    <div className="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-black bg-opacity-50">
+      <div className="text-white text-2xl font-bold">Loading...</div>
+    </div>
+  )
 }

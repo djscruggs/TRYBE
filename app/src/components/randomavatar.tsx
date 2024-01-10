@@ -27,7 +27,6 @@ const RandomAvatar = ({ variant='circular', size='md', color='gray', className='
       variant={variant}
       size={size} 
       color={color}
-      className={className} 
       withBorder={withBorder} 
     />
   )  
