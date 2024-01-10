@@ -1,12 +1,12 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
-import {isMobile} from 'react-device-detect';
 import { Navigate } from 'react-router-dom';
 import { useLocation } from '@remix-run/react';
 import { UserContext } from '../utils/usercontext';
 import LayoutWeb from './layout-web'
 import LayoutMobile from './layout-mobile'
 import {ClientOnly} from 'remix-utils/client-only'
+import {useMobileSize} from '../utils/useMobileSize'
 
 
 export default function Layout({ children }: { children: React.ReactNode }) {
@@ -14,7 +14,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const location = useLocation()
   const [fetchCount, setFetchCount] = useState(0)
   const openRoutes = ['/landing','/login','/logout','/register'] 
-  
+  const isMobileSize = useMobileSize()
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -42,25 +42,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   
   
   
-  const isBrowser = () => typeof window !== "undefined"
-  const [windowSize, setWindowSize] = useState({
-    width: isBrowser() ? window.innerWidth : null,
-    height: isBrowser() ? window.innerHeight : null,
-  });
-  const updateSize = () => {
-    setWindowSize({
-      width: window.innerWidth,
-      height: window.innerHeight,
-    });
-  };
-  useEffect(() => {
-    if(isBrowser()) {
-      window.addEventListener('resize', updateSize);
-    }
-    return () => window.removeEventListener('resize', updateSize);
-  }, [])
   
-  const useMobile = isMobile || windowSize?.width < 400
+  
+  
   
   //detect wether they should redirect to honme if not loggd in
   //array to track available routes for non-logged in users
@@ -76,7 +60,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <UserContext.Provider value={user}>
       
       <ClientOnly fallback={<Loading />}>
-        {()=> useMobile ? <LayoutMobile /> : <LayoutWeb />}
+        {()=> isMobileSize ? <LayoutMobile /> : <LayoutWeb />}
       </ClientOnly>
       
       </UserContext.Provider>

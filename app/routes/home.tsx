@@ -7,20 +7,20 @@ import RandomAvatar from '../src/components/randomavatar'
 import FeedChallengeCard from '../src/components/feedchallengecard'
 import FeedCommunityCard from '~/src/components/feedcommunitycard';
 import FeedPostCard from '~/src/components/feedpostcard';
+import {useMobileSize} from '../src/utils/useMobileSize'
 
 export default function Home() {
+   const isMobile = useMobileSize()
    const user = useContext(UserContext)
-   console.log("user")
-   console.log(user)
    if(!user) {return 'Loading...'}
    return (
       <> 
             <div className='max-w-lg px-2'>
                <div className="flex items-center pl-0 mt-10 max-w-lg">
                   <div className="flex-grow-0 justify-self-start">
-                     <UserAvatar size='xxl' />
+                     <UserAvatar size={isMobile ? 'md': 'xxl'} />
                   </div>
-                  <div className="ml-10 flex-grow text-4xl">
+                  <div className={`ml-${isMobile ? 4 : 10} flex-grow text-${isMobile ? 'l' : '4xl'}`}>
                      <h1>Hello, {user.profile.firstName}</h1>
                   </div>
                   </div>
