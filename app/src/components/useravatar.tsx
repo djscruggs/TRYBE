@@ -11,6 +11,7 @@ type UserAvatarProps = {
 }
 const UserAvatar = ({ variant='circular', size='md', color='gray', className='', withBorder=false }: UserAvatarProps) => {
   const user = useContext(UserContext)
+  if(!user) return <></>
   const name = user ? user.profile.firstName + ' ' + user.profile.lastName : 'Anonymous'
   return(
     <Avatar 

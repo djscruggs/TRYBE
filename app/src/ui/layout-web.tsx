@@ -1,15 +1,16 @@
 import { useLocation } from '@remix-run/react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import NavLinks from './navlinks';
 import {AnimatePresence, motion} from 'framer-motion'
 import UserAvatar from '../components/useravatar'
 import { Outlet } from '@remix-run/react';
-
+import {UserContext} from '../utils/usercontext'
 
 const LayoutWeb = () => {
   const location = useLocation();
-  
+  const user = useContext(UserContext)
   const [animate,setAnimate] = useState(true)
+  
   //turn off animation on login and register OR if Link to includes animate state
   useEffect(() => {
     // Check if the key exists in location.state
@@ -38,9 +39,11 @@ const LayoutWeb = () => {
               </div>
             </div>
             <div className="flex-grow pt-4 ml-24">
+              { user &&
               <div className='float-right mr-4'>
                 <UserAvatar className='cursor-pointer'/>
               </div>
+              }
                 
               <AnimatePresence mode='wait' initial={false}>
                   {animate &&

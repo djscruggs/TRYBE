@@ -3,6 +3,8 @@
   "version": "5.0.0",
   "private": true,
   "scripts": {
+    "generate":"npx prisma generate",
+    "deploy": "npx prisma migrate deploy",  
     "setup": "prisma generate && prisma migrate deploy",
     "build": "find ./ -name \".DS_Store\" -print -delete; remix build",
     "dev": "find ./ -name \".DS_Store\" -print -delete; remix dev --manual",
@@ -10,6 +12,9 @@
     "typecheck": "tsc",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
+  },
+  "prisma": {
+    "schema": "prisma/schema.prisma"
   },
   "dependencies": {
     "@emotion/cache": "latest",
