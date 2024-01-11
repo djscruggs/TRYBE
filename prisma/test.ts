@@ -22,7 +22,6 @@ async function main() {
     where: { id: 2 },
     data: { published: true },
   })
-  console.log(post)
   
   const allUsers = await prisma.user.findMany({
     include: {

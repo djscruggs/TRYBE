@@ -9,7 +9,7 @@ import FeedCommunityCard from '~/src/components/feedcommunitycard';
 import FeedPostCard from '~/src/components/feedpostcard';
 import {useMobileSize} from '../src/utils/useMobileSize'
 import { requireCurrentUser } from "../src/utils/auth.server"
-import { LoaderFunction, redirect } from '@remix-run/node'
+import { LoaderFunction } from '@remix-run/node'
 import { useLoaderData } from '@remix-run/react';
 
 export const loader: LoaderFunction = async ({ request }) => {
@@ -23,7 +23,6 @@ export default function Home() {
    setCurrentUser(data)
    const isMobile = useMobileSize()
    
-   console.log('home,currentUser is ',currentUser)
    return (
       <> 
             <div className='max-w-lg px-2'>

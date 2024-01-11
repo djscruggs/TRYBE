@@ -36,7 +36,9 @@ import {AnimatePresence, motion} from 'framer-motion'
                 <div className="flex justify-end items-start mb-4 pt-2 pr-0">
                     <MagnifyingGlassIcon className='w-6 mr-4' />
                     <BellIcon className='w-6 mr-4' />
+                    <Link to="/messages">
                     <ChatBubbleLeftRightIcon className='w-6 mr-4' />
+                    </Link>
                 </div>
                 <div className="flex flex-col items-center min-h-fit pb-16">
                     <AnimatePresence mode='wait' initial={false}>
