@@ -1,7 +1,7 @@
 import * as ReactDOMServer from 'react-dom/server';
 import { RemixServer } from '@remix-run/react';
 import type { EntryContext } from '@remix-run/node';
-import createEmotionCache from './src/createEmotionCache';
+import createEmotionCache from './createEmotionCache';
 import { CacheProvider } from '@emotion/react';
 import createEmotionServer from '@emotion/server/create-instance';
 

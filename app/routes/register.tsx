@@ -2,11 +2,11 @@
 import { useState } from 'react';
 import { ActionFunction, json, LoaderFunction, redirect } from '@remix-run/node'
 import { Form, Link } from "@remix-run/react";
-import {register, requireCurrentUser } from '~/src/utils/auth.server'
-import { validateEmail, validateName, validatePassword } from '~/src/utils/validators.server'
+import {register, requireCurrentUser } from '~/utils/auth.server'
+import { validateEmail, validateName, validatePassword } from '~/utils/validators.server'
 import { useActionData } from '@remix-run/react'
 import * as React from 'react';
-import { FormField } from '~/src/components/form-field';
+import { FormField } from '~/components/form-field';
 import { Button } from "@material-tailwind/react";
 
 

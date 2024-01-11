@@ -1,6 +1,6 @@
 import type { LoaderFunctionArgs } from "@remix-run/node"; // or cloudflare/deno
 import { json } from "@remix-run/node"; // or cloudflare/deno
-import {requireCurrentUser} from '../src/utils/auth.server'
+import {requireCurrentUser} from '../utils/auth.server'
 
 export const loader = async ({
   request,

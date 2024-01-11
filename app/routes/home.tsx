@@ -1,14 +1,14 @@
 
-import { CurrentUserContext } from '../src/utils/CurrentUserContext';
-import Nav from '../src/ui/nav'
+import { CurrentUserContext } from '../utils/CurrentUserContext';
+import Nav from '../ui/nav'
 import { useContext } from 'react';
-import UserAvatar from '../src/components/useravatar'
-import RandomAvatar from '../src/components/randomavatar'
-import FeedChallengeCard from '../src/components/feedchallengecard'
-import FeedCommunityCard from '~/src/components/feedcommunitycard';
-import FeedPostCard from '~/src/components/feedpostcard';
-import {useMobileSize} from '../src/utils/useMobileSize'
-import { requireCurrentUser } from "../src/utils/auth.server"
+import UserAvatar from '../components/useravatar'
+import RandomAvatar from '../components/randomavatar'
+import FeedChallengeCard from '../components/feedchallengecard'
+import FeedCommunityCard from '~/components/feedcommunitycard';
+import FeedPostCard from '~/components/feedpostcard';
+import {useMobileSize} from '../utils/useMobileSize'
+import { requireCurrentUser } from "../utils/auth.server"
 import { LoaderFunction } from '@remix-run/node'
 import { useLoaderData } from '@remix-run/react';
 

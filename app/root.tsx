@@ -11,12 +11,12 @@ import {
 } from '@remix-run/react';
 import { withEmotionCache } from '@emotion/react';
 import { useState } from 'react';
-import { CurrentUserContext } from './src/utils/CurrentUserContext';
-import ClientStyleContext from './src/ClientStyleContext';
-import Layout from './src/ui/layout';
+import { CurrentUserContext } from './utils/CurrentUserContext';
+import ClientStyleContext from './ClientStyleContext';
+import Layout from './ui/layout';
 import stylesheet from "./tailwind.css";
 import type { LinksFunction } from "@remix-run/node";
-import { User } from './src/utils/types.client';
+import { User } from './utils/types.client';
 
 interface DocumentProps {
   children: React.ReactNode;

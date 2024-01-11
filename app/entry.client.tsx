@@ -3,8 +3,8 @@ import * as ReactDOM from 'react-dom/client';
 import { RemixBrowser, useLocation, useMatches } from '@remix-run/react';
 import { CacheProvider } from '@emotion/react';
 
-import ClientStyleContext from './src/ClientStyleContext';
-import createEmotionCache from './src/createEmotionCache';
+import ClientStyleContext from './ClientStyleContext';
+import createEmotionCache from './createEmotionCache';
 import { ThemeProvider } from "@material-tailwind/react";
 
 
