@@ -30,7 +30,7 @@ export default function Home() {
                   <div className="flex-grow-0 justify-self-start">
                      <UserAvatar size={isMobile ? 'md': 'xxl'} />
                   </div>
-                  <div className={`ml-${isMobile ? 4 : 10} flex-grow text-${isMobile ? 'l' : '4xl'}`}>
+                  <div className={`ml-4 flex-grow text-${isMobile ? 'l' : '4xl'}`}>
                      <h1>Hello, {currentUser?.profile.firstName}</h1>
                   </div>
                   </div>
