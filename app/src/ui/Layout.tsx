@@ -14,10 +14,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const isMobileSize = useMobileSize()
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const {currentUser, setCurrentUser} = useContext(CurrentUserContext)
-  
-  
-  console.log('layout current user')
-  console.log(currentUser)
   return (
     <>
       

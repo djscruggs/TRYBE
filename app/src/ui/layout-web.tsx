@@ -4,7 +4,7 @@ import NavLinks from './navlinks';
 import {AnimatePresence, motion} from 'framer-motion'
 import UserAvatar from '../components/useravatar'
 import { Outlet } from '@remix-run/react';
-import { CurrentUserContext } from '../utils/CurrentUserContext'
+import {CurrentUserContext} from '../utils/CurrentUserContext'
 
 const LayoutWeb = () => {
   const location = useLocation();
@@ -27,6 +27,8 @@ const LayoutWeb = () => {
   
   return (
           <div className='flex px-2 pt-2 min-h-screen'>
+            {currentUser && 
+            
             <div className="flex flex-col justify-start items-start mr-8 ">
               <div className="flex items-center mb-4 mt-10">
                 <div className="flex h-full flex-col px-3 py-4 md:px-2">
@@ -38,11 +40,14 @@ const LayoutWeb = () => {
                 </div>
               </div>
             </div>
-            <div className="flex-grow pt-4 ml-24">
-              {currentUser &&
-              <div className='float-right mr-4'>
-                <UserAvatar className='cursor-pointer'/>
-              </div>
+            
+            }
+            
+            <div className={`flex-grow pt-4 ml-${currentUser ? 24 : 0}`}> 
+              { currentUser &&
+                <div className='float-right mr-4'>
+                  <UserAvatar className='cursor-pointer'/>
+                </div>
               }
                 
               <AnimatePresence mode='wait' initial={false}>
