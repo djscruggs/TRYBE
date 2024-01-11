@@ -1,5 +1,5 @@
 
-import { UserContext } from '../src/utils/usercontext';
+import { CurrentUserContext } from '../src/utils/CurrentUserContext';
 import Nav from '../src/ui/nav'
 import { useContext } from 'react';
 import UserAvatar from '../src/components/useravatar'
@@ -8,11 +8,22 @@ import FeedChallengeCard from '../src/components/feedchallengecard'
 import FeedCommunityCard from '~/src/components/feedcommunitycard';
 import FeedPostCard from '~/src/components/feedpostcard';
 import {useMobileSize} from '../src/utils/useMobileSize'
+import { requireCurrentUser } from "../src/utils/auth.server"
+import { LoaderFunction, redirect } from '@remix-run/node'
+import { useLoaderData } from '@remix-run/react';
+
+export const loader: LoaderFunction = async ({ request }) => {
+  // if thecurrentUser isn't authenticated, this will redirect to login
+  return await requireCurrentUser(request)
+}
 
 export default function Home() {
+   const data = useLoaderData<typeof loader>();
+   const {currentUser, setCurrentUser} = useContext(CurrentUserContext)
+   setCurrentUser(data)
    const isMobile = useMobileSize()
-   const user = useContext(UserContext)
-   if(!user) {return 'Loading...'}
+   
+   console.log('home,currentUser is ',currentUser)
    return (
       <> 
             <div className='max-w-lg px-2'>
@@ -21,7 +32,7 @@ export default function Home() {
                      <UserAvatar size={isMobile ? 'md': 'xxl'} />
                   </div>
                   <div className={`ml-${isMobile ? 4 : 10} flex-grow text-${isMobile ? 'l' : '4xl'}`}>
-                     <h1>Hello, {user.profile.firstName}</h1>
+                     <h1>Hello, {currentUser?.profile.firstName}</h1>
                   </div>
                   </div>
                   <div className="flex items-center justify-between w-full max-w-lg mt-10">

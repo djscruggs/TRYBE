@@ -31,7 +31,7 @@ export async function createUserSession(userId: string | number, redirectTo: str
   })
 }
 export async function register(user: RegisterForm) {
-  const exists = await prisma.user.count({ where: { email: user.email } })
+  const exists = await prisma.user.count({ where: { email:user.email } })
   if (exists) {
     return json({ error: `User already exists with that email` }, { status: 400 })
   }
@@ -41,33 +41,46 @@ export async function register(user: RegisterForm) {
   if (!newUser) {
     return json(
       {
-        error: `Something went wrong trying to create a new user.`,
-        fields: { email: user.email, password: user.password },
+        error: `Something went wrong trying to create a newcurrentUser.`,
+        fields: { email:user.email, password:user.password },
       },
       { status: 400 },
     )
   }
-  return createUserSession(newUser.id, '/');
+  return createUserSession(newUser.id, '/home');
 }
 
-export async function login({ email, password }: LoginForm) {
-  const user = await prisma.user.findUnique({
+export async function login({ email, password, request }: LoginForm) {
+  const currentUser = await prisma.user.findUnique({
     where: { email },
   })
-if (!user || !(await bcrypt.compare(password, user.password)))
+  if (!currentUser || !(await bcrypt.compare(password,currentUser.password)))
     return json({ error: `Incorrect login` }, { status: 400 })
-  return createUserSession(user.id, '/');
+  const {URL} = require('url');
+  const parsedUrl = new URL(request.url);
+  
+  let redirect = '/home'
+  if(parsedUrl.searchParams){
+    const params = parsedUrl.searchParams
+    if(params.get('redirectTo')){
+      redirect = params.get('redirectTo')
+    }
+  }
+  return createUserSession(currentUser.id, redirect);
 }
 
 
-export async function requireUserId(request: Request, redirectTo: string = new URL(request.url).pathname) {
-  const session = await getUserSession(request)
-  const userId = session.get('userId')
-  if (!userId) {
-    const searchParams = new URLSearchParams([['redirectTo', redirectTo]])
-    throw redirect(`/login?${searchParams}`)
+export async function requireCurrentUser(request: Request, redirectTo: string = new URL(request.url).pathname) {
+  const currentUser = await getUser(request)
+  const url = require('url');
+  const path = url.parse(request.url).pathname
+  if (!currentUser) {
+    if(!['/login','/register'].includes(path)) {
+      const searchParams = new URLSearchParams([['redirectTo', redirectTo]])
+      throw redirect(`/login?${searchParams}`)
+    }
   }
-  return userId
+  return currentUser
 }
 
 export function getUserSession(request: Request) {
@@ -76,12 +89,12 @@ export function getUserSession(request: Request) {
 
 async function getUserId(request: Request) {
   const session = await getUserSession(request)
-  const userId = session.get('userId')
-  if (!userId) return null
-  return userId
+  const currentUserId = session.get('userId')
+  if (!currentUserId) return null
+  return currentUserId
 }
 
-export async function getUser(request: Request) {
+async function getUser(request: Request) {
   const userId = await getUserId(request)
   if (!userId) {
     return null
@@ -89,12 +102,12 @@ export async function getUser(request: Request) {
 
   try {
     const user = await prisma.user.findUnique({
-      where: { id: userId },
+      where: { id:userId },
       select: { id: true, email: true, profile: true },
     })
     return user
   } catch {
-    throw logout(request)
+    return null
   }
 }
 

@@ -10,11 +10,13 @@ import {
   isRouteErrorResponse,
 } from '@remix-run/react';
 import { withEmotionCache } from '@emotion/react';
-
+import { useState } from 'react';
+import { CurrentUserContext } from './src/utils/CurrentUserContext';
 import ClientStyleContext from './src/ClientStyleContext';
 import Layout from './src/ui/layout';
 import stylesheet from "./tailwind.css";
 import type { LinksFunction } from "@remix-run/node";
+import { User } from './src/utils/types.client';
 
 interface DocumentProps {
   children: React.ReactNode;
@@ -57,11 +59,14 @@ const Document = withEmotionCache(({ children, title }: DocumentProps, emotionCa
 // https://remix.run/docs/en/main/route/component
 // https://remix.run/docs/en/main/file-conventions/routes
 export default function App() {
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
   return (
     <Document>
-      <Layout>
-        <Outlet />
-      </Layout>
+      <CurrentUserContext.Provider value={{currentUser, setCurrentUser}}>
+        <Layout>
+          <Outlet />
+        </Layout>
+      </CurrentUserContext.Provider>
     </Document>
   );
 }
@@ -105,7 +110,7 @@ export function ErrorBoundary() {
             <h1>There was an error</h1>
             <p>{error.message}</p>
             <hr />
-            <p>Hey, developer, you should replace this with what you want your users to see.</p>
+            <p>Hey, developer, you should replace this with what you want yourcurrentUsers to see.</p>
           </div>
         </Layout>
       </Document>

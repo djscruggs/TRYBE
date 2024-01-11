@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { ActionFunction, json, LoaderFunction, redirect } from '@remix-run/node'
 import { Form, Link } from "@remix-run/react";
-import { login, getUser } from '~/src/utils/auth.server'
+import { login, requireCurrentUser } from '~/src/utils/auth.server'
 import { validateEmail } from '~/src/utils/validators.server'
 import { useActionData } from '@remix-run/react'
 import * as React from 'react';
@@ -10,8 +10,9 @@ import { FormField } from '~/src/components/form-field';
 import { Button } from "@material-tailwind/react";
 
 export const loader: LoaderFunction = async ({ request }) => {
-  // If there's already a user in the session, redirect to the home page
-  return (await getUser(request)) ? redirect('/') : null
+  
+  // If there's already a currentUser in the session, redirect to the home page
+  return (await requireCurrentUser(request)) ? redirect('/home') : null
 }
 export const action: ActionFunction = async ({ request }) => {
   
@@ -29,7 +30,7 @@ export const action: ActionFunction = async ({ request }) => {
   if (Object.values(errors).some(Boolean)) {
     return json({ errors, fields: { email }, form: action }, { status: 400 })
   }
-  const result = await login({ email, password })
+  const result = await login({ email, password, request })
   return result
     
 

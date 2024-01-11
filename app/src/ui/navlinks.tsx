@@ -14,17 +14,22 @@ import {
         PowerIcon,
         SunIcon
               } from '@heroicons/react/24/outline'
-import {UserContext} from '../utils/usercontext'
+import { CurrentUserContext } from '../utils/CurrentUserContext'
 import { useContext } from 'react';
 
 
 const NavLinks = () => {
-  const user = useContext(UserContext)
+  const {currentUser, setCurrentUser} = useContext(CurrentUserContext)
   const location = useLocation()
+  function handleLogout(e: React.FormEvent) {
+    e.preventDefault(); // Prevent default form submission
+    setCurrentUser(null); // Example: Set the current user to null on logout
+    e.currentTarget.submit(); // Manually trigger the form submission
+  }
   return (
     
     <div className="flex flex-col justify-start items-center min-h-full">
-      {!user &&
+      {!currentUser &&
           <div className="absolute  ml-24 w-24 h-20 flex items-center justify-center flex-col text-darkgrey text-center mb-4 hover:bg-gray-300 p-2 rounded-lg">
           <Link to="/login" className='flex items-center flex-col'>
             <SunIcon className='h-8 w-8 cursor-pointer mb-1' />
@@ -32,7 +37,7 @@ const NavLinks = () => {
           </Link>
           </div>
         }
-      {user &&
+      {currentUser &&
       <>
       <div className={`w-24 flex items-center flex-col text-darkgrey text-center mb-4 p-2 rounded-lg ${location.pathname === '/home' ? 'bg-gray-100' : 'hover:bg-gray-300'}`}>
         <Link to="/home" className='flex items-center flex-col' >
@@ -71,7 +76,7 @@ const NavLinks = () => {
         </Link>
       </div>
       <div className=" bottom-0  w-24 h-20 flex items-center justify-center flex-col text-darkgrey text-center mb-4 hover:bg-gray-300 p-2 rounded-lg">
-        <Form action="/logout" method="post">
+        <Form action="/logout" onSubmit={handleLogout} method="post">
           <Button type="submit" className='flex items-center flex-col bg-inherit shadow-none hover:shadow-none'>
             <PowerIcon className='h-8 w-8 cursor-pointer text-darkgrey' />
             <span className='bg-inherit text-darkgrey font-normal text-base mt-2 normal-case'>Logout</span>

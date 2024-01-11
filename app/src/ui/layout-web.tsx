@@ -4,11 +4,11 @@ import NavLinks from './navlinks';
 import {AnimatePresence, motion} from 'framer-motion'
 import UserAvatar from '../components/useravatar'
 import { Outlet } from '@remix-run/react';
-import {UserContext} from '../utils/usercontext'
+import { CurrentUserContext } from '../utils/CurrentUserContext'
 
 const LayoutWeb = () => {
   const location = useLocation();
-  const user = useContext(UserContext)
+  const {currentUser, setCurrentUser} = useContext(CurrentUserContext)
   const [animate,setAnimate] = useState(true)
   
   //turn off animation on login and register OR if Link to includes animate state
@@ -39,7 +39,7 @@ const LayoutWeb = () => {
               </div>
             </div>
             <div className="flex-grow pt-4 ml-24">
-              { user &&
+              {currentUser &&
               <div className='float-right mr-4'>
                 <UserAvatar className='cursor-pointer'/>
               </div>

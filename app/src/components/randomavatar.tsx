@@ -1,6 +1,5 @@
 import { Avatar } from "@material-tailwind/react";
-import {UserContext} from '../utils/usercontext'
-import { useContext } from 'react';
+import { CurrentUserContext } from '../utils/CurrentUserContext'
 
 type UserAvatarProps = {
   variant?: string
