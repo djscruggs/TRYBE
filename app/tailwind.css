@@ -19,3 +19,167 @@
   font-weight: 400;
   src: url('../public/fonts/source-sans-3/source-sans-3-v15-latin-regular.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
 }
+
+.welcome-page {
+  background-color: #f8f8f8;
+  height: 812px;
+  overflow: hidden;
+  width: 375px;
+}
+
+.welcome-page .overlap {
+  height: 1568px;
+  left: -233px;
+  position: relative;
+  top: -315px;
+  width: 847px;
+}
+
+.welcome-page .graphic-shape {
+  box-shadow: 0px 4px 4px #00000040;
+  height: 1568px;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 847px;
+}
+
+.welcome-page .overlap-group {
+  height: 512px;
+  left: 68px;
+  position: absolute;
+  top: 81px;
+  width: 808px;
+}
+
+.welcome-page .ellipse {
+  background-color: #fdc94cbf;
+  border-radius: 116.34px/177.49px;
+  height: 355px;
+  left: 480px;
+  position: absolute;
+  top: 119px;
+  transform: rotate(-123.96deg);
+  width: 233px;
+}
+
+.welcome-page .div {
+  background-color: #3295b780;
+  border-radius: 157.31px/306.64px;
+  height: 613px;
+  left: 171px;
+  position: absolute;
+  top: -100px;
+  transform: rotate(-80.35deg);
+  width: 315px;
+}
+
+.welcome-page .img {
+  height: 278px;
+  left: 222px;
+  position: absolute;
+  top: 234px;
+  width: 317px;
+}
+
+.welcome-page .overlap-2 {
+  height: 640px;
+  left: -7px;
+  position: absolute;
+  top: 889px;
+  width: 690px;
+}
+
+.welcome-page .ellipse-2 {
+  background-color: #3295b780;
+  border-radius: 206.6px/309.77px;
+  height: 620px;
+  left: 139px;
+  position: absolute;
+  top: 65px;
+  transform: rotate(101.67deg);
+  width: 413px;
+}
+
+.welcome-page .ellipse-3 {
+  background-color: #ec5f5cbf;
+  border-radius: 270.48px/252.4px;
+  height: 505px;
+  left: 10px;
+  position: absolute;
+  top: 20px;
+  transform: rotate(89.66deg);
+  width: 541px;
+}
+
+.welcome-page .already-have-account {
+  height: 50px;
+  left: 254px;
+  position: absolute;
+  top: 865px;
+  width: 337px;
+}
+
+.welcome-page .div-wrapper {
+  background-color: #f7fff7;
+  border-radius: 100px;
+  box-shadow: 0px 3px 10px #0000001a;
+  height: 50px;
+  position: relative;
+  width: 335px;
+}
+
+.welcome-page .p {
+  color: #000000;
+  font-family: "Source Sans Pro", Helvetica;
+  font-size: 16px;
+  font-weight: 600;
+  height: 20px;
+  left: 84px;
+  letter-spacing: -0.32px;
+  line-height: normal;
+  position: absolute;
+  text-align: center;
+  top: 14px;
+}
+
+.welcome-page .sign-up-button {
+  height: 70px;
+  left: 244px;
+  position: absolute;
+  top: 790px;
+  width: 355px;
+}
+
+.welcome-page .making-personal {
+  color: #000000;
+  font-family: "Source Sans Pro", Helvetica;
+  font-size: 20px;
+  font-weight: 400;
+  left: 253px;
+  letter-spacing: 0;
+  line-height: normal;
+  position: absolute;
+  text-align: center;
+  top: 658px;
+  width: 335px;
+}
+
+.welcome-page .text-wrapper-2 {
+  color: #000000;
+  font-family: "Source Sans Pro", Helvetica;
+  font-size: 36px;
+  font-weight: 900;
+  left: 368px;
+  letter-spacing: 0;
+  line-height: normal;
+  position: absolute;
+  text-align: center;
+  top: 593px;
+}
+
+.welcome-page .status-bar-instance {
+  left: 233px !important;
+  position: absolute !important;
+  top: 315px !important;
+}

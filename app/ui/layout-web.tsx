@@ -26,7 +26,7 @@ const LayoutWeb = () => {
   }, [location.pathname]);
   
   return (
-          <div className='flex px-2 pt-2 min-h-screen'>
+          <div className='flex  min-h-screen'>
             {currentUser && 
             
             <div className="flex flex-col justify-start items-start mr-8 ">

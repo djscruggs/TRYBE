@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 import {Outlet, useLocation} from '@remix-run/react';
 import { BellIcon,
         HomeIcon,
@@ -15,24 +16,40 @@ import { BellIcon,
 import {AnimatePresence, motion} from 'framer-motion'
 
 
-  const LayoutMobile = () => {
-  const [newOpen, setNewOpen] = React.useState(false)
+const LayoutMobile = () => {
+  const [newOpen, setNewOpen] = useState(false)
+
+  //hide nav if on index, login or register
+  const [showNav, setShowNav] = useState(true)
+  const location = useLocation()
+  useEffect(() => {
+    console.log('triggered')
+    if(['/','/register','/login'].includes(location.pathname)){
+      setShowNav(false)
+      
+    } else {
+      setShowNav(true)
+    }
+    
+  }, [location.pathname]);
+  
   
   const handlePlusClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-    event.stopPropagation()
-    setNewOpen(!newOpen)
+      event.stopPropagation()
+      setNewOpen(!newOpen)
   }
   const hideMenu = () => {
-    setNewOpen(false)
+      setNewOpen(false)
   }
   const navigate = useNavigate()
   const handleNewOpt = (action: string, event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-    event.stopPropagation();
-    navigate(action)
-    hideMenu();
+      event.stopPropagation();
+      navigate(action)
+      hideMenu();
   };
   return (
             <div className="max-w-screen flex flex-col justify-between h-screen p-0" onClick={hideMenu}>
+                {showNav &&
                 <div className="flex justify-end items-start mb-4 pt-2 pr-0">
                     <MagnifyingGlassIcon className='w-6 mr-4' />
                     <BellIcon className='w-6 mr-4' />
@@ -40,6 +57,7 @@ import {AnimatePresence, motion} from 'framer-motion'
                     <ChatBubbleLeftRightIcon className='w-6 mr-4' />
                     </Link>
                 </div>
+                }
                 <div className="flex flex-col items-center min-h-fit pb-16">
                     <AnimatePresence mode='wait' initial={false}>
                         <motion.main
@@ -53,7 +71,7 @@ import {AnimatePresence, motion} from 'framer-motion'
                         </motion.main>
                     </AnimatePresence>
                 </div>
-                {/* <div className="max-w-screen flex w-full justify-between  m-0 p-0 px-2 py-1 bg-gray-50 border-2 border-slate-200"> */}
+                {showNav &&
                 <div className="fixed bottom-0 left-0 right-0 max-w-screen flex w-full justify-between m-0 p-0 px-2 py-1 bg-gray-50 border-2 border-slate-200 z-10">
                     <Link to="/" className='min-w-8'>
                     <HomeIcon className='cursor-pointer' />
@@ -99,6 +117,7 @@ import {AnimatePresence, motion} from 'framer-motion'
                     <IdentificationIcon className='cursor-pointer' />
                     </Link>
                 </div>
+                }
             </div>
   );
 }
