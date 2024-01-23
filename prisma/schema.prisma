@@ -17,6 +17,8 @@ model User {
   createdAt DateTime @default(now())
   updatetAt DateTime @updatedAt
   posts   Post[]
+  challenges Challenge[]  //challenges that the user as created
+  memberChallenges MemberChallenge[] //challenges that the user is a member of
   profile Profile?
 }
 model Profile {
@@ -31,12 +33,41 @@ model Post {
   id         Int        @id @default(autoincrement())
   createdAt  DateTime   @default(now())
   updatedAt  DateTime   @updatedAt
+  publishAt  DateTime   @default(now())
   title      String
+  body       Bytes
   published  Boolean    @default(false)
-  author     User       @relation(fields: [authorId], references: [id])
-  authorId   Int
+  user       User       @relation(fields: [userId], references: [id])
+  userId     Int
   categories Category[]
 }
+model Challenge {
+  id         Int        @id @default(autoincrement())
+  name       String
+  description       Bytes?
+  startAt  DateTime   @default(now())
+  endAt  DateTime?   
+  coverPhoto String?
+  icon        String?
+  color       String?
+  reminders   Boolean  @default(false)
+  syncCalendar Boolean @default(false)
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  publishAt  DateTime   @default(now())
+  published  Boolean    @default(false)
+  user       User       @relation(fields: [userId], references: [id])
+  userId     Int
+  members    MemberChallenge[]
+}
+model MemberChallenge{
+  user User @relation(fields: [userId], references: [id])
+  userId    Int
+  challenge Challenge? @relation(fields: [challengeId], references: [id])
+  challengeId Int
+  @@id([challengeId, userId])
+}
+
 
 model Category {
   id    Int    @id @default(autoincrement())
@@ -47,4 +78,11 @@ model Category {
 enum Role {
   USER
   ADMIN
+}
+enum Frequency {
+  DAILY
+  WEEKDAYS
+  ALTERNATING
+  WEEKLY
+  CUSTOM
 }

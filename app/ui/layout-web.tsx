@@ -29,7 +29,7 @@ const LayoutWeb = () => {
           <div className='flex  min-h-screen'>
             {currentUser && 
             
-            <div className="flex flex-col justify-start items-start mr-8 ">
+            <div className="flex flex-col justify-start items-start mr-8">
               <div className="flex items-center mb-4 mt-10">
                 <div className="flex h-full flex-col px-3 py-4 md:px-2">
                   <div className="flex grow flex-row justify-between space-x-2 md:flex-col md:space-x-0 md:space-y-2 h-full">
@@ -43,7 +43,7 @@ const LayoutWeb = () => {
             
             }
             
-            <div className={`flex-grow pt-4 ml-${currentUser ? 24 : 0}`}> 
+            <div className={`flex-grow pt-4 ${currentUser ? "ml-20" : "ml-0"}`}> 
               { currentUser &&
                 <div className='float-right mr-4'>
                   <UserAvatar className='cursor-pointer'/>

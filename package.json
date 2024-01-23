@@ -17,7 +17,7 @@
     "@emotion/styled": "^11.11.0",
     "@heroicons/react": "^2.1.1",
     "@material-tailwind/react": "^2.1.8",
-    "@prisma/client": "5.8.0",
+    "@prisma/client": "^5.8.1",
     "@remix-run/css-bundle": "latest",
     "@remix-run/node": "^2.4.1",
     "@remix-run/react": "^2.4.1",
@@ -50,7 +50,7 @@
     "@types/react-dom": "latest",
     "autoprefixer": "^10.4.16",
     "postcss": "^8.4.32",
-    "prisma": "5.8.0",
+    "prisma": "^5.8.1",
     "storybook": "^7.6.6",
     "tailwindcss": "^3.4.0",
     "typescript": "latest"
