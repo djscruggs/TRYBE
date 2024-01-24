@@ -36,7 +36,7 @@ const NavLinks = () => {
             <span className="cursor-pointer ">Home</span>
           </Link>
         </div>
-        <div className={`w-24 h-20 flex items-center justify-center flex-col text-darkgrey text-center mb-4 p-2 rounded-lg ${location.pathname === '/challenges' ? 'bg-gray-100' : 'hover:bg-gray-300'}`}>
+        <div className={`w-24 h-20 flex items-center justify-center flex-col text-darkgrey text-center mb-4 p-2 rounded-lg ${location.pathname === '/challenges/' ? 'bg-gray-100' : 'hover:bg-gray-300'}`}>
           <Link to="/challenges" className='flex items-center flex-col'>
             <TrophyIcon className='h-8 w-8 cursor-pointer mb-1y' />
             <span className="cursor-pointer">Challenges</span>
@@ -49,7 +49,7 @@ const NavLinks = () => {
           </Link>
         </div>
         <div className={`w-24 h-20 flex items-center justify-center flex-col  text-darkgrey text-center mb-4 p-2 rounded-lg ${location.pathname === '/groups' ? 'bg-gray-100' : 'hover:bg-gray-300'}`}>
-          <Link to="/groups" className='flex items-center flex-col'>
+          <Link to="/groups/" className='flex items-center flex-col'>
             <UserGroupIcon className='h-8 w-8 cursor-pointer mb-1' />
             <span className="cursor-pointer">Groups</span>
           </Link>

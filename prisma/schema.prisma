@@ -46,7 +46,8 @@ model Challenge {
   name       String
   description       Bytes?
   startAt  DateTime   @default(now())
-  endAt  DateTime?   
+  endAt  DateTime?
+  frequency Frequency @default(DAILY)   
   coverPhoto String?
   icon        String?
   color       String?
