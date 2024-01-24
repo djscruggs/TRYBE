@@ -75,6 +75,7 @@ export default function Register(): JSX.Element {
             error={actionData?.errors?.firstName}
             value={formData.firstName}
             autoComplete="given-name"
+            autoFocus={true}
           />
           <FormField
             htmlFor="lastName"

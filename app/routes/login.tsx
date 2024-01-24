@@ -65,6 +65,7 @@ export default function Login(): JSX.Element {
             value={formData.email}
             error={actionData?.errors?.email}
             onChange={e => handleInputChange(e, 'email')}
+            autoFocus={true}
           />
           <div className="relative">
             <FormField

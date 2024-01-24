@@ -10,6 +10,7 @@ interface FormFieldProps {
   onChange?: (...args: any) => any
   error?: string
   autoComplete?: string
+  autoFocus?: boolean
 }
 
 export function FormField({
@@ -19,7 +20,8 @@ export function FormField({
   value,
   onChange = () => { },
   error = "",
-  autoComplete=""
+  autoComplete="",
+  autoFocus = false
 
 }: FormFieldProps) {
   
@@ -50,6 +52,7 @@ export function FormField({
           className={`w-full p-2 px-4 rounded-full my-2 ${errorText ? 'border border-2 border-red' : ''}`}
           value={value} 
           autoComplete={autoComplete}
+          autoFocus = {autoFocus}
       />
       {type == 'password' &&
         <ShowPasswordButton passwordVisible={passwordVisible} clickHandler={togglePasswordVisibility} />
