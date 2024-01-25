@@ -9,6 +9,7 @@ interface FormFieldProps {
   value?: any
   onChange?: (...args: any) => any
   error?: string
+  required?: boolean
   autoComplete?: string
   autoFocus?: boolean
   rows?: number
@@ -22,6 +23,7 @@ export function FormField({
   value = '',
   onChange = () => { },
   error = "",
+  required = false,
   autoComplete="",
   autoFocus = false,
   cols=30,
@@ -58,6 +60,7 @@ export function FormField({
           rows={rows}
           value={value} 
           autoComplete={autoComplete}
+          required={required}
           autoFocus = {autoFocus}>
           {value}
         </textarea>
@@ -70,6 +73,7 @@ export function FormField({
           type={localType} 
           id={name} 
           name={name} 
+          required={required}
           className={`w-full p-2 px-4 rounded-md my-2 border ${errorText ? ' border-red' : ''}`}
           value={value} 
           autoComplete={autoComplete}
@@ -82,7 +86,7 @@ export function FormField({
         <ShowPasswordButton passwordVisible={passwordVisible} clickHandler={togglePasswordVisibility} />
       }
       {errorText &&
-        <div className="text-xs font-semibold text-left tracking-wide text-red w-full mb-4 ml-4">
+        <div className="text-xs font-semibold text-left tracking-wide text-red w-full mb-4 ">
             {errorText || ''}
         </div>
       }

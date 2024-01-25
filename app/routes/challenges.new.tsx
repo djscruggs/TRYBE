@@ -11,9 +11,12 @@ import type { ActionFunctionArgs } from "@remix-run/node"; // or cloudflare/deno
 import { json, redirect } from "@remix-run/node"; // or cloudflare/deno
 import { Input } from "@material-tailwind/react";
 import { useActionData } from "@remix-run/react";
-import { Button } from "@material-tailwind/react";
+import { Button, Select, Option } from "@material-tailwind/react";
 import { FormField } from "~/components/form-field";
 import DatePicker from "react-datepicker";
+import { CurrentUserContext } from '../utils/CurrentUserContext';
+import { useContext } from "react";
+
 
 
 const schema =  z.object({
@@ -23,23 +26,22 @@ const schema =  z.object({
                   description: z
                     .string()
                     .min(1, { message: "Description is required" }),
-                  startAt: z.date({required_error: "Please select a date"})
+                  startAt: z.coerce.date({required_error: "Please select a date"})
                           .min(new Date(), { message: "Must start today or after" }),
-                  frequency: z.enum(
-                    ["DAILY",
-                    "WEEKDAYS",
-                    "ALTERNATING",
-                    "WEEKLY",
-                    "CUSTOM"]
-                  ),
-                  coverPhoto: z.string(),
-                  icon: z.string(),
-                  color: z.string(),
-                  reminders: z.boolean(),
-                  syncCalendar: z.boolean(),
-                  publishAt: z.date(),
-                  published: z.boolean(),
-                  userId: z.bigint()
+                          
+                          
+                  endAt: z.coerce.date()
+                          .or(z.literal('')).nullable(),
+                          
+                  frequency: z.enum(["DAILY","WEEKDAYS","ALTERNATING","WEEKLY","CUSTOM"]),
+                  coverPhoto: z.string().optional(),
+                  icon: z.string().optional(),
+                  color: z.string().optional(),
+                  reminders: z.boolean().default(false),
+                  syncCalendar: z.boolean().default(false),
+                  publishAt: z.date().optional(),
+                  published: z.boolean().default(false),
+                  userId: z.coerce.bigint()
 
   })
 
@@ -55,14 +57,19 @@ function getDefaults<Schema extends z.AnyZodObject>(schema: Schema) {
 export async function action({
   request,
 }: ActionFunctionArgs) {
-  const formData = await request.formData();
-  const errors = {};
+  
+  const formData = Object.fromEntries(await request.formData());
+  console.log(formData)
+  
   try {
     const result = schema.safeParse(formData)
     if (!result.success) {
+      //additional check
+      let errors = result.error.format()
+      console.log(errors)
       return({
         formData,
-        error: result.error.format()
+        errors: errors
       })
     }
     
@@ -86,17 +93,20 @@ type FormData = {
   // Add other types as needed for the values
 };
 type Data = {
-  error?: ErrorObject;
+  errors?: ErrorObject;
   formData?: FormData;
 };
 export default function NewChallenge({ children }: { children: React.ReactNode }) {
-  
+  const frequencies = schema.shape.frequency._def.values
   const data: Data = useActionData() ?? {};
   console.log(data)
-  const [errors, setErrors] = useState<ErrorObject>(data.error || {});
-  
+  const [errors, setErrors] = useState<ErrorObject>();
+  useEffect(() => {
+    setErrors(data.errors)
+  }, [data]);
   const defaults = getDefaults(schema)
-  // console.log(defaults)
+  const {currentUser} = useContext(CurrentUserContext)
+  
   const [formData, setFormData] = useState(defaults)
   function selectDate(name:string, value:Date) {
     setFormData((prevFormData) => ({
@@ -111,30 +121,63 @@ export default function NewChallenge({ children }: { children: React.ReactNode }
       [name]: value,
     }));
   };
+  function handleSelect(event: any){
+    console.log(event)
+  }
+  function handleSubmit(event:FormEvent){
+    event.preventDefault()
+    console.log(event.target)
+
+  }
   
   console.log(errors)
   return  (
           <>
-          <Form method="post">
-            
+          <Form method="post" >
+            <input type="hidden" name="userId" value={currentUser?.id} />
             <div className="relative max-w-sm">
             
-            <div className="relative ">
-              <FormField name='name' value={formData.name} onChange={handleChange} error={errors?.name?._errors[0]} label="Name of Challenge" />
+            <div className="relative mb-2">
+              <FormField name='name' required={true} value={formData.name} onChange={handleChange} error={errors?.name?._errors[0]} label="Name of Challenge" />
             </div>
-            <div className="relative flex space-x-4">
+            <div className="relative flex mb-2">
+            <Select 
+              label="Select frequency" 
+              placeholder='frequency'
+              name="frequency" 
+              value={formData.frequency} 
+              onChange={handleSelect}
+              >
+              {frequencies.map((frequency: string, index: number) => (
+                  <Option key={index} value={frequency}>{frequency.charAt(0).toUpperCase() + frequency.slice(1).toLowerCase()}</Option>
+                ))
+              }
+              </Select>
+            </div>
+            <div className="relative flex mb-2">
               <div className="relative max-w-[200px]">
               <label>Start Date</label>
-              <DatePicker className='p-1 border border-slate-gray-500 rounded-md' selected={formData.startAt} onChange={(date:Date) => selectDate('startAt', date)} />
               
+              <DatePicker name='startAt' required={true} className='p-1 border border-slate-gray-500 rounded-md my-2 pl-2' selected={formData.startAt} onChange={(date:Date) => selectDate('startAt', date)} />
+              {errors?.startAt && (
+                <div className="text-xs font-semibold text-left tracking-wide text-red w-full mb-4">
+                  {errors?.startAt._errors[0]}
+                </div>
+              )}
               </div>
               <div className="relative max-w-[200px]">
               <label>End Date</label>
-              <DatePicker className='p-1 border border-slate-gray-500 rounded-md'  selected={formData.endAt} onChange={(date:Date) => selectDate('endAt', date)} />
+              <DatePicker name='endAt' className='p-1 border border-slate-gray-500 rounded-md my-2 pl-2'  selected={formData.endAt} onChange={(date:Date) => selectDate('endAt', date)} />
+              {errors?.endAt && (
+                <div className="text-xs font-semibold text-left tracking-wide text-red w-full mb-4">
+                  {errors?.endAt._errors[0]}
+                </div>
+              )}
               </div>
             </div>
-            <div className="relative mt-4">
-              <FormField name='description' type="textarea" value={formData.description} onChange={handleChange} error={errors?.description?._errors[0]} label="Description" />
+
+            <div className="relative my-2">
+              <FormField name='description' required={true} type="textarea" value={formData.description} onChange={handleChange} error={errors?.description?._errors[0]} label="Description" />
             </div>
             <Button type="submit" placeholder='Save' className="bg-red">Save Challenge</Button>
             

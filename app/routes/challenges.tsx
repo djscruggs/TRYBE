@@ -18,7 +18,7 @@ export default function ChallengesLayout({ children }: { children: React.ReactNo
   const navigate = useNavigate()
   const data = useLoaderData<typeof loader>();
   const {currentUser, setCurrentUser} = useContext(CurrentUserContext)
-  setCurrentUser(data)
+  !currentUser && setCurrentUser(data)
   return  (
           <>
             <h1>
