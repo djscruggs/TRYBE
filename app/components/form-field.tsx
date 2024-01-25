@@ -3,28 +3,31 @@ import { useEffect, useState } from "react"
 import ShowPasswordButton from './show-password-button';
 
 interface FormFieldProps {
-  htmlFor: string
-  label: string
+  name: string
+  label?: string
   type?: string
-  value: any
+  value?: any
   onChange?: (...args: any) => any
   error?: string
   autoComplete?: string
   autoFocus?: boolean
+  rows?: number
+  cols?: number
 }
 
 export function FormField({
-  htmlFor,
+  name,
   label,
   type = "text",
-  value,
+  value = '',
   onChange = () => { },
   error = "",
   autoComplete="",
-  autoFocus = false
+  autoFocus = false,
+  cols=30,
+  rows=10
 
 }: FormFieldProps) {
-  
   
   const [errorText, setErrorText] = useState(error)
   useEffect(() => {
@@ -40,20 +43,41 @@ export function FormField({
     setPasswordVisible((prevState) => !prevState);
   }
   return <>
-      <label htmlFor={htmlFor} className="text-blue-600 font-semibold">{label}</label>
+      <label htmlFor={name} className="text-blue-600">{label}</label>
+      {localType === 'textarea' ? (
+        <textarea 
+          onChange={(e) => {
+              onChange(e)
+              setErrorText('')
+              }} 
+
+          id={name} 
+          name={name} 
+          className={`w-full p-2 px-4 rounded-sm my-2 border ${errorText ? ' border-red' : ''}`}
+          cols={cols}
+          rows={rows}
+          value={value} 
+          autoComplete={autoComplete}
+          autoFocus = {autoFocus}>
+          {value}
+        </textarea>
+      ): (
       <input 
           onChange={e => {
                         onChange(e)
                         setErrorText('')
                     }} 
           type={localType} 
-          id={htmlFor} 
-          name={htmlFor} 
-          className={`w-full p-2 px-4 rounded-full my-2 ${errorText ? 'border border-2 border-red' : ''}`}
+          id={name} 
+          name={name} 
+          className={`w-full p-2 px-4 rounded-md my-2 border ${errorText ? ' border-red' : ''}`}
           value={value} 
           autoComplete={autoComplete}
           autoFocus = {autoFocus}
       />
+      
+      )}
+      
       {type == 'password' &&
         <ShowPasswordButton passwordVisible={passwordVisible} clickHandler={togglePasswordVisibility} />
       }

@@ -60,7 +60,7 @@ export default function Login(): JSX.Element {
         }
         
           <FormField
-            htmlFor="email"
+            name="email"
             label="Email"
             value={formData.email}
             error={actionData?.errors?.email}
@@ -69,7 +69,7 @@ export default function Login(): JSX.Element {
           />
           <div className="relative">
             <FormField
-              htmlFor="password"
+              name="password"
               label="Password"
               value={formData.password}
               onChange={e => handleInputChange(e, 'password')}

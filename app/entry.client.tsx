@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import * as ReactDOM from 'react-dom/client';
 import { RemixBrowser, useLocation, useMatches } from '@remix-run/react';
 import { CacheProvider } from '@emotion/react';
-
 import ClientStyleContext from './ClientStyleContext';
 import createEmotionCache from './createEmotionCache';
 import { ThemeProvider } from "@material-tailwind/react";

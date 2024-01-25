@@ -15,6 +15,7 @@ import { CurrentUserContext } from './utils/CurrentUserContext';
 import ClientStyleContext from './ClientStyleContext';
 import Layout from './ui/layout';
 import stylesheet from "./tailwind.css";
+import datepickerStyle from "react-datepicker/dist/react-datepicker.css";
 import type { LinksFunction } from "@remix-run/node";
 import { User } from './utils/types.client';
 
@@ -25,6 +26,7 @@ interface DocumentProps {
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: stylesheet },
+  { rel: "stylesheet", href: datepickerStyle },
   
 ];
 const Document = withEmotionCache(({ children, title }: DocumentProps, emotionCache) => {

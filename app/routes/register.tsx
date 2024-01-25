@@ -69,7 +69,7 @@ export default function Register(): JSX.Element {
           </div>
           
           <FormField
-            htmlFor="firstName"
+            name="firstName"
             label="First Name"
             onChange={e => handleInputChange(e, 'firstName')}
             error={actionData?.errors?.firstName}
@@ -78,7 +78,7 @@ export default function Register(): JSX.Element {
             autoFocus={true}
           />
           <FormField
-            htmlFor="lastName"
+            name="lastName"
             label="Last Name"
             error={actionData?.errors?.lastName}
             onChange={e => handleInputChange(e, 'lastName')}
@@ -86,7 +86,7 @@ export default function Register(): JSX.Element {
             autoComplete="family-name"
           />
           <FormField
-            htmlFor="email"
+            name="email"
             label="Email"
             value={formData.email}
             error={actionData?.errors?.email}
@@ -95,7 +95,7 @@ export default function Register(): JSX.Element {
           />
           <div className="relative">
             <FormField
-              htmlFor="password"
+              name="password"
               label="Password"
               value={formData.password}
               onChange={e => handleInputChange(e, 'password')}
@@ -111,7 +111,7 @@ export default function Register(): JSX.Element {
           </div>
           <div className="relative">
             <FormField
-              htmlFor="passwordMatch"
+              name="passwordMatch"
               label="Repeat password"
               value={formData.passwordMatch}
               onChange={e => handleInputChange(e, 'passwordMatch')}

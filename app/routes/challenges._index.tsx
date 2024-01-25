@@ -19,7 +19,7 @@ export default function ChallengesIndex({ children }: { children: React.ReactNod
   return  (
           <>
             <h1>
-              I am Challenges Home
+              I am Challenges _index
             </h1>
           </>
           )
