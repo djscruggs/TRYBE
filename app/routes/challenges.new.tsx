@@ -61,7 +61,7 @@ export async function action({
 }: ActionFunctionArgs) {
   
   const formData = Object.fromEntries(await request.formData());
-  console.log(formData)
+  // console.log(formData)
   
   try {
     const validation = schema.safeParse(formData)
@@ -74,12 +74,13 @@ export async function action({
         errors: errors
       })
     }
-    const toSubmit = {userId: '1',
+    const toSubmit = {userId: 1,
                       name: 'asdasd',
                       startAt: new Date('01/26/2024'),
                       endAt: null,
                       description: 'asdasdasd'}
     const data = await createChallenge(toSubmit as ChallengeData)
+    console.log('result from prisma')
     console.log(data)
     return data
     

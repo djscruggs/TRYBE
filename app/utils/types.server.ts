@@ -23,5 +23,5 @@ export type ChallengeData = {
   syncCalendar?: boolean;
   publishAt?: Date;
   published?: boolean;
-  userId: string;
+  userId: string | number;
 }
