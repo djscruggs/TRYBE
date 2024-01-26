@@ -40,6 +40,9 @@ model Post {
   user       User       @relation(fields: [userId], references: [id])
   userId     Int
   categories Category[]
+  // indexes for faster sorting by user
+  @@index([userId])
+  @@index([userId, createdAt])
 }
 model Challenge {
   id         Int        @id @default(autoincrement())
@@ -60,13 +63,19 @@ model Challenge {
   user       User       @relation(fields: [userId], references: [id])
   userId     Int
   members    MemberChallenge[]
+  // indexes for faster sorting by user
+  @@index([userId])
+  @@index([userId, updatedAt])
 }
 model MemberChallenge{
   user User @relation(fields: [userId], references: [id])
   userId    Int
   challenge Challenge? @relation(fields: [challengeId], references: [id])
   challengeId Int
+  createdAt  DateTime   @default(now())
   @@id([challengeId, userId])
+  @@index([userId])
+  @@index([userId, createdAt])
 }
 
 

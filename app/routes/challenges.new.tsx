@@ -9,8 +9,10 @@ import z from 'zod'
 import { Form } from "@remix-run/react";
 import type { ActionFunctionArgs } from "@remix-run/node"; // or cloudflare/deno
 import { json, redirect } from "@remix-run/node"; // or cloudflare/deno
-import { Input } from "@material-tailwind/react";
-import { useActionData } from "@remix-run/react";
+
+import { useActionData, useSubmit } from "@remix-run/react";
+import {createChallenge} from '~/utils/challenge.server'
+import type {ChallengeData} from '~/utils/types.server'
 import { Button, Select, Option } from "@material-tailwind/react";
 import { FormField } from "~/components/form-field";
 import DatePicker from "react-datepicker";
@@ -62,16 +64,24 @@ export async function action({
   console.log(formData)
   
   try {
-    const result = schema.safeParse(formData)
-    if (!result.success) {
+    const validation = schema.safeParse(formData)
+    if (!validation.success) {
       //additional check
-      let errors = result.error.format()
-      console.log(errors)
+      let errors = validation.error.format()
+      // console.log(errors)
       return({
         formData,
         errors: errors
       })
     }
+    const toSubmit = {userId: '1',
+                      name: 'asdasd',
+                      startAt: new Date('01/26/2024'),
+                      endAt: null,
+                      description: 'asdasdasd'}
+    const data = await createChallenge(toSubmit as ChallengeData)
+    console.log(data)
+    return data
     
   } catch(error){
     return {
@@ -99,12 +109,12 @@ type Data = {
 export default function NewChallenge({ children }: { children: React.ReactNode }) {
   const frequencies = schema.shape.frequency._def.values
   const data: Data = useActionData() ?? {};
-  console.log(data)
   const [errors, setErrors] = useState<ErrorObject>();
   useEffect(() => {
     setErrors(data.errors)
   }, [data]);
   const defaults = getDefaults(schema)
+  const submit = useSubmit();
   const {currentUser} = useContext(CurrentUserContext)
   
   const [formData, setFormData] = useState(defaults)
@@ -121,30 +131,32 @@ export default function NewChallenge({ children }: { children: React.ReactNode }
       [name]: value,
     }));
   };
-  function handleSelect(event: any){
-    console.log(event)
-  }
-  function handleSubmit(event:FormEvent){
-    event.preventDefault()
-    console.log(event.target)
-
+  function handleSelect(value: string | undefined){
+    console.log('setting to ', value)
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      ['frequency']: value,
+    }));
   }
   
-  console.log(errors)
+  
+  
   return  (
           <>
-          <Form method="post" >
-            <input type="hidden" name="userId" value={currentUser?.id} />
+          <Form method="post">
+            <input type="hidden" name="userId"  value={currentUser?.id} />
             <div className="relative max-w-sm">
             
             <div className="relative mb-2">
               <FormField name='name' required={true} value={formData.name} onChange={handleChange} error={errors?.name?._errors[0]} label="Name of Challenge" />
             </div>
+            {/* material-tailwind <Select> element doesn't populate an actual HTML input element, so this hidden field captres the value for submission */}
+            <input type="hidden" name='frequency' value={formData.frequency} />
             <div className="relative flex mb-2">
             <Select 
               label="Select frequency" 
               placeholder='frequency'
-              name="frequency" 
+              name="_frequency" 
               value={formData.frequency} 
               onChange={handleSelect}
               >
@@ -179,7 +191,7 @@ export default function NewChallenge({ children }: { children: React.ReactNode }
             <div className="relative my-2">
               <FormField name='description' required={true} type="textarea" value={formData.description} onChange={handleChange} error={errors?.description?._errors[0]} label="Description" />
             </div>
-            <Button type="submit" placeholder='Save' className="bg-red">Save Challenge</Button>
+            <Button type="submit"   placeholder='Save' className="bg-red">Save Challenge</Button>
             
             
    

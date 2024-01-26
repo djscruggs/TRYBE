@@ -10,3 +10,18 @@ export type LoginForm = {
   password: string
   request: Request
 }
+export type ChallengeData = {
+  name: string;
+  description: string;
+  startAt: Date;
+  endAt?: Date | null;
+  frequency?: "DAILY" | "WEEKDAYS" | "ALTERNATING" | "WEEKLY" | "CUSTOM";
+  coverPhoto?: string;
+  icon?: string;
+  color?: string;
+  reminders?: boolean;
+  syncCalendar?: boolean;
+  publishAt?: Date;
+  published?: boolean;
+  userId: string;
+}
