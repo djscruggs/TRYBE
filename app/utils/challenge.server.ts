@@ -16,3 +16,14 @@ export const createChallenge = async (challenge: prisma.challengeCreateInput) =>
   console.log('returning from create')
   return newChallenge
 }
+export const loadChallenge = async (challengeId: string | number, userId:string | number | undefined) => {
+  const id = Number(challengeId)
+  const uid = Number(userId)
+  return await prisma.challenge.findUnique({
+    where: {
+      id: id,
+      userId: uid
+    },
+  })
+
+}

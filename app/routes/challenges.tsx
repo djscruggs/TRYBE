@@ -8,7 +8,6 @@ import { CurrentUserContext } from '../utils/CurrentUserContext';
 import { useContext } from "react";
 
 export const loader: LoaderFunction = async ({ request }) => {
-  console.log('layout loader')
   // if thecurrentUser isn't authenticated, this will redirect to login
   const currentUser = await requireCurrentUser(request)
   return currentUser

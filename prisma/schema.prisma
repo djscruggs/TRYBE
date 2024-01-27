@@ -35,7 +35,7 @@ model Post {
   updatedAt  DateTime   @updatedAt
   publishAt  DateTime   @default(now())
   title      String
-  body       Bytes
+  body       String?       @db.Text
   published  Boolean    @default(false)
   user       User       @relation(fields: [userId], references: [id])
   userId     Int
@@ -47,7 +47,7 @@ model Post {
 model Challenge {
   id         Int        @id @default(autoincrement())
   name       String
-  description       Bytes?
+  description String?       @db.Text
   startAt  DateTime   @default(now())
   endAt  DateTime?
   frequency Frequency @default(DAILY)   

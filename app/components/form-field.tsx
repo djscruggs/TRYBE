@@ -61,7 +61,9 @@ export function FormField({
           value={value} 
           autoComplete={autoComplete}
           required={required}
-          autoFocus = {autoFocus}>
+          autoFocus = {autoFocus}
+          maxLength={65535}
+          >
           {value}
         </textarea>
       ): (
