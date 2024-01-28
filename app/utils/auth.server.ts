@@ -10,7 +10,7 @@ if (!sessionSecret) {
   throw new Error('SESSION_SECRET must be set')
 }
 
-const storage = createCookieSessionStorage({
+export const storage = createCookieSessionStorage({
   cookie: {
     name: 'trybe-session',
     secure: process.env.NODE_ENV === 'production',

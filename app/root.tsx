@@ -18,6 +18,7 @@ import stylesheet from "./tailwind.css";
 import datepickerStyle from "react-datepicker/dist/react-datepicker.css";
 import type { LinksFunction } from "@remix-run/node";
 import { User } from './utils/types.client';
+import { Toaster } from 'react-hot-toast';
 
 interface DocumentProps {
   children: React.ReactNode;
@@ -64,6 +65,8 @@ export default function App() {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   return (
     <Document>
+      <Toaster position="top-center"/>
+            
       <CurrentUserContext.Provider value={{currentUser, setCurrentUser}}>
         <Layout>
           <Outlet />
