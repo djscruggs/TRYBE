@@ -81,13 +81,13 @@ export default function App() {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   React.useEffect(() => {
     if(toastData){
-     // Call your toast function here
-     if(toastData.type=='success'){
-      toast.success(toastData.message); 
-     } else if (toastData.type=='error')
-      toast.error(toastData.message);
-    } else {
-      toast(toastData.message)
+      if(toastData.type=='success'){
+        toast.success(toastData.message); 
+      } else if (toastData.type=='error') {
+        toast.error(toastData.message);
+      } else {
+        toast(toastData.message)
+      }
     }
    }, [toastData])
   return (

@@ -62,10 +62,10 @@ export default function FormChallenge(props:ObjectData) {
     let msg;
     if(formData.id){
       response = await axios.post(url, formData, headers);
-      msg = 'Challenge created';
+      msg = 'Challenge saved';
     } else {
       response = await axios.put(url, formData, headers);
-      msg = 'Challenge updated';
+      msg = 'Challenge created';
     }
     if(response.data.errors){
       console.log('errors', response.data.errors)
