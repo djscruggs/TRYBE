@@ -18,7 +18,11 @@ import stylesheet from "./tailwind.css";
 import datepickerStyle from "react-datepicker/dist/react-datepicker.css";
 import type { LinksFunction } from "@remix-run/node";
 import { User } from './utils/types.client';
-import { Toaster } from 'react-hot-toast';
+import { useLoaderData } from '@remix-run/react';
+import { getToast } from "remix-toast";
+import { Toaster, toast } from 'react-hot-toast';
+
+import { json } from '@remix-run/node';
 
 interface DocumentProps {
   children: React.ReactNode;
@@ -30,6 +34,16 @@ export const links: LinksFunction = () => [
   { rel: "stylesheet", href: datepickerStyle },
   
 ];
+
+
+
+export const loader = async ({ request }: LoaderFunctionArgs) => {
+  // Extracts the toast from the request
+  const { toast, headers } = await getToast(request);
+  let toastData = toast;
+  // Important to pass in the headers so the toast is cleared properly
+  return json({ toastData }, { headers });
+}
 const Document = withEmotionCache(({ children, title }: DocumentProps, emotionCache) => {
   const clientStyleData = React.useContext(ClientStyleContext);
 
@@ -62,12 +76,25 @@ const Document = withEmotionCache(({ children, title }: DocumentProps, emotionCa
 // https://remix.run/docs/en/main/route/component
 // https://remix.run/docs/en/main/file-conventions/routes
 export default function App() {
+  const { toastData } = useLoaderData<typeof loader>();
+  
   const [currentUser, setCurrentUser] = useState<User | null>(null);
+  React.useEffect(() => {
+    if(toastData){
+     // Call your toast function here
+     if(toastData.type=='success'){
+      toast.success(toastData.message); 
+     } else if (toastData.type=='error')
+      toast.error(toastData.message);
+    } else {
+      toast(toastData.message)
+    }
+   }, [toastData])
   return (
     <Document>
-      <Toaster position="top-center"/>
-            
+      
       <CurrentUserContext.Provider value={{currentUser, setCurrentUser}}>
+        <Toaster position='top-center' />
         <Layout>
           <Outlet />
         </Layout>
