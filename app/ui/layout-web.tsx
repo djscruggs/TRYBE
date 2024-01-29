@@ -49,8 +49,8 @@ const LayoutWeb = () => {
                   <UserAvatar className='cursor-pointer'/>
                 </div>
               }
-                
-              <AnimatePresence mode='wait' initial={false}>
+                 <Outlet />
+              {/* <AnimatePresence mode='wait' initial={false}>
                   {animate &&
                   <motion.main
                   key={useLocation().pathname}
@@ -67,7 +67,7 @@ const LayoutWeb = () => {
                   <Outlet />
                   </motion.main>
                   }
-              </AnimatePresence>
+              </AnimatePresence> */}
             </div>
           </div>
         );

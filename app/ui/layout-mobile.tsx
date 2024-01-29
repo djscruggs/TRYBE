@@ -58,8 +58,9 @@ const LayoutMobile = () => {
                     </Link>
                 </div>
                 }
-                <div className="flex flex-col items-center min-h-fit pb-16">
-                    <AnimatePresence mode='wait' initial={false}>
+                <div className="flex flex-col items-center min-h-fit pb-16 px-2">
+                    <Outlet />
+                    {/* <AnimatePresence mode='wait' initial={false}>
                         <motion.main
                          key={useLocation().pathname}
                          initial={{opacity: 0}}
@@ -69,7 +70,7 @@ const LayoutMobile = () => {
                         >
                         <Outlet />
                         </motion.main>
-                    </AnimatePresence>
+                    </AnimatePresence> */}
                 </div>
                 {showNav &&
                 <div className="fixed bottom-0 left-0 right-0 max-w-screen flex w-full justify-between m-0 p-0 px-2 py-1 bg-gray-50 border-2 border-slate-200 z-10">

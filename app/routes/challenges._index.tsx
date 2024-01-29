@@ -34,7 +34,7 @@ export default function ChallengesIndex() {
             {(data && data.length) > 0 &&
                data.map((challenge:any)=> (
                 <p key={challenge.id}>
-                  <Link className='underline text-red' to = {`/challenges/${challenge.id}/edit`}>edit</Link>&nbsp;&nbsp;
+                  <Link className='underline text-red' to = {`/challenges/edit/${challenge.id}`}>edit</Link>&nbsp;&nbsp;
                   <Link className='underline text-red' to = {`/challenges/${challenge.id}`}>{challenge.name}</Link>
                 </p>
               ))

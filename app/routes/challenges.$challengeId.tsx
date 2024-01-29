@@ -49,7 +49,7 @@ export default function ViewChallenge() {
   return (
     <>
     <h1>{data.object.name}</h1>
-    <Link className='underline text-red' to = {`/challenges/${data.object.id}/edit`}>edit</Link>&nbsp;&nbsp;
+    <Link className='underline text-red' to = {`/challenges/edit/${data.object.id}`}>edit</Link>&nbsp;&nbsp;
     <Outlet/>
     </>
   );
