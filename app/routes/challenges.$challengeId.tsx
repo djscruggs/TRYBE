@@ -5,7 +5,9 @@ import { requireCurrentUser } from "../utils/auth.server"
 import type {  ObjectData} from '~/utils/types.server'
 import { json, LoaderFunction } from "@remix-run/node"; 
 import type {  LoaderFunctionArgs } from "@remix-run/node"; // or cloudflare/deno
+import { Outlet } from '@remix-run/react';
 import { toast } from 'react-hot-toast';
+import { Link } from '@remix-run/react';
 
 export const loader: LoaderFunction = async ({ request, params }) => {
   const currentUser = await requireCurrentUser(request)
@@ -13,7 +15,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     return null;
   }
 
-  console.log('loading with params', params)
+  console.log('loading from view with params', params)
   const result = await loadChallenge(params.challengeId, currentUser?.id)
   
   if(!result){
@@ -43,9 +45,12 @@ export default function ViewChallenge() {
   if(!data.object){
     return '<p>Loading...</p>'
   }
-  console.log('data in parent', data)
   
   return (
+    <>
     <h1>{data.object.name}</h1>
+    <Link className='underline text-red' to = {`/challenges/${data.object.id}/edit`}>edit</Link>&nbsp;&nbsp;
+    <Outlet/>
+    </>
   );
 }

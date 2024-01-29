@@ -20,7 +20,6 @@ export const loader: LoaderFunction = async ({ request }) => {
 export default function Home() {
    const data = useLoaderData<typeof loader>();
    const {currentUser, setCurrentUser} = useContext(CurrentUserContext)
-   setCurrentUser(data)
    const isMobile = useMobileSize()
    
    return (

@@ -8,18 +8,17 @@ import { requireCurrentUser, getUserSession, storage } from "~/utils/auth.server
 import { json, redirect, LoaderFunction } from "@remix-run/node"; 
 import type { ActionFunctionArgs} from "@remix-run/node"; // or cloudflare/deno
 import { useActionData } from "@remix-run/react";
-
+import {convertStringValues} from '../utils/helpers'
 
 export async function action({
   request,
 }: ActionFunctionArgs) {
   
   const formData = Object.fromEntries(await request.formData());
-  console.log(formData)
-  
+  const cleanData = convertStringValues(formData)
   try {
     
-    const validation = challengeSchema.safeParse(formData)
+    const validation = challengeSchema.safeParse(cleanData)
     if (!validation.success) {
       console.log('validation error')
       console.log(validation.error.format())
@@ -29,20 +28,20 @@ export async function action({
       })
     }
     //convert types where necessary
-    console.log('inserting')
-    let converted = formData
+    let converted = cleanData
     converted.userId = Number(converted.userId)
-    converted.endAt = new Date(converted.endAt).toISOString()
-    converted.startAt = new Date(converted.startAt).toISOString()
-    let result;
+    converted.endAt = converted.endAt ? new Date(converted.endAt).toISOString() : null
+    converted.startAt = converted.startAt ? new Date(converted.startAt).toISOString() : null;
+    converted.publishAt = converted.publishAt ? new Date(converted.startAt).toISOString() : null;
+    let data;
     if(formData.id) {
-      result = await createChallenge(formData)
+      data = await updateChallenge(converted)
     } else {
-      result = await updateChallenge(formData)
+      data = await createChallenge(converted)
     }
     console.log('result from prisma')
-    console.log(result)
-    return ({success: true, data:result})
+    console.log(data)
+    return (data)
     
   } catch(error){
     console.log('error', error)

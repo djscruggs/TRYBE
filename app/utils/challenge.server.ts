@@ -36,6 +36,14 @@ const loadChallenge = async (challengeId: string | number, userId:string | numbe
     },
   })
 }
+const fetchChallenges = async (userId:string | number | undefined) => {
+  const uid = userId ? Number(userId) : undefined
+  return await prisma.challenge.findMany({
+    where: {
+      userId: uid
+    },
+  })
+}
 function getSchemaDefaults<Schema extends z.AnyZodObject>(schema: Schema) {
   return Object.fromEntries(
       Object.entries(schema.shape).map(([key, value]) => {
@@ -53,12 +61,11 @@ const challengeSchema =
                               .string()
                               .min(1, { message: "Description is required" }),
                             startAt: z
-                              .coerce
-                              .date({required_error: "Please select a date"})
-                              .min(new Date(), { message: "Must start today or after" }),
+                              .string({required_error: "Please select a date"})
+                              .pipe(z.coerce.date()),
                             endAt: z
-                                .coerce
-                                .date()
+                                .string()
+                                .pipe(z.coerce.date())
                                 .or(z.literal(''))
                                 .nullable(),
                             frequency: z
@@ -79,8 +86,12 @@ const challengeSchema =
                               .boolean()
                               .default(false),
                             publishAt: z
-                              .date()
-                              .optional(),
+                                .string()
+                                .pipe(z.coerce.date())
+                                .or(z.date())
+                                .or(z.literal(''))
+                                .nullable()
+                                .optional(),
                             published: z
                               .boolean()
                               .default(false),
@@ -88,4 +99,4 @@ const challengeSchema =
                               .coerce
                               .bigint()
                           })
-export { createChallenge, updateChallenge, loadChallenge, challengeSchema};                              
+export { createChallenge, updateChallenge, loadChallenge, challengeSchema, fetchChallenges};                              

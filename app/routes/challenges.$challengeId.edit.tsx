@@ -10,10 +10,9 @@ import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node"; /
 export const loader: LoaderFunction = async ({ request, params }) => {
   const currentUser = await requireCurrentUser(request)
   if(!params.challengeId){
-    return null;
+    return json({loadingError: 'No challenge id submitted'})
   }
-
-  console.log('loading with params', params)
+  console.log('loading from edit with params', params)
   const result = await loadChallenge(params.challengeId, currentUser?.id)
   
   if(!result){
@@ -28,7 +27,6 @@ export const loader: LoaderFunction = async ({ request, params }) => {
 }
 export default function EditChallenge() {
   const data: ObjectData  = useLoaderData()
-  console.log(data)
   if(data?.loadingError){
     return <h1>{data.loadingError}</h1>
   }

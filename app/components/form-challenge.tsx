@@ -1,21 +1,17 @@
 
-import React, { 
+import { 
   useState, 
-  useReducer,
   useEffect,
   ChangeEvent, 
-  FormEvent
 } from 'react';
-import z from 'zod'
 import { Form } from "@remix-run/react";
 import { useNavigate } from '@remix-run/react';
-import type {ErrorObject, ObjectData} from '~/utils/types.server'
+import type {ObjectData} from '~/utils/types.server'
 import { Button, Select, Option } from "@material-tailwind/react";
 import { FormField } from "~/components/form-field";
 import DatePicker from "react-datepicker";
 import { CurrentUserContext } from '../utils/CurrentUserContext';
 import { useContext } from "react";
-import { addDays } from 'date-fns';
 import { toast } from 'react-hot-toast';
 import axios from 'axios'
 
@@ -58,7 +54,6 @@ export default function FormChallenge(props:ObjectData) {
   }
   async function handleSubmit(event: any){
     event.preventDefault()
-    console.log(formData)
     const url = '/api/challenges'
     const headers = {headers: {
       'content-type': 'multipart/form-data'
@@ -78,7 +73,7 @@ export default function FormChallenge(props:ObjectData) {
       setFormData(response.data.formData)
     } else {
       toast.success(msg)
-      navigate('/challenges')
+      navigate(`/challenges/${response.data.id}`)
     }
   }
   
@@ -113,7 +108,6 @@ export default function FormChallenge(props:ObjectData) {
                   name='startAt' 
                   required={true} 
                   dateFormat="MM-dd-YYYY" 
-                  minDate={addDays(new Date(), 1)}
                   selected={formData.startAt ? new Date(formData.startAt) : null} 
                   onChange={(date:Date) => selectDate('startAt', date)} 
                   className='p-1 border border-slate-gray-500 rounded-md my-2 pl-2' 
@@ -129,7 +123,6 @@ export default function FormChallenge(props:ObjectData) {
                 <DatePicker 
                   name='endAt' 
                   required={true} 
-                  minDate={addDays(new Date(), 8)}
                   dateFormat="MM-dd-YYYY" 
                   selected={formData.endAt ? new Date(formData.endAt): null} 
                   onChange={(date:Date) => selectDate('endAt', date)} 
