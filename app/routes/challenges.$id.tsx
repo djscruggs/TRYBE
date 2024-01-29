@@ -16,12 +16,10 @@ export const loader: LoaderFunction = async ({ request, params }) => {
   const result = await loadChallenge(params.id, currentUser?.id)
   
   if(!result){
-    console.log('retirning error')
     const error = {loadingError: 'Challenge not found'}
     return json(error)
   }
   const data: ObjectData = {object: result} 
-  console.log(data)
   return json(data)
 }
 export default function ViewChallenge() {
