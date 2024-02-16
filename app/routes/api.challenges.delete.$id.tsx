@@ -1,27 +1,20 @@
 
-import ChallengeForm from '~/components/form-challenge';
-import {createChallenge, updateChallenge, challengeSchema} from '~/utils/challenge.server'
 import type {ErrorObject, ObjectData} from '~/utils/types.server'
-import { useSearchParams } from 'react-router-dom';
-import { useEffect } from 'react';
-import { requireCurrentUser, getUserSession, storage } from "~/utils/auth.server"
-import { json, redirect, LoaderFunction } from "@remix-run/node"; 
+
+import { requireCurrentUser } from "~/utils/auth.server"
+import { deleteChallenge } from '~/utils/challenge.server'
+import { json, LoaderFunction } from "@remix-run/node"; 
 import type { ActionFunctionArgs} from "@remix-run/node"; // or cloudflare/deno
-import { useActionData } from "@remix-run/react";
-import {convertStringValues} from '../utils/helpers'
 
 export async function action({
-  request,
+  request, params
 }: ActionFunctionArgs) {
-  console.log(request)
-  const currentUser = await requireCurrentUser(request)
-  const url = new URL(request.url)
-  console.log(url)
-  const id = url.searchParams.get('id')
-  console.log("id is ", id)
-  return json({ message: 'Deleteed' }, 200);
+  console.log('top of action')
+  console.log('params', params)
+  const result = await deleteChallenge(params.id)
+  console.log('result', result)
   
-  
+  return json({ message: `Deleted challenge ${params.id}`}, 204);
 }
 export const loader: LoaderFunction = async ({ request }) => {
   const currentUser = await requireCurrentUser(request)

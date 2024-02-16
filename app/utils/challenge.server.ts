@@ -36,6 +36,14 @@ const loadChallenge = async (challengeId: string | number, userId:string | numbe
     },
   })
 }
+const deleteChallenge = async (challengeId: string | number) => {
+  const id = Number(challengeId)
+  return await prisma.challenge.delete({
+    where: {
+      id: id
+    },
+  })
+}
 const fetchChallenges = async (userId:string | number | undefined) => {
   const uid = userId ? Number(userId) : undefined
   return await prisma.challenge.findMany({
@@ -99,4 +107,4 @@ const challengeSchema =
                               .coerce
                               .bigint()
                           })
-export { createChallenge, updateChallenge, loadChallenge, challengeSchema, fetchChallenges};                              
+export { createChallenge, updateChallenge, loadChallenge, challengeSchema, fetchChallenges, deleteChallenge};                              

@@ -1,10 +1,12 @@
-import {loadChallenge} from '~/utils/challenge.server'
+import { loadChallenge } from '~/utils/challenge.server'
 import { useLoaderData } from '@remix-run/react';
 import { requireCurrentUser } from "../utils/auth.server"
 import type {  ObjectData} from '~/utils/types.server'
 import { json, LoaderFunction } from "@remix-run/node"; 
 import { Link } from '@remix-run/react';
+import { useNavigate } from '@remix-run/react';
 import axios from 'axios'
+import { toast } from 'react-hot-toast';
 
 export const loader: LoaderFunction = async ({ request, params }) => {
   const currentUser = await requireCurrentUser(request)
@@ -23,6 +25,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
   return json(data)
 }
 export default function ViewChallenge() {
+  const navigate = useNavigate()
   const data: ObjectData  = useLoaderData()
   if(!data){
     return <p>No data.</p>
@@ -41,7 +44,12 @@ export default function ViewChallenge() {
     console.log('delete', data.object)
     const url = `/api/challenges/delete/${data.object.id}`
     const response = await axios.post(url);
-    console.log(response)
+    if(204 === response.status){
+      toast.success('Challenge deleted')
+      navigate('/challenges')
+    } else {
+      toast.error('Delete failed')
+    }
   }
   return (
     <>
