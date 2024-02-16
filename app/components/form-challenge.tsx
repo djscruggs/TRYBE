@@ -67,6 +67,7 @@ export default function FormChallenge(props:ObjectData) {
       response = await axios.put(url, formData, headers);
       msg = 'Challenge created';
     }
+    console.log(response)
     if(response.data.errors){
       console.log('errors', response.data.errors)
       setErrors(response.data.errors)

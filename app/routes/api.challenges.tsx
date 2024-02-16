@@ -13,7 +13,7 @@ import {convertStringValues} from '../utils/helpers'
 export async function action({
   request,
 }: ActionFunctionArgs) {
-  
+  const currentUser = await requireCurrentUser(request)
   const formData = Object.fromEntries(await request.formData());
   const cleanData = convertStringValues(formData)
   try {
@@ -29,10 +29,9 @@ export async function action({
     }
     //convert types where necessary
     let converted = cleanData
-    converted.userId = Number(converted.userId)
     converted.endAt = converted.endAt ? new Date(converted.endAt).toISOString() : null
     converted.startAt = converted.startAt ? new Date(converted.startAt).toISOString() : null;
-    converted.publishAt = converted.publishAt ? new Date(converted.startAt).toISOString() : null;
+    converted.publishAt = converted.publishAt ? new Date(converted.startAt).toISOString() : new Date().toISOString();
     let data;
     if(formData.id) {
       data = await updateChallenge(converted)
