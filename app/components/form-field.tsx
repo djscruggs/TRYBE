@@ -41,9 +41,6 @@ export function FormField({
     localType='text'
   }
   
-  function togglePasswordVisibility() {
-    setPasswordVisible((prevState) => !prevState);
-  }
   return <>
       <label htmlFor={name} className="text-blue-600">{label}</label>
       {localType === 'textarea' ? (
@@ -85,7 +82,7 @@ export function FormField({
       )}
       
       {type == 'password' &&
-        <ShowPasswordButton passwordVisible={passwordVisible} clickHandler={togglePasswordVisibility} />
+        <ShowPasswordButton passwordVisible={passwordVisible} clickHandler={()=>setPasswordVisible(!passwordVisible)} />
       }
       {errorText &&
         <div className="text-xs font-semibold text-left tracking-wide text-red w-full mb-4 ">

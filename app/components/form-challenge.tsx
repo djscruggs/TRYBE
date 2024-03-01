@@ -7,7 +7,7 @@ import {
 import { Form } from "@remix-run/react";
 import { useNavigate } from '@remix-run/react';
 import type {ObjectData} from '~/utils/types.server'
-import { Button, Select, Option } from "@material-tailwind/react";
+import { Button, Select, Option, Menu, MenuHandler, MenuList, MenuItem}  from "@material-tailwind/react";
 import { FormField } from "~/components/form-field";
 import DatePicker from "react-datepicker";
 import { CurrentUserContext } from '../utils/CurrentUserContext';
@@ -34,20 +34,20 @@ export default function FormChallenge(props:ObjectData) {
   }, [props])
 
   function selectDate(name:string, value:Date) {
-    setFormData((prevFormData) => ({
+    setFormData((prevFormData: ObjectData) => ({
       ...prevFormData,
       [name]: value,
     }));
   }
   const handleChange = (event: ChangeEvent<HTMLInputElement | HTMLSelectElement>): void => {
     const { name, value } = event.target;
-    setFormData((prevFormData) => ({
+    setFormData((prevFormData: ObjectData) => ({
       ...prevFormData,
       [name]: value,
     }));
   };
   function handleSelect(value: string | undefined){
-    setFormData((prevFormData) => ({
+    setFormData((prevFormData: ObjectData) => ({
       ...prevFormData,
       ['frequency']: value,
     }));
@@ -135,6 +135,45 @@ export default function FormChallenge(props:ObjectData) {
                   </div>
                 )}
             </div>
+              </div>
+              <div className="relative my-2">
+                foo
+              <Menu>
+                <MenuHandler>
+                  <Button>Background  Color</Button>
+                </MenuHandler>
+                  <MenuList>
+                    <MenuItem className="flex items-center">
+                      <div className="w-4 h-4 rounded-full bg-red-500 mr-2"></div>
+                      Red
+                    </MenuItem>
+                    
+                    <MenuItem className="flex items-center">
+                      <div className="w-4 h-4 rounded-full bg-orange-500 mr-2"></div>
+                      Orange
+                    </MenuItem>
+                    <MenuItem className="flex items-center">
+                      <div className="w-4 h-4 rounded-full bg-yellow-500 mr-2"></div>
+                      Yellow
+                    </MenuItem>
+                    <MenuItem className="flex items-center">
+                      <div className="w-4 h-4 rounded-full bg-green-500 mr-2"></div>
+                      Green
+                    </MenuItem>
+                    <MenuItem className="flex items-center">
+                      <div className="w-4 h-4 rounded-full bg-blue-500 mr-2"></div>
+                      Blue
+                    </MenuItem>
+                    <MenuItem className="flex items-center">
+                      <div className="w-4 h-4 rounded-full bg-indigo-500 mr-2"></div>
+                      Indigo
+                    </MenuItem>
+                    <MenuItem className="flex items-center">
+                      <div className="w-4 h-4 rounded-full bg-violet-500 mr-2"></div>
+                      Violet
+                    </MenuItem>
+                  </MenuList>
+              </Menu>
               </div>
               <div className="relative my-2">
                 <FormField name='description' required={true} type="textarea" value={formData.description} onChange={handleChange} error={errors?.description?._errors[0]} label="Description" />
