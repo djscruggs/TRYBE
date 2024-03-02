@@ -14,7 +14,7 @@ import { useState } from 'react';
 import { CurrentUserContext } from './utils/CurrentUserContext';
 import ClientStyleContext from './ClientStyleContext';
 import Layout from './ui/layout';
-import stylesheet from "./tailwind.css";
+import stylesheet from "./output.css";
 import datepickerStyle from "react-datepicker/dist/react-datepicker.css";
 import type { LinksFunction } from "@remix-run/node";
 import { User } from './utils/types.client';
@@ -71,6 +71,7 @@ const Document = withEmotionCache(({ children, title }: DocumentProps, emotionCa
       </body>
     </html>
   );
+
 });
 
 // https://remix.run/docs/en/main/route/component

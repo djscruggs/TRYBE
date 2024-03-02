@@ -14,7 +14,7 @@ import { CurrentUserContext } from '../utils/CurrentUserContext';
 import { useContext } from "react";
 import { toast } from 'react-hot-toast';
 import axios from 'axios'
-
+import { colorToClassName } from '~/utils/helpers'
 
 
 
@@ -52,6 +52,12 @@ export default function FormChallenge(props:ObjectData) {
       ['frequency']: value,
     }));
   }
+  function handleColorChange(value: string){
+    setFormData((prevFormData: ObjectData) => ({
+      ...prevFormData,
+      ['color']: value,
+    }));
+  }
   async function handleSubmit(event: any){
     event.preventDefault()
     const url = '/api/challenges'
@@ -76,6 +82,16 @@ export default function FormChallenge(props:ObjectData) {
       navigate(`/challenges/${response.data.id}`)
     }
   }
+  
+  const colorOptions = [
+    'Red',
+    'Orange',
+    'Yellow',
+    'Green',
+    'Blue',
+    'Pink',
+    'Purple',
+  ];
   
   return  (
           <Form method="post" onSubmit={handleSubmit}>
@@ -135,42 +151,25 @@ export default function FormChallenge(props:ObjectData) {
                 )}
             </div>
               </div>
+
               <div className="relative my-2">
-                foo
+                {/* <div className='border border-red'>
+                  <p className='bg-blue'>Blue</p>
+                  <p className='bg-yellow'>Yellow</p>
+                  <p className='bg-purple-400'>Purple</p>
+                  <p className='bg-pink-300'>Pink</p>
+                </div> */}
               <Menu>
                 <MenuHandler>
-                  <Button>Background  Color</Button>
+                  <Button className={formData.color ? `bg-${colorToClassName(formData.color)}` : 'bg-red'}>Banner Color</Button>
                 </MenuHandler>
                   <MenuList>
-                    <MenuItem className="flex items-center">
-                      <div className="w-4 h-4 rounded-full bg-red-500 mr-2"></div>
-                      Red
-                    </MenuItem>
-                    
-                    <MenuItem className="flex items-center">
-                      <div className="w-4 h-4 rounded-full bg-orange-500 mr-2"></div>
-                      Orange
-                    </MenuItem>
-                    <MenuItem className="flex items-center">
-                      <div className="w-4 h-4 rounded-full bg-yellow-500 mr-2"></div>
-                      Yellow
-                    </MenuItem>
-                    <MenuItem className="flex items-center">
-                      <div className="w-4 h-4 rounded-full bg-green-500 mr-2"></div>
-                      Green
-                    </MenuItem>
-                    <MenuItem className="flex items-center">
-                      <div className="w-4 h-4 rounded-full bg-blue-500 mr-2"></div>
-                      Blue
-                    </MenuItem>
-                    <MenuItem className="flex items-center">
-                      <div className="w-4 h-4 rounded-full bg-indigo-500 mr-2"></div>
-                      Indigo
-                    </MenuItem>
-                    <MenuItem className="flex items-center">
-                      <div className="w-4 h-4 rounded-full bg-violet-500 mr-2"></div>
-                      Violet
-                    </MenuItem>
+                    {colorOptions.map((option, index) => (
+                      <MenuItem key={index} className="flex items-center" onClick={() => handleColorChange(option)}>
+                        <div className={`w-4 h-4 rounded-full bg-${colorToClassName(option)} mr-2`}></div>
+                        {option}
+                      </MenuItem>
+                    ))}
                   </MenuList>
               </Menu>
               </div>

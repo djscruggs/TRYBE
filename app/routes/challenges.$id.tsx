@@ -26,7 +26,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
 }
 export default function ViewChallenge() {
   const navigate = useNavigate()
-  const data: ObjectData  = useLoaderData()
+  const data: ObjectData  = useLoaderData() as ObjectData
   if(!data){
     return <p>No data.</p>
   }

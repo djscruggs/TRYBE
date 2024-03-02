@@ -2,8 +2,8 @@
 
 import { requireCurrentUser } from "../utils/auth.server"
 import { LoaderFunction } from '@remix-run/node'
-import { Button } from "@material-tailwind/react";
-import { useLoaderData, Link, Outlet, useNavigate } from '@remix-run/react';
+
+import { useLoaderData, Outlet, useNavigate } from '@remix-run/react';
 import { CurrentUserContext } from '../utils/CurrentUserContext';
 import { useContext } from "react";
 
@@ -14,16 +14,11 @@ export const loader: LoaderFunction = async ({ request }) => {
 }
 
 export default function ChallengesLayout({ children }: { children: React.ReactNode }) {
-  const navigate = useNavigate()
   const data = useLoaderData<typeof loader>();
   const {currentUser, setCurrentUser} = useContext(CurrentUserContext)
   !currentUser && setCurrentUser(data)
   return  (
           <>
-            <h1>
-              I am Challenges Layout
-            </h1>
-            <Button placeholder='New Challenge' onClick={()=>navigate('./new')} className="bg-red">New Challenge</Button>
             <div className="mt-10">
               <Outlet />
             </div>

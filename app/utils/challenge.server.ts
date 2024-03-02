@@ -8,8 +8,7 @@ const createChallenge = async (challenge: prisma.challengeCreateInput) => {
     })
     return newChallenge
   } catch(error){
-    console.log('error')
-    console.error(error)
+    console.error('error', error)
     return error
   }
 }
@@ -21,8 +20,7 @@ const updateChallenge = async (challenge: prisma.challengeCreateInput) => {
     })
     return newChallenge
   } catch(error){
-    console.log('error')
-    console.error(error)
+    console.error('error', error)
     return error
   }
 }

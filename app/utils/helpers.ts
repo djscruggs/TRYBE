@@ -14,3 +14,17 @@ export function convertStringValues(obj: any): any {
   }
   return result;
 }
+
+export function colorToClassName(color: string): string {
+  const lower = color.toLowerCase()
+  const colorMap: { [key: string]: string } = {
+    "red": "red",
+    "orange": "orange-500",
+    "yellow": "yellow",
+    "green": "green-500",
+    "blue": "blue",
+    "pink": "pink-300",
+    "purple": "purple-400",
+  }
+  return colorMap[lower]
+}

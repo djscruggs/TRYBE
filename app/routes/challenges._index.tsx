@@ -5,6 +5,8 @@ import { LoaderFunction } from '@remix-run/node'
 import { useLoaderData, Link, Outlet } from '@remix-run/react';
 import { fetchChallenges } from "~/utils/challenge.server";
 import { json } from "@remix-run/node";
+import { Button } from "@material-tailwind/react";
+import { useNavigate } from "@remix-run/react";
 
 export const loader: LoaderFunction = async ({ request, params }) => {
   const currentUser = await requireCurrentUser(request)
@@ -19,6 +21,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
  
 
 export default function ChallengesIndex() {
+  const navigate = useNavigate()
   const data:any  = useLoaderData()
   if(data?.loadingError){
     return <h1>{data.loadingError}</h1>
@@ -31,6 +34,8 @@ export default function ChallengesIndex() {
             <h1>
               Challenges
             </h1>
+            <Button placeholder='New Challenge' onClick={()=>navigate('./new')} className="bg-red">New Challenge</Button>
+            
             {(data && data.length) > 0 &&
                data.map((challenge:any)=> (
                 <p key={challenge.id}>
