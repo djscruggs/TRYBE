@@ -84,13 +84,13 @@ export default function FormChallenge(props:ObjectData) {
   }
   
   const colorOptions = [
-    'Red',
-    'Orange',
-    'Yellow',
-    'Green',
-    'Blue',
-    'Pink',
-    'Purple',
+    'red',
+    'orange',
+    'yellow',
+    'green',
+    'blue',
+    'pink',
+    'purple',
   ];
   
   return  (
@@ -167,7 +167,7 @@ export default function FormChallenge(props:ObjectData) {
                     {colorOptions.map((option, index) => (
                       <MenuItem key={index} className="flex items-center" onClick={() => handleColorChange(option)}>
                         <div className={`w-4 h-4 rounded-full bg-${colorToClassName(option)} mr-2`}></div>
-                        {option}
+                        <span className='capitalize'>{option}</span>
                       </MenuItem>
                     ))}
                   </MenuList>
