@@ -9,13 +9,12 @@ import { useContext } from "react";
 
 export const loader: LoaderFunction = async ({ request }) => {
   // if thecurrentUser isn't authenticated, this will redirect to login
-  const currentUser = await requireCurrentUser(request)
-  console.log(currentUser)
-  return currentUser
+  return await requireCurrentUser(request)
+  
 }
 
 export default function ChallengesLayout({ children }: { children: React.ReactNode }) {
-  const data = useLoaderData<typeof loader>();
+  
   return  (
           <>
             <div className="mt-10">

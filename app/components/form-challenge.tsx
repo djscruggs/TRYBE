@@ -72,7 +72,66 @@ export default function FormChallenge(props:ObjectData) {
       navigate(`/challenges/${response.data.id}`)
     }
   }
-  
+  const [file,setFile] = useState<File | null>(null);
+  const [fileDataURL, setFileDataURL] = useState<string | null>(null);
+
+  const handlePhoto = async (e: ChangeEvent<HTMLInputElement>) => {
+    const { files } = e.target
+    if(!files) return
+    
+    const image = files[0]
+    setFile(image);
+    const fileReader = new FileReader();
+    const url = fileReader.readAsDataURL(image);
+    console.log(url)
+    setFormData((prevFormData: ObjectData) => ({
+      ...prevFormData,
+      coverPhoto: image.name,
+    }));
+  }
+  useEffect(() => {
+    let fileReader:FileReader | null = null 
+    let isCancel = false;
+    if (file) {
+      fileReader = new FileReader();
+      fileReader.onload = (e) => {
+        const { result } = e.target  as FileReader;
+        if (result && !isCancel) {
+          if (typeof result === 'string') {
+            setFileDataURL(result);
+          } else {
+            setFileDataURL(null);
+          }
+        }
+      }
+      fileReader.readAsDataURL(file);
+    }
+    return () => {
+      isCancel = true;
+      if (fileReader && fileReader.readyState === 1) {
+        fileReader.abort();
+      }
+    }
+
+  }, [file]);
+  const fileInput = () => {
+    const textColor = formData.coverPhoto ? 'white' : 'blue-gray-50'
+    return (
+      <input type="file" 
+        name="coverPhoto"
+        onChange={handlePhoto}
+        accept="image/*"
+        className={`text-sm text-${textColor}
+                  file:text-white
+                    file:mr-5 file:py-2 file:px-6
+                    file:rounded-full file:border-0
+                    file:text-sm file:font-medium
+                    file:bg-blue-50 file:text-blue-700
+                    file:cursor-pointer file:bg-blue
+                    hover:file:bg-red`}
+      />
+    );
+  }
   const colorOptions = [
     'red',
     'orange',
@@ -82,13 +141,21 @@ export default function FormChallenge(props:ObjectData) {
     'pink',
     'purple',
   ];
-  
+  console.log(formData)
   return  (
           <Form method="post" onSubmit={handleSubmit}>
             <input type="hidden" name="userId"  value={currentUser?.id} />
             <div className="relative max-w-sm">
+              
               <div className="relative mb-2">
-            <FormField name='name' required={true} value={formData.name} onChange={handleChange} error={errors?.name?._errors[0]} label="Name of Challenge" />
+                <FormField 
+                  name='name' 
+                  placeholder='Give your challenge a catchy name'
+                  required={true} 
+                  value={formData.name} 
+                  onChange={handleChange} 
+                  error={errors?.name?._errors[0]} 
+                  label="Name of Challenge" />
               </div>
               {/* material-tailwind <Select> element doesn't populate an actual HTML input element, so this hidden field captres the value for submission */}
               <input type="hidden" name='frequency' value={formData.frequency}  />
@@ -141,27 +208,44 @@ export default function FormChallenge(props:ObjectData) {
                 )}
             </div>
               </div>
-
+              <div className='w-full'>
+                <label className='mb-2 block'>Cover Photo</label>
+                <div className='w-full bg-blue-gray-50 h-40 rounded-md flex items-center justify-center'>
+                  {fileDataURL &&
+                    <img src={fileDataURL} alt="cover photo" className="w-full" />
+                  }
+                  {!fileDataURL && 
+                    <div className="flex flex-col items-center justify-end">
+                      <p className="text-2xl text-blue-gray-500 text-center">Upload a cover photo</p>
+                      <div className='mt-10 ml-36'>
+                        {fileInput()} 
+                      </div>
+                    </div>
+                  }
+                </div>
+                <div className='mt-8 mb-4'>
+                  {fileDataURL && fileInput()}
+                  {fileDataURL && <div className='-mt-8 pl-36'>{formData.coverPhoto}</div>}
+                  
+                </div>
+              </div>  
+                
+                
+              
               <div className="relative my-2">
-                {/* <div className='border border-red'>
-                  <p className='bg-blue'>Blue</p>
-                  <p className='bg-yellow'>Yellow</p>
-                  <p className='bg-purple-400'>Purple</p>
-                  <p className='bg-pink-300'>Pink</p>
-                </div> */}
-              <Menu>
-                <MenuHandler>
-                  <Button className={formData.color ? `bg-${colorToClassName(formData.color)}` : 'bg-red'}>Banner Color</Button>
-                </MenuHandler>
-                  <MenuList>
-                    {colorOptions.map((option, index) => (
-                      <MenuItem key={index} className="flex items-center" onClick={() => handleColorChange(option)}>
-                        <div className={`w-4 h-4 rounded-full bg-${colorToClassName(option)} mr-2`}></div>
-                        <span className="capitalize">{option}</span>
-                      </MenuItem>
-                    ))}
-                  </MenuList>
-              </Menu>
+                <Menu>
+                  <MenuHandler>
+                    <Button className={formData.color ? `bg-${colorToClassName(formData.color)}` : 'bg-red'}>Banner Color</Button>
+                  </MenuHandler>
+                    <MenuList>
+                      {colorOptions.map((option, index) => (
+                        <MenuItem key={index} className="flex items-center" onClick={() => handleColorChange(option)}>
+                          <div className={`w-4 h-4 rounded-full bg-${colorToClassName(option)} mr-2`}></div>
+                          <span className="capitalize">{option}</span>
+                        </MenuItem>
+                      ))}
+                    </MenuList>
+                </Menu>
               </div>
               <div className="relative my-2">
                 <label>Description</label>
@@ -174,3 +258,6 @@ export default function FormChallenge(props:ObjectData) {
           </Form>
           )
   }
+
+
+

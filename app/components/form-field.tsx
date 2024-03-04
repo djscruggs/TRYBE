@@ -5,6 +5,7 @@ import ShowPasswordButton from './show-password-button';
 interface FormFieldProps {
   name: string
   label?: string
+  placeholder?: string
   type?: string
   value?: any
   onChange?: (...args: any) => any
@@ -18,7 +19,8 @@ interface FormFieldProps {
 
 export function FormField({
   name,
-  label,
+  placeholder='',
+  label='',
   type = "text",
   value = '',
   onChange = () => { },
@@ -45,21 +47,21 @@ export function FormField({
       <label htmlFor={name} className="text-blue-600">{label}</label>
       {localType === 'textarea' ? (
         <textarea 
-          onChange={(e) => {
-              onChange(e)
-              setErrorText('')
-              }} 
-
-          id={name} 
-          name={name} 
-          className={`w-full p-2 px-4 rounded-sm my-2 border ${errorText ? ' border-red' : ''}`}
-          cols={cols}
-          rows={rows}
-          value={value} 
-          autoComplete={autoComplete}
-          required={required}
-          autoFocus = {autoFocus}
-          maxLength={65535}
+            onChange={(e) => {
+                onChange(e)
+                setErrorText('')
+                }} 
+            id={name} 
+            name={name} 
+            placeholder={placeholder} 
+            className={`w-full p-2 px-4 rounded-sm my-2 border ${errorText ? ' border-red' : ''}`}
+            cols={cols}
+            rows={rows}
+            value={value} 
+            autoComplete={autoComplete}
+            required={required}
+            autoFocus = {autoFocus}
+            maxLength={65535}
           >
           {value}
         </textarea>
