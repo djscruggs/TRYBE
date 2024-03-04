@@ -17,22 +17,13 @@ import axios from 'axios'
 import { colorToClassName } from '~/utils/helpers'
 
 
-
-
-
-
 export default function FormChallenge(props:ObjectData) {
   const frequencies = ["DAILY","WEEKDAYS","ALTERNATING","WEEKLY","CUSTOM"]
-  
   const navigate = useNavigate()
   const [errors, setErrors] = useState(props.errors);
   const [formData, setFormData] = useState(props.object)
   const {currentUser} = useContext(CurrentUserContext)
-  useEffect(() => {
-      setFormData(props.object)
-      setErrors(props.errors)
-  }, [props])
-
+  
   function selectDate(name:string, value:Date) {
     setFormData((prevFormData: ObjectData) => ({
       ...prevFormData,
@@ -76,7 +67,6 @@ export default function FormChallenge(props:ObjectData) {
     if(response.data.errors){
       console.log('errors', response.data.errors)
       setErrors(response.data.errors)
-      setFormData(response.data.formData)
     } else {
       toast.success(msg)
       navigate(`/challenges/${response.data.id}`)
@@ -167,13 +157,16 @@ export default function FormChallenge(props:ObjectData) {
                     {colorOptions.map((option, index) => (
                       <MenuItem key={index} className="flex items-center" onClick={() => handleColorChange(option)}>
                         <div className={`w-4 h-4 rounded-full bg-${colorToClassName(option)} mr-2`}></div>
-                        <span className='capitalize'>{option}</span>
+                        <span className="capitalize">{option}</span>
                       </MenuItem>
                     ))}
                   </MenuList>
               </Menu>
               </div>
               <div className="relative my-2">
+                <label>Description</label>
+                
+                
                 <FormField name='description' required={true} type="textarea" value={formData.description} onChange={handleChange} error={errors?.description?._errors[0]} label="Description" />
               </div>
               <Button type="submit"  onClick={handleSubmit} placeholder='Save' className="bg-red">Save Challenge</Button>
