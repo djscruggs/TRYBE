@@ -3,7 +3,7 @@ import type { ActionFunctionArgs } from "@remix-run/node";
 import { logout } from '~/utils/auth.server'
 
 export async function action({ request }: ActionFunctionArgs) {
-  return logout(request);
+  return await logout(request);
 }
 
 export const loader: LoaderFunction = async ({ request }) => {

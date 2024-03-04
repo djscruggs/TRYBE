@@ -19,13 +19,9 @@ import { useContext } from 'react';
 
 
 const NavLinks = () => {
-  const {currentUser, setCurrentUser} = useContext(CurrentUserContext)
+  const {currentUser} = useContext(CurrentUserContext)
   const location = useLocation()
-  function handleLogout(e: React.FormEvent) {
-    e.preventDefault(); // Prevent default form submission
-    setCurrentUser(null); // Example: Set the current user to null on logout
-    e.currentTarget.submit(); // Manually trigger the form submission
-  }
+  
   return (
       <>
       {currentUser &&
@@ -67,7 +63,7 @@ const NavLinks = () => {
           </Link>
         </div>
         <div className=" bottom-0  w-24 h-20 flex items-center justify-center flex-col text-darkgrey text-center mb-4 hover:bg-gray-300 p-2 rounded-lg">
-          <Form action="/logout" onSubmit={handleLogout} method="post">
+          <Form action="/logout"  method="post">
             <Button type="submit" className='flex items-center flex-col bg-inherit shadow-none hover:shadow-none'>
               <PowerIcon className='h-8 w-8 cursor-pointer text-darkgrey' />
               <span className='bg-inherit text-darkgrey font-normal text-base mt-2 normal-case'>Logout</span>

@@ -11,9 +11,7 @@ export const loader: LoaderFunction = async ({ request }) => {
   return currentUser
 }
 export default function GroupsNew({ children }: { children: React.ReactNode }) {
-  const data = useLoaderData<typeof loader>();
-  const {currentUser, setCurrentUser} = useContext(CurrentUserContext)
-  setCurrentUser(data)
+  
   return  (
             <>
              <h1>

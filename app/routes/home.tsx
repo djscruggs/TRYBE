@@ -13,14 +13,12 @@ import { LoaderFunction } from '@remix-run/node'
 import { useLoaderData } from '@remix-run/react';
 
 export const loader: LoaderFunction = async ({ request }) => {
-  // if thecurrentUser isn't authenticated, this will redirect to login
+  // if currentUser isn't authenticated, this will redirect to login
   return await requireCurrentUser(request)
 }
 
 export default function Home() {
-   const data = useLoaderData<typeof loader>();
-   const {currentUser, setCurrentUser} = useContext(CurrentUserContext)
-   setCurrentUser(data)
+   const {currentUser} = useContext(CurrentUserContext)
    const isMobile = useMobileSize()
    
    return (
@@ -30,9 +28,11 @@ export default function Home() {
                   <div className="flex-grow-0 justify-self-start">
                      <UserAvatar size={isMobile ? 'md': 'xxl'} />
                   </div>
+                  {currentUser?.profile &&
                   <div className={`ml-4 flex-grow text-${isMobile ? 'l' : '4xl'}`}>
-                     <h1>Hello, {currentUser?.profile.firstName}</h1>
+                     <h1>Hello, {currentUser.profile.firstName}</h1>
                   </div>
+                  }
                   </div>
                   <div className="flex items-center justify-between w-full max-w-lg mt-10">
                   <div className="flex-grow-0">

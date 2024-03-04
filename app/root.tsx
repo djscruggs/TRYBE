@@ -10,19 +10,17 @@ import {
   isRouteErrorResponse,
 } from '@remix-run/react';
 import { withEmotionCache } from '@emotion/react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { CurrentUserContext } from './utils/CurrentUserContext';
-import ClientStyleContext from './ClientStyleContext';
 import Layout from './ui/layout';
 import stylesheet from "./output.css";
 import datepickerStyle from "react-datepicker/dist/react-datepicker.css";
 import type { LinksFunction } from "@remix-run/node";
 import { User } from './utils/types.client';
 import { useLoaderData } from '@remix-run/react';
-import { getToast } from "remix-toast";
 import { Toaster, toast } from 'react-hot-toast';
-
-import { json } from '@remix-run/node';
+import { getUser } from './utils/auth.server';
+import type { LoaderFunctionArgs } from "@remix-run/node"; 
 
 interface DocumentProps {
   children: React.ReactNode;
@@ -38,15 +36,11 @@ export const links: LinksFunction = () => [
 
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
-  // Extracts the toast from the request
-  const { toast, headers } = await getToast(request);
-  let toastData = toast;
-  // Important to pass in the headers so the toast is cleared properly
-  return json({ toastData }, { headers });
+  const user = await getUser(request)
+  return {user}
 }
 const Document = withEmotionCache(({ children, title }: DocumentProps, emotionCache) => {
-  const clientStyleData = React.useContext(ClientStyleContext);
-
+  
   return (
     <html lang="en">
       <head>
@@ -77,20 +71,11 @@ const Document = withEmotionCache(({ children, title }: DocumentProps, emotionCa
 // https://remix.run/docs/en/main/route/component
 // https://remix.run/docs/en/main/file-conventions/routes
 export default function App() {
-  const { toastData } = useLoaderData<typeof loader>();
-  
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
-  React.useEffect(() => {
-    if(toastData){
-      if(toastData.type=='success'){
-        toast.success(toastData.message); 
-      } else if (toastData.type=='error') {
-        toast.error(toastData.message);
-      } else {
-        toast(toastData.message)
-      }
-    }
-   }, [toastData])
+  const {user} = useLoaderData<{user: User}>();
+  const [currentUser, setCurrentUser] = useState<User | null>(user);
+  useEffect(() => {
+    setCurrentUser(user)
+  }, [user])
   return (
     <Document>
       

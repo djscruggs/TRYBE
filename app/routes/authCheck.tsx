@@ -1,4 +1,4 @@
-import type { LoaderFunctionArgs } from "@remix-run/node"; // or cloudflare/deno
+import type { LoaderFunctionArgs } from "@remix-run/node"; 
 import { json } from "@remix-run/node"; // or cloudflare/deno
 import {requireCurrentUser} from '../utils/auth.server'
 

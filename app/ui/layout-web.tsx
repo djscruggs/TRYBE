@@ -8,7 +8,7 @@ import {CurrentUserContext} from '../utils/CurrentUserContext'
 
 const LayoutWeb = () => {
   const location = useLocation();
-  const {currentUser, setCurrentUser} = useContext(CurrentUserContext)
+  const {currentUser} = useContext(CurrentUserContext)
   const [animate,setAnimate] = useState(true)
   
   //turn off animation on login and register OR if Link to includes animate state

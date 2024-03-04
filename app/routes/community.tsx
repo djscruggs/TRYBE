@@ -8,9 +8,7 @@ export const loader: LoaderFunction = async ({ request }) => {
   return await requireCurrentUser(request)
 }
 export default function Community({ children }: { children: React.ReactNode }) {
-  const data = useLoaderData<typeof loader>();
-  const {currentUser, setCurrentUser} = useContext(CurrentUserContext)
-  setCurrentUser(data)
+  const {currentUser } = useContext(CurrentUserContext)
   return  (
             <>
               <h1>

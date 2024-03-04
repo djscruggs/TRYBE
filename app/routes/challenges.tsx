@@ -10,13 +10,12 @@ import { useContext } from "react";
 export const loader: LoaderFunction = async ({ request }) => {
   // if thecurrentUser isn't authenticated, this will redirect to login
   const currentUser = await requireCurrentUser(request)
+  console.log(currentUser)
   return currentUser
 }
 
 export default function ChallengesLayout({ children }: { children: React.ReactNode }) {
   const data = useLoaderData<typeof loader>();
-  const {currentUser, setCurrentUser} = useContext(CurrentUserContext)
-  !currentUser && setCurrentUser(data)
   return  (
           <>
             <div className="mt-10">

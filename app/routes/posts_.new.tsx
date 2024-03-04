@@ -9,9 +9,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 }
 
 export default function PostsNew({ children }: { children: React.ReactNode }) {
-  const data = useLoaderData<typeof loader>();
-  const {currentUser, setCurrentUser} = useContext(CurrentUserContext)
-  setCurrentUser(data)
+  const {currentUser } = useContext(CurrentUserContext)
   return  (
           <>
             <h1>

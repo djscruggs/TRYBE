@@ -10,9 +10,6 @@ export const loader: LoaderFunction = async ({ request }) => {
 }
 
 export default function Messages({ children }: { children: React.ReactNode }) {
-  const data = useLoaderData<typeof loader>();
-  const {currentUser, setCurrentUser} = useContext(CurrentUserContext)
-  setCurrentUser(data)
   return  (
             <>
               <h1>

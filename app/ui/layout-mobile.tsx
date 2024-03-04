@@ -23,7 +23,6 @@ const LayoutMobile = () => {
   const [showNav, setShowNav] = useState(true)
   const location = useLocation()
   useEffect(() => {
-    console.log('triggered')
     if(['/','/register','/login'].includes(location.pathname)){
       setShowNav(false)
       

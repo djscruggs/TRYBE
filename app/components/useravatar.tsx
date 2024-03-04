@@ -1,20 +1,12 @@
 import { Avatar } from "@material-tailwind/react";
 import { CurrentUserContext } from '../utils/CurrentUserContext'
 import { useContext } from 'react';
+import type { AvatarProps } from "@material-tailwind/react";
 
-
-type UserAvatarProps = {
-  variant?: string
-  size?: string
-  color?: string
-  className?: string
-  withBorder?: boolean
-}
-const UserAvatar = ({ variant='circular', size='md', color='gray', className='', withBorder=false }: UserAvatarProps) => {
-  const {currentUser, setCurrentUser} = useContext(CurrentUserContext)
-  
-  if(!currentUser) return <></>
-  const name =currentUser ? currentUser.profile.firstName + ' ' +currentUser.profile.lastName : 'Anonymous'
+const UserAvatar = ({ variant='circular', size='md', color='gray', className='', withBorder=false }: AvatarProps) => {
+  const {currentUser } = useContext(CurrentUserContext)
+  if(!currentUser || !currentUser.profile) return <></>
+  const name = currentUser ? `${currentUser.profile.firstName} ${currentUser.profile.lastName}` : 'Anonymous'
   return(
     <Avatar 
       src={currentUser.profile.firstName == 'DJ' ? "/avatars/dj.jpeg" : "/avatars/tameem.jpeg"}
