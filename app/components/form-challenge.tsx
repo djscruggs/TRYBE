@@ -2,6 +2,7 @@
 import { 
   useState, 
   useEffect,
+  useRef,
   ChangeEvent, 
 } from 'react';
 import { Form } from "@remix-run/react";
@@ -20,6 +21,7 @@ import { colorToClassName } from '~/utils/helpers'
 export default function FormChallenge(props:ObjectData) {
   const frequencies = ["DAILY","WEEKDAYS","ALTERNATING","WEEKLY","CUSTOM"]
   const navigate = useNavigate()
+  const challengeForm = useRef(null)
   const [errors, setErrors] = useState(props.errors);
   const [formData, setFormData] = useState(props.object)
   const {currentUser} = useContext(CurrentUserContext)
@@ -55,8 +57,16 @@ export default function FormChallenge(props:ObjectData) {
     const headers = {headers: {
       'content-type': 'multipart/form-data'
     }}
-    let response;
-    let msg;
+    const toSubmit = challengeForm.current ? new FormData(challengeForm.current) : new FormData();
+    if(file){
+      toSubmit.append('photo',file)
+    }
+    if(formData.id){
+      toSubmit.append('id',formData.id)
+    }
+    let response, msg;
+    
+    console.log(formData)
     if(formData.id){
       response = await axios.post(url, formData, headers);
       msg = 'Challenge saved';
@@ -83,7 +93,6 @@ export default function FormChallenge(props:ObjectData) {
     setFile(image);
     const fileReader = new FileReader();
     const url = fileReader.readAsDataURL(image);
-    console.log(url)
     setFormData((prevFormData: ObjectData) => ({
       ...prevFormData,
       coverPhoto: image.name,
@@ -115,7 +124,7 @@ export default function FormChallenge(props:ObjectData) {
 
   }, [file]);
   const fileInput = () => {
-    const textColor = formData.coverPhoto ? 'white' : 'blue-gray-50'
+    const textColor = fileDataURL ? 'white' : 'blue-gray-50'
     return (
       <input type="file" 
         name="coverPhoto"
@@ -141,9 +150,8 @@ export default function FormChallenge(props:ObjectData) {
     'pink',
     'purple',
   ];
-  console.log(formData)
   return  (
-          <Form method="post" onSubmit={handleSubmit}>
+          <Form method="post" ref={challengeForm} encType="multipart/form-data" onSubmit={handleSubmit}>
             <input type="hidden" name="userId"  value={currentUser?.id} />
             <div className="relative max-w-sm">
               
@@ -209,8 +217,10 @@ export default function FormChallenge(props:ObjectData) {
             </div>
               </div>
               <div className='w-full'>
-                <label className='mb-2 block'>Cover Photo</label>
-                <div className='w-full bg-blue-gray-50 h-40 rounded-md flex items-center justify-center'>
+                  {fileDataURL &&
+                    <label htmlFor='coverPhoto' className='mb-2 block'>Cover Photo</label>
+                  }
+                <div className='w-full my-4 bg-blue-gray-50 h-40 rounded-md flex items-center justify-center'>
                   {fileDataURL &&
                     <img src={fileDataURL} alt="cover photo" className="w-full" />
                   }
@@ -231,21 +241,11 @@ export default function FormChallenge(props:ObjectData) {
               </div>  
                 
                 
-              
-              <div className="relative my-2">
-                <Menu>
-                  <MenuHandler>
-                    <Button className={formData.color ? `bg-${colorToClassName(formData.color)}` : 'bg-red'}>Banner Color</Button>
-                  </MenuHandler>
-                    <MenuList>
-                      {colorOptions.map((option, index) => (
-                        <MenuItem key={index} className="flex items-center" onClick={() => handleColorChange(option)}>
-                          <div className={`w-4 h-4 rounded-full bg-${colorToClassName(option)} mr-2`}></div>
-                          <span className="capitalize">{option}</span>
-                        </MenuItem>
-                      ))}
-                    </MenuList>
-                </Menu>
+              <label>Banner Color</label>
+              <div className="relative my-2 flex flex-wrap">
+                {colorOptions.map((option, index) => (
+                  <div key={index} onClick={() => handleColorChange(option)} className={`w-8 h-8 cursor-pointer rounded-full bg-${colorToClassName(option)} mr-2 mb-2 ${formData.color === option ? 'outline outline-2 outline-offset-2 outline-darkgrey' : ''}`}></div>
+                ))}
               </div>
               <div className="relative my-2">
                 <label>Description</label>

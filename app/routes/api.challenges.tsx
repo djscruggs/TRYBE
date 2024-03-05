@@ -4,12 +4,21 @@ import { requireCurrentUser } from "~/utils/auth.server"
 import { json, LoaderFunction } from "@remix-run/node"; 
 import type { ActionFunctionArgs} from "@remix-run/node"; // or cloudflare/deno
 import {convertStringValues} from '../utils/helpers'
-
+import {
+  unstable_composeUploadHandlers,
+  unstable_createMemoryUploadHandler,
+  unstable_parseMultipartFormData,
+} from "@remix-run/node";
 export async function action({
   request,
 }: ActionFunctionArgs) {
   await requireCurrentUser(request)
-  const formData = Object.fromEntries(await request.formData());
+  const uploadHandler = unstable_createMemoryUploadHandler();
+  const rawData = await unstable_parseMultipartFormData(request, uploadHandler);
+  // const data = await request.formData()
+  // console.log('data', data)
+  const formData = Object.fromEntries(rawData);
+  console.log(formData)
   const cleanData = convertStringValues(formData)
   try {
     
@@ -33,8 +42,6 @@ export async function action({
     } else {
       data = await createChallenge(converted)
     }
-    console.log('result from prisma')
-    console.log(data)
     return (data)
     
   } catch(error){
