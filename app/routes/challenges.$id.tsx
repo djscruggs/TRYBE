@@ -1,5 +1,6 @@
 import { loadChallenge } from '~/utils/challenge.server'
 import { useLoaderData } from '@remix-run/react';
+import { useContext } from "react";
 import { requireCurrentUser } from "../utils/auth.server"
 import type {  ObjectData} from '~/utils/types.server'
 import { json, LoaderFunction } from "@remix-run/node"; 
@@ -9,15 +10,13 @@ import axios from 'axios'
 import { toast } from 'react-hot-toast';
 import { colorToClassName } from '~/utils/helpers';
 import { DateTimeFormatOptions } from 'intl'
+import { CurrentUserContext } from '../utils/CurrentUserContext';
 export const loader: LoaderFunction = async ({ request, params }) => {
   const currentUser = await requireCurrentUser(request)
   if(!params.id){
     return null;
   }
-
-  
   const result = await loadChallenge(params.id, currentUser?.id)
-  
   if(!result){
     const error = {loadingError: 'Challenge not found'}
     return json(error)
@@ -26,6 +25,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
   return json(data)
 }
 export default function ViewChallenge() {
+  const {currentUser} = useContext(CurrentUserContext)
   const navigate = useNavigate()
   const data: ObjectData  = useLoaderData() as ObjectData
   if(!data){
@@ -63,8 +63,12 @@ export default function ViewChallenge() {
   return (
     <>
     <h1>{data.object.name}</h1>
-    <Link className='underline text-red' to = {`/challenges/edit/${data.object.id}`}>edit</Link>&nbsp;&nbsp;
-    <Link className='underline text-red' onClick={handleDelete} to = {`/challenges/edit/${data.object.id}`}>delete</Link>&nbsp;&nbsp;
+    {data.object.userId === currentUser?.id && (
+      <>
+        <Link className='underline text-red' to = {`/challenges/edit/${data.object.id}`}>edit</Link>&nbsp;&nbsp;
+        <Link className='underline text-red' onClick={handleDelete} to = {`/challenges/edit/${data.object.id}`}>delete</Link>&nbsp;&nbsp;
+      </>
+    )}
     <div className={`max-w-sm border-2 border-${colorToClassName(data.object.color)} rounded-md p-4`}>
       <div className="mb-2 flex justify-center">
         {data.object.coverPhoto && <img src={data.object.coverPhoto} alt={`${data.object.name} cover photo`} className="max-w-full max-h-40 rounded-sm" />}
