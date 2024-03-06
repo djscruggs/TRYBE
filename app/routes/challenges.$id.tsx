@@ -39,6 +39,9 @@ export default function ViewChallenge() {
   }
   const handleDelete = async (event:any) => {
     event.preventDefault()
+    if(!confirm('Are you sure you want to delete this challenge?')){
+      return
+    }
     if(!data.object.id){
       throw ('cannot delete without an id')
     }

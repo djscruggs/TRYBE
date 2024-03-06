@@ -37,7 +37,6 @@ export async function action({
     
     const validation = challengeSchema.safeParse(cleanData)
     if (!validation.success) {
-      console.log('validation error')
       console.log(validation.error.format())
       return({
         formData,
@@ -72,11 +71,11 @@ export async function action({
       const dest = `${directory}/${fullName}`
       //first delete any existing files
       //the regex below deletes files that match wildcard pattern challenge-<id>.* 
-      await fs.readdir(directory, (err:any, files:any)=>{
+      await fs.readdir(directory, (err:Error, files:any)=>{
         for (let i = 0, len = files.length; i < len; i++) {
           let match = files[i].match(new RegExp(escapeRegExp(nameNoExt) + '.*'));
           if(match !== null) {
-            fs.unlink(`${directory}/${match[0]}`,(err:any) => {
+            fs.unlink(`${directory}/${match[0]}`,(err:Error) => {
             if (err) throw err;
           });
         }

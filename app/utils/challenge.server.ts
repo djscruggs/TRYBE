@@ -36,6 +36,27 @@ const loadChallenge = async (challengeId: string | number, userId:string | numbe
 }
 const deleteChallenge = async (challengeId: string | number) => {
   const id = Number(challengeId)
+  //load the challenge first so you can get a handle to the coverPhoto
+  const challenge = await prisma.challenge.findUnique({
+    where: { id: id }
+  })
+  if(challenge?.coverPhoto){
+    try {
+      const file = `${process.cwd()}/public${challenge.coverPhoto}`
+      const fs = require('fs')
+      await fs.unlink(file, (error:Error) => {
+        if (error){
+          if((error as NodeJS.ErrnoException).code === 'ENOENT'){
+            console.error('file does  not  exist', file)
+          } else {
+            throw error
+          }
+        }
+      })
+    } catch(error:any){
+      return error
+    }
+  }
   return await prisma.challenge.delete({
     where: {
       id: id
