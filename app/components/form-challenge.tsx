@@ -57,23 +57,23 @@ export default function FormChallenge(props:ObjectData) {
     const headers = {headers: {
       'content-type': 'multipart/form-data'
     }}
-    const toSubmit = challengeForm.current ? new FormData(challengeForm.current) : new FormData();
+    const toSubmit = new FormData();
+    for (const key in formData) {
+      if(key ===  'id') continue
+      if (formData.hasOwnProperty(key)) {
+        toSubmit.append(key, formData[key]);
+      }
+    }
+    toSubmit.set('coverPhoto', formData.coverPhoto)
     if(file){
       toSubmit.append('photo',file)
     }
     if(formData.id){
       toSubmit.append('id',formData.id)
     }
-    let response, msg;
+    const response = await axios.post(url, toSubmit, headers);
+    const  msg = formData.id?'Challenge saved':'Challenge created';
     
-    console.log(formData)
-    if(formData.id){
-      response = await axios.post(url, formData, headers);
-      msg = 'Challenge saved';
-    } else {
-      response = await axios.put(url, formData, headers);
-      msg = 'Challenge created';
-    }
     if(response.data.errors){
       console.log('errors', response.data.errors)
       setErrors(response.data.errors)
@@ -83,14 +83,19 @@ export default function FormChallenge(props:ObjectData) {
     }
   }
   const [file,setFile] = useState<File | null>(null);
-  const [fileDataURL, setFileDataURL] = useState<string | null>(null);
+  const [fileDataURL, setFileDataURL] = useState<string | null>(formData.coverPhoto ? String(formData.coverPhoto) : null);
 
   const handlePhoto = async (e: ChangeEvent<HTMLInputElement>) => {
     const { files } = e.target
     if(!files) return
     
     const image = files[0]
+    if(image.size > 1_000_000){
+      toast.error('Image must be less than 1MB')
+      return
+    }
     setFile(image);
+    console.log(image)
     const fileReader = new FileReader();
     const url = fileReader.readAsDataURL(image);
     setFormData((prevFormData: ObjectData) => ({
@@ -152,7 +157,6 @@ export default function FormChallenge(props:ObjectData) {
   ];
   return  (
           <Form method="post" ref={challengeForm} encType="multipart/form-data" onSubmit={handleSubmit}>
-            <input type="hidden" name="userId"  value={currentUser?.id} />
             <div className="relative max-w-sm">
               
               <div className="relative mb-2">
@@ -222,7 +226,7 @@ export default function FormChallenge(props:ObjectData) {
                   }
                 <div className='w-full my-4 bg-blue-gray-50 h-40 rounded-md flex items-center justify-center'>
                   {fileDataURL &&
-                    <img src={fileDataURL} alt="cover photo" className="w-full" />
+                    <img src={fileDataURL} alt="cover photo" className="max-w-full maxh-40" />
                   }
                   {!fileDataURL && 
                     <div className="flex flex-col items-center justify-end">
@@ -235,8 +239,6 @@ export default function FormChallenge(props:ObjectData) {
                 </div>
                 <div className='mt-8 mb-4'>
                   {fileDataURL && fileInput()}
-                  {fileDataURL && <div className='-mt-8 pl-36'>{formData.coverPhoto}</div>}
-                  
                 </div>
               </div>  
                 

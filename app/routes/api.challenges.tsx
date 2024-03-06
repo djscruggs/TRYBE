@@ -3,22 +3,35 @@ import {createChallenge, updateChallenge, challengeSchema} from '~/utils/challen
 import { requireCurrentUser } from "~/utils/auth.server"
 import { json, LoaderFunction } from "@remix-run/node"; 
 import type { ActionFunctionArgs} from "@remix-run/node"; // or cloudflare/deno
+const fs = require('fs')
 import {convertStringValues} from '../utils/helpers'
 import {
   unstable_composeUploadHandlers,
   unstable_createMemoryUploadHandler,
+  unstable_createFileUploadHandler,
   unstable_parseMultipartFormData,
 } from "@remix-run/node";
 export async function action({
   request,
 }: ActionFunctionArgs) {
   await requireCurrentUser(request)
-  const uploadHandler = unstable_createMemoryUploadHandler();
+  const uploadHandler = unstable_composeUploadHandlers(
+    unstable_createFileUploadHandler({
+      maxPartSize: 5_000_000,
+      file: ({ filename }) => filename,
+    }),
+    // parse everything else into memory
+    unstable_createMemoryUploadHandler()
+  );
   const rawData = await unstable_parseMultipartFormData(request, uploadHandler);
   // const data = await request.formData()
   // console.log('data', data)
+  /* @ts-expect-error */ 
+  const file:NodeOnDiskFile = rawData.get("photo");
+  
+  
   const formData = Object.fromEntries(rawData);
-  console.log(formData)
+  // console.log(formData)
   const cleanData = convertStringValues(formData)
   try {
     
@@ -33,16 +46,60 @@ export async function action({
     }
     //convert types where necessary
     let converted = cleanData
+    delete converted.photo
     converted.endAt = converted.endAt ? new Date(converted.endAt).toISOString() : null
     converted.startAt = converted.startAt ? new Date(converted.startAt).toISOString() : null;
-    converted.publishAt = converted.publishAt ? new Date(converted.startAt).toISOString() : new Date().toISOString();
-    let data;
+    converted.publishAt = converted.publishAt ? new Date(converted.publishAt).toISOString() : new Date().toISOString();
+    let data: any;
     if(formData.id) {
       data = await updateChallenge(converted)
     } else {
       data = await createChallenge(converted)
     }
-    return (data)
+    if(!file){
+      return data
+    }
+    //now handle the photo
+    try {
+      function escapeRegExp(string: string) {
+        return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
+      }
+      const nameNoExt = `challenge-${data.id}`
+      const ext = file.type.split('/')[1]
+      const fullName = `${nameNoExt}.${ext}`
+      const directory = `${process.cwd()}/public/uploads`
+      const src = file.filepath
+      const dest = `${directory}/${fullName}`
+      //first delete any existing files
+      //the regex below deletes files that match wildcard pattern challenge-<id>.* 
+      await fs.readdir(directory, (err:any, files:any)=>{
+        for (let i = 0, len = files.length; i < len; i++) {
+          let match = files[i].match(new RegExp(escapeRegExp(nameNoExt) + '.*'));
+          if(match !== null) {
+            fs.unlink(`${directory}/${match[0]}`,(err:any) => {
+            if (err) throw err;
+          });
+        }
+        }
+      });
+      await fs.copyFile(src, dest, fs.constants.COPYFILE_FICLONE, (err:any) => {
+        if(err){
+          throw err
+        } else {
+          console.log('finished copy')
+        }
+      })
+      const webPath = `/uploads/${fullName}`
+      data.coverPhoto = webPath
+      const result = await updateChallenge(data)
+      return (result)
+    } catch(error){
+      throw error
+    }
+      
+    
+    
+    
     
   } catch(error){
     console.log('error', error)
