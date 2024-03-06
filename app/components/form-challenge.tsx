@@ -226,7 +226,7 @@ export default function FormChallenge(props:ObjectData) {
                   }
                 <div className='w-full my-4 bg-blue-gray-50 h-40 rounded-md flex items-center justify-center'>
                   {fileDataURL &&
-                    <img src={fileDataURL} alt="cover photo" className="max-w-full maxh-40" />
+                    <img src={fileDataURL} alt="cover photo" className="max-w-full max-h-40" />
                   }
                   {!fileDataURL && 
                     <div className="flex flex-col items-center justify-end">
