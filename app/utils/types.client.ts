@@ -9,6 +9,13 @@ export type User = {
   id?: number | string
   email: string
   profile?: Profile
+  memberChallenges?: MemberChallenge[]
+}
+
+export type MemberChallenge = {
+  id?: number | string
+  userId: number | string
+  challengeId: number | string
 }
 
 export type Profile = {

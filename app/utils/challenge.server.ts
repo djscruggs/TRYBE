@@ -1,7 +1,7 @@
 import { prisma } from './prisma.server'
 import z from 'zod'
 
-const createChallenge = async (challenge: prisma.challengeCreateInput) => {
+export const createChallenge = async (challenge: prisma.challengeCreateInput) => {
   try {
     const newChallenge = await prisma.challenge.create({
       data: challenge,
@@ -12,7 +12,7 @@ const createChallenge = async (challenge: prisma.challengeCreateInput) => {
     return error
   }
 }
-const updateChallenge = async (challenge: prisma.challengeCreateInput) => {
+export const updateChallenge = async (challenge: prisma.challengeCreateInput) => {
   try {
     const newChallenge = await prisma.challenge.update({
       where: { id: challenge.id },
@@ -24,7 +24,7 @@ const updateChallenge = async (challenge: prisma.challengeCreateInput) => {
     return error
   }
 }
-const loadChallenge = async (challengeId: string | number, userId:string | number | undefined) => {
+export const loadChallenge = async (challengeId: string | number, userId:string | number | undefined) => {
   const id = Number(challengeId)
   const uid = Number(userId)
   return await prisma.challenge.findUnique({
@@ -34,7 +34,7 @@ const loadChallenge = async (challengeId: string | number, userId:string | numbe
     },
   })
 }
-const deleteChallenge = async (challengeId: string | number) => {
+export const deleteChallenge = async (challengeId: string | number) => {
   const id = Number(challengeId)
   //load the challenge first so you can get a handle to the coverPhoto
   const challenge = await prisma.challenge.findUnique({
@@ -63,7 +63,7 @@ const deleteChallenge = async (challengeId: string | number) => {
     },
   })
 }
-const fetchChallenges = async (userId:string | number | undefined) => {
+export const fetchChallenges = async (userId:string | number | undefined) => {
   const uid = userId ? Number(userId) : undefined
   return await prisma.challenge.findMany({
     where: {
@@ -71,7 +71,25 @@ const fetchChallenges = async (userId:string | number | undefined) => {
     },
   })
 }
-function getSchemaDefaults<Schema extends z.AnyZodObject>(schema: Schema) {
+export const joinChallenge = async (userId: number, challengeId: number): Promise<any> => {
+  return await prisma.memberChallenge.create({
+    data: {
+      userId: userId,
+      challengeId: challengeId
+    }
+  })
+}
+export const unjoinChallenge = async (userId: number, challengeId: number): Promise<any> => {
+  return await prisma.memberChallenge.delete({
+    where: {
+      challengeId_userId: {
+        userId: userId,
+        challengeId: challengeId
+      }
+    }
+  })
+}
+export function getSchemaDefaults<Schema extends z.AnyZodObject>(schema: Schema) {
   return Object.fromEntries(
       Object.entries(schema.shape).map(([key, value]) => {
           if (value instanceof z.ZodDefault) return [key, value._def.defaultValue()]
@@ -79,7 +97,7 @@ function getSchemaDefaults<Schema extends z.AnyZodObject>(schema: Schema) {
       })
   )
 }
-const challengeSchema =  
+export const challengeSchema =  
                     z.object({
                             name: z
                               .string()
@@ -126,4 +144,3 @@ const challengeSchema =
                               .coerce
                               .bigint()
                           })
-export { createChallenge, updateChallenge, loadChallenge, challengeSchema, fetchChallenges, deleteChallenge};                              

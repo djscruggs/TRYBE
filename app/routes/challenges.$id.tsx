@@ -1,7 +1,7 @@
 import { loadChallenge } from '~/utils/challenge.server'
 import { useLoaderData } from '@remix-run/react';
-import { useContext } from "react";
-import { requireCurrentUser } from "../utils/auth.server"
+import { useContext, useState } from "react";
+import { requireCurrentUser, getUser } from "../utils/auth.server"
 import type {  ObjectData} from '~/utils/types.server'
 import { json, LoaderFunction } from "@remix-run/node"; 
 import { Link } from '@remix-run/react';
@@ -11,6 +11,7 @@ import { toast } from 'react-hot-toast';
 import { colorToClassName, convertlineTextToHtml } from '~/utils/helpers';
 import { DateTimeFormatOptions } from 'intl'
 import { CurrentUserContext } from '../utils/CurrentUserContext';
+
 export const loader: LoaderFunction = async ({ request, params }) => {
   const currentUser = await requireCurrentUser(request)
   if(!params.id){
@@ -21,13 +22,22 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     const error = {loadingError: 'Challenge not found'}
     return json(error)
   }
-  const data: ObjectData = {object: result} 
+  //load membership for current user
+  const u = await getUser(request, true)
+  const challengeId = params.id ? parseInt(params.id) : undefined;
+  let isMember = false
+  if(u && u.memberChallenges.filter((c) => c.challengeId === challengeId).length > 0){
+    isMember = true
+  }
+  
+  const data: ObjectData = {object: result, isMember: isMember} 
   return json(data)
 }
 export default function ViewChallenge() {
   const {currentUser} = useContext(CurrentUserContext)
   const navigate = useNavigate()
   const data: ObjectData  = useLoaderData() as ObjectData
+  console.log(data)
   if(!data){
     return <p>No data.</p>
   }
@@ -37,6 +47,9 @@ export default function ViewChallenge() {
   if(!data?.object){
     return <p>Loading...</p>
   }
+  
+  const [isMember, setIsMember] = useState<boolean>(data.isMember)
+  
   const handleDelete = async (event:any) => {
     event.preventDefault()
     if(!confirm('Are you sure you want to delete this challenge?')){
@@ -54,6 +67,16 @@ export default function ViewChallenge() {
     } else {
       toast.error('Delete failed')
     }
+  }
+  const toggleJoin = async (event:any) => {
+    event.preventDefault()
+    if(!data.object.id){
+      throw ('cannot join without an id')
+    }
+    
+    const url = `/api/challenges/join-unjoin/${data.object.id}`
+    const response = await axios.post(url);
+    setIsMember(response.data.result == 'joined')
   }
   const dateOptions:DateTimeFormatOptions = {
     weekday: 'short',
@@ -89,7 +112,9 @@ export default function ViewChallenge() {
       <div className="mb-2">
         {convertlineTextToHtml(data.object.description)}
       </div>
+      
     </div>
+    <button onClick={toggleJoin} className="mt-8 bg-purple-500 text-white rounded-md p-2">{isMember ? 'Leave Challenge' : 'Join this Challenge'}</button>
 </>
   );
 }

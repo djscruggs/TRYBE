@@ -36,4 +36,6 @@ export type ObjectData = {
   formData?: FormData;
   object?: any
   loadingError?: string
+  [key: string]: any
 };
+
