@@ -1,12 +1,24 @@
 import ChallengeForm from '~/components/form-challenge';
-import { useLoaderData, useRouteLoaderData, useFetcher } from '@remix-run/react';
+import { useLoaderData } from '@remix-run/react';
 import type {ObjectData} from '~/utils/types.server'
-import { LoaderFunction } from "@remix-run/node"; 
-import {loader as challengeLoader} from './challenges.$id'
+import { loadChallenge } from '~/utils/challenge.server';
+import { json, LoaderFunction } from "@remix-run/node"; 
+import { requireCurrentUser } from "../utils/auth.server"
 // import { useRouteLoaderData } from '@remix-run/react';
 
-export const loader: LoaderFunction = async ({ request, params, context }) => {
-  return challengeLoader({ request, params, context })
+export const loader: LoaderFunction = async ({ request, params }) => {
+    const currentUser = await requireCurrentUser(request)
+    if(!params.id || !currentUser){
+      return null;
+    }
+    const result = await loadChallenge(params.id, currentUser.id)
+    if(!result){
+      const error = {loadingError: 'Challenge not found'}
+      return json(error)
+    }
+    const data: ObjectData = {object: result}
+    return json(data)
+  
 }
 export default function EditChallenge() {
   const data: ObjectData  = useLoaderData() as ObjectData
@@ -16,10 +28,6 @@ export default function EditChallenge() {
    
   if(!data?.object){
     return <p>Loading.</p> 
-  }
-  //remove _count from object, side effect of using challengeLoader
-  if(data.object._count){
-    delete data.object._count
   }
   return (
     <ChallengeForm object={data.object}/>
