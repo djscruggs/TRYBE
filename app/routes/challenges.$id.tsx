@@ -8,7 +8,7 @@ import { Link } from '@remix-run/react';
 import { useNavigate } from '@remix-run/react';
 import axios from 'axios'
 import { toast } from 'react-hot-toast';
-import { colorToClassName } from '~/utils/helpers';
+import { colorToClassName, convertlineTextToHtml } from '~/utils/helpers';
 import { DateTimeFormatOptions } from 'intl'
 import { CurrentUserContext } from '../utils/CurrentUserContext';
 export const loader: LoaderFunction = async ({ request, params }) => {
@@ -87,7 +87,7 @@ export default function ViewChallenge() {
       </div>
       
       <div className="mb-2">
-        {data.object.description}
+        {convertlineTextToHtml(data.object.description)}
       </div>
     </div>
 </>

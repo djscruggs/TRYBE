@@ -1,3 +1,4 @@
+import React from 'react'
 //helper  function that converts booleans, integers and dates from strings to the proper type
 export function convertStringValues(obj: any): any {
   const result: any = {};
@@ -28,4 +29,17 @@ export function colorToClassName(color: string): string {
     "purple": "purple-400",
   }
   return colorMap[lower]
+}
+
+export function convertlineTextToHtml(text: string): React.ReactNode {
+  return (
+    <div>
+      {text.split('\n').map((line: string, index: number) => (
+        <React.Fragment key={index}>
+          {line}
+          <br />
+        </React.Fragment>
+      ))}
+    </div>
+  );
 }
