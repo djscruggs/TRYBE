@@ -16,8 +16,8 @@ export function convertStringValues(obj: any): any {
   return result;
 }
 
-export function colorToClassName(color: string): string {
-  if(!color) return ''
+export function colorToClassName(color: string, defaultColor:string): string {
+  if(!color) return defaultColor
   const lower = color.toLowerCase()
   const colorMap: { [key: string]: string } = {
     "red": "red",

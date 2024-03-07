@@ -87,7 +87,7 @@ export default function ViewChallenge() {
     <>
     
    
-    <div className={`max-w-sm border-2 border-${colorToClassName(data.object.color)} rounded-md p-4`}>
+    <div className={`max-w-sm border-2 border-${colorToClassName(data.object.color, 'red')} rounded-md p-4`}>
     
       <div className="mb-6 flex flex-col justify-center">
         <h1 className='flex justify-center'>{data.object.name}</h1>
@@ -114,7 +114,7 @@ export default function ViewChallenge() {
       </div>
       
     </div>
-    <button onClick={toggleJoin} className="mt-8 bg-purple-500 text-white rounded-md p-2">{isMember ? 'Leave Challenge' : 'Join this Challenge'}</button>
+    <button onClick={toggleJoin} className={`mt-8 bg-${colorToClassName(data.object.color, 'red')} text-white rounded-md p-2`}>{isMember ? 'Leave Challenge' : 'Join this Challenge'}</button>
 </>
   );
 }

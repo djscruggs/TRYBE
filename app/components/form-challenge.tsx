@@ -246,7 +246,7 @@ export default function FormChallenge(props:ObjectData) {
               <label>Banner Color</label>
               <div className="relative my-2 flex flex-wrap">
                 {colorOptions.map((option, index) => (
-                  <div key={index} onClick={() => handleColorChange(option)} className={`w-8 h-8 cursor-pointer rounded-full bg-${colorToClassName(option)} mr-2 mb-2 ${formData.color === option ? 'outline outline-2 outline-offset-2 outline-darkgrey' : ''}`}></div>
+                  <div key={index} onClick={() => handleColorChange(option)} className={`w-8 h-8 cursor-pointer rounded-full bg-${colorToClassName(option, 'red')} mr-2 mb-2 ${formData.color === option ? 'outline outline-2 outline-offset-2 outline-darkgrey' : ''}`}></div>
                 ))}
               </div>
               <div className="relative my-2">
