@@ -73,10 +73,12 @@ export default function FormChallenge(props:ObjectData) {
     }
     const response = await axios.post(url, toSubmit, headers);
     const  msg = formData.id?'Challenge saved':'Challenge created';
-    
-    if(response.data.errors){
-      console.log('errors', response.data.errors)
-      setErrors(response.data.errors)
+    if(!response.data.id || response.data.errors){
+      if(response.data.errors){
+        setErrors(response.data.errors)
+      } else {
+        toast.error('An error occured')
+      }
     } else {
       toast.success(msg)
       navigate(`/challenges/${response.data.id}`)
@@ -95,7 +97,6 @@ export default function FormChallenge(props:ObjectData) {
       return
     }
     setFile(image);
-    console.log(image)
     const fileReader = new FileReader();
     const url = fileReader.readAsDataURL(image);
     setFormData((prevFormData: ObjectData) => ({

@@ -1,4 +1,4 @@
-import { loadChallenge } from '~/utils/challenge.server'
+import { loadChallengeSummary } from '~/utils/challenge.server'
 import { useLoaderData } from '@remix-run/react';
 import { useContext, useState } from "react";
 import { requireCurrentUser, getUser } from "../utils/auth.server"
@@ -17,12 +17,12 @@ export const loader: LoaderFunction = async ({ request, params }) => {
   if(!params.id){
     return null;
   }
-  const result = await loadChallenge(params.id, currentUser?.id)
+  const result = await loadChallengeSummary(params.id)
   if(!result){
     const error = {loadingError: 'Challenge not found'}
     return json(error)
   }
-  //load membership for current user
+  //load memberships for current user
   const u = await getUser(request, true)
   const challengeId = params.id ? parseInt(params.id) : undefined;
   let isMember = false
@@ -30,7 +30,8 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     isMember = true
   }
   
-  const data: ObjectData = {object: result, isMember: isMember} 
+  
+  const data: ObjectData = {object: result, isMember: isMember}
   return json(data)
 }
 export default function ViewChallenge() {
@@ -77,6 +78,9 @@ export default function ViewChallenge() {
     const url = `/api/challenges/join-unjoin/${data.object.id}`
     const response = await axios.post(url);
     setIsMember(response.data.result == 'joined')
+    //probably should use revalidate instead but this is quicker to add
+    //https://github.com/remix-run/react-router/discussions/10381
+    navigate('.')
   }
   const dateOptions:DateTimeFormatOptions = {
     weekday: 'short',
@@ -107,6 +111,9 @@ export default function ViewChallenge() {
       </div>
       <div className="mb-2">
         Meets <span className="capitalize">{data.object.frequency.toLowerCase()}</span> 
+      </div>
+      <div className="mb-2">
+        <span className="capitalize">{data.object._count.members}</span> members
       </div>
       
       <div className="mb-2">

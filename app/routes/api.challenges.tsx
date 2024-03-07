@@ -46,10 +46,11 @@ export async function action({
     //convert types where necessary
     let converted = cleanData
     delete converted.photo
+    delete converted.userId
     converted.endAt = converted.endAt ? new Date(converted.endAt).toISOString() : null
     converted.startAt = converted.startAt ? new Date(converted.startAt).toISOString() : null;
     converted.publishAt = converted.publishAt ? new Date(converted.publishAt).toISOString() : new Date().toISOString();
-    let data: any;
+    let data: any
     if(formData.id) {
       data = await updateChallenge(converted)
     } else {
@@ -84,9 +85,7 @@ export async function action({
       await fs.copyFile(src, dest, fs.constants.COPYFILE_FICLONE, (err:any) => {
         if(err){
           throw err
-        } else {
-          console.log('finished copy')
-        }
+        } 
       })
       const webPath = `/uploads/${fullName}`
       data.coverPhoto = webPath

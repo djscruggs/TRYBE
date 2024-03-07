@@ -34,6 +34,19 @@ export const loadChallenge = async (challengeId: string | number, userId:string 
     },
   })
 }
+export const loadChallengeSummary = async (challengeId: string | number) => {
+  const id = Number(challengeId)
+  return await prisma.challenge.findUnique({
+    where: {
+      id: id,
+    },
+    include: {
+      _count: {
+        select: { members: true },
+      },
+    },
+  })
+}
 export const deleteChallenge = async (challengeId: string | number) => {
   const id = Number(challengeId)
   //load the challenge first so you can get a handle to the coverPhoto

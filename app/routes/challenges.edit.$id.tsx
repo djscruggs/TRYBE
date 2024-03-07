@@ -17,8 +17,10 @@ export default function EditChallenge() {
   if(!data?.object){
     return <p>Loading.</p> 
   }
-  
-  
+  //remove _count from object, side effect of using challengeLoader
+  if(data.object._count){
+    delete data.object._count
+  }
   return (
     <ChallengeForm object={data.object}/>
   );
