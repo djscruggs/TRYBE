@@ -1,16 +1,16 @@
 
 import { CurrentUserContext } from '../utils/CurrentUserContext';
-import Nav from '../ui/nav'
 import { useContext } from 'react';
 import UserAvatar from '../components/useravatar'
 import RandomAvatar from '../components/randomavatar'
-import FeedChallengeCard from '../components/feedchallengecard'
+
 import FeedCommunityCard from '~/components/feedcommunitycard';
 import FeedPostCard from '~/components/feedpostcard';
 import {useMobileSize} from '../utils/useMobileSize'
 import { requireCurrentUser } from "../utils/auth.server"
 import { LoaderFunction } from '@remix-run/node'
 import { useLoaderData } from '@remix-run/react';
+import FeedChallengeCard from '~/components/feedchallengecard';
 
 export const loader: LoaderFunction = async ({ request }) => {
   // if currentUser isn't authenticated, this will redirect to login

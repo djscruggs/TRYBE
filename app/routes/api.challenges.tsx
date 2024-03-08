@@ -14,7 +14,7 @@ import {
 export async function action({
   request,
 }: ActionFunctionArgs) {
-  await requireCurrentUser(request)
+  const currentUser = await requireCurrentUser(request)
   const uploadHandler = unstable_composeUploadHandlers(
     unstable_createFileUploadHandler({
       maxPartSize: 5_000_000,
@@ -51,9 +51,10 @@ export async function action({
     converted.startAt = converted.startAt ? new Date(converted.startAt).toISOString() : null;
     converted.publishAt = converted.publishAt ? new Date(converted.publishAt).toISOString() : new Date().toISOString();
     let data: any
-    if(formData.id) {
+    if(converted.id) {
       data = await updateChallenge(converted)
     } else {
+      converted.userId = currentUser.id
       data = await createChallenge(converted)
     }
     if(!file){

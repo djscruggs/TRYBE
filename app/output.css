@@ -1440,6 +1440,18 @@ video {
   max-width: 5rem;
 }
 
+.max-w-2xl {
+  max-width: 42rem;
+}
+
+.max-w-xl {
+  max-width: 36rem;
+}
+
+.max-w-md {
+  max-width: 28rem;
+}
+
 .flex-none {
   flex: none;
 }

@@ -13,11 +13,9 @@ export const loader: LoaderFunction = async ({ request }) => {
 }
 
 export default function NewChallenge() {
-  const data = useActionData() || {}
   const {currentUser} = useContext(CurrentUserContext)
-  const formData = data?.formData || {userId: currentUser?.id}
-  const errors = data?.errors || {} 
+  const formData = {userId: currentUser?.id}
   return (
-    <ChallengeForm object={formData} errors={errors} />
+    <ChallengeForm object={formData}/>
   );
 }

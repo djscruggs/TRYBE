@@ -11,6 +11,7 @@ import { toast } from 'react-hot-toast';
 import { colorToClassName, convertlineTextToHtml } from '~/utils/helpers';
 import { DateTimeFormatOptions } from 'intl'
 import { CurrentUserContext } from '../utils/CurrentUserContext';
+import { Spinner } from '@material-tailwind/react';
 
 export const loader: LoaderFunction = async ({ request, params }) => {
   const currentUser = await requireCurrentUser(request)
@@ -37,6 +38,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
 export default function ViewChallenge() {
   const {currentUser} = useContext(CurrentUserContext)
   const navigate = useNavigate()
+  const [loading, setLoading] = useState<boolean>(false)
   const data: ObjectData  = useLoaderData() as ObjectData
   console.log(data)
   if(!data){
@@ -74,10 +76,12 @@ export default function ViewChallenge() {
     if(!data.object.id){
       throw ('cannot join without an id')
     }
+    setLoading(true)
     
     const url = `/api/challenges/join-unjoin/${data.object.id}`
     const response = await axios.post(url);
     setIsMember(response.data.result == 'joined')
+    setLoading(false)
     //probably should use revalidate instead but this is quicker to add
     //https://github.com/remix-run/react-router/discussions/10381
     navigate('.')
@@ -121,7 +125,16 @@ export default function ViewChallenge() {
       </div>
       
     </div>
-    <button onClick={toggleJoin} className={`mt-8 bg-${colorToClassName(data.object.color, 'red')} text-white rounded-md p-2`}>{isMember ? 'Leave Challenge' : 'Join this Challenge'}</button>
+    {data.object.userId != currentUser?.id && (
+      <>
+        <button 
+            onClick={toggleJoin} 
+            className={`mt-8 bg-${colorToClassName(data.object.color, 'red')} text-white rounded-md p-2`}>
+              {isMember ? 'Leave Challenge' : 'Join this Challenge'}
+          </button>
+          {loading && <Spinner className="h-4 w-4 ml-1 inline" />}
+      </>
+    )}
 </>
   );
 }

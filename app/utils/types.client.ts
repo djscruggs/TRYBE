@@ -12,6 +12,22 @@ export type User = {
   memberChallenges?: MemberChallenge[]
 }
 
+export interface Challenge  {
+  id: number | string
+  name: string
+  description: string
+  color: string
+  userId: number | string
+  duration: number
+  unit: string
+  icon: string
+}
+export interface ChallengeSummary extends Challenge {
+  _count: {
+    members: number
+  }
+}
+
 export type MemberChallenge = {
   id?: number | string
   userId: number | string

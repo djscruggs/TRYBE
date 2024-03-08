@@ -47,6 +47,19 @@ export const loadChallengeSummary = async (challengeId: string | number) => {
     },
   })
 }
+export const loadUserCreatedChallenges = async (userId: string |  number) => {
+  const uid = Number(userId)
+  return await prisma.challenge.findMany({
+    where: {
+      userId: uid
+    },
+    include: {
+      _count: {
+        select: { members: true },
+      },
+    },
+  })
+}
 export const deleteChallenge = async (challengeId: string | number) => {
   const id = Number(challengeId)
   //load the challenge first so you can get a handle to the coverPhoto
@@ -83,6 +96,18 @@ export const fetchChallenges = async (userId:string | number | undefined) => {
       userId: uid
     },
   })
+}
+export const fetchChallengeSummaries = async (userId?:string | number | undefined) => {
+  const uid = userId ? Number(userId) : undefined
+  const params:prisma.challengeFindManyArgs = {
+    where: userId ? { userId: uid } : undefined,
+    include: {
+      _count: {
+        select: { members: true },
+      },
+    },
+  }
+  return await prisma.challenge.findMany(params)
 }
 export const joinChallenge = async (userId: number, challengeId: number): Promise<any> => {
   return await prisma.memberChallenge.create({

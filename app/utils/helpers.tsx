@@ -30,6 +30,15 @@ export function colorToClassName(color: string, defaultColor:string): string {
   }
   return colorMap[lower]
 }
+export function textColorFromContainer(containerColor: string, defaultColor:string): string {
+  if(!containerColor) return defaultColor
+  const containerColorLower = containerColor.toLowerCase()
+  if (containerColorLower === 'red' || containerColorLower === 'purple') {
+    return 'white'
+  } else {
+    return 'black'
+  }
+}
 
 export function convertlineTextToHtml(text: string): React.ReactNode {
   return (
