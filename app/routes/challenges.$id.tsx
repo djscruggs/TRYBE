@@ -111,20 +111,26 @@ export default function ViewChallenge() {
           )}
         </div>
         <div className='p-4'>
-        <div className="mb-2">
-            {convertlineTextToHtml(data.object.description)}
-          </div>
-          <div className="mb-2">
-            <label className='block justify-center'>Mission</label>
-            {convertlineTextToHtml(data.object.mission)}
-          </div>
-          <div className="mb-2">
+          <div className="mb-2 text-sm">
             {new Date(data.object.startAt).toLocaleDateString(undefined, dateOptions)} to {new Date(data.object.endAt).toLocaleDateString(undefined, dateOptions)}
           </div>
           <div className="mb-2">
-            Meets <span className="capitalize">{data.object.frequency.toLowerCase()}</span> 
+            <div className='text-center text-sm font-bold'>About</div>
+            <div className='text-left mb-4'>
+            {convertlineTextToHtml(data.object.description)}
+            </div>
           </div>
           <div className="mb-2">
+            <div className='text-center text-sm font-bold'>Mission</div>
+            <div className='text-left mb-4'>
+            {convertlineTextToHtml(data.object.mission)}
+            </div>
+          </div>
+          
+          <div className="mb-2 text-sm">
+            Meets <span className="capitalize">{data.object.frequency.toLowerCase()}</span> 
+          </div>
+          <div className="mb-2 text-sm">
             <span className="capitalize">{data.object._count.members}</span> members
           </div>
           
