@@ -40,7 +40,7 @@ export default function CardChallenge({challenge}: {challenge: ChallengeSummary}
               </div>
               <div className="flex flex-col items-center col-span-2">
                 <div className={`mt-2 font-bold text-${textColorFromContainer(challenge.color,'black')}`}>{challenge.name}</div>
-                {currentUser && challenge.userId === currentUser.id && (<Link className={`underline text-${textColorFromContainer(challenge.color,'black')}`} to = {`/challenges/edit/${challenge.id}`}>edit</Link>)}
+                {currentUser && challenge.userId === currentUser.id && (<Link className={`underline text-xs text-${textColorFromContainer(challenge.color,'black')}`} to = {`/challenges/edit/${challenge.id}`}>edit</Link>)}
                 <Button onClick={() => navigate(`/challenges/${challenge.id}`)} className={`bg-red p-3 py-2 rounded-full mt-3`}>Sign up!</Button>
               </div>
             </div>

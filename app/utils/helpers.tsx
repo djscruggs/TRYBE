@@ -40,7 +40,8 @@ export function textColorFromContainer(containerColor: string, defaultColor:stri
   }
 }
 
-export function convertlineTextToHtml(text: string): React.ReactNode {
+export function convertlineTextToHtml(text: string | undefined): React.ReactNode {
+  if(!text) return null
   return (
     <div>
       {text.split('\n').map((line: string, index: number) => (

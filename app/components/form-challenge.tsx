@@ -221,6 +221,40 @@ export default function FormChallenge(props:ObjectData) {
                 )}
             </div>
               </div>
+              
+                
+                
+              <div className="relative my-2">
+                <FormField 
+                  name='description'  
+                  placeholder='Develop a new habit, eat healthy and lower your carbon footprint' 
+                  required={true} 
+                  type="textarea" 
+                  rows={2} 
+                  value={formData.description} 
+                  onChange={handleChange} 
+                  error={errors?.description?._errors[0]} 
+                  label="Description" 
+                />
+              </div>
+              <div className="relative my-2">
+                <FormField 
+                  name='mission' 
+                  placeholder='Eat vegetarian every day for two weeks. Check in daily to stay on track.' 
+                  required={true} 
+                  type="textarea" 
+                  rows={4} 
+                  value={formData.mission} 
+                  onChange={handleChange}  
+                  error={errors?.description?._errors[0]} label="Mission" 
+                />
+              </div>
+              <label>Banner Color</label>
+              <div className="relative my-2 flex flex-wrap">
+                {colorOptions.map((option, index) => (
+                  <div key={index} onClick={() => handleColorChange(option)} className={`w-8 h-8 cursor-pointer rounded-full bg-${colorToClassName(option, 'red')} mr-2 mb-2 ${formData.color === option ? 'outline outline-2 outline-offset-2 outline-darkgrey' : ''}`}></div>
+                ))}
+              </div>
               <div className='w-full'>
                   {fileDataURL &&
                     <label htmlFor='coverPhoto' className='mb-2 block'>Cover Photo</label>
@@ -242,20 +276,6 @@ export default function FormChallenge(props:ObjectData) {
                   {fileDataURL && fileInput()}
                 </div>
               </div>  
-                
-                
-              <label>Banner Color</label>
-              <div className="relative my-2 flex flex-wrap">
-                {colorOptions.map((option, index) => (
-                  <div key={index} onClick={() => handleColorChange(option)} className={`w-8 h-8 cursor-pointer rounded-full bg-${colorToClassName(option, 'red')} mr-2 mb-2 ${formData.color === option ? 'outline outline-2 outline-offset-2 outline-darkgrey' : ''}`}></div>
-                ))}
-              </div>
-              <div className="relative my-2">
-                <label>Description</label>
-                
-                
-                <FormField name='description' required={true} type="textarea" value={formData.description} onChange={handleChange} error={errors?.description?._errors[0]} label="Description" />
-              </div>
               <Button type="submit"  onClick={handleSubmit} placeholder='Save' className="bg-red">Save Challenge</Button>
             </div>
           </Form>

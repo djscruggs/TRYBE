@@ -48,6 +48,7 @@ model Challenge {
   id         Int        @id @default(autoincrement())
   name       String
   description String?       @db.Text
+  mission String?       @db.Text
   startAt  DateTime   @default(now())
   endAt  DateTime?
   frequency Frequency @default(DAILY)   

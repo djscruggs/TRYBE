@@ -141,8 +141,11 @@ export const challengeSchema =
                               .string()
                               .min(1, { message: "Challenge name is required" }),
                             description: z
-                              .string({ invalid_type_error: 'You got it wrong mate!' })
+                              .string({ invalid_type_error: 'Wrong type' })
                               .min(1, { message: "Description is required" }),
+                              description: z
+                              .string({ invalid_type_error: 'Wrong type' })
+                              .min(1, { message: "Mission is required" }),
                             startAt: z
                               .string({required_error: "Please select a date"})
                               .pipe(z.coerce.date()),

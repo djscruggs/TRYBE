@@ -13,6 +13,7 @@ export type LoginForm = {
 export type ChallengeData = {
   name: string;
   description: string;
+  mission: string;
   startAt: Date;
   endAt?: Date | null;
   frequency?: "DAILY" | "WEEKDAYS" | "ALTERNATING" | "WEEKLY" | "CUSTOM";

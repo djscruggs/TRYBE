@@ -19,6 +19,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     return null;
   }
   const result = await loadChallengeSummary(params.id)
+  
   if(!result){
     const error = {loadingError: 'Challenge not found'}
     return json(error)
@@ -95,34 +96,41 @@ export default function ViewChallenge() {
     <>
     
    
-    <div className={`max-w-sm border-2 border-${colorToClassName(data.object.color, 'red')} rounded-md p-4`}>
-    
-      <div className="mb-6 flex flex-col justify-center">
-        <h1 className='flex justify-center'>{data.object.name}</h1>
-        {data.object.userId === currentUser?.id && (
-          <div className="flex justify-center mt-2">
-            <Link className='underline text-red' to = {`/challenges/edit/${data.object.id}`}>edit</Link>&nbsp;&nbsp;
-            <Link className='underline text-red' onClick={handleDelete} to = {`/challenges/edit/${data.object.id}`}>delete</Link>&nbsp;&nbsp;
-          </div>
-        )}
-      </div>
-    
-      <div className="mb-2 flex justify-center">
-        {data.object.coverPhoto && <img src={data.object.coverPhoto} alt={`${data.object.name} cover photo`} className="max-w-full max-h-40 rounded-sm" />}
-      </div>
-      <div className="mb-2">
-        {new Date(data.object.startAt).toLocaleDateString(undefined, dateOptions)} to {new Date(data.object.endAt).toLocaleDateString(undefined, dateOptions)}
-      </div>
-      <div className="mb-2">
-        Meets <span className="capitalize">{data.object.frequency.toLowerCase()}</span> 
-      </div>
-      <div className="mb-2">
-        <span className="capitalize">{data.object._count.members}</span> members
+    <div className={`max-w-sm border-2 border-${colorToClassName(data.object.color, 'red')} rounded-md`}>
+      <div className="mb-2 flex justify-center max-h-10 ">
+          {data.object.coverPhoto && <img src={data.object.coverPhoto} alt={`${data.object.name} cover photo`} className="w-full rounded-sm" />}
       </div>
       
-      <div className="mb-2">
-        {convertlineTextToHtml(data.object.description)}
-      </div>
+        <div className="mb-6 flex flex-col justify-center">
+          <h1 className='flex justify-center'>{data.object.name}</h1>
+          {data.object.userId === currentUser?.id && (
+            <div className="flex justify-center mt-2">
+              <Link className='underline text-red' to = {`/challenges/edit/${data.object.id}`}>edit</Link>&nbsp;&nbsp;
+              <Link className='underline text-red' onClick={handleDelete} to = {`/challenges/edit/${data.object.id}`}>delete</Link>&nbsp;&nbsp;
+            </div>
+          )}
+        </div>
+        <div className='p-4'>
+        <div className="mb-2">
+            {convertlineTextToHtml(data.object.description)}
+          </div>
+          <div className="mb-2">
+            <label className='block justify-center'>Mission</label>
+            {convertlineTextToHtml(data.object.mission)}
+          </div>
+          <div className="mb-2">
+            {new Date(data.object.startAt).toLocaleDateString(undefined, dateOptions)} to {new Date(data.object.endAt).toLocaleDateString(undefined, dateOptions)}
+          </div>
+          <div className="mb-2">
+            Meets <span className="capitalize">{data.object.frequency.toLowerCase()}</span> 
+          </div>
+          <div className="mb-2">
+            <span className="capitalize">{data.object._count.members}</span> members
+          </div>
+          
+          
+        </div>
+      
       
     </div>
     {data.object.userId != currentUser?.id && (

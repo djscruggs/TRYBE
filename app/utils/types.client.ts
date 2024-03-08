@@ -16,6 +16,7 @@ export interface Challenge  {
   id: number | string
   name: string
   description: string
+  mission: string
   color: string
   userId: number | string
   duration: number
