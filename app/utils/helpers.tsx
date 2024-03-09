@@ -1,37 +1,44 @@
 import React from 'react'
-//helper  function that converts booleans, integers and dates from strings to the proper type
-export function convertStringValues(obj: any): any {
-  const result: any = {};
+// icons
+import { GiShinyApple, GiMeditation } from 'react-icons/gi'
+import { FaRegLightbulb } from 'react-icons/fa6'
+import { RiMentalHealthLine } from 'react-icons/ri'
+import { PiBarbellLight } from 'react-icons/pi'
+import { IoFishOutline } from 'react-icons/io5'
+
+// helper  function that converts booleans, integers and dates from strings to the proper type
+export function convertStringValues (obj: any): any {
+  const result: any = {}
   for (const key in obj) {
     if (obj[key] === 'true' || obj[key] === 'false') {
-      result[key] = obj[key] === 'true';
+      result[key] = obj[key] === 'true'
     } else if (!isNaN(obj[key])) {
-      result[key] = parseInt(obj[key]);
+      result[key] = parseInt(obj[key])
     } else if (!isNaN(Date.parse(obj[key]))) {
       result[key] = new Date(obj[key]).toISOString()
     } else {
-      result[key] = obj[key];
+      result[key] = obj[key]
     }
   }
-  return result;
+  return result
 }
 
-export function colorToClassName(color: string, defaultColor:string): string {
-  if(!color) return defaultColor
+export function colorToClassName (color: string, defaultColor: string): string {
+  if (!color) return defaultColor
   const lower = color.toLowerCase()
-  const colorMap: { [key: string]: string } = {
-    "red": "red",
-    "orange": "orange-500",
-    "yellow": "yellow",
-    "green": "green-500",
-    "blue": "blue",
-    "pink": "pink-300",
-    "purple": "purple-400",
+  const colorMap: Record<string, string> = {
+    red: 'red',
+    orange: 'orange-500',
+    yellow: 'yellow',
+    green: 'green-500',
+    blue: 'blue',
+    pink: 'pink-300',
+    purple: 'purple-400'
   }
   return colorMap[lower]
 }
-export function textColorFromContainer(containerColor: string, defaultColor:string): string {
-  if(!containerColor) return defaultColor
+export function textColorFromContainer (containerColor: string, defaultColor: string): string {
+  if (!containerColor) return defaultColor
   const containerColorLower = containerColor.toLowerCase()
   if (containerColorLower === 'red' || containerColorLower === 'purple') {
     return 'white'
@@ -40,8 +47,14 @@ export function textColorFromContainer(containerColor: string, defaultColor:stri
   }
 }
 
-export function convertlineTextToHtml(text: string | undefined): React.ReactNode {
-  if(!text) return null
+export function iconStyle (color: string): string {
+  const bgColor = colorToClassName(color, 'red')
+  const textColor = ['yellow', 'pink-300'].includes(bgColor) ? 'black' : 'white'
+  return `h-12 w-12 text-${textColor} bg-${bgColor} rounded-full p-2`
+}
+
+export function convertlineTextToHtml (text: string | undefined): React.ReactNode {
+  if (!text) return null
   return (
     <div>
       {text.split('\n').map((line: string, index: number) => (
@@ -51,5 +64,5 @@ export function convertlineTextToHtml(text: string | undefined): React.ReactNode
         </React.Fragment>
       ))}
     </div>
-  );
+  )
 }

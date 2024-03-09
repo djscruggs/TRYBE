@@ -1,80 +1,112 @@
-
-import { 
-  useState, 
+import React, {
+  useState,
   useEffect,
   useRef,
-  ChangeEvent, 
-} from 'react';
-import { Form } from "@remix-run/react";
-import { useNavigate } from '@remix-run/react';
-import type {ObjectData} from '~/utils/types.server'
-import { Button, Select, Option, Menu, MenuHandler, MenuList, MenuItem}  from "@material-tailwind/react";
-import { FormField } from "~/components/form-field";
-import DatePicker from "react-datepicker";
-import { CurrentUserContext } from '../utils/CurrentUserContext';
-import { useContext } from "react";
-import { toast } from 'react-hot-toast';
+  type ChangeEvent
+} from 'react'
+import { Form, useNavigate } from '@remix-run/react'
+import type { ObjectData } from '~/utils/types.server'
+import { Button, Select, Option } from '@material-tailwind/react'
+import { FormField } from '~/components/form-field'
+import DatePicker from 'react-datepicker'
+import { toast } from 'react-hot-toast'
 import axios from 'axios'
-import { colorToClassName } from '~/utils/helpers'
+import { colorToClassName, iconStyle } from '~/utils/helpers'
+// icons
+import { GiShinyApple, GiMeditation } from 'react-icons/gi'
+import { FaRegLightbulb } from 'react-icons/fa6'
+import { RiMentalHealthLine } from 'react-icons/ri'
+import { PiBarbellLight } from 'react-icons/pi'
+import { IoFishOutline } from 'react-icons/io5'
 
-
-export default function FormChallenge(props:ObjectData) {
-  const frequencies = ["DAILY","WEEKDAYS","ALTERNATING","WEEKLY","CUSTOM"]
+export default function FormChallenge (props: ObjectData): JSX.Element {
+  const frequencies = ['DAILY', 'WEEKDAYS', 'ALTERNATING', 'WEEKLY', 'CUSTOM']
   const navigate = useNavigate()
   const challengeForm = useRef(null)
-  const [errors, setErrors] = useState(props.errors);
+  const [errors, setErrors] = useState(props.errors)
   const [formData, setFormData] = useState(props.object)
-  const {currentUser} = useContext(CurrentUserContext)
-  
-  function selectDate(name:string, value:Date) {
+
+  function selectDate (name: string, value: Date): void {
     setFormData((prevFormData: ObjectData) => ({
       ...prevFormData,
-      [name]: value,
-    }));
+      [name]: value
+    }))
   }
   const handleChange = (event: ChangeEvent<HTMLInputElement | HTMLSelectElement>): void => {
-    const { name, value } = event.target;
+    const { name, value } = event.target
     setFormData((prevFormData: ObjectData) => ({
       ...prevFormData,
-      [name]: value,
-    }));
-  };
-  function handleSelect(value: string | undefined){
-    setFormData((prevFormData: ObjectData) => ({
-      ...prevFormData,
-      ['frequency']: value,
-    }));
+      [name]: value
+    }))
   }
-  function handleColorChange(value: string){
+  function handleSelect (value: string | undefined): void {
     setFormData((prevFormData: ObjectData) => ({
       ...prevFormData,
-      ['color']: value,
-    }));
+      frequency: value
+    }))
   }
-  async function handleSubmit(event: any){
+  const colorOptions = [
+    'red',
+    'orange',
+    'yellow',
+    'green',
+    'blue',
+    'pink',
+    'purple'
+  ]
+  function handleColorChange (value: string): void {
+    setFormData((prevFormData: ObjectData) => ({
+      ...prevFormData,
+      color: value
+    }))
+  }
+  const iconOptions: Record<string, JSX.Element> = {
+    GiShinyApple: <GiShinyApple className={iconStyle(formData?.color as string)} />,
+    GiMeditation: <GiMeditation className={iconStyle(formData?.color as string)} />,
+    FaRegLightbulb: <FaRegLightbulb className={iconStyle(formData?.color as string)} />,
+    RiMentalHealthLine: <RiMentalHealthLine className={iconStyle(formData?.color as string)} />,
+    PiBarbellLight: <PiBarbellLight className={iconStyle(formData?.color as string)} />,
+    IoFishOutline: <IoFishOutline className={iconStyle(formData?.color as string)} />
+  }
+  const handleIconChange = (value: string): void => {
+    setFormData((prevFormData: ObjectData) => ({
+      ...prevFormData,
+      icon: value
+    }))
+  }
+  async function handleSubmit (event: React.FormEvent): Promise<void> {
     event.preventDefault()
     const url = '/api/challenges'
-    const headers = {headers: {
-      'content-type': 'multipart/form-data'
-    }}
-    const toSubmit = new FormData();
-    for (const key in formData) {
-      if(key ===  'id') continue
-      if (formData.hasOwnProperty(key)) {
-        toSubmit.append(key, formData[key]);
+    const headers = {
+      headers: {
+        'content-type': 'multipart/form-data'
       }
     }
-    toSubmit.set('coverPhoto', formData.coverPhoto)
-    if(file){
-      toSubmit.append('photo',file)
+    const toSubmit = new FormData()
+    for (const key in formData) {
+      if (key === 'id') continue
+      if (Object.prototype.hasOwnProperty.call(formData, key)) {
+        const value = formData[key]
+        if (typeof value === 'string') {
+          toSubmit.append(key, value)
+        } else if (value instanceof Blob) {
+          toSubmit.append(key, value)
+        } else {
+          toSubmit.append(key, String(value))
+        }
+      }
     }
-    if(formData.id){
-      toSubmit.append('id',formData.id)
+    toSubmit.set('coverPhoto', String(formData.coverPhoto))
+    if (file !== null) {
+      toSubmit.append('photo', file)
     }
-    const response = await axios.post(url, toSubmit, headers);
-    const  msg = formData.id?'Challenge saved':'Challenge created';
-    if(!response.data.id || response.data.errors){
-      if(response.data.errors){
+    if (formData.id !== undefined) {
+      toSubmit.append('id', String(formData.id))
+    }
+    const response = await axios.post(url, toSubmit, headers)
+    const msg = formData.id !== null ? 'Challenge saved' : 'Challenge created'
+    if (!response.data.id || response.data.errors) {
+      if (response.data.errors) {
         setErrors(response.data.errors)
       } else {
         toast.error('An error occured')
@@ -84,55 +116,61 @@ export default function FormChallenge(props:ObjectData) {
       navigate(`/challenges/${response.data.id}`)
     }
   }
-  const [file,setFile] = useState<File | null>(null);
-  const [fileDataURL, setFileDataURL] = useState<string | null>(formData.coverPhoto ? String(formData.coverPhoto) : null);
+  const [file, setFile] = useState<File | null>(null)
+  const [fileDataURL, setFileDataURL] = useState<string | null>(formData.coverPhoto ? String(formData.coverPhoto) : null)
 
-  const handlePhoto = async (e: ChangeEvent<HTMLInputElement>) => {
+  const handlePhoto = (e: ChangeEvent<HTMLInputElement>): void => {
     const { files } = e.target
-    if(!files) return
-    
+    if (!files) return
     const image = files[0]
-    if(image.size > 1_000_000){
+    if (image.size > 1_000_000) {
       toast.error('Image must be less than 1MB')
       return
     }
-    setFile(image);
-    const fileReader = new FileReader();
-    const url = fileReader.readAsDataURL(image);
-    setFormData((prevFormData: ObjectData) => ({
-      ...prevFormData,
-      coverPhoto: image.name,
-    }));
+    setFile(image)
+    const fileReader = new FileReader()
+    fileReader.onload = (e) => {
+      const result = e.target?.result
+      if (result) {
+        if (typeof result === 'string') {
+          setFileDataURL(result)
+        } else {
+          setFileDataURL(null)
+        }
+      }
+    }
+    fileReader.readAsDataURL(image)
   }
+
   useEffect(() => {
-    let fileReader:FileReader | null = null 
-    let isCancel = false;
+    let fileReader: FileReader | null = null
+    let isCancel = false
+    console.log('file', file)
     if (file) {
-      fileReader = new FileReader();
+      fileReader = new FileReader()
       fileReader.onload = (e) => {
-        const { result } = e.target  as FileReader;
+        const result = e.target?.result
         if (result && !isCancel) {
           if (typeof result === 'string') {
-            setFileDataURL(result);
+            setFileDataURL(result)
           } else {
-            setFileDataURL(null);
+            setFileDataURL(null)
           }
         }
       }
-      fileReader.readAsDataURL(file);
+      fileReader.readAsDataURL(file)
     }
     return () => {
-      isCancel = true;
+      isCancel = true
       if (fileReader && fileReader.readyState === 1) {
-        fileReader.abort();
+        fileReader.abort()
       }
     }
-
-  }, [file]);
-  const fileInput = () => {
+  }, [file])
+  const fileInput = (): JSX.Element => {
     const textColor = fileDataURL ? 'white' : 'blue-gray-50'
     return (
-      <input type="file" 
+      <input type="file"
         name="coverPhoto"
         onChange={handlePhoto}
         accept="image/*"
@@ -145,58 +183,60 @@ export default function FormChallenge(props:ObjectData) {
                     file:cursor-pointer file:bg-blue
                     hover:file:bg-red`}
       />
-    );
+    )
   }
-  const colorOptions = [
-    'red',
-    'orange',
-    'yellow',
-    'green',
-    'blue',
-    'pink',
-    'purple',
-  ];
-  return  (
+  return (
+          // eslint-disable-next-line @typescript-eslint/no-misused-promises
           <Form method="post" ref={challengeForm} encType="multipart/form-data" onSubmit={handleSubmit}>
+            {/* this is here so tailwind generates the correct classes, should be moveed to tailwind.config.js file */}
+            <div className='hidden'>
+            <div className='text-purple-400 bg-purple-400'>asdasd</div>
+            <div className='text-pink-300 bg-pink-300'>asdasd</div>
+            <div className='text-blue bg-blue'>blue</div>
+            <div className='text-yellow bg-yellow'>yellow</div>
+            <div className='text-orange-500 bg-orange-500'>orange</div>
+            <div className='text-red bg-red'>red</div>
+            <div className='text-green-500 bg-green-500'>green</div>
+            </div>
             <div className="relative max-w-sm">
-              
+
               <div className="relative mb-2">
-                <FormField 
-                  name='name' 
+                <FormField
+                  name='name'
                   placeholder='Give your challenge a catchy name'
-                  required={true} 
-                  value={formData.name} 
-                  onChange={handleChange} 
-                  error={errors?.name?._errors[0]} 
+                  required={true}
+                  value={formData.name}
+                  onChange={handleChange}
+                  error={errors?.name?._errors[0]}
                   label="Name of Challenge" />
               </div>
               {/* material-tailwind <Select> element doesn't populate an actual HTML input element, so this hidden field captres the value for submission */}
-              <input type="hidden" name='frequency' value={formData.frequency}  />
+              <input type="hidden" name='frequency' value={formData.frequency} />
               <div className="relative flex mb-2">
-                <Select 
-                  label="Select frequency" 
+                <Select
+                  label="Select frequency"
                   placeholder='frequency'
-                  name="_frequency" 
-                  value={formData.frequency} 
+                  name="_frequency"
+                  value={formData.frequency}
                   onChange={handleSelect}
                   >
                   {frequencies.map((frequency: string, index: number) => (
                       <Option key={index} value={frequency}>{frequency.charAt(0).toUpperCase() + frequency.slice(1).toLowerCase()}</Option>
-                    ))
+                  ))
                   }
                 </Select>
               </div>
               <div className="relative flex mb-2">
               <div className="relative max-w-[200px]">
                 <label>Start Date</label>
-                
-                <DatePicker 
-                  name='startAt' 
-                  required={true} 
-                  dateFormat="MM-dd-YYYY" 
-                  selected={formData.startAt ? new Date(formData.startAt) : null} 
-                  onChange={(date:Date) => selectDate('startAt', date)} 
-                  className='p-1 border border-slate-gray-500 rounded-md my-2 pl-2' 
+
+                <DatePicker
+                  name='startAt'
+                  required={true}
+                  dateFormat="MM-dd-YYYY"
+                  selected={formData.startAt ? new Date(formData.startAt) : null}
+                  onChange={(date: Date) => { selectDate('startAt', date) }}
+                  className='p-1 border border-slate-gray-500 rounded-md my-2 pl-2'
                   />
                 {errors?.startAt && (
                   <div className="text-xs font-semibold text-left tracking-wide text-red w-full mb-4">
@@ -206,13 +246,13 @@ export default function FormChallenge(props:ObjectData) {
               </div>
               <div className="relative max-w-[200px]">
                 <label>End Date</label>
-                <DatePicker 
-                  name='endAt' 
-                  required={true} 
-                  dateFormat="MM-dd-YYYY" 
-                  selected={formData.endAt ? new Date(formData.endAt): null} 
-                  onChange={(date:Date) => selectDate('endAt', date)} 
-                  className='p-1 border border-slate-gray-500 rounded-md my-2 pl-2'  
+                <DatePicker
+                  name='endAt'
+                  required={true}
+                  dateFormat="MM-dd-YYYY"
+                  selected={formData.endAt ? new Date(formData.endAt) : null}
+                  onChange={(date: Date) => { selectDate('endAt', date) }}
+                  className='p-1 border border-slate-gray-500 rounded-md my-2 pl-2'
                   />
                 {errors?.endAt && (
                   <div className="text-xs font-semibold text-left tracking-wide text-red w-full mb-4">
@@ -221,39 +261,31 @@ export default function FormChallenge(props:ObjectData) {
                 )}
             </div>
               </div>
-              
-                
-                
+
               <div className="relative my-2">
-                <FormField 
-                  name='description'  
-                  placeholder='Develop a new habit, eat healthy and lower your carbon footprint' 
-                  required={true} 
-                  type="textarea" 
-                  rows={2} 
-                  value={formData.description} 
-                  onChange={handleChange} 
-                  error={errors?.description?._errors[0]} 
-                  label="Description" 
+                <FormField
+                  name='description'
+                  placeholder='Develop a new habit, eat healthy and lower your carbon footprint'
+                  required={true}
+                  type="textarea"
+                  rows={2}
+                  value={formData.description}
+                  onChange={handleChange}
+                  error={errors?.description?._errors[0]}
+                  label="Description"
                 />
               </div>
               <div className="relative my-2">
-                <FormField 
-                  name='mission' 
-                  placeholder='Eat vegetarian every day for two weeks. Check in daily to stay on track.' 
-                  required={true} 
-                  type="textarea" 
-                  rows={4} 
-                  value={formData.mission} 
-                  onChange={handleChange}  
-                  error={errors?.description?._errors[0]} label="Mission" 
+                <FormField
+                  name='mission'
+                  placeholder='Eat vegetarian every day for two weeks. Check in daily to stay on track.'
+                  required={true}
+                  type="textarea"
+                  rows={4}
+                  value={formData.mission}
+                  onChange={handleChange}
+                  error={errors?.description?._errors[0]} label="Mission"
                 />
-              </div>
-              <label>Banner Color</label>
-              <div className="relative my-2 flex flex-wrap">
-                {colorOptions.map((option, index) => (
-                  <div key={index} onClick={() => handleColorChange(option)} className={`w-8 h-8 cursor-pointer rounded-full bg-${colorToClassName(option, 'red')} mr-2 mb-2 ${formData.color === option ? 'outline outline-2 outline-offset-2 outline-darkgrey' : ''}`}></div>
-                ))}
               </div>
               <div className='w-full'>
                   {fileDataURL &&
@@ -263,11 +295,11 @@ export default function FormChallenge(props:ObjectData) {
                   {fileDataURL &&
                     <img src={fileDataURL} alt="cover photo" className="max-w-full max-h-40" />
                   }
-                  {!fileDataURL && 
+                  {!fileDataURL &&
                     <div className="flex flex-col items-center justify-end">
                       <p className="text-2xl text-blue-gray-500 text-center">Upload a cover photo</p>
                       <div className='mt-10 ml-36'>
-                        {fileInput()} 
+                        {fileInput()}
                       </div>
                     </div>
                   }
@@ -275,12 +307,23 @@ export default function FormChallenge(props:ObjectData) {
                 <div className='mt-8 mb-4'>
                   {fileDataURL && fileInput()}
                 </div>
-              </div>  
-              <Button type="submit"  onClick={handleSubmit} placeholder='Save' className="bg-red">Save Challenge</Button>
+              </div>
+              <label>Color</label>
+              <div className="relative my-2 flex flex-wrap">
+                {colorOptions.map((option, index) => (
+                  <div key={index} onClick={() => { handleColorChange(option) }} className={`w-10 h-10 cursor-pointer rounded-full bg-${colorToClassName(option, 'red')} mr-2 mb-2 ${formData.color === option ? 'outline outline-2 outline-offset-2 outline-darkgrey' : ''}`}></div>
+                ))}
+              </div>
+              <label>Icon</label>
+              <div className="relative my-2 flex flex-wrap">
+                {Object.keys(iconOptions).map((key, index) => (
+                  <div key={key} onClick={() => { handleIconChange(key) }} className={`w-12 h-12 cursor-pointer rounded-full mr-4 mb-2 ${formData.icon === key ? 'outline outline-2 outline-offset-2 outline-darkgrey' : ''}`}>{iconOptions[key]}</div>
+                ))}
+              </div>
+
+              {/* eslint-disable-next-line @typescript-eslint/no-misused-promises */}
+              <Button type="submit" onClick={handleSubmit} placeholder='Save' className="bg-red">Save Challenge</Button>
             </div>
           </Form>
-          )
-  }
-
-
-
+  )
+}

@@ -7,6 +7,7 @@ node_modules
 !/app/routes/**/.DS_Store
 app/routes/.DS_Store
  **/.DS_Store.
+/coverage
 
 # Sentry Config File
 .sentryclirc
