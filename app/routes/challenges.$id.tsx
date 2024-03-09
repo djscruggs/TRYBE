@@ -6,10 +6,15 @@ import type { ObjectData } from '~/utils/types.server'
 import { json, type LoaderFunction } from '@remix-run/node'
 import axios from 'axios'
 import { toast } from 'react-hot-toast'
-import { colorToClassName, convertlineTextToHtml } from '~/utils/helpers'
+import { colorToClassName, convertlineTextToHtml, iconStyle } from '~/utils/helpers'
 import { type DateTimeFormatOptions } from 'intl'
 import { CurrentUserContext } from '../utils/CurrentUserContext'
 import { Spinner } from '@material-tailwind/react'
+import { GiShinyApple, GiMeditation } from 'react-icons/gi'
+import { FaRegLightbulb } from 'react-icons/fa6'
+import { RiMentalHealthLine } from 'react-icons/ri'
+import { PiBarbellLight } from 'react-icons/pi'
+import { IoFishOutline } from 'react-icons/io5'
 
 export const loader: LoaderFunction = async ({ request, params }) => {
   await requireCurrentUser(request)
@@ -89,49 +94,56 @@ export default function ViewChallenge (): JSX.Element {
     month: 'short',
     day: 'numeric'
   }
+  const iconOptions: Record<string, JSX.Element> = {
+    GiShinyApple: <GiShinyApple className={iconStyle(data.object?.color as string)} />,
+    GiMeditation: <GiMeditation className={iconStyle(data.object?.color as string)} />,
+    FaRegLightbulb: <FaRegLightbulb className={iconStyle(data.object?.color as string)} />,
+    RiMentalHealthLine: <RiMentalHealthLine className={iconStyle(data.object?.color as string)} />,
+    PiBarbellLight: <PiBarbellLight className={iconStyle(data.object?.color as string)} />,
+    IoFishOutline: <IoFishOutline className={iconStyle(data.object?.color as string)} />
+  }
   return (
     <>
 
-    <div className={`max-w-sm border-2 border-${colorToClassName(data.object?.color as string, 'red')} rounded-md`}>
+    <div className={`max-w-sm border-4 border-${colorToClassName(data.object?.color as string, 'red')} rounded-md`}>
       <div className={`mb-2 flex justify-center max-h-80 ${colorToClassName(data.object.color as string, 'red')}`}>
           {data.object.coverPhoto && <img src={data.object.coverPhoto} alt={`${data.object.name as string} cover photo`} className="w-full rounded-sm" />}
       </div>
-
-        <div className="mb-6 flex flex-col justify-center">
-          <h1 className='flex justify-center'>{data.object.name as string}</h1>
-          {data.object.userId === currentUser?.id && (
-            <div className="flex justify-center mt-2">
-              <Link className='underline text-red' to = {`/challenges/edit/${data.object.id as string | number}`}>edit</Link>&nbsp;&nbsp;
-              <Link className='underline text-red' onClick={handleDelete} to = {`/challenges/edit/${data.object.id as string | number}`}>delete</Link>&nbsp;&nbsp;
-            </div>
-          )}
+      <div className="mb-6 flex flex-col justify-center">
+      {data.object.icon && <div className="mb-2 flex justify-center">{iconOptions[data.object.icon as string]}</div>}
+        <h1 className='flex justify-center text-2xl'>{data.object.name as string}</h1>
+        {data.object.userId === currentUser?.id && (
+          <div className="flex justify-center mt-2">
+            <Link className='underline text-red' to = {`/challenges/edit/${data.object.id as string | number}`}>edit</Link>&nbsp;&nbsp;
+            <Link className='underline text-red' onClick={handleDelete} to = {`/challenges/edit/${data.object.id as string | number}`}>delete</Link>&nbsp;&nbsp;
+          </div>
+        )}
+      </div>
+      <div className='p-4'>
+        <div className="mb-2 text-sm">
+          {new Date(data.object.startAt).toLocaleDateString(undefined, dateOptions)} to {new Date(data.object.endAt).toLocaleDateString(undefined, dateOptions)}
         </div>
-        <div className={'w-12 h-12 cursor-pointer rounded-full mr-4 mb-2'} >{data.object.icon as string | number}</div>
-        <div className='p-4'>
-          <div className="mb-2 text-sm">
-            {new Date(data.object.startAt).toLocaleDateString(undefined, dateOptions)} to {new Date(data.object.endAt).toLocaleDateString(undefined, dateOptions)}
+        <div className="mb-2">
+          <div className='text-center text-sm font-bold'>About</div>
+          <div className='text-left mb-4'>
+          {convertlineTextToHtml(data.object.description)}
           </div>
-          <div className="mb-2">
-            <div className='text-center text-sm font-bold'>About</div>
-            <div className='text-left mb-4'>
-            {convertlineTextToHtml(data.object.description)}
-            </div>
-          </div>
-          <div className="mb-2">
-            <div className='text-center text-sm font-bold'>Mission</div>
-            <div className='text-left mb-4'>
-            {convertlineTextToHtml(data.object.mission)}
-            </div>
-          </div>
-
-          <div className="mb-2 text-sm">
-            Meets <span className="capitalize">{data.object.frequency.toLowerCase()}</span>
-          </div>
-          <div className="mb-2 text-sm">
-            <span className="capitalize">{data.object._count.members}</span> members
-          </div>
-
         </div>
+        <div className="mb-2">
+          <div className='text-center text-sm font-bold'>Mission</div>
+          <div className='text-left mb-4'>
+          {convertlineTextToHtml(data.object.mission)}
+          </div>
+        </div>
+
+        <div className="mb-2 text-sm">
+          Meets <span className="capitalize">{data.object.frequency.toLowerCase()}</span>
+        </div>
+        <div className="mb-2 text-sm">
+          <span className="capitalize">{data.object._count.members}</span> members
+        </div>
+
+      </div>
 
     </div>
     {data.object.userId != currentUser?.id && (

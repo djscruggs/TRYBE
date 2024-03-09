@@ -1,10 +1,5 @@
 import React from 'react'
 // icons
-import { GiShinyApple, GiMeditation } from 'react-icons/gi'
-import { FaRegLightbulb } from 'react-icons/fa6'
-import { RiMentalHealthLine } from 'react-icons/ri'
-import { PiBarbellLight } from 'react-icons/pi'
-import { IoFishOutline } from 'react-icons/io5'
 
 // helper  function that converts booleans, integers and dates from strings to the proper type
 export function convertStringValues (obj: any): any {

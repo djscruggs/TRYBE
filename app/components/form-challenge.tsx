@@ -190,13 +190,13 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
           <Form method="post" ref={challengeForm} encType="multipart/form-data" onSubmit={handleSubmit}>
             {/* this is here so tailwind generates the correct classes, should be moveed to tailwind.config.js file */}
             <div className='hidden'>
-            <div className='text-purple-400 bg-purple-400'>asdasd</div>
-            <div className='text-pink-300 bg-pink-300'>asdasd</div>
-            <div className='text-blue bg-blue'>blue</div>
-            <div className='text-yellow bg-yellow'>yellow</div>
-            <div className='text-orange-500 bg-orange-500'>orange</div>
-            <div className='text-red bg-red'>red</div>
-            <div className='text-green-500 bg-green-500'>green</div>
+            <div className='text-purple-400 bg-purple-400 border-purple-400'>purple</div>
+            <div className='text-pink-300 bg-pink-300 border-pink-300'>pink</div>
+            <div className='text-blue-500 bg-blue border-blue'>blue</div>
+            <div className='text-yellow bg-yellow border-yellow'>yellow</div>
+            <div className='text-orange-500 bg-orange-500 border-orange-500'>orange</div>
+            <div className='text-red bg-red border-red'>red</div>
+            <div className='text-green-500 bg-green-500 border-green-500'>green</div>
             </div>
             <div className="relative max-w-sm">
 
