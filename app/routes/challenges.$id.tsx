@@ -109,7 +109,7 @@ export default function ViewChallenge (): JSX.Element {
       <div className={`mb-2 flex justify-center max-h-80 ${colorToClassName(data.object.color as string, 'red')}`}>
           {data.object.coverPhoto && <img src={data.object.coverPhoto} alt={`${data.object.name as string} cover photo`} className="w-full rounded-sm" />}
       </div>
-      <div className="mb-6 flex flex-col justify-center">
+      <div className="mb-6 px-4 flex flex-col justify-center">
       {data.object.icon && <div className="mb-2 flex justify-center">{iconOptions[data.object.icon as string]}</div>}
         <h1 className='flex justify-center text-2xl'>{data.object.name as string}</h1>
         {data.object.userId === currentUser?.id && (
@@ -129,13 +129,14 @@ export default function ViewChallenge (): JSX.Element {
           {convertlineTextToHtml(data.object.description)}
           </div>
         </div>
+        {data.object.mission && (
         <div className="mb-2">
           <div className='text-center text-sm font-bold'>Mission</div>
           <div className='text-left mb-4'>
           {convertlineTextToHtml(data.object.mission)}
           </div>
         </div>
-
+        )}
         <div className="mb-2 text-sm">
           Meets <span className="capitalize">{data.object.frequency.toLowerCase()}</span>
         </div>

@@ -197,6 +197,7 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
             <div className='text-orange-500 bg-orange-500 border-orange-500'>orange</div>
             <div className='text-red bg-red border-red'>red</div>
             <div className='text-green-500 bg-green-500 border-green-500'>green</div>
+            <div className='text-grey bg-grey border-grey'>grey</div>
             </div>
             <div className="relative max-w-sm">
 

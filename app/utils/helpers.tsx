@@ -7,6 +7,8 @@ export function convertStringValues (obj: any): any {
   for (const key in obj) {
     if (obj[key] === 'true' || obj[key] === 'false') {
       result[key] = obj[key] === 'true'
+    } else if (String(obj[key]) === 'null') {
+      result[key] = null
     } else if (!isNaN(obj[key])) {
       result[key] = parseInt(obj[key])
     } else if (!isNaN(Date.parse(obj[key]))) {
@@ -44,7 +46,8 @@ export function textColorFromContainer (containerColor: string, defaultColor: st
 
 export function iconStyle (color: string): string {
   const bgColor = colorToClassName(color, 'red')
-  const textColor = ['yellow', 'pink-300'].includes(bgColor) ? 'black' : 'white'
+  console.log(bgColor)
+  const textColor = ['yellow'].includes(bgColor) ? 'black' : 'white'
   return `h-12 w-12 text-${textColor} bg-${bgColor} rounded-full p-2`
 }
 
