@@ -1,8 +1,8 @@
 
-import { requireCurrentUser } from "../utils/auth.server"
+import { requireCurrentUser } from "../models/auth.server"
 import { LoaderFunction } from '@remix-run/node'
 import { CurrentUserContext } from '../utils/CurrentUserContext';
-import { loadUserCreatedChallenges } from "~/utils/challenge.server";
+import { loadUserCreatedChallenges } from "~/models/challenge.server";
 import { useLoaderData, Link, Outlet } from '@remix-run/react'
 import { useContext } from "react";
 import { json } from "@remix-run/node";

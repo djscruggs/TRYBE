@@ -7,7 +7,7 @@ import RandomAvatar from '../components/randomavatar'
 import FeedCommunityCard from '~/components/feedcommunitycard';
 import FeedPostCard from '~/components/feedpostcard';
 import {useMobileSize} from '../utils/useMobileSize'
-import { requireCurrentUser } from "../utils/auth.server"
+import { requireCurrentUser } from "../models/auth.server"
 import { LoaderFunction } from '@remix-run/node'
 import { useLoaderData } from '@remix-run/react';
 import FeedChallengeCard from '~/components/feedchallengecard';

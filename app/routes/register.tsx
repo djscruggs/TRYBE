@@ -2,8 +2,8 @@
 import { useState } from 'react';
 import { ActionFunction, json, LoaderFunction, redirect } from '@remix-run/node'
 import { Form, Link } from "@remix-run/react";
-import {register, requireCurrentUser } from '~/utils/auth.server'
-import { validateEmail, validateName, validatePassword } from '~/utils/validators.server'
+import {register, requireCurrentUser } from '~/models/auth.server'
+import { validateEmail, validateName, validatePassword } from '~/models/validators.server'
 import { useActionData } from '@remix-run/react'
 import * as React from 'react';
 import { FormField } from '~/components/form-field';

@@ -1,5 +1,5 @@
 import { type Post } from '@prisma/client'
-import { prisma } from '../utils/prisma.server'
+import { prisma } from './prisma.server'
 
 export const createPost = async (
   post: Pick<Post, 'title' | 'body' | 'userId'>

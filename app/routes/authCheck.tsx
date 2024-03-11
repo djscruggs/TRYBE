@@ -1,16 +1,15 @@
-import type { LoaderFunctionArgs } from "@remix-run/node"; 
-import { json } from "@remix-run/node"; // or cloudflare/deno
-import {requireCurrentUser} from '../utils/auth.server'
+import type { LoaderFunctionArgs } from '@remix-run/node'
+import { json } from '@remix-run/node' // or cloudflare/deno
+import { requireCurrentUser } from '../models/auth.server'
 
 export const loader = async ({
-  request,
+  request
 }: LoaderFunctionArgs) => {
   // handle "GET" request
-  return requireCurrentUser(request)
-  .then((response) => {
-    return response
-  }).then((data) => {
-    return data
-  });
-  
-};
+  return await requireCurrentUser(request)
+    .then((response) => {
+      return response
+    }).then((data) => {
+      return data
+    })
+}

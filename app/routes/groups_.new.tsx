@@ -1,5 +1,5 @@
 
-import { requireCurrentUser } from "../utils/auth.server"
+import { requireCurrentUser } from "../models/auth.server"
 import { LoaderFunction } from '@remix-run/node'
 import { useLoaderData } from '@remix-run/react';
 import { CurrentUserContext } from '../utils/CurrentUserContext';

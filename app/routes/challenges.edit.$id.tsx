@@ -1,9 +1,9 @@
 import ChallengeForm from '~/components/form-challenge';
 import { useLoaderData } from '@remix-run/react';
 import type {ObjectData} from '~/utils/types.server'
-import { loadChallenge } from '~/utils/challenge.server';
+import { loadChallenge } from '~/models/challenge.server';
 import { json, LoaderFunction } from "@remix-run/node"; 
-import { requireCurrentUser } from "../utils/auth.server"
+import { requireCurrentUser } from "../models/auth.server"
 // import { useRouteLoaderData } from '@remix-run/react';
 
 export const loader: LoaderFunction = async ({ request, params }) => {

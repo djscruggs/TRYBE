@@ -1,4 +1,4 @@
-import * as React from 'react';
+import * as React from 'react'
 import {
   Links,
   LiveReload,
@@ -7,40 +7,36 @@ import {
   Scripts,
   ScrollRestoration,
   useRouteError,
-  isRouteErrorResponse,
-} from '@remix-run/react';
-import { withEmotionCache } from '@emotion/react';
-import { useEffect, useState } from 'react';
-import { CurrentUserContext } from './utils/CurrentUserContext';
-import Layout from './ui/layout';
-import stylesheet from "./output.css";
-import datepickerStyle from "react-datepicker/dist/react-datepicker.css";
-import type { LinksFunction } from "@remix-run/node";
-import { User } from './utils/types.client';
-import { useLoaderData } from '@remix-run/react';
-import { Toaster, toast } from 'react-hot-toast';
-import { getUser } from './utils/auth.server';
-import type { LoaderFunctionArgs } from "@remix-run/node"; 
+  isRouteErrorResponse
+  , useLoaderData
+} from '@remix-run/react'
+import { withEmotionCache } from '@emotion/react'
+import { useEffect, useState } from 'react'
+import { CurrentUserContext } from './utils/CurrentUserContext'
+import Layout from './ui/layout'
+import stylesheet from './output.css'
+import datepickerStyle from 'react-datepicker/dist/react-datepicker.css'
+import type { LinksFunction, LoaderFunctionArgs } from '@remix-run/node'
+import { type User } from './utils/types.client'
+import { Toaster, toast } from 'react-hot-toast'
+import { getUser } from './models/auth.server'
 
 interface DocumentProps {
-  children: React.ReactNode;
-  title?: string;
+  children: React.ReactNode
+  title?: string
 }
 
 export const links: LinksFunction = () => [
-  { rel: "stylesheet", href: stylesheet },
-  { rel: "stylesheet", href: datepickerStyle },
-  
-];
+  { rel: 'stylesheet', href: stylesheet },
+  { rel: 'stylesheet', href: datepickerStyle }
 
-
+]
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const user = await getUser(request)
-  return {user}
+  return { user }
 }
 const Document = withEmotionCache(({ children, title }: DocumentProps, emotionCache) => {
-  
   return (
     <html lang="en">
       <head>
@@ -64,47 +60,46 @@ const Document = withEmotionCache(({ children, title }: DocumentProps, emotionCa
         <LiveReload />
       </body>
     </html>
-  );
-
-});
+  )
+})
 
 // https://remix.run/docs/en/main/route/component
 // https://remix.run/docs/en/main/file-conventions/routes
-export default function App() {
-  const {user} = useLoaderData<{user: User}>();
-  const [currentUser, setCurrentUser] = useState<User | null>(user);
+export default function App () {
+  const { user } = useLoaderData<{ user: User }>()
+  const [currentUser, setCurrentUser] = useState<User | null>(user)
   useEffect(() => {
     setCurrentUser(user)
   }, [user])
   return (
     <Document>
-      
-      <CurrentUserContext.Provider value={{currentUser, setCurrentUser}}>
+
+      <CurrentUserContext.Provider value={{ currentUser, setCurrentUser }}>
         <Toaster position='top-center' />
         <Layout>
           <Outlet />
         </Layout>
       </CurrentUserContext.Provider>
     </Document>
-  );
+  )
 }
 
 // https://remix.run/docs/en/main/route/error-boundary
-export function ErrorBoundary() {
-  const error = useRouteError();
+export function ErrorBoundary () {
+  const error = useRouteError()
 
   if (isRouteErrorResponse(error)) {
-    let message;
+    let message
     switch (error.status) {
       case 401:
-        message = <p>Oops! Looks like you tried to visit a page that you do not have access to.</p>;
-        break;
+        message = <p>Oops! Looks like you tried to visit a page that you do not have access to.</p>
+        break
       case 404:
-        message = <p>Oops! Looks like you tried to visit a page that does not exist.</p>;
-        break;
+        message = <p>Oops! Looks like you tried to visit a page that does not exist.</p>
+        break
 
       default:
-        throw new Error(error.data || error.statusText);
+        throw new Error(error.data || error.statusText)
     }
 
     return (
@@ -116,11 +111,11 @@ export function ErrorBoundary() {
           {message}
         </Layout>
       </Document>
-    );
+    )
   }
 
   if (error instanceof Error) {
-    console.error(error);
+    console.error(error)
     return (
       <Document title="Error!">
         <Layout>
@@ -132,8 +127,8 @@ export function ErrorBoundary() {
           </div>
         </Layout>
       </Document>
-    );
+    )
   }
 
-  return <h1>Unknown Error</h1>;
+  return <h1>Unknown Error</h1>
 }

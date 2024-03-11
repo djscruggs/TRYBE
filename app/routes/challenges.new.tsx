@@ -1,6 +1,6 @@
 
 import ChallengeForm from '~/components/form-challenge';
-import { requireCurrentUser, } from "../utils/auth.server"
+import { requireCurrentUser, } from "../models/auth.server"
 import { LoaderFunction } from "@remix-run/node"; 
 import { useActionData } from "@remix-run/react";
 import { CurrentUserContext } from '../utils/CurrentUserContext'
