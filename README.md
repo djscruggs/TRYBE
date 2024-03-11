@@ -13,7 +13,7 @@
 
 We are building this with [RemixJS](https://remix.run/)
 
-The database piece has not been hooked up yet, but we will be using [Supabase](https://supabase.com/) and [Fly.io](https://fly.io/) for deployment.
+Testing uses Vitest and is configured based on [this excellent blog post](https://alemtuzlak.hashnode.dev/integration-testing-remix-apps-with-vitest-typescript-docker#heading-setting-up-the-vitest-config) by @AlemTuzlak
 
 **Installation**
 
