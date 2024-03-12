@@ -1,32 +1,29 @@
-
-import { CurrentUserContext } from '../utils/CurrentUserContext';
-import { useContext } from 'react';
+import { CurrentUserContext } from '../utils/CurrentUserContext'
+import React, { useContext } from 'react'
 import UserAvatar from '../components/useravatar'
-import RandomAvatar from '../components/randomavatar'
 
-import FeedCommunityCard from '~/components/feedcommunitycard';
-import FeedPostCard from '~/components/feedpostcard';
-import {useMobileSize} from '../utils/useMobileSize'
-import { requireCurrentUser } from "../models/auth.server"
-import { LoaderFunction } from '@remix-run/node'
-import { useLoaderData } from '@remix-run/react';
-import FeedChallengeCard from '~/components/feedchallengecard';
+import FeedCommunityCard from '~/components/feedcommunitycard'
+import FeedPostCard from '~/components/feedpostcard'
+import { useMobileSize } from '../utils/useMobileSize'
+import { requireCurrentUser } from '../models/auth.server'
+import { type LoaderFunction } from '@remix-run/node'
+import FeedChallengeCard from '~/components/feedchallengecard'
 
 export const loader: LoaderFunction = async ({ request }) => {
   // if currentUser isn't authenticated, this will redirect to login
   return await requireCurrentUser(request)
 }
 
-export default function Home() {
-   const {currentUser} = useContext(CurrentUserContext)
-   const isMobile = useMobileSize()
-   
-   return (
-      <> 
+export default function Home (): JSX.Element {
+  const { currentUser } = useContext(CurrentUserContext)
+  const isMobile = useMobileSize()
+
+  return (
+         <>
             <div className='max-w-lg px-2'>
                <div className="flex items-center pl-0 mt-10 max-w-lg">
                   <div className="flex-grow-0 justify-self-start">
-                     <UserAvatar size={isMobile ? 'md': 'xxl'} />
+                     <UserAvatar size={isMobile ? 'md' : 'xxl'} />
                   </div>
                   {currentUser?.profile &&
                   <div className={`ml-4 flex-grow text-${isMobile ? 'l' : '4xl'}`}>
@@ -61,7 +58,7 @@ export default function Home() {
                <div className="ml-4 flex-grow text-2xl ">
                   <FeedPostCard />
                </div>
-            </div>            
-      </>
-   );
+            </div>
+         </>
+  )
 }

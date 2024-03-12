@@ -1,20 +1,15 @@
-import type { MetaFunction } from '@remix-run/node';
-import { Link,  } from 'react-router-dom';
-import { SunIcon } from '@heroicons/react/24/outline'
-import { WelcomePage } from '~/components/welcomepage';
-
+import type { MetaFunction } from '@remix-run/node'
+import { WelcomePage } from '~/components/welcomepage'
+import React from 'react'
 
 export const meta: MetaFunction = () => [
   { title: 'Trybe' },
-  { name: 'description', content: 'Build new habits. Join challenges. Meet your Trybe.' },
-];
-export default function Index() {
+  { name: 'description', content: 'Build new habits. Join challenges. Meet your Trybe.' }
+]
+export default function Index (): JSX.Element {
   return (
-    <>
-          
-          <WelcomePage />
-          
-
-    </>
-  );
+          <>
+            <WelcomePage />
+          </>
+  )
 }

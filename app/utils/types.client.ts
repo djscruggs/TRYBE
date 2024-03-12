@@ -1,18 +1,18 @@
 // app/utils/types.server.ts
-export type RegisterForm = {
+export interface RegisterForm {
   email: string
   password: string
   firstName: string
   lastName: string
 }
-export type User = {
+export interface User {
   id?: number | string
   email: string
   profile?: Profile
   memberChallenges?: MemberChallenge[]
 }
 
-export interface Challenge  {
+export interface Challenge {
   id: number | string
   name: string
   description: string
@@ -29,13 +29,13 @@ export interface ChallengeSummary extends Challenge {
   }
 }
 
-export type MemberChallenge = {
+export interface MemberChallenge {
   id?: number | string
   userId: number | string
   challengeId: number | string
 }
 
-export type Profile = {
+export interface Profile {
   id?: number | string
   firstName?: string
   lastName?: string

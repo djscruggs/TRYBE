@@ -2,8 +2,9 @@ import { prisma } from './prisma.server'
 import { createUser } from './user.server'
 import { type RegisterForm, type LoginForm } from '../utils/types.server'
 import bcrypt from 'bcryptjs'
+import type { User } from '~/utils/types.client'
 import { redirect, json, createCookieSessionStorage } from '@remix-run/node'
-
+import { URL } from 'url'
 const sessionSecret = process.env.SESSION_SECRET
 if (!sessionSecret) {
   throw new Error('SESSION_SECRET must be set')
@@ -20,7 +21,7 @@ export const storage = createCookieSessionStorage({
     httpOnly: true
   }
 })
-export async function createUserSession (userId: string | number, redirectTo: string) {
+export async function createUserSession (userId: string | number, redirectTo: string): Promise<Response> {
   const session = await storage.getSession()
   session.set('userId', userId)
   return redirect(redirectTo, {
@@ -29,7 +30,7 @@ export async function createUserSession (userId: string | number, redirectTo: st
     }
   })
 }
-export async function register (user: RegisterForm) {
+export async function register (user: RegisterForm): Promise<Response> {
   const exists = await prisma.user.count({ where: { email: user.email } })
   if (exists) {
     return json({ error: 'User already exists with that email' }, { status: 400 })
@@ -48,12 +49,11 @@ export async function register (user: RegisterForm) {
   return await createUserSession(newUser.id, '/home')
 }
 
-export async function login ({ email, password, request }: LoginForm) {
+export async function login ({ email, password, request }: LoginForm): Promise<Response> {
   const currentUser = await prisma.user.findUnique({
     where: { email }
   })
   if (!currentUser || !(await bcrypt.compare(password, currentUser.password))) { return json({ error: 'Incorrect login' }, { status: 400 }) }
-  const { URL } = require('url')
   const parsedUrl = new URL(request.url)
 
   let redirect = '/home'
@@ -66,7 +66,7 @@ export async function login ({ email, password, request }: LoginForm) {
   return await createUserSession(currentUser.id, redirect)
 }
 
-export async function requireCurrentUser (request: Request, redirectTo: string = new URL(request.url).pathname) {
+export async function requireCurrentUser (request: Request, redirectTo: string = new URL(request.url).pathname): Promise< User | null> {
   const currentUser = await getUser(request)
   const url = require('url')
   const path = url.parse(request.url).pathname
