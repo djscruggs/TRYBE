@@ -17,8 +17,13 @@ export const loader: LoaderFunction = async ({ request, params }) => {
 }
 export default function ViewChallengeComments (): JSX.Element {
   const revalidator = useRevalidator()
-  const [showForm, setShowForm] = useState(false)
+  const handleFormSubmit = () => {
+    setShowForm(false)
+    revalidator.revalidate()
+  }
   const comments = useLoaderData() as Array<Record<string, any>>
+  const [showForm, setShowForm] = useState(comments.length === 0)
+
   const params = useParams()
   const currentUser = useContext(CurrentUserContext)
   return (
@@ -29,7 +34,7 @@ export default function ViewChallengeComments (): JSX.Element {
     )}
     {currentUser && showForm && (
       <div className="mt-1">
-        <FormComment revalidate={revalidator.revalidate} challengeId={params.id ?? ''} />
+        <FormComment afterSave={handleFormSubmit} challengeId={params.id ?? ''} />
       </div>
     )}
     <div className="mt-8 max-w-sm">

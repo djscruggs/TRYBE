@@ -45,6 +45,7 @@ export default function ViewChallenge (): JSX.Element {
   if (location.pathname.includes('edit')) {
     return <Outlet />
   }
+  const isComments = location.pathname.includes('comments')
   const { currentUser } = useContext(CurrentUserContext)
   const navigate = useNavigate()
   const [loading, setLoading] = useState<boolean>(false)
@@ -149,9 +150,19 @@ export default function ViewChallenge (): JSX.Element {
       </div>
 
     </div>
+    {data.challenge.userId === currentUser?.id && (
+      <>
+        <button
+            onClick={toggleJoin}
+            className={`mt-8 bg-${color} text-white rounded-md p-2 text-xs`}>
+              {isMember ? 'Leave Challenge' : 'Join this Challenge'}
+          </button>
+          {loading && <Spinner className="h-4 w-4 ml-1 inline" />}
+      </>
+    )}
     <div className="my-2 text-sm max-w-sm pl-2">
       <div className='flex flex-row justify-left'>
-       {data.challenge._count.members > 0 && (
+       {data.challenge._count?.members > 0 && (
         <div>
           <LiaUserFriendsSolid className="text-gray h-4 w-4 inline mr-1" />
           <Link className="underline" to={`/challenges/${data.challenge.id}/members`}>
@@ -159,38 +170,22 @@ export default function ViewChallenge (): JSX.Element {
           </Link>
         </div>
        )}
-        {data.challenge._count.comments > 0
-          ? (
-              <div className="underline ml-4">
-                  <CiChat1 className="text-gray mr-1 inline" />
-                  <Link to={`/challenges/${data.challenge.id}/comments`}>
-                    {data.challenge._count.comments} comments
-                  </Link>
-
-              </div>
-            )
-          : (
-            <>
-              <div className="ml-4"><CiChat1 className="text-gray mr-1 inline" />No comments yet.</div>
-              {currentUser && (
-                <div className="mt-1 ml-4">
-                  <FormComment challengeId={data.challenge.id ?? ''} />
-                </div>
-              )}
-            </>
-            )}
+        {data.challenge._count.comments > 0 && !isComments && (
+          <div className="underline ml-4">
+              <CiChat1 className="text-gray mr-1 inline" />
+              <Link to={`/challenges/${data.challenge.id}/comments`}>
+                {data.challenge._count.comments} comments
+              </Link>
+          </div>
+        )}
         </div>
     </div>
-    {data.challenge.userId !== currentUser?.id && (
-      <>
-        <button
-            onClick={toggleJoin}
-            className={`mt-8 bg-${color} text-white rounded-md p-2`}>
-              {isMember ? 'Leave Challenge' : 'Join this Challenge'}
-          </button>
-          {loading && <Spinner className="h-4 w-4 ml-1 inline" />}
-      </>
+    {data.challenge._count.comments == 0 && !isComments && (
+      <div className="w-full">
+        No comments yet. <Link to={`/challenges/${data.challenge.id}/comments`} className="underline">Add comment</Link>
+      </div>
     )}
+
     <Outlet />
 </>
   )

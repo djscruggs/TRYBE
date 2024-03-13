@@ -32,7 +32,7 @@ export default function CardChallenge ({ challenge }: { challenge: ChallengeSumm
                   <GiShinyApple className={`text-${color} text-3xl`} />
                 </div>
                 <div className="flex justify-center items-center mt-2">
-                  <FaRegCalendarAlt className={`text-${color} h-4 w-4`} />
+                  <FaRegCalendarAlt className={`text-${color} h-4 w-4 mr-1`} />
                   <span className={`text-${color} text-xs pr-4`}>7 days</span>
                   <FaUserFriends className={`text-${color} h-4 w-4`} />
                   <span className={`text-${color} text-xs pl-2`}>{challenge._count.members}</span>
@@ -51,8 +51,10 @@ export default function CardChallenge ({ challenge }: { challenge: ChallengeSumm
       <hr />
       <div className="grid grid-cols-3 text-center py-2 cursor-pointer">
         <div className="flex justify-center items-center">
-          <CiChat1 className="text-gray mr-1" />
-          <span className="text-xs">12 comments</span>
+        <Link to={`/challenges/${challenge.id}/comments`}>
+          <CiChat1 className="text-gray mr-1 inline" />
+          <span className="text-xs">{challenge._count.comments} comments</span>
+          </Link>
         </div>
         <div className="flex justify-center items-center cursor-pointer">
           {/* Replace with the actual heart icon import */}

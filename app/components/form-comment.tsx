@@ -5,7 +5,7 @@ import { FormField } from './form-field'
 import { Button } from '@material-tailwind/react'
 interface FormCommentProps {
   challengeId: string | number
-  revalidate?: () => void
+  afterSave?: () => void
 }
 
 export default function FormComment (props: FormCommentProps): JSX.Element {
@@ -24,8 +24,8 @@ export default function FormComment (props: FormCommentProps): JSX.Element {
     formData.append('challengeId', String(challengeId))
     await axios.post('/api/comments', formData)
     setBody('')
-    if (props.revalidate) {
-      props.revalidate()
+    if (props.afterSave) {
+      props.afterSave()
     } else {
       navigate('.')
     }

@@ -24,7 +24,10 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
   const navigate = useNavigate()
   const challengeForm = useRef(null)
   const [errors, setErrors] = useState(props.errors)
-  const [formData, setFormData] = useState(props.challenge)
+  // make a copy so it doesn't affect parent renders
+  const challenge = { ...props.challenge }
+  delete challenge._count
+  const [formData, setFormData] = useState(challenge)
 
   function selectDate (name: string, value: Date): void {
     setFormData((prevFormData: ObjectData) => ({
@@ -108,6 +111,7 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
       toSubmit.append('id', String(formData.id))
     }
     const response = await axios.post(url, toSubmit, headers)
+    console.log('response', response)
     const msg = formData.id !== null ? 'Challenge saved' : 'Challenge created'
     if (!response.data.id || response.data.errors) {
       if (response.data.errors) {
