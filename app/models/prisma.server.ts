@@ -1,4 +1,3 @@
-// app/utils/prisma.server.ts
 import { PrismaClient } from '@prisma/client'
 
 let prisma: PrismaClient

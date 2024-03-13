@@ -23,18 +23,14 @@ export async function action ({
     unstable_createMemoryUploadHandler()
   )
   const rawData = await unstable_parseMultipartFormData(request, uploadHandler)
-  // const data = await request.formData()
-  // console.log('data', data)
   /* @ts-expect-error */
   const file: NodeOnDiskFile = rawData.get('photo')
 
   const formData = Object.fromEntries(rawData)
-  // console.log(formData)
   const cleanData = convertStringValues(formData)
   try {
     const validation = challengeSchema.safeParse(cleanData)
     if (!validation.success) {
-      console.log(validation.error.format())
       return ({
         formData,
         errors: validation.error.format()
@@ -63,7 +59,7 @@ export async function action ({
         return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') // $& means the whole matched string
       }
       const nameNoExt = `challenge-${data.id}`
-      const ext = file.type.split('/')[1]
+      const ext = file.type.split('/').at(-1)
       const fullName = `${nameNoExt}.${ext}`
       const directory = `${process.cwd()}/public/uploads`
       const src = file.filepath
@@ -93,7 +89,6 @@ export async function action ({
       throw error
     }
   } catch (error) {
-    console.log('error', error)
     return {
       formData,
       error

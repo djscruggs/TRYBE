@@ -26,6 +26,14 @@ export interface ChallengeData {
   published?: boolean
   userId: string | number
 }
+export interface Comment {
+  id: string | number
+  userId: string | number
+  challengeId: string | number
+  content: string
+  createdAt: Date
+  updatedAt: Date
+}
 export interface ErrorObject extends Record<string, { _errors: string[] }> {}
 
 // generic interface thatandles responses from server loading a single object

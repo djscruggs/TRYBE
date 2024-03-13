@@ -20,6 +20,7 @@ model User {
   challenges Challenge[]  //challenges that the user as created
   memberChallenges MemberChallenge[] //challenges that the user is a member of
   profile Profile?
+  comments Comment[]
 }
 model Profile {
   id     Int    @id @default(autoincrement())
@@ -40,6 +41,7 @@ model Post {
   user       User       @relation(fields: [userId], references: [id])
   userId     Int
   categories Category[]
+  comments   Comment[]
   // indexes for faster sorting by user
   @@index([userId])
   @@index([userId, createdAt])
@@ -64,6 +66,7 @@ model Challenge {
   user       User       @relation(fields: [userId], references: [id])
   userId     Int
   members    MemberChallenge[]
+  comments   Comment[]
   // indexes for faster sorting by user
   @@index([userId])
   @@index([userId, updatedAt])
@@ -76,6 +79,23 @@ model MemberChallenge{
   createdAt  DateTime   @default(now())
   @@id([challengeId, userId])
   @@index([userId])
+  @@index([userId, createdAt])
+}
+
+model Comment {
+  id         Int        @id @default(autoincrement())
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  body       String
+  user       User       @relation(fields: [userId], references: [id])
+  userId     Int
+  post       Post?       @relation(fields: [postId], references: [id])
+  postId     Int?
+  challenge  Challenge?       @relation(fields: [challengeId], references: [id])
+  challengeId     Int?
+  // indexes for faster sorting by user
+  @@index([userId])
+  @@index([challengeId])
   @@index([userId, createdAt])
 }
 

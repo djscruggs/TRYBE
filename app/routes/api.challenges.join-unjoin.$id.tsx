@@ -5,15 +5,14 @@ import type { ActionFunctionArgs } from '@remix-run/node' // or cloudflare/deno
 
 export async function action ({
   request, params
-}: ActionFunctionArgs) {
-  requireCurrentUser(request)
+}: ActionFunctionArgs): Promise<prisma.challenge> {
+  void requireCurrentUser(request)
   const user = await getUser(request, true)
   if (!user) {
     return {
       result: 'not-logged-in'
     }
   }
-  console.log(params.id, user)
   if (user.memberChallenges.filter((c) => c.challengeId === parseInt(params.id!)).length > 0) {
     const result = await unjoinChallenge(user.id, Number(params.id))
     return {
@@ -27,12 +26,8 @@ export async function action ({
       data: result
     }
   }
-
-  return {
-    result: 'joined'
-  }
 }
 export const loader: LoaderFunction = async ({ request }) => {
-  const currentUser = await requireCurrentUser(request)
+  void requireCurrentUser(request)
   return json({ message: 'This route does not accept GET requests' }, 200)
 }

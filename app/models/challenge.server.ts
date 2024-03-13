@@ -1,4 +1,5 @@
 import { prisma } from './prisma.server'
+
 import z from 'zod'
 
 export const createChallenge = async (challenge: prisma.challengeCreateInput) => {
@@ -34,7 +35,7 @@ export const loadChallenge = async (challengeId: string | number, userId: string
     }
   })
 }
-export const loadChallengeSummary = async (challengeId: string | number) => {
+export const loadChallengeSummary = async (challengeId: string | number, counts = false): Promise<Array<Record<string, any>>> => {
   const id = Number(challengeId)
   return await prisma.challenge.findUnique({
     where: {
@@ -42,7 +43,7 @@ export const loadChallengeSummary = async (challengeId: string | number) => {
     },
     include: {
       _count: {
-        select: { members: true }
+        select: { members: true, comments: true }
       }
     }
   })
@@ -109,6 +110,21 @@ export const fetchChallengeSummaries = async (userId?: string | number | undefin
   }
   return await prisma.challenge.findMany(params)
 }
+export const fetchChallengeMembers = async (cId: string | number): Promise<any> => {
+  const params: prisma.memberChallengeFindManyArgs = {
+    where: { challengeId: parseInt(cId.toString()) },
+    include: {
+      challenge: true,
+      user: {
+        include: {
+          profile: true
+        }
+      }
+    }
+  }
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+  return await prisma.memberChallenge.findMany(params)
+}
 export const joinChallenge = async (userId: number, challengeId: number): Promise<any> => {
   return await prisma.memberChallenge.create({
     data: {
@@ -143,7 +159,7 @@ export const challengeSchema =
                       description: z
                         .string({ invalid_type_error: 'Wrong type' })
                         .min(1, { message: 'Description is required' }),
-                      description: z
+                      mission: z
                         .string({ invalid_type_error: 'Wrong type' })
                         .min(1, { message: 'Mission is required' }),
                       startAt: z

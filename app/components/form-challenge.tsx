@@ -24,7 +24,7 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
   const navigate = useNavigate()
   const challengeForm = useRef(null)
   const [errors, setErrors] = useState(props.errors)
-  const [formData, setFormData] = useState(props.object)
+  const [formData, setFormData] = useState(props.challenge)
 
   function selectDate (name: string, value: Date): void {
     setFormData((prevFormData: ObjectData) => ({
@@ -145,7 +145,6 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
   useEffect(() => {
     let fileReader: FileReader | null = null
     let isCancel = false
-    console.log('file', file)
     if (file) {
       fileReader = new FileReader()
       fileReader.onload = (e) => {

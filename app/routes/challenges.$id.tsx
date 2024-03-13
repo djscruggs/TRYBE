@@ -1,5 +1,5 @@
 import { loadChallengeSummary } from '~/models/challenge.server'
-import { useLoaderData, Link, useNavigate } from '@remix-run/react'
+import { Outlet, useLoaderData, Link, useNavigate } from '@remix-run/react'
 import React, { useContext, useState } from 'react'
 import { requireCurrentUser, getUser } from '../models/auth.server'
 import type { ObjectData } from '~/utils/types.server'
@@ -15,13 +15,15 @@ import { FaRegLightbulb } from 'react-icons/fa6'
 import { RiMentalHealthLine } from 'react-icons/ri'
 import { PiBarbellLight } from 'react-icons/pi'
 import { IoFishOutline } from 'react-icons/io5'
-
+import { CiChat1 } from 'react-icons/ci'
+import { LiaUserFriendsSolid } from 'react-icons/lia'
+import FormComment from '~/components/form-comment'
 export const loader: LoaderFunction = async ({ request, params }) => {
   await requireCurrentUser(request)
   if (!params.id) {
     return null
   }
-  const result = await loadChallengeSummary(params.id)
+  const result = await loadChallengeSummary(params.id, true)
 
   if (!result) {
     const error = { loadingError: 'Challenge not found' }
@@ -35,7 +37,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     isMember = true
   }
 
-  const data: ObjectData = { object: result, isMember }
+  const data: ObjectData = { challenge: result, isMember }
   return json(data)
 }
 export default function ViewChallenge (): JSX.Element {
@@ -43,14 +45,13 @@ export default function ViewChallenge (): JSX.Element {
   const navigate = useNavigate()
   const [loading, setLoading] = useState<boolean>(false)
   const data: ObjectData = useLoaderData() as ObjectData
-  console.log(data)
   if (!data) {
     return <p>No data.</p>
   }
   if (data?.loadingError) {
     return <h1>{data.loadingError}</h1>
   }
-  if (!data?.object) {
+  if (!data?.challenge) {
     return <p>Loading...</p>
   }
 
@@ -61,11 +62,10 @@ export default function ViewChallenge (): JSX.Element {
     if (!confirm('Are you sure you want to delete this challenge?')) {
       return
     }
-    if (!data.object?.id) {
+    if (!data.challenge?.id) {
       throw new Error('cannot delete without an id')
     }
-    console.log('delete', data.object)
-    const url = `/api/challenges/delete/${data.object.id as string | number}`
+    const url = `/api/challenges/delete/${data.challenge.id as string | number}`
     const response = await axios.post(url)
     if (response.status === 204) {
       toast.success('Challenge deleted')
@@ -76,12 +76,12 @@ export default function ViewChallenge (): JSX.Element {
   }
   const toggleJoin = async (event: any): Promise<void> => {
     event.preventDefault()
-    if (!data.object?.id) {
+    if (!data.challenge?.id) {
       throw new Error('cannot join without an id')
     }
     setLoading(true)
 
-    const url = `/api/challenges/join-unjoin/${data.object.id as string | number}`
+    const url = `/api/challenges/join-unjoin/${data.challenge.id as string | number}`
     const response = await axios.post(url)
     setIsMember(response.data.result === 'joined')
     setLoading(false)
@@ -95,68 +95,98 @@ export default function ViewChallenge (): JSX.Element {
     day: 'numeric'
   }
   const iconOptions: Record<string, JSX.Element> = {
-    GiShinyApple: <GiShinyApple className={iconStyle(data.object?.color as string)} />,
-    GiMeditation: <GiMeditation className={iconStyle(data.object?.color as string)} />,
-    FaRegLightbulb: <FaRegLightbulb className={iconStyle(data.object?.color as string)} />,
-    RiMentalHealthLine: <RiMentalHealthLine className={iconStyle(data.object?.color as string)} />,
-    PiBarbellLight: <PiBarbellLight className={iconStyle(data.object?.color as string)} />,
-    IoFishOutline: <IoFishOutline className={iconStyle(data.object?.color as string)} />
+    GiShinyApple: <GiShinyApple className={iconStyle(data.challenge?.color as string)} />,
+    GiMeditation: <GiMeditation className={iconStyle(data.challenge?.color as string)} />,
+    FaRegLightbulb: <FaRegLightbulb className={iconStyle(data.challenge?.color as string)} />,
+    RiMentalHealthLine: <RiMentalHealthLine className={iconStyle(data.challenge?.color as string)} />,
+    PiBarbellLight: <PiBarbellLight className={iconStyle(data.challenge?.color as string)} />,
+    IoFishOutline: <IoFishOutline className={iconStyle(data.challenge?.color as string)} />
   }
   return (
     <>
 
-    <div className={`max-w-sm border-4 border-${colorToClassName(data.object?.color as string, 'red')} rounded-md`}>
-      <div className={`mb-2 flex justify-center max-h-80 ${colorToClassName(data.object.color as string, 'red')}`}>
-          {data.object.coverPhoto && <img src={data.object.coverPhoto} alt={`${data.object.name as string} cover photo`} className="w-full rounded-sm" />}
+    <div className={`max-w-sm border-4 border-${colorToClassName(data.challenge?.color as string, 'red')} rounded-md`}>
+      <div className={`mb-2 flex justify-center max-h-80 ${colorToClassName(data.challenge.color as string, 'red')}`}>
+          {data.challenge.coverPhoto && <img src={data.challenge.coverPhoto} alt={`${data.challenge.name as string} cover photo`} className="w-full rounded-sm" />}
       </div>
       <div className="mb-6 px-4 flex flex-col justify-center">
-      {data.object.icon && <div className="mb-2 flex justify-center">{iconOptions[data.object.icon as string]}</div>}
-        <h1 className='flex justify-center text-2xl'>{data.object.name as string}</h1>
-        {data.object.userId === currentUser?.id && (
+      {data.challenge.icon && <div className="mb-2 flex justify-center">{iconOptions[data.challenge.icon as string]}</div>}
+        <h1 className='flex justify-center text-2xl'>{data.challenge.name as string}</h1>
+        {data.challenge.userId === currentUser?.id && (
           <div className="flex justify-center mt-2">
-            <Link className='underline text-red' to = {`/challenges/edit/${data.object.id as string | number}`}>edit</Link>&nbsp;&nbsp;
-            <Link className='underline text-red' onClick={handleDelete} to = {`/challenges/edit/${data.object.id as string | number}`}>delete</Link>&nbsp;&nbsp;
+            <Link className='underline text-red' to = {`/challenges/edit/${data.challenge.id as string | number}`}>edit</Link>&nbsp;&nbsp;
+            <Link className='underline text-red' onClick={handleDelete} to = {`/challenges/edit/${data.challenge.id as string | number}`}>delete</Link>&nbsp;&nbsp;
           </div>
         )}
       </div>
       <div className='p-4'>
         <div className="mb-2 text-sm">
-          {new Date(data.object.startAt).toLocaleDateString(undefined, dateOptions)} to {new Date(data.object.endAt).toLocaleDateString(undefined, dateOptions)}
+          {new Date(data.challenge.startAt).toLocaleDateString(undefined, dateOptions)} to {new Date(data.challenge.endAt).toLocaleDateString(undefined, dateOptions)}
         </div>
         <div className="mb-2">
           <div className='text-center text-sm font-bold'>About</div>
           <div className='text-left mb-4'>
-          {convertlineTextToHtml(data.object.description)}
+          {convertlineTextToHtml(data.challenge.description)}
           </div>
         </div>
-        {data.object.mission && (
+        {data.challenge.mission && (
         <div className="mb-2">
           <div className='text-center text-sm font-bold'>Mission</div>
           <div className='text-left mb-4'>
-          {convertlineTextToHtml(data.object.mission)}
+          {convertlineTextToHtml(data.challenge.mission)}
           </div>
         </div>
         )}
         <div className="mb-2 text-sm">
-          Meets <span className="capitalize">{data.object.frequency.toLowerCase()}</span>
-        </div>
-        <div className="mb-2 text-sm">
-          <span className="capitalize">{data.object._count.members}</span> members
+          Meets <span className="capitalize">{data.challenge.frequency.toLowerCase()}</span>
         </div>
 
       </div>
 
     </div>
-    {data.object.userId != currentUser?.id && (
+    <div className="mb-2 text-sm max-w-sm pl-2">
+      <div className='flex flex-row justify-left'>
+       {data.challenge._count.members > 0 && (
+        <div>
+          <LiaUserFriendsSolid className="text-gray h-4 w-4 inline mr-1" />
+          <Link className="underline" to={`/challenges/${data.challenge.id}/members`}>
+            {data.challenge._count.members} members
+          </Link>
+        </div>
+       )}
+        {data.challenge._count.comments > 0
+          ? (
+              <div className="underline ml-4">
+                  <CiChat1 className="text-gray mr-1 inline" />
+                  <Link to={`/challenges/${data.challenge.id}/comments`}>
+                    {data.challenge._count.comments} comments
+                  </Link>
+
+              </div>
+            )
+          : (
+            <>
+              <div className="ml-4"><CiChat1 className="text-gray mr-1 inline" />No comments yet.</div>
+              {currentUser && (
+                <div className="mt-1 ml-4">
+                  <FormComment challengeId={params.id ?? ''} />
+                </div>
+              )}
+            </>
+            )}
+        </div>
+    </div>
+    {data.challenge.userId !== currentUser?.id && (
       <>
         <button
             onClick={toggleJoin}
-            className={`mt-8 bg-${colorToClassName(data.object.color, 'red')} text-white rounded-md p-2`}>
+            className={`mt-8 bg-${colorToClassName(data.challenge.color, 'red')} text-white rounded-md p-2`}>
               {isMember ? 'Leave Challenge' : 'Join this Challenge'}
           </button>
           {loading && <Spinner className="h-4 w-4 ml-1 inline" />}
       </>
     )}
+    <Outlet />
 </>
   )
 }

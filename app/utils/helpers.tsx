@@ -46,7 +46,6 @@ export function textColorFromContainer (containerColor: string, defaultColor: st
 
 export function iconStyle (color: string): string {
   const bgColor = colorToClassName(color, 'red')
-  console.log(bgColor)
   const textColor = ['yellow'].includes(bgColor) ? 'black' : 'white'
   return `h-12 w-12 text-${textColor} bg-${bgColor} rounded-full p-2`
 }

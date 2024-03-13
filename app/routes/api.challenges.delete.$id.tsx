@@ -8,11 +8,7 @@ import type { ActionFunctionArgs } from '@remix-run/node' // or cloudflare/deno
 export async function action ({
   request, params
 }: ActionFunctionArgs) {
-  console.log('top of action')
-  console.log('params', params)
-  const result = await deleteChallenge(params.id)
-  console.log('result', result)
-
+  await deleteChallenge(params.id)
   return json({ message: `Deleted challenge ${params.id}` }, 204)
 }
 export const loader: LoaderFunction = async ({ request }) => {

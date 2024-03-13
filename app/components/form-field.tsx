@@ -17,7 +17,7 @@ interface FormFieldProps {
   cols?: number
 }
 
-export function FormField({
+export function FormField ({
   name,
   placeholder = '',
   label = '',
@@ -89,7 +89,7 @@ export function FormField({
       }
       {(errorText.length > 0) &&
         <div className="text-xs font-semibold text-left tracking-wide text-red w-full mb-4 ">
-            {(errorText.length > 0) || ''}
+            {errorText}
         </div>
       }
   </>
