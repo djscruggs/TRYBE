@@ -74,6 +74,10 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
       icon: value
     }))
   }
+  function handleCancel (event: React.FormEvent): void {
+    event.preventDefault()
+    navigate(-1)
+  }
   async function handleSubmit (event: React.FormEvent): Promise<void> {
     event.preventDefault()
     const url = '/api/challenges'
@@ -190,13 +194,21 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
             {/* this is here so tailwind generates the correct classes, should be moveed to tailwind.config.js file */}
             <div className='hidden'>
             <div className='text-purple-400 bg-purple-400 border-purple-400'>purple</div>
+            <div className='bg-gradient-to-b from-purple-400 to-white'>gradient</div>
             <div className='text-pink-300 bg-pink-300 border-pink-300'>pink</div>
+            <div className='bg-gradient-to-b from-pink-300 to-white'>gradient</div>
             <div className='text-blue-500 bg-blue border-blue'>blue</div>
+            <div className='bg-gradient-to-b from-blue to-white'>gradient</div>
             <div className='text-yellow bg-yellow border-yellow'>yellow</div>
+            <div className='bg-gradient-to-b from-yellow to-white'>gradient</div>
             <div className='text-orange-500 bg-orange-500 border-orange-500'>orange</div>
+            <div className='bg-gradient-to-b from-orange-500 to-white'>gradient</div>
             <div className='text-red bg-red border-red'>red</div>
+            <div className='bg-gradient-to-b from-red to-white'>gradient</div>
             <div className='text-green-500 bg-green-500 border-green-500'>green</div>
+            <div className='bg-gradient-to-b from-green-500 to-white'>gradient</div>
             <div className='text-grey bg-grey border-grey'>grey</div>
+            <div className='bg-gradient-to-b from-grey to-white'>gradient</div>
             </div>
             <div className="relative max-w-sm">
 
@@ -322,7 +334,8 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
               </div>
 
               {/* eslint-disable-next-line @typescript-eslint/no-misused-promises */}
-              <Button type="submit" onClick={handleSubmit} placeholder='Save' className="bg-red">Save Challenge</Button>
+              <Button type="submit" onClick={handleSubmit} placeholder='Save' className="bg-blue">Save Challenge</Button>
+              <Button type="submit" onClick={handleCancel} placeholder='Cancel' className="ml-2 bg-red">Cancel</Button>
             </div>
           </Form>
   )

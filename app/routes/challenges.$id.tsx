@@ -1,5 +1,5 @@
 import { loadChallengeSummary } from '~/models/challenge.server'
-import { Outlet, useLoaderData, Link, useNavigate } from '@remix-run/react'
+import { Outlet, useLoaderData, Link, useNavigate, useLocation } from '@remix-run/react'
 import React, { useContext, useState } from 'react'
 import { requireCurrentUser, getUser } from '../models/auth.server'
 import type { ObjectData } from '~/utils/types.server'
@@ -41,6 +41,10 @@ export const loader: LoaderFunction = async ({ request, params }) => {
   return json(data)
 }
 export default function ViewChallenge (): JSX.Element {
+  const location = useLocation()
+  if (location.pathname.includes('edit')) {
+    return <Outlet />
+  }
   const { currentUser } = useContext(CurrentUserContext)
   const navigate = useNavigate()
   const [loading, setLoading] = useState<boolean>(false)
@@ -102,11 +106,12 @@ export default function ViewChallenge (): JSX.Element {
     PiBarbellLight: <PiBarbellLight className={iconStyle(data.challenge?.color as string)} />,
     IoFishOutline: <IoFishOutline className={iconStyle(data.challenge?.color as string)} />
   }
+  const color = colorToClassName(data.challenge?.color as string, 'red')
   return (
     <>
 
-    <div className={`max-w-sm border-4 border-${colorToClassName(data.challenge?.color as string, 'red')} rounded-md`}>
-      <div className={`mb-2 flex justify-center max-h-80 ${colorToClassName(data.challenge.color as string, 'red')}`}>
+    <div className={`max-w-sm border border-transparent border-b-inherit rounded-md bg-gradient-to-b from-${color} to-90%`}>
+      <div className={'mb-2 mt-0.5 flex justify-center max-h-80 '}>
           {data.challenge.coverPhoto && <img src={data.challenge.coverPhoto} alt={`${data.challenge.name as string} cover photo`} className="w-full rounded-sm" />}
       </div>
       <div className="mb-6 px-4 flex flex-col justify-center">
@@ -114,7 +119,7 @@ export default function ViewChallenge (): JSX.Element {
         <h1 className='flex justify-center text-2xl'>{data.challenge.name as string}</h1>
         {data.challenge.userId === currentUser?.id && (
           <div className="flex justify-center mt-2">
-            <Link className='underline text-red' to = {`/challenges/edit/${data.challenge.id as string | number}`}>edit</Link>&nbsp;&nbsp;
+            <Link className='underline text-red' to = {`/challenges/${data.challenge.id as string | number}/edit`}>edit</Link>&nbsp;&nbsp;
             <Link className='underline text-red' onClick={handleDelete} to = {`/challenges/edit/${data.challenge.id as string | number}`}>delete</Link>&nbsp;&nbsp;
           </div>
         )}
@@ -144,7 +149,7 @@ export default function ViewChallenge (): JSX.Element {
       </div>
 
     </div>
-    <div className="mb-2 text-sm max-w-sm pl-2">
+    <div className="my-2 text-sm max-w-sm pl-2">
       <div className='flex flex-row justify-left'>
        {data.challenge._count.members > 0 && (
         <div>
@@ -169,7 +174,7 @@ export default function ViewChallenge (): JSX.Element {
               <div className="ml-4"><CiChat1 className="text-gray mr-1 inline" />No comments yet.</div>
               {currentUser && (
                 <div className="mt-1 ml-4">
-                  <FormComment challengeId={params.id ?? ''} />
+                  <FormComment challengeId={data.challenge.id ?? ''} />
                 </div>
               )}
             </>
@@ -180,7 +185,7 @@ export default function ViewChallenge (): JSX.Element {
       <>
         <button
             onClick={toggleJoin}
-            className={`mt-8 bg-${colorToClassName(data.challenge.color, 'red')} text-white rounded-md p-2`}>
+            className={`mt-8 bg-${color} text-white rounded-md p-2`}>
               {isMember ? 'Leave Challenge' : 'Join this Challenge'}
           </button>
           {loading && <Spinner className="h-4 w-4 ml-1 inline" />}

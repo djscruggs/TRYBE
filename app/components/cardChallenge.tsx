@@ -20,6 +20,7 @@ export default function CardChallenge ({ challenge }: { challenge: ChallengeSumm
   const isMobile = useMobileSize()
   const { currentUser } = useContext(CurrentUserContext)
   const navigate = useNavigate()
+  const color = textColorFromContainer(challenge.color, 'black')
   return (
     <div className="mt-2 w-md border-0 drop-shadow-none mr-2">
       <div className="drop-shadow-none">
@@ -27,19 +28,19 @@ export default function CardChallenge ({ challenge }: { challenge: ChallengeSumm
           <Card className={`md:col-span-2 bg-${colorToClassName(challenge.color, 'red')} p-2 border-1 drop-shadow-lg border-gray rounded-md`}>
             <div className="grid grid-cols-3 gap-4">
             <div className="flex flex-col justify-center items-center col-span-1">
-                <div className={`bg-transparent border-2 border-${textColorFromContainer(challenge.color, 'black')} rounded-full w-16 h-16 flex items-center justify-center`}>
-                  <GiShinyApple className={`text-${textColorFromContainer(challenge.color, 'black')} text-3xl`} />
+                <div className={`bg-transparent border-2 border-${color} rounded-full w-16 h-16 flex items-center justify-center`}>
+                  <GiShinyApple className={`text-${color} text-3xl`} />
                 </div>
                 <div className="flex justify-center items-center mt-2">
-                  <FaRegCalendarAlt className={`text-${textColorFromContainer(challenge.color, 'black')} h-4 w-4`} />
-                  <span className={`text-${textColorFromContainer(challenge.color, 'black')} text-xs pr-4`}>7 days</span>
-                  <FaUserFriends className={`text-${textColorFromContainer(challenge.color, 'black')} h-4 w-4`} />
-                  <span className={`text-${textColorFromContainer(challenge.color, 'black')} text-xs pl-2`}>{challenge._count.members}</span>
+                  <FaRegCalendarAlt className={`text-${color} h-4 w-4`} />
+                  <span className={`text-${color} text-xs pr-4`}>7 days</span>
+                  <FaUserFriends className={`text-${color} h-4 w-4`} />
+                  <span className={`text-${color} text-xs pl-2`}>{challenge._count.members}</span>
                 </div>
               </div>
               <div className="flex flex-col items-center col-span-2">
-                <div className={`mt-2 font-bold text-${textColorFromContainer(challenge.color, 'black')}`}>{challenge.name}</div>
-                {currentUser && challenge.userId === currentUser.id && (<Link className={`underline text-xs text-${textColorFromContainer(challenge.color, 'black')}`} to = {`/challenges/edit/${challenge.id}`}>edit</Link>)}
+                <div className={`mt-2 font-bold text-${color}`}>{challenge.name}</div>
+                {currentUser && challenge.userId === currentUser.id && (<Link className={`underline text-xs text-${color}`} to = {`/challenges/${challenge.id}/edit`}>edit</Link>)}
                 <Button onClick={() => { navigate(`/challenges/${challenge.id}`) }} className={'bg-red p-3 py-2 rounded-full mt-3'}>Sign up!</Button>
               </div>
             </div>
