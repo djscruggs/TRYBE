@@ -25,9 +25,11 @@ export default function ViewChallengeMembers (): JSX.Element {
       <p>Members</p>
       {members.map((member) => {
         return (
-          <div key={member.id}>
-            <div>{member.user.profile?.firstName} {member.user.profile?.lastName}</div>
-            <div> {member.body}</div>
+          <div key={member.id} className='max-w-sm'>
+            <div className='mb-2 p-4 border border-gray-200 break-all rounded-md even:bg-white odd:bg-gray-50'>
+              {member.user.profile?.firstName} {member.user.profile?.lastName}
+            </div>
+
           </div>
         )
       })}
