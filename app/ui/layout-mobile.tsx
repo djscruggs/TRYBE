@@ -1,51 +1,48 @@
-import * as React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useState, useEffect } from 'react';
-import {Outlet, useLocation} from '@remix-run/react';
-import { BellIcon,
-        HomeIcon,
-        MagnifyingGlassIcon,
-        ChatBubbleLeftRightIcon,
-        TrophyIcon,
-        UserGroupIcon,
-        UsersIcon,
-        IdentificationIcon,
-        PlusCircleIcon,
-        ChatBubbleLeftEllipsisIcon
-                    } from '@heroicons/react/24/outline'
-import {AnimatePresence, motion} from 'framer-motion'
+import * as React from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { Outlet, useLocation } from '@remix-run/react'
+import {
+  BellIcon,
+  HomeIcon,
+  MagnifyingGlassIcon,
+  ChatBubbleLeftRightIcon,
+  TrophyIcon,
+  UserGroupIcon,
+  UsersIcon,
+  IdentificationIcon,
+  PlusCircleIcon,
+  ChatBubbleLeftEllipsisIcon
+} from '@heroicons/react/24/outline'
+import { AnimatePresence, motion } from 'framer-motion'
 
-
-const LayoutMobile = () => {
+const LayoutMobile = (): JSX.Element => {
   const [newOpen, setNewOpen] = useState(false)
 
-  //hide nav if on index, login or register
+  // hide nav if on index, login or register
   const [showNav, setShowNav] = useState(true)
   const location = useLocation()
   useEffect(() => {
-    if(['/','/register','/login'].includes(location.pathname)){
+    if (['/', '/register', '/login'].includes(location.pathname)) {
       setShowNav(false)
-      
     } else {
       setShowNav(true)
     }
-    
-  }, [location.pathname]);
-  
-  
-  const handlePlusClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-      event.stopPropagation()
-      setNewOpen(!newOpen)
+  }, [location.pathname])
+
+  const handlePlusClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>): void => {
+    event.stopPropagation()
+    setNewOpen(!newOpen)
   }
   const hideMenu = () => {
-      setNewOpen(false)
+    setNewOpen(false)
   }
   const navigate = useNavigate()
-  const handleNewOpt = (action: string, event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-      event.stopPropagation();
-      navigate(action)
-      hideMenu();
-  };
+  const handleNewOpt = (action: string, event: React.MouseEvent<HTMLDivElement, MouseEvent>): void => {
+    event.stopPropagation()
+    navigate(action)
+    hideMenu()
+  }
   return (
             <div className="max-w-screen flex flex-col justify-between h-screen p-0" onClick={hideMenu}>
                 {showNav &&
@@ -79,28 +76,28 @@ const LayoutMobile = () => {
                     <Link to="/challenges" className='min-w-8'>
                     <TrophyIcon className='cursor-pointer' />
                     </Link>
-                    <div className="flex items-center justify-center relative min-w-8" onClick={(event) => handlePlusClick(event)}>
+                    <div className="flex items-center justify-center relative min-w-8" onClick={(event) => { handlePlusClick(event) }}>
                         {/* Your plus sign */}
                         <PlusCircleIcon className='min-w-12 text-white rounded-full bg-red text-color-white cursor-pointer text-6xl -mt-10' />
                         <AnimatePresence mode='wait' initial={false}>
                         {newOpen && (
                             <motion.main
                             key={useLocation().pathname}
-                            initial={{ opacity: 0}}
-                            animate={{ opacity: 1}}
-                            exit={{ opacity: 0}}
-                            transition={{duration: 0.4}}
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.4 }}
                             >
                             <div className="flex absolute top-[-100px] left-1/2 transform -translate-x-1/2">
-                               <div onClick={(event) => handleNewOpt('/groups/new', event)} className="flex flex-col items-center justify-center w-12 h-12 rounded-full bg-[#FDC94C] mx-2 cursor-pointer text-sm p-1">
+                               <div onClick={(event) => { handleNewOpt('/groups/new', event) }} className="flex flex-col items-center justify-center w-16 h-16 rounded-full bg-[#FDC94C] mx-2 cursor-pointer text-sm p-1">
                                     <UsersIcon />
                                     <span className="cursor-pointer text-xs">Group</span>
                                 </div>
-                                <div onClick={(event) => handleNewOpt('/posts/new', event)} className="flex flex-col items-center justify-center w-12 h-12 rounded-full bg-[#FDC94C] mx-2  cursor-pointer text-sm p-1" style={{ marginTop: '-24px' }}>
+                                <div onClick={(event) => { handleNewOpt('/posts/new', event) }} className="flex flex-col items-center justify-center w-16 h-16 rounded-full bg-[#FDC94C] mx-2  cursor-pointer text-sm p-1" style={{ marginTop: '-24px' }}>
                                     <ChatBubbleLeftEllipsisIcon className='-scale-x-100' />
                                     <span className="cursor-pointer text-xs">Post</span>
                                 </div>
-                                <div onClick={(event) => handleNewOpt('/challenges/new', event)} className="flex flex-col items-center justify-center w-12 h-12 rounded-full bg-[#FDC94C] mx-2 cursor-pointer text-sm p-1">
+                                <div onClick={(event) => { handleNewOpt('/challenges/new', event) }} className="flex flex-col items-center justify-center w-16 h-16 rounded-full bg-[#FDC94C] mx-2 cursor-pointer text-xxs p-2">
                                     <TrophyIcon />
                                     <span className="cursor-pointer text-xs mt-0">Challenge</span>
                                 </div>
@@ -109,7 +106,7 @@ const LayoutMobile = () => {
                         )}
                         </AnimatePresence>
                     </div>
-                    
+
                     <Link to="/groups" className='min-w-8'>
                     <UserGroupIcon className='cursor-pointer' />
                     </Link>
@@ -119,6 +116,6 @@ const LayoutMobile = () => {
                 </div>
                 }
             </div>
-  );
+  )
 }
-export default LayoutMobile;
+export default LayoutMobile

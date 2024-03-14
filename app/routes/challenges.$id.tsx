@@ -117,7 +117,7 @@ export default function ViewChallenge (): JSX.Element {
     setLoading(false)
     // probably should use revalidate instead but this is quicker to add
     // https://github.com/remix-run/react-router/discussions/10381
-    navigate('.', { replace: true })
+    revalidator.revalidate()
   }
   const dateOptions: DateTimeFormatOptions = {
     weekday: 'short',
@@ -185,19 +185,11 @@ export default function ViewChallenge (): JSX.Element {
           {loading && <Spinner className="h-4 w-4 ml-1 inline" />}
       </>
     )}
-    <div className="my-2 text-sm max-w-sm pl-2">
+    <div className="my-2 text-sm max-w-sm pl-0">
       <div className='flex flex-row justify-left'>
-        <div className="-ml-2">
+        <div >
           <TbHeartFilled className={`h-5 w-5 cursor-pointer ${data.hasLiked ? 'text-red' : 'text-grey'}`} onClick={handleLike}/>
         </div>
-       {data.challenge._count?.members > 0 && (
-        <div>
-          <LiaUserFriendsSolid className="text-gray h-4 w-4 inline mr-1" />
-          <Link className="underline" to={`/challenges/${data.challenge.id}/members`}>
-            {data.challenge._count.members} members
-          </Link>
-        </div>
-       )}
 
         {data.challenge._count.comments > 0 && !isComments && (
           <div className="underline ml-4">
@@ -207,6 +199,14 @@ export default function ViewChallenge (): JSX.Element {
                 {data.challenge._count.comments} comments
               </Link>
           </div>
+        )}
+        {data.challenge._count?.members > 0 && (
+        <div>
+          <LiaUserFriendsSolid className="text-gray h-5 w-5 inline ml-4 -mt-1 mr-1" />
+          <Link className="underline" to={`/challenges/${data.challenge.id}/members`}>
+            {data.challenge._count.members} members
+          </Link>
+        </div>
         )}
       </div>
     </div>
