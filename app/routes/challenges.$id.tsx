@@ -41,7 +41,6 @@ export const loader: LoaderFunction = async ({ request, params }) => {
         userId: currentUser.id
       }
     })
-    console.log('memberships', memberships)
     // has the user liked this challenge?
     likes = await prisma.like.count({
       where: {
@@ -64,7 +63,6 @@ export default function ViewChallenge (): JSX.Element {
   const revalidator = useRevalidator()
   const [loading, setLoading] = useState<boolean>(false)
   const data: ObjectData = useLoaderData() as ObjectData
-  console.log('data', data)
   if (!data) {
     return <p>No data.</p>
   }
@@ -104,7 +102,6 @@ export default function ViewChallenge (): JSX.Element {
     }
     const url = '/api/likes'
     const response = await axios.post(url, form)
-    console.log(response)
     revalidator.revalidate()
   }
   const toggleJoin = async (event: any): Promise<void> => {
