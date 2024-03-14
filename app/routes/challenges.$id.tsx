@@ -1,7 +1,7 @@
 import { loadChallengeSummary } from '~/models/challenge.server'
 import { Outlet, useLoaderData, Link, useNavigate, useLocation } from '@remix-run/react'
 import React, { useContext, useState } from 'react'
-import { requireCurrentUser, getUser } from '../models/auth.server'
+import { getUser } from '../models/auth.server'
 import type { ObjectData } from '~/utils/types.server'
 import { json, type LoaderFunction } from '@remix-run/node'
 import axios from 'axios'
@@ -17,27 +17,40 @@ import { PiBarbellLight } from 'react-icons/pi'
 import { IoFishOutline } from 'react-icons/io5'
 import { CiChat1 } from 'react-icons/ci'
 import { LiaUserFriendsSolid } from 'react-icons/lia'
-import FormComment from '~/components/form-comment'
+import { prisma } from '../models/prisma.server'
+import { TbHeartFilled } from 'react-icons/tb'
+import { useRevalidator } from 'react-router-dom'
 export const loader: LoaderFunction = async ({ request, params }) => {
-  await requireCurrentUser(request)
+  const currentUser = await getUser(request)
   if (!params.id) {
     return null
   }
   const result = await loadChallengeSummary(params.id, true)
-
   if (!result) {
     const error = { loadingError: 'Challenge not found' }
     return json(error)
   }
-  // load memberships for current user
-  const u = await getUser(request, true)
-  const challengeId = params.id ? parseInt(params.id) : undefined
-  let isMember = false
-  if (u && u.memberChallenges.filter((c) => c.challengeId === challengeId).length > 0) {
-    isMember = true
+  // load memberships & likes for current user if it exists
+  let memberships = 0
+  let likes = 0
+  if (currentUser) {
+    const challengeId = params.id ? parseInt(params.id) : undefined
+    memberships = await prisma.memberChallenge.count({
+      where: {
+        challengeId,
+        userId: currentUser.id
+      }
+    })
+    console.log('memberships', memberships)
+    // has the user liked this challenge?
+    likes = await prisma.like.count({
+      where: {
+        challengeId,
+        userId: currentUser.id
+      }
+    })
   }
-
-  const data: ObjectData = { challenge: result, isMember }
+  const data: ObjectData = { challenge: result, isMember: Boolean(memberships), hasLiked: Boolean(likes) }
   return json(data)
 }
 export default function ViewChallenge (): JSX.Element {
@@ -48,8 +61,10 @@ export default function ViewChallenge (): JSX.Element {
   const isComments = location.pathname.includes('comments')
   const { currentUser } = useContext(CurrentUserContext)
   const navigate = useNavigate()
+  const revalidator = useRevalidator()
   const [loading, setLoading] = useState<boolean>(false)
   const data: ObjectData = useLoaderData() as ObjectData
+  console.log('data', data)
   if (!data) {
     return <p>No data.</p>
   }
@@ -78,6 +93,19 @@ export default function ViewChallenge (): JSX.Element {
     } else {
       toast.error('Delete failed')
     }
+  }
+  const handleLike = async (event: any): Promise<void> => {
+    event.preventDefault()
+
+    const form = new FormData()
+    form.append('challengeId', data.challenge.id as string | number)
+    if (data.hasLiked) {
+      form.append('unlike', true)
+    }
+    const url = '/api/likes'
+    const response = await axios.post(url, form)
+    console.log(response)
+    revalidator.revalidate()
   }
   const toggleJoin = async (event: any): Promise<void> => {
     event.preventDefault()
@@ -162,6 +190,9 @@ export default function ViewChallenge (): JSX.Element {
     )}
     <div className="my-2 text-sm max-w-sm pl-2">
       <div className='flex flex-row justify-left'>
+        <div className="-ml-2">
+          <TbHeartFilled className={`h-5 w-5 cursor-pointer ${data.hasLiked ? 'text-red' : 'text-grey'}`} onClick={handleLike}/>
+        </div>
        {data.challenge._count?.members > 0 && (
         <div>
           <LiaUserFriendsSolid className="text-gray h-4 w-4 inline mr-1" />
@@ -170,15 +201,17 @@ export default function ViewChallenge (): JSX.Element {
           </Link>
         </div>
        )}
+
         {data.challenge._count.comments > 0 && !isComments && (
           <div className="underline ml-4">
-              <CiChat1 className="text-gray mr-1 inline" />
+
               <Link to={`/challenges/${data.challenge.id}/comments`}>
+                <CiChat1 className="h-5 w-5 -mt-1 text-gray mr-1 inline" />
                 {data.challenge._count.comments} comments
               </Link>
           </div>
         )}
-        </div>
+      </div>
     </div>
     {data.challenge._count.comments == 0 && !isComments && (
       <div className="w-full">

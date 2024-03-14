@@ -43,7 +43,7 @@ export const loadChallengeSummary = async (challengeId: string | number, counts 
     },
     include: {
       _count: {
-        select: { members: true, comments: true }
+        select: { members: true, comments: true, likes: true }
       }
     }
   })

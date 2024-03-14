@@ -12,6 +12,7 @@ import DatePicker from 'react-datepicker'
 import { toast } from 'react-hot-toast'
 import axios from 'axios'
 import { colorToClassName, iconStyle } from '~/utils/helpers'
+import { useRevalidator } from 'react-router-dom'
 // icons
 import { GiShinyApple, GiMeditation } from 'react-icons/gi'
 import { FaRegLightbulb } from 'react-icons/fa6'
@@ -21,6 +22,7 @@ import { IoFishOutline } from 'react-icons/io5'
 
 export default function FormChallenge (props: ObjectData): JSX.Element {
   const frequencies = ['DAILY', 'WEEKDAYS', 'ALTERNATING', 'WEEKLY', 'CUSTOM']
+  const revalidator = useRevalidator()
   const navigate = useNavigate()
   const challengeForm = useRef(null)
   const [errors, setErrors] = useState(props.errors)
@@ -120,6 +122,7 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
         toast.error('An error occured')
       }
     } else {
+      revalidator.revalidate()
       toast.success(msg)
       navigate(`/challenges/${response.data.id}`)
     }
