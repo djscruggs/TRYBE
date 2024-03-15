@@ -6,6 +6,7 @@ import { Button } from '@material-tailwind/react'
 interface FormCommentProps {
   challengeId: string | number
   afterSave?: () => void
+  onCancel?: () => void
 }
 
 export default function FormComment (props: FormCommentProps): JSX.Element {
@@ -14,7 +15,7 @@ export default function FormComment (props: FormCommentProps): JSX.Element {
   const [error, setError] = useState('')
   const navigate = useNavigate()
 
-  async function handleSubmit (ev: FormEvent<HTMLFormElement>): void {
+  async function handleSubmit (ev: React.FormEvent<HTMLFormElement>): Promise<void> {
     ev.preventDefault()
     if (body.length < 10) {
       setError('Comment must be at least 10 characters long')
@@ -30,7 +31,12 @@ export default function FormComment (props: FormCommentProps): JSX.Element {
       navigate('.')
     }
   }
-
+  const handleCancel = (ev: React.FormEvent<HTMLFormElement>): void => {
+    ev.preventDefault()
+    if (props.onCancel) {
+      props.onCancel()
+    }
+  }
   return (
     <div className='w-80'>
       <Form method="post" onSubmit={handleSubmit}>
@@ -49,6 +55,10 @@ export default function FormComment (props: FormCommentProps): JSX.Element {
           />
 
         <Button type="submit" placeholder='Save' className="bg-red">Save</Button>
+        {props.onCancel && (
+          <button onClick={handleCancel} className="mt-2 text-sm underline ml-2">cancel</button>
+        )}
+
       </Form>
     </div>
   )

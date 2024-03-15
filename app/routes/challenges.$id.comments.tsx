@@ -34,7 +34,7 @@ export default function ViewChallengeComments (): JSX.Element {
           {showForm
             ? (
                 <div className="mt-1">
-                  <FormComment afterSave={handleFormSubmit} challengeId={params.id ?? ''} />
+                  <FormComment afterSave={handleFormSubmit} onCancel={() => { setShowForm(false) }} challengeId={params.id ?? ''} />
                 </div>
               )
             : (
