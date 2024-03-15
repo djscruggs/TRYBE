@@ -44,7 +44,7 @@ const LayoutWeb = () => {
 
             <div className={`flex-grow pt-4 ${currentUser ? 'ml-20' : 'ml-0'}`}>
               { currentUser &&
-                <div className='float-right mr-4'>
+                <div className='absolute right-0 mr-4'>
                   <UserAvatar className='cursor-pointer'/>
                 </div>
               }

@@ -54,7 +54,7 @@ export function FormField ({
             id={name}
             name={name}
             placeholder={placeholder}
-            className={`w-full p-2 px-4 rounded-sm my-2 border ${(errorText.length > 0) ? ' border-red' : ''}`}
+            className={`w-full p-2 rounded-sm my-1 border ${(errorText.length > 0) ? ' border-red' : ''}`}
             cols={cols}
             rows={rows}
             value={value}
@@ -76,7 +76,7 @@ export function FormField ({
           id={name}
           name={name}
           required={required}
-          className={`w-full p-2 px-4 rounded-md my-2 border ${(errorText.length > 0) ? ' border-red' : ''}`}
+          className={`w-full p-2 rounded-md my-1 border ${(errorText.length > 0) ? ' border-red' : ''}`}
           value={value}
           autoComplete={autoComplete}
           autoFocus = {autoFocus}

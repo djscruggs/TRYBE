@@ -227,8 +227,8 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
             <div className='bg-gradient-to-b from-grey to-white'>gradient</div>
             </div>
 
-            <div className="relative max-w-sm md:max-w-lg px-2 md:px-0">
-              <div className="grid grid-cols-1 gap-4">
+            <div className="relative max-w-xl sm:max-w-screen-xl px-2 md:px-0 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2">
+              <div className="sm:col-span-2 lg:col-span-1">
                 <div className="relative mb-2">
                   <FormField
                     name='name'
@@ -266,7 +266,7 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
                       minDate={new Date()}
                       selected={formData.startAt ? new Date(formData.startAt) : null}
                       onChange={(date: Date) => { selectDate('startAt', date) }}
-                      className={`p-1 border rounded-md my-2 pl-2 ${errors?.startAt ? 'border-red' : 'border-slate-gray-500'}`}
+                      className={`p-1 border rounded-md pl-2 ${errors?.startAt ? 'border-red' : 'border-slate-gray-500'}`}
                       />
                     {errors?.startAt && (
                       <div className="text-xs font-semibold text-left tracking-wide text-red w-full mb-4">
@@ -284,7 +284,7 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
                       minDate={formData.startAt ? addDays(new Date(formData.startAt), 7) : addDays(new Date(), 7)}
                       selected={formData.endAt ? new Date(formData.endAt) : null}
                       onChange={(date: Date) => { selectDate('endAt', date) }}
-                      className={`p-1 border rounded-md my-2 pl-2 ${errors?.endAt ? 'border-red' : 'border-slate-gray-500'}`}
+                      className={`p-1 border rounded-md pl-2 ${errors?.endAt ? 'border-red' : 'border-slate-gray-500'}`}
                       />
                     {errors?.endAt && (
                       <div className="text-xs font-semibold text-left tracking-wide text-red w-full mb-4">
@@ -294,7 +294,7 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
                   </div>
                 </div>
 
-                <div className="relative my-2">
+                <div className="relative">
                   <FormField
                     name='description'
                     placeholder='Develop a new habit, eat healthy and lower your carbon footprint'
@@ -307,7 +307,7 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
                     label="Description"
                   />
                 </div>
-                <div className="relative my-2">
+                <div className="relative">
                   <FormField
                     name='mission'
                     placeholder='Eat vegetarian every day for two weeks. Check in daily to stay on track.'
@@ -320,12 +320,12 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
                   />
                 </div>
               </div>
-              <div className="grid grid-cols-1">
+              <div className="sm:col-span-2 md:ml-4 lg:col-span-1">
                 <div className='w-full'>
                     {fileDataURL &&
                       <label htmlFor='coverPhoto' className='mb-2 block'>Cover Photo</label>
                     }
-                  <div className='w-full my-4 bg-blue-gray-50 h-40 rounded-md flex items-center justify-center'>
+                  <div className='max-w-md my-4 bg-blue-gray-50 h-40 rounded-md flex items-center justify-center'>
                     {fileDataURL &&
                       <img src={fileDataURL} alt="cover photo" className="max-w-full max-h-40" />
                     }
@@ -342,20 +342,21 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
                     {fileDataURL && fileInput()}
                   </div>
                 </div>
-                <label>Color</label>
-                <div className="relative my-2 flex flex-wrap">
+                <div className="relative flex flex-wrap justify-center">
+                  <label className='w-full block mb-2 text-center'>Color</label>
                   {colorOptions.map((option, index) => (
                     <div key={index} onClick={() => { handleColorChange(option) }} className={`w-10 h-10 cursor-pointer rounded-full bg-${colorToClassName(option, 'red')} mr-2 mb-2 ${formData.color === option ? 'outline outline-2 outline-offset-2 outline-darkgrey' : ''}`}></div>
                   ))}
                 </div>
-                <label>Icon</label>
-                <div className="relative my-2 flex flex-wrap">
+                <div className="mt-4 relative flex flex-wrap justify-center">
+                  <label className='w-full block mb-2 text-center'>Icon</label>
                   {Object.keys(iconOptions).map((key, index) => (
                     <div key={key} onClick={() => { handleIconChange(key) }} className={`w-12 h-12 cursor-pointer rounded-full mr-4 mb-2 ${formData.icon === key ? 'outline outline-2 outline-offset-2 outline-darkgrey' : ''}`}>{iconOptions[key]}</div>
                   ))}
                 </div>
               </div>
-              {/* eslint-disable-next-line @typescript-eslint/no-misused-promises */}
+            </div>
+            <div className="mt-4 flex justify-left md:justify-center">
               <Button type="submit" onClick={handleSubmit} placeholder='Save' className="bg-blue">Save Challenge</Button>
               <Button type="submit" onClick={handleCancel} placeholder='Cancel' className="ml-2 bg-red">Cancel</Button>
             </div>
