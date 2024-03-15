@@ -14,10 +14,15 @@ export function convertStringValues (obj: any): any {
       result[key] = obj[key] === 'true'
     } else if (String(obj[key]) === 'null') {
       result[key] = null
-    } else if (!isNaN(obj[key])) {
-      result[key] = parseInt(obj[key])
+    } else if (!isNaN(obj[key] as number)) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      const parsed = parseInt(obj[key])
+      result[key] = isNaN(parsed) ? null : parsed
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     } else if (!isNaN(Date.parse(obj[key]))) {
-      result[key] = new Date(obj[key]).toISOString()
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      const date = new Date(obj[key])
+      result[key] = date
     } else {
       result[key] = obj[key]
     }

@@ -28,25 +28,30 @@ export default function ViewChallengeComments (): JSX.Element {
   const currentUser = useContext(CurrentUserContext)
   return (
     <>
-    Comments
-    {currentUser && !showForm && (
-      <button onClick={() => { setShowForm(true) }} className="mt-2 text-sm underline ml-2">Add a comment</button>
-    )}
-    {currentUser && showForm && (
-      <div className="mt-1">
-        <FormComment afterSave={handleFormSubmit} challengeId={params.id ?? ''} />
+      <span id="comments">Comments</span>
+      {currentUser &&
+        <div className="mb-8">
+          {showForm
+            ? (
+                <div className="mt-1">
+                  <FormComment afterSave={handleFormSubmit} challengeId={params.id ?? ''} />
+                </div>
+              )
+            : (
+                <button onClick={() => { setShowForm(true) }} className="mt-2 text-sm underline ml-2">Add a comment</button>
+              )}
+        </div>
+      }
+      <div className="max-w-sm">
+        {comments.map((comment) => {
+          return (
+            <div key={comment.id} className='mb-2 p-4 border border-gray-200 break-all rounded-md even:bg-white odd:bg-gray-50'>
+              <div>{comment.user.profile?.firstName} {comment.user.profile?.lastName}</div>
+              <div> {comment.body}</div>
+            </div>
+          )
+        })}
       </div>
-    )}
-    <div className="mt-8 max-w-sm">
-      {comments.map((comment) => {
-        return (
-          <div key={comment.id} className='mb-2 p-4 border border-gray-200 break-all rounded-md even:bg-white odd:bg-gray-50'>
-            <div>{comment.user.profile?.firstName} {comment.user.profile?.lastName}</div>
-            <div> {comment.body}</div>
-          </div>
-        )
-      })}
-    </div>
 
     </>
 

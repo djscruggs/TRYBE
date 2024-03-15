@@ -11,15 +11,15 @@ export interface LoginForm {
   request: Request
 }
 export interface ChallengeData {
-  name: string
-  description: string
-  mission: string
+  name: string | null
+  description: string | null
+  mission: string | null
   startAt: Date
   endAt?: Date | null
   frequency?: 'DAILY' | 'WEEKDAYS' | 'ALTERNATING' | 'WEEKLY' | 'CUSTOM'
-  coverPhoto?: string
-  icon?: string
-  color?: string
+  coverPhoto?: string | null
+  icon?: string | null
+  color?: string | null
   reminders?: boolean
   syncCalendar?: boolean
   publishAt?: Date

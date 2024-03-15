@@ -3,6 +3,7 @@ import { Outlet, useLoaderData, Link, useNavigate, useLocation } from '@remix-ru
 import React, { useContext, useState } from 'react'
 import { getUser } from '../models/auth.server'
 import type { ObjectData } from '~/utils/types.server'
+import type { Challenge } from '~/utils/types.client'
 import { json, type LoaderFunction } from '@remix-run/node'
 import axios from 'axios'
 import { toast } from 'react-hot-toast'
@@ -20,6 +21,13 @@ import { LiaUserFriendsSolid } from 'react-icons/lia'
 import { prisma } from '../models/prisma.server'
 import { TbHeartFilled } from 'react-icons/tb'
 import { useRevalidator } from 'react-router-dom'
+
+interface ChallengObjectData {
+  challenge: Challenge
+  isMember: boolean
+  hasLiked: boolean
+}
+
 export const loader: LoaderFunction = async ({ request, params }) => {
   const currentUser = await getUser(request)
   if (!params.id) {
@@ -49,7 +57,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
       }
     })
   }
-  const data: ObjectData = { challenge: result, isMember: Boolean(memberships), hasLiked: Boolean(likes) }
+  const data: ChallengObjectData = { challenge: result, isMember: Boolean(memberships), hasLiked: Boolean(likes) }
   return json(data)
 }
 export default function ViewChallenge (): JSX.Element {
@@ -194,7 +202,7 @@ export default function ViewChallenge (): JSX.Element {
         {data.challenge._count.comments > 0 && !isComments && (
           <div className="underline ml-4">
 
-              <Link to={`/challenges/${data.challenge.id}/comments`}>
+              <Link to={`/challenges/${data.challenge.id}/comments#comments`}>
                 <CiChat1 className="h-5 w-5 -mt-1 text-gray mr-1 inline" />
                 {data.challenge._count.comments} comments
               </Link>
@@ -215,8 +223,9 @@ export default function ViewChallenge (): JSX.Element {
         No comments yet. <Link to={`/challenges/${data.challenge.id}/comments`} className="underline">Add comment</Link>
       </div>
     )}
-
+    <div className='mb-16'>
     <Outlet />
+    </div>
 </>
   )
 }

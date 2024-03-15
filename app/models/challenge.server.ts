@@ -1,29 +1,18 @@
 import { prisma } from './prisma.server'
-
+import type { ChallengeData } from '~/utils/types.server'
 import z from 'zod'
 
-export const createChallenge = async (challenge: prisma.challengeCreateInput) => {
-  try {
-    const newChallenge = await prisma.challenge.create({
-      data: challenge
-    })
-    return newChallenge
-  } catch (error) {
-    console.error('error', error)
-    return error
-  }
+export const createChallenge = async (challenge: prisma.challengeCreateInput): Promise<ChallengeData> => {
+  const newChallenge = await prisma.challenge.create({
+    data: challenge
+  })
+  return newChallenge
 }
-export const updateChallenge = async (challenge: prisma.challengeCreateInput) => {
-  try {
-    const newChallenge = await prisma.challenge.update({
-      where: { id: challenge.id },
-      data: challenge
-    })
-    return newChallenge
-  } catch (error) {
-    console.error('error', error)
-    return error
-  }
+export const updateChallenge = async (challenge: prisma.challengeCreateInput): Promise<ChallengeData> => {
+  return await prisma.challenge.update({
+    where: { id: challenge.id },
+    data: challenge
+  })
 }
 export const loadChallenge = async (challengeId: string | number, userId: string | number | undefined) => {
   const id = Number(challengeId)
@@ -90,7 +79,7 @@ export const deleteChallenge = async (challengeId: string | number) => {
     }
   })
 }
-export const fetchChallenges = async (userId: string | number | undefined) => {
+export const fetchChallenges = async (userId: string | number | undefined): Promise<Challenge[]> => {
   const uid = userId ? Number(userId) : undefined
   return await prisma.challenge.findMany({
     where: {

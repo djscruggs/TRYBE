@@ -51,7 +51,7 @@ export default function CardChallenge ({ challenge }: { challenge: ChallengeSumm
       <hr />
       <div className="grid grid-cols-3 text-center py-2 cursor-pointer">
         <div className="flex justify-center items-center">
-        <Link to={`/challenges/${challenge.id}/comments`}>
+        <Link to={`/challenges/${challenge.id}/comments#comments`}>
           <CiChat1 className="text-gray mr-1 inline" />
           <span className="text-xs">{challenge._count.comments} comments</span>
           </Link>

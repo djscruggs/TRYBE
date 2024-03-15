@@ -1001,6 +1001,14 @@ video {
   margin-top: 1px;
 }
 
+.mb-8 {
+  margin-bottom: 2rem;
+}
+
+.mb-16 {
+  margin-bottom: 4rem;
+}
+
 .box-border {
   box-sizing: border-box;
 }
