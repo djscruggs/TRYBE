@@ -205,11 +205,11 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
     )
   }
   return (
-          // eslint-disable-next-line @typescript-eslint/no-misused-promises
           <Form method="post" ref={challengeForm} encType="multipart/form-data" onSubmit={handleSubmit}>
             {/* this is here so tailwind generates the correct classes, should be moveed to tailwind.config.js file */}
             <div className='hidden'>
             <div className='text-purple-400 bg-purple-400 border-purple-400'>purple</div>
+            <div className='text-blue-gray-50 bg-blue-gray-50 border-blue-gray-50'>blue-gray</div>
             <div className='bg-gradient-to-b from-purple-400 to-white'>gradient</div>
             <div className='text-pink-300 bg-pink-300 border-pink-300'>pink</div>
             <div className='bg-gradient-to-b from-pink-300 to-white'>gradient</div>
@@ -227,135 +227,139 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
             <div className='bg-gradient-to-b from-grey to-white'>gradient</div>
             </div>
 
-            <div className="relative max-w-sm">
-              <div className="relative mb-2">
-                <FormField
-                  name='name'
-                  placeholder='Give your challenge a catchy name'
-                  required={true}
-                  value={formData.name}
-                  onChange={handleChange}
-                  error={errors?.name}
-                  label="Name of Challenge" />
-              </div>
-              {/* material-tailwind <Select> element doesn't populate an actual HTML input element, so this hidden field captres the value for submission */}
-              <input type="hidden" name='frequency' value={formData.frequency} />
-              <div className="relative flex mb-2">
-                <Select
-                  label="Select frequency"
-                  placeholder='frequency'
-                  name="_frequency"
-                  value={formData.frequency}
-                  onChange={handleSelect}
-                  >
-                  {frequencies.map((frequency: string, index: number) => (
-                      <Option key={index} value={frequency}>{frequency.charAt(0).toUpperCase() + frequency.slice(1).toLowerCase()}</Option>
-                  ))
-                  }
-                </Select>
-              </div>
-              <div className="relative flex mb-2">
-              <div className="relative max-w-[200px]">
-                <label>Start Date</label>
+            <div className="relative max-w-sm md:max-w-lg px-2 md:px-0">
+              <div className="grid grid-cols-1 gap-4">
+                <div className="relative mb-2">
+                  <FormField
+                    name='name'
+                    placeholder='Give your challenge a catchy name'
+                    required={true}
+                    value={formData.name}
+                    onChange={handleChange}
+                    error={errors?.name}
+                    label="Name of Challenge" />
+                </div>
+                {/* material-tailwind <Select> element doesn't populate an actual HTML input element, so this hidden field captres the value for submission */}
+                <input type="hidden" name='frequency' value={formData.frequency} />
+                <div className="max-w-[300px] relative flex mb-2">
+                  <Select
+                    label="Select frequency"
+                    placeholder='frequency'
+                    name="_frequency"
+                    value={formData.frequency}
+                    onChange={handleSelect}
+                    >
+                    {frequencies.map((frequency: string, index: number) => (
+                        <Option key={index} value={frequency}>{frequency.charAt(0).toUpperCase() + frequency.slice(1).toLowerCase()}</Option>
+                    ))
+                    }
+                  </Select>
+                </div>
+                <div className="relative flex flex-col mb-2 md:flex-row md:space-x-2">
+                  <div className="relative max-w-[200px] mr-2">
+                    <label>Start Date</label>
 
-                <DatePicker
-                  name='startAt'
-                  required={true}
-                  dateFormat="MM-dd-YYYY"
-                  minDate={new Date()}
-                  selected={formData.startAt ? new Date(formData.startAt) : null}
-                  onChange={(date: Date) => { selectDate('startAt', date) }}
-                  className={`p-1 border rounded-md my-2 pl-2 ${errors?.startAt ? 'border-red' : 'border-slate-gray-500'}`}
-                  />
-                {errors?.startAt && (
-                  <div className="text-xs font-semibold text-left tracking-wide text-red w-full mb-4">
-                    {errors?.startAt}
-                  </div>
-                )}
-              </div>
-              <div className="relative max-w-[200px]">
-                <label>End Date</label>
-                <DatePicker
-                  name='endAt'
-                  required={true}
-                  placeholderText='At least one week long'
-                  dateFormat="MM-dd-YYYY"
-                  minDate={formData.startAt ? addDays(new Date(formData.startAt), 7) : addDays(new Date(), 7)}
-                  selected={formData.endAt ? new Date(formData.endAt) : null}
-                  onChange={(date: Date) => { selectDate('endAt', date) }}
-                  className={`p-1 border rounded-md my-2 pl-2 ${errors?.endAt ? 'border-red' : 'border-slate-gray-500'}`}
-                  />
-                {errors?.endAt && (
-                  <div className="text-xs font-semibold text-left tracking-wide text-red w-full mb-4">
-                    {errors?.endAt}
-                  </div>
-                )}
-            </div>
-              </div>
-
-              <div className="relative my-2">
-                <FormField
-                  name='description'
-                  placeholder='Develop a new habit, eat healthy and lower your carbon footprint'
-                  required={true}
-                  type="textarea"
-                  rows={2}
-                  value={formData.description}
-                  onChange={handleChange}
-                  error={errors?.description}
-                  label="Description"
-                />
-              </div>
-              <div className="relative my-2">
-                <FormField
-                  name='mission'
-                  placeholder='Eat vegetarian every day for two weeks. Check in daily to stay on track.'
-                  required={true}
-                  type="textarea"
-                  rows={4}
-                  value={formData.mission}
-                  onChange={handleChange}
-                  error={errors?.mission} label="Mission"
-                />
-              </div>
-              <div className='w-full'>
-                  {fileDataURL &&
-                    <label htmlFor='coverPhoto' className='mb-2 block'>Cover Photo</label>
-                  }
-                <div className='w-full my-4 bg-blue-gray-50 h-40 rounded-md flex items-center justify-center'>
-                  {fileDataURL &&
-                    <img src={fileDataURL} alt="cover photo" className="max-w-full max-h-40" />
-                  }
-                  {!fileDataURL &&
-                    <div className="flex flex-col items-center justify-end">
-                      <p className="text-2xl text-blue-gray-500 text-center">Upload a cover photo</p>
-                      <div className='mt-10 ml-36'>
-                        {fileInput()}
+                    <DatePicker
+                      name='startAt'
+                      required={true}
+                      dateFormat="MM-dd-YYYY"
+                      minDate={new Date()}
+                      selected={formData.startAt ? new Date(formData.startAt) : null}
+                      onChange={(date: Date) => { selectDate('startAt', date) }}
+                      className={`p-1 border rounded-md my-2 pl-2 ${errors?.startAt ? 'border-red' : 'border-slate-gray-500'}`}
+                      />
+                    {errors?.startAt && (
+                      <div className="text-xs font-semibold text-left tracking-wide text-red w-full mb-4">
+                        {errors?.startAt}
                       </div>
-                    </div>
-                  }
+                    )}
+                  </div>
+                  <div className="relative max-w-[200px] mr-2">
+                    <label>End Date</label>
+                    <DatePicker
+                      name='endAt'
+                      required={true}
+                      placeholderText='At least one week long'
+                      dateFormat="MM-dd-YYYY"
+                      minDate={formData.startAt ? addDays(new Date(formData.startAt), 7) : addDays(new Date(), 7)}
+                      selected={formData.endAt ? new Date(formData.endAt) : null}
+                      onChange={(date: Date) => { selectDate('endAt', date) }}
+                      className={`p-1 border rounded-md my-2 pl-2 ${errors?.endAt ? 'border-red' : 'border-slate-gray-500'}`}
+                      />
+                    {errors?.endAt && (
+                      <div className="text-xs font-semibold text-left tracking-wide text-red w-full mb-4">
+                        {errors?.endAt}
+                      </div>
+                    )}
+                  </div>
                 </div>
-                <div className='mt-8 mb-4'>
-                  {fileDataURL && fileInput()}
-                </div>
-              </div>
-              <label>Color</label>
-              <div className="relative my-2 flex flex-wrap">
-                {colorOptions.map((option, index) => (
-                  <div key={index} onClick={() => { handleColorChange(option) }} className={`w-10 h-10 cursor-pointer rounded-full bg-${colorToClassName(option, 'red')} mr-2 mb-2 ${formData.color === option ? 'outline outline-2 outline-offset-2 outline-darkgrey' : ''}`}></div>
-                ))}
-              </div>
-              <label>Icon</label>
-              <div className="relative my-2 flex flex-wrap">
-                {Object.keys(iconOptions).map((key, index) => (
-                  <div key={key} onClick={() => { handleIconChange(key) }} className={`w-12 h-12 cursor-pointer rounded-full mr-4 mb-2 ${formData.icon === key ? 'outline outline-2 outline-offset-2 outline-darkgrey' : ''}`}>{iconOptions[key]}</div>
-                ))}
-              </div>
 
+                <div className="relative my-2">
+                  <FormField
+                    name='description'
+                    placeholder='Develop a new habit, eat healthy and lower your carbon footprint'
+                    required={true}
+                    type="textarea"
+                    rows={2}
+                    value={formData.description}
+                    onChange={handleChange}
+                    error={errors?.description}
+                    label="Description"
+                  />
+                </div>
+                <div className="relative my-2">
+                  <FormField
+                    name='mission'
+                    placeholder='Eat vegetarian every day for two weeks. Check in daily to stay on track.'
+                    required={true}
+                    type="textarea"
+                    rows={4}
+                    value={formData.mission}
+                    onChange={handleChange}
+                    error={errors?.mission} label="Mission"
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-1">
+                <div className='w-full'>
+                    {fileDataURL &&
+                      <label htmlFor='coverPhoto' className='mb-2 block'>Cover Photo</label>
+                    }
+                  <div className='w-full my-4 bg-blue-gray-50 h-40 rounded-md flex items-center justify-center'>
+                    {fileDataURL &&
+                      <img src={fileDataURL} alt="cover photo" className="max-w-full max-h-40" />
+                    }
+                    {!fileDataURL &&
+                      <div className="flex flex-col items-center justify-end">
+                        <p className="text-2xl text-blue-gray-500 text-center">Upload a cover photo</p>
+                        <div className='mt-10 ml-36'>
+                          {fileInput()}
+                        </div>
+                      </div>
+                    }
+                  </div>
+                  <div className='mt-8 mb-4'>
+                    {fileDataURL && fileInput()}
+                  </div>
+                </div>
+                <label>Color</label>
+                <div className="relative my-2 flex flex-wrap">
+                  {colorOptions.map((option, index) => (
+                    <div key={index} onClick={() => { handleColorChange(option) }} className={`w-10 h-10 cursor-pointer rounded-full bg-${colorToClassName(option, 'red')} mr-2 mb-2 ${formData.color === option ? 'outline outline-2 outline-offset-2 outline-darkgrey' : ''}`}></div>
+                  ))}
+                </div>
+                <label>Icon</label>
+                <div className="relative my-2 flex flex-wrap">
+                  {Object.keys(iconOptions).map((key, index) => (
+                    <div key={key} onClick={() => { handleIconChange(key) }} className={`w-12 h-12 cursor-pointer rounded-full mr-4 mb-2 ${formData.icon === key ? 'outline outline-2 outline-offset-2 outline-darkgrey' : ''}`}>{iconOptions[key]}</div>
+                  ))}
+                </div>
+              </div>
               {/* eslint-disable-next-line @typescript-eslint/no-misused-promises */}
               <Button type="submit" onClick={handleSubmit} placeholder='Save' className="bg-blue">Save Challenge</Button>
               <Button type="submit" onClick={handleCancel} placeholder='Cancel' className="ml-2 bg-red">Cancel</Button>
             </div>
           </Form>
+
   )
 }

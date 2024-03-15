@@ -43,7 +43,7 @@ export function FormField ({
   }
 
   return <>
-      <label htmlFor={name} className="text-blue-600">{label}</label>
+      <label htmlFor={name} className="block text-blue-600">{label}</label>
       {localType === 'textarea'
         ? (
         <textarea
