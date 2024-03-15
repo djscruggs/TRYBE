@@ -11,7 +11,6 @@ interface FormCommentProps {
 
 export default function FormComment (props: FormCommentProps): JSX.Element {
   const [body, setBody] = useState('')
-  const [challengeId, setChallengeId] = useState(props.challengeId)
   const [error, setError] = useState('')
   const navigate = useNavigate()
 
@@ -22,7 +21,7 @@ export default function FormComment (props: FormCommentProps): JSX.Element {
     }
     const formData = new FormData()
     formData.append('body', body)
-    formData.append('challengeId', String(challengeId))
+    formData.append('challengeId', String(props.challengeId))
     await axios.post('/api/comments', formData)
     setBody('')
     if (props.afterSave) {
