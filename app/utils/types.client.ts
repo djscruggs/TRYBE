@@ -25,7 +25,9 @@ export interface Challenge {
 }
 export interface ChallengeSummary extends Challenge {
   _count: {
-    members: number
+    members?: number
+    likes?: number
+    comments?: number
   }
 }
 

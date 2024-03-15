@@ -104,7 +104,7 @@ export const fetchChallengeSummaries = async (userId?: string | number | undefin
     where: userId ? { userId: uid } : undefined,
     include: {
       _count: {
-        select: { members: true, comments: true }
+        select: { members: true, comments: true, likes: true }
       }
     }
   }

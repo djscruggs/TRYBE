@@ -9,23 +9,27 @@ import type { ObjectData } from '~/utils/types.server'
 import { Button, Select, Option } from '@material-tailwind/react'
 import { FormField } from '~/components/form-field'
 import DatePicker from 'react-datepicker'
+import { addDays } from 'date-fns'
 import { toast } from 'react-hot-toast'
 import axios from 'axios'
-import { colorToClassName, iconStyle } from '~/utils/helpers'
+import { colorToClassName, getIconOptionsForColor } from '~/utils/helpers'
 import { useRevalidator } from 'react-router-dom'
-// icons
-import { GiShinyApple, GiMeditation } from 'react-icons/gi'
-import { FaRegLightbulb } from 'react-icons/fa6'
-import { RiMentalHealthLine } from 'react-icons/ri'
-import { PiBarbellLight } from 'react-icons/pi'
-import { IoFishOutline } from 'react-icons/io5'
+
+interface Errors {
+  name?: string
+  description?: string
+  mission?: string
+  startAt?: string
+  endAt?: string
+  coverPhoto?: string
+}
 
 export default function FormChallenge (props: ObjectData): JSX.Element {
-  const frequencies = ['DAILY', 'WEEKDAYS', 'ALTERNATING', 'WEEKLY', 'CUSTOM']
+  const frequencies = ['DAILY', 'WEEKDAYS', 'ALTERNATING', 'WEEKLY']
   const revalidator = useRevalidator()
   const navigate = useNavigate()
   const challengeForm = useRef(null)
-  const [errors, setErrors] = useState(props.errors)
+  const [errors, setErrors] = useState<Errors>()
   // make a copy so it doesn't affect parent renders
   const challenge = { ...props.challenge }
   delete challenge._count
@@ -65,14 +69,8 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
       color: value
     }))
   }
-  const iconOptions: Record<string, JSX.Element> = {
-    GiShinyApple: <GiShinyApple className={iconStyle(formData?.color as string)} />,
-    GiMeditation: <GiMeditation className={iconStyle(formData?.color as string)} />,
-    FaRegLightbulb: <FaRegLightbulb className={iconStyle(formData?.color as string)} />,
-    RiMentalHealthLine: <RiMentalHealthLine className={iconStyle(formData?.color as string)} />,
-    PiBarbellLight: <PiBarbellLight className={iconStyle(formData?.color as string)} />,
-    IoFishOutline: <IoFishOutline className={iconStyle(formData?.color as string)} />
-  }
+
+  const iconOptions: Record<string, JSX.Element> = getIconOptionsForColor(formData?.color as string)
   const handleIconChange = (value: string): void => {
     setFormData((prevFormData: ObjectData) => ({
       ...prevFormData,
@@ -85,11 +83,16 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
   }
   async function handleSubmit (event: React.FormEvent): Promise<void> {
     event.preventDefault()
-    const url = '/api/challenges'
-    const headers = {
-      headers: {
-        'content-type': 'multipart/form-data'
-      }
+    // validation
+    const validation: Errors = {}
+    if (formData.name.trim() === '') { validation.name = 'Name is required' }
+    if (formData.description.trim() === '') { validation.description = 'Description is required' }
+    if (formData.mission.trim() === '') { validation.mission = 'Mission is required' }
+    if (!formData.startAt) { validation.startAt = 'Start date is required' }
+    if (!formData.endAt) { validation.endAt = 'End date is required' }
+    if (Object.keys(validation).length > 0) {
+      setErrors(validation)
+      return
     }
     const toSubmit = new FormData()
     for (const key in formData) {
@@ -112,14 +115,20 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
     if (formData.id !== undefined) {
       toSubmit.append('id', String(formData.id))
     }
+    const url = '/api/challenges'
+    const headers = {
+      headers: {
+        'content-type': 'multipart/form-data'
+      }
+    }
     const response = await axios.post(url, toSubmit, headers)
     console.log('response', response)
-    const msg = formData.id !== null ? 'Challenge saved' : 'Challenge created'
+    const msg = (formData.id !== null) ? 'Challenge saved' : 'Challenge created'
     if (!response.data.id || response.data.errors) {
+      toast.error('An error occured')
       if (response.data.errors) {
-        setErrors(response.data.errors)
-      } else {
-        toast.error('An error occured')
+        setErrors(response.data.errors as Errors)
+        console.error('response', response.data.errors)
       }
     } else {
       revalidator.revalidate()
@@ -217,8 +226,8 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
             <div className='text-grey bg-grey border-grey'>grey</div>
             <div className='bg-gradient-to-b from-grey to-white'>gradient</div>
             </div>
-            <div className="relative max-w-sm">
 
+            <div className="relative max-w-sm">
               <div className="relative mb-2">
                 <FormField
                   name='name'
@@ -226,7 +235,7 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
                   required={true}
                   value={formData.name}
                   onChange={handleChange}
-                  error={errors?.name?._errors[0]}
+                  error={errors?.name}
                   label="Name of Challenge" />
               </div>
               {/* material-tailwind <Select> element doesn't populate an actual HTML input element, so this hidden field captres the value for submission */}
@@ -253,13 +262,14 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
                   name='startAt'
                   required={true}
                   dateFormat="MM-dd-YYYY"
+                  minDate={new Date()}
                   selected={formData.startAt ? new Date(formData.startAt) : null}
                   onChange={(date: Date) => { selectDate('startAt', date) }}
-                  className='p-1 border border-slate-gray-500 rounded-md my-2 pl-2'
+                  className={`p-1 border rounded-md my-2 pl-2 ${errors?.startAt ? 'border-red' : 'border-slate-gray-500'}`}
                   />
                 {errors?.startAt && (
                   <div className="text-xs font-semibold text-left tracking-wide text-red w-full mb-4">
-                    {errors?.startAt._errors[0]}
+                    {errors?.startAt}
                   </div>
                 )}
               </div>
@@ -268,14 +278,16 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
                 <DatePicker
                   name='endAt'
                   required={true}
+                  placeholderText='At least one week long'
                   dateFormat="MM-dd-YYYY"
+                  minDate={formData.startAt ? addDays(new Date(formData.startAt), 7) : addDays(new Date(), 7)}
                   selected={formData.endAt ? new Date(formData.endAt) : null}
                   onChange={(date: Date) => { selectDate('endAt', date) }}
-                  className='p-1 border border-slate-gray-500 rounded-md my-2 pl-2'
+                  className={`p-1 border rounded-md my-2 pl-2 ${errors?.endAt ? 'border-red' : 'border-slate-gray-500'}`}
                   />
                 {errors?.endAt && (
                   <div className="text-xs font-semibold text-left tracking-wide text-red w-full mb-4">
-                    {errors?.endAt._errors[0]}
+                    {errors?.endAt}
                   </div>
                 )}
             </div>
@@ -290,7 +302,7 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
                   rows={2}
                   value={formData.description}
                   onChange={handleChange}
-                  error={errors?.description?._errors[0]}
+                  error={errors?.description}
                   label="Description"
                 />
               </div>
@@ -303,7 +315,7 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
                   rows={4}
                   value={formData.mission}
                   onChange={handleChange}
-                  error={errors?.description?._errors[0]} label="Mission"
+                  error={errors?.mission} label="Mission"
                 />
               </div>
               <div className='w-full'>
