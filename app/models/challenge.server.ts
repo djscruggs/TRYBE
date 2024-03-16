@@ -152,11 +152,9 @@ export const challengeSchema =
                         .string({ invalid_type_error: 'Wrong type' })
                         .min(1, { message: 'Mission is required' }),
                       startAt: z
-                        .string({ required_error: 'Please select a date' })
-                        .pipe(z.coerce.date()),
+                        .date({ required_error: 'Please select a date' }),
                       endAt: z
-                        .string()
-                        .pipe(z.coerce.date())
+                        .date()
                         .or(z.literal(''))
                         .nullable(),
                       frequency: z

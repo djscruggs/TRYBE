@@ -28,6 +28,7 @@ export async function action ({
 
   const formData = Object.fromEntries(rawData)
   const cleanData = convertStringValues(formData)
+  console.log(cleanData)
   try {
     const validation = challengeSchema.safeParse(cleanData)
     if (!validation.success) {

@@ -14,7 +14,7 @@ import { toast } from 'react-hot-toast'
 import axios from 'axios'
 import { colorToClassName, getIconOptionsForColor } from '~/utils/helpers'
 import { useRevalidator } from 'react-router-dom'
-
+import { TiDelete } from 'react-icons/ti'
 interface Errors {
   name?: string
   description?: string
@@ -81,6 +81,20 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
     event.preventDefault()
     navigate(-1)
   }
+  function parseErrors (errors: any, path: string = ''): Record<string, string> {
+    let result: Record<string, string> = {}
+
+    for (const key in errors) {
+      if (key === '_errors') {
+        result[path] = errors[key][0]
+      } else if (typeof errors[key] === 'object') {
+        const nestedErrors = parseErrors(errors[key], path ? `${path}.${key}` : key)
+        result = { ...result, ...nestedErrors }
+      }
+    }
+
+    return result
+  }
   async function handleSubmit (event: React.FormEvent): Promise<void> {
     event.preventDefault()
     // validation
@@ -127,8 +141,10 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
     if (!response.data.id || response.data.errors) {
       toast.error('An error occured')
       if (response.data.errors) {
-        setErrors(response.data.errors as Errors)
-        console.error('response', response.data.errors)
+        console.error('errors', response.data.errors)
+        const parsedErrors = parseErrors(response.data.errors)
+        console.log('parsedErrors', parsedErrors)
+        setErrors(parsedErrors as Errors)
       }
     } else {
       revalidator.revalidate()
@@ -160,6 +176,10 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
       }
     }
     fileReader.readAsDataURL(image)
+  }
+  const removePhoto = (): void => {
+    setFile(null)
+    setFileDataURL(null)
   }
 
   useEffect(() => {
@@ -227,9 +247,9 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
             <div className='bg-gradient-to-b from-grey to-white'>gradient</div>
             </div>
 
-            <div className="relative max-w-xl sm:max-w-screen-xl px-2 md:px-0 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2">
+            <div className="relative max-w-[800px] sm:max-w-screen-xl px-2 md:px-0 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2">
               <div className="sm:col-span-2 lg:col-span-1">
-                <div className="relative mb-2">
+                <div className="relative mb-2 max-w-[400px]">
                   <FormField
                     name='name'
                     placeholder='Give your challenge a catchy name'
@@ -294,7 +314,7 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
                   </div>
                 </div>
 
-                <div className="relative">
+                <div className="relative max-w-[400px]">
                   <FormField
                     name='description'
                     placeholder='Develop a new habit, eat healthy and lower your carbon footprint'
@@ -307,7 +327,7 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
                     label="Description"
                   />
                 </div>
-                <div className="relative">
+                <div className="max-w-[400px] relative">
                   <FormField
                     name='mission'
                     placeholder='Eat vegetarian every day for two weeks. Check in daily to stay on track.'
@@ -320,14 +340,25 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
                   />
                 </div>
               </div>
-              <div className="sm:col-span-2 md:ml-4 lg:col-span-1">
-                <div className='w-full'>
+              <div className="max-w-[400px] sm:col-span-2 md:ml-4 lg:col-span-1">
+              <div className="max-w-[400px] relative flex flex-wrap">
+                  <label className='w-full block mb-2 text-left'>Color</label>
+                  {colorOptions.map((option, index) => (
+                    <div key={index} onClick={() => { handleColorChange(option) }} className={`w-10 h-10 cursor-pointer rounded-full bg-${colorToClassName(option, 'red')} mr-2 mb-2 ${formData.color === option ? 'outline outline-2 outline-offset-2 outline-darkgrey' : ''}`}></div>
+                  ))}
+                </div>
+                <div className="mt-4 max-w-[400px] relative flex flex-wrap">
+                  <label className='w-full block mb-2 text-left'>Icon</label>
+                  {Object.keys(iconOptions).map((key, index) => (
+                    <div key={key} onClick={() => { handleIconChange(key) }} className={`w-12 h-12 cursor-pointer rounded-full mr-4 mb-2 ${formData.icon === key ? 'outline outline-2 outline-offset-2 outline-darkgrey' : ''}`}>{iconOptions[key]}</div>
+                  ))}
+                </div>
+                <div className='w-full mt-2'>
+                  <div className={`max-w-md mb-2 h-60 rounded-md flex items-center justify-center ${fileDataURL ? '' : 'bg-blue-gray-50'}`}>
                     {fileDataURL &&
-                      <label htmlFor='coverPhoto' className='mb-2 block'>Cover Photo</label>
-                    }
-                  <div className='max-w-md my-4 bg-blue-gray-50 h-40 rounded-md flex items-center justify-center'>
-                    {fileDataURL &&
-                      <img src={fileDataURL} alt="cover photo" className="max-w-full max-h-40" />
+                      <>
+                      <img src={fileDataURL} alt="cover photo" className="max-w-full max-h-60" />
+                      </>
                     }
                     {!fileDataURL &&
                       <div className="flex flex-col items-center justify-end">
@@ -338,25 +369,20 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
                       </div>
                     }
                   </div>
-                  <div className='mt-8 mb-4'>
-                    {fileDataURL && fileInput()}
+                  <div className='px-[28%] justify-center items-center'>
+                    {fileDataURL &&
+                      <>
+                        {fileInput()}
+                        <p onClick={removePhoto} className='text-red underline ml-[130px] -mt-8 cursor-pointer'>remove</p>
+                      </>
+                    }
+
                   </div>
                 </div>
-                <div className="relative flex flex-wrap justify-center">
-                  <label className='w-full block mb-2 text-center'>Color</label>
-                  {colorOptions.map((option, index) => (
-                    <div key={index} onClick={() => { handleColorChange(option) }} className={`w-10 h-10 cursor-pointer rounded-full bg-${colorToClassName(option, 'red')} mr-2 mb-2 ${formData.color === option ? 'outline outline-2 outline-offset-2 outline-darkgrey' : ''}`}></div>
-                  ))}
-                </div>
-                <div className="mt-4 relative flex flex-wrap justify-center">
-                  <label className='w-full block mb-2 text-center'>Icon</label>
-                  {Object.keys(iconOptions).map((key, index) => (
-                    <div key={key} onClick={() => { handleIconChange(key) }} className={`w-12 h-12 cursor-pointer rounded-full mr-4 mb-2 ${formData.icon === key ? 'outline outline-2 outline-offset-2 outline-darkgrey' : ''}`}>{iconOptions[key]}</div>
-                  ))}
-                </div>
+
               </div>
             </div>
-            <div className="mt-4 flex justify-left md:justify-center">
+            <div className="mt-8 flex justify-left">
               <Button type="submit" onClick={handleSubmit} placeholder='Save' className="bg-blue">Save Challenge</Button>
               <Button type="submit" onClick={handleCancel} placeholder='Cancel' className="ml-2 bg-red">Cancel</Button>
             </div>
