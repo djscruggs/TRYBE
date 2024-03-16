@@ -16,11 +16,12 @@ import { CurrentUserContext } from './utils/CurrentUserContext'
 import Layout from './ui/layout'
 import stylesheet from './output.css'
 import datepickerStyle from 'react-datepicker/dist/react-datepicker.css'
-import type { LinksFunction, LoaderFunctionArgs } from '@remix-run/node'
+import type { LinksFunction, LoaderFunction, LoaderFunctionArgs, MetaFunction } from '@remix-run/node'
 import { type User } from './utils/types.client'
 import { Toaster, toast } from 'react-hot-toast'
 import { getUser } from './models/auth.server'
-
+import { rootAuthLoader } from '@clerk/remix/ssr.server'
+import { ClerkApp, ClerkErrorBoundary } from '@clerk/remix'
 interface DocumentProps {
   children: React.ReactNode
   title?: string
@@ -31,11 +32,29 @@ export const links: LinksFunction = () => [
   { rel: 'stylesheet', href: datepickerStyle }
 
 ]
-
-export const loader = async ({ request }: LoaderFunctionArgs) => {
-  const user = await getUser(request)
-  return { user }
+export const meta: MetaFunction = () => {
+  return [
+    { title: 'Trybe' },
+    { viewport: 'width=device-width,initial-scale=1' }
+  ]
 }
+// export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
+//   return await rootAuthLoader(args)
+// }
+export const loader: LoaderFunction = async args => {
+  return await rootAuthLoader(args, async ({ request }) => {
+    const user = await getUser(request)
+    const auth = request.auth
+    return { user, auth }
+  })
+}
+// export const loader = async ({ request }: LoaderFunctionArgs) => {
+//   const user = await getUser(request)
+//   const auth = rootAuthLoader(({ request }) => {
+//     return request.auth
+//   })
+//   return { user, auth }
+// }
 const Document = withEmotionCache(({ children, title }: DocumentProps, emotionCache) => {
   return (
     <html lang="en">
@@ -65,8 +84,11 @@ const Document = withEmotionCache(({ children, title }: DocumentProps, emotionCa
 
 // https://remix.run/docs/en/main/route/component
 // https://remix.run/docs/en/main/file-conventions/routes
-export default function App () {
+function App () {
   const { user } = useLoaderData<{ user: User }>()
+  const { auth } = useLoaderData<{ auth: Auth }>()
+  console.log('auth', auth)
+  console.log('user', user)
   const [currentUser, setCurrentUser] = useState<User | null>(user)
   useEffect(() => {
     setCurrentUser(user)
@@ -83,9 +105,11 @@ export default function App () {
     </Document>
   )
 }
+export default ClerkApp(App)
 
 // https://remix.run/docs/en/main/route/error-boundary
-export function ErrorBoundary () {
+export const ErrorBoundary = ClerkErrorBoundary()
+export function ErrorBoundaryOld (): JSX.Element {
   const error = useRouteError()
 
   if (isRouteErrorResponse(error)) {
