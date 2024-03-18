@@ -2,6 +2,7 @@ import { requireCurrentUser } from '../models/auth.server'
 import { type LoaderFunction, json, type LoaderFunctionArgs } from '@remix-run/node'
 import { loadUserCreatedChallenges } from '~/models/challenge.server'
 import React from 'react'
+import { dark, neobrutalism, shadesOfPurple } from '@clerk/themes'
 import { UserProfile } from '@clerk/clerk-react'
 export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
   const currentUser = await requireCurrentUser(args)
@@ -13,11 +14,20 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
   return json(result)
 }
 
-export default function Profile () {
+export default function Profile (): JSX.Element {
   return (
       <>
       <h1>Profile</h1>
-      <UserProfile path="/profile" routing="path" />
+      <UserProfile
+        path="/profile"
+        routing="path"
+        appearance={{
+          variables: {
+            colorPrimary: '#FABFC4',
+            colorText: '#6b7280'
+          }
+        }}
+        />
       </>
   )
 }
