@@ -23,7 +23,6 @@ import { getUser } from './models/auth.server'
 import { getUserByClerkId } from './models/user.server'
 import { rootAuthLoader } from '@clerk/remix/ssr.server'
 import { ClerkApp, ClerkErrorBoundary } from '@clerk/remix'
-import { dark, neobrutalism, shadesOfPurple } from '@clerk/themes'
 interface DocumentProps {
   children: React.ReactNode
   title?: string
