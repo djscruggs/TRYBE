@@ -1,9 +1,10 @@
 import { prisma } from './prisma.server'
-import { createUser } from './user.server'
+import { createUser, getUserByClerkId } from './user.server'
 import { type RegisterForm, type LoginForm } from '../utils/types.server'
 import bcrypt from 'bcryptjs'
 import type { User } from '~/utils/types.client'
 import { redirect, json, createCookieSessionStorage } from '@remix-run/node'
+import { getAuth } from '@clerk/remix/ssr.server'
 import { URL } from 'url'
 const sessionSecret = process.env.SESSION_SECRET
 if (!sessionSecret) {
@@ -21,9 +22,12 @@ export const storage = createCookieSessionStorage({
     httpOnly: true
   }
 })
-export async function createUserSession (userId: string | number, redirectTo: string): Promise<Response> {
+export async function createUserSession (userId: string | number, redirectTo: string | null): Promise<Response> {
   const session = await storage.getSession()
   session.set('userId', userId)
+  if (!redirectTo) {
+    return redirect('/home')
+  }
   return redirect(redirectTo, {
     headers: {
       'Set-Cookie': await storage.commitSession(session)
@@ -53,27 +57,38 @@ export async function login ({ email, password, request }: LoginForm): Promise<R
   const currentUser = await prisma.user.findUnique({
     where: { email }
   })
-  if (!currentUser || !(await bcrypt.compare(password, currentUser.password))) { return json({ error: 'Incorrect login' }, { status: 400 }) }
+  console.log('currentUser', currentUser)
+  if (!currentUser || !(await bcrypt.compare(String(password), String(currentUser.password)))) { return json({ error: 'Incorrect login' }, { status: 400 }) }
   const parsedUrl = new URL(request.url)
 
   let redirect = '/home'
   if (parsedUrl.searchParams) {
     const params = parsedUrl.searchParams
     if (params.get('redirectTo')) {
-      redirect = params.get('redirectTo')
+      redirect = String(params.get('redirectTo'))
     }
   }
   return await createUserSession(currentUser.id, redirect)
 }
 
-export async function requireCurrentUser (request: Request, redirectTo: string = new URL(request.url).pathname): Promise< User | null> {
-  const currentUser = await getUser(request)
+export async function requireCurrentUser (args): Promise< User | null> {
+  const request = args.request
+  const redirectTo = args.redirectTo || new URL(request.url).pathname
+  const clerkUser = await getAuth(args)
+  let dbUser
+  if (!clerkUser) {
+    dbUser = await getUser(request)
+  } else {
+    dbUser = await getUserByClerkId(clerkUser.userId)
+  }
+  const currentUser = dbUser
+
   const url = require('url')
   const path = url.parse(request.url).pathname
   if (!currentUser) {
-    if (!['/login', '/register'].includes(path)) {
+    if (!['/login', '/register', 'signup', 'signin'].includes(path)) {
       const searchParams = new URLSearchParams([['redirectTo', redirectTo]])
-      throw redirect(`/login?${searchParams}`)
+      throw redirect(`/signin?${searchParams}`)
     }
   }
   return currentUser

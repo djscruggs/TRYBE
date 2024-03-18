@@ -1,7 +1,7 @@
 // app/utils/types.server.ts
 export interface RegisterForm {
   email: string
-  password: string
+  password?: string
   firstName: string
   lastName: string
 }

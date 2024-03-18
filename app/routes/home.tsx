@@ -9,9 +9,9 @@ import { requireCurrentUser } from '../models/auth.server'
 import { type LoaderFunction } from '@remix-run/node'
 import FeedChallengeCard from '~/components/feedchallengecard'
 
-export const loader: LoaderFunction = async ({ request }) => {
+export const loader: LoaderFunction = async (args) => {
   // if currentUser isn't authenticated, this will redirect to login
-  return await requireCurrentUser(request)
+  return await requireCurrentUser(args)
 }
 
 export default function Home (): JSX.Element {

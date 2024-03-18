@@ -1,9 +1,11 @@
 // app/utils/types.server.ts
 export interface RegisterForm {
   email: string
-  password: string
+  password?: string
   firstName: string
   lastName: string
+  clerkId?: string
+  profileImage?: string
 }
 export interface User {
   id?: number | string
@@ -42,4 +44,5 @@ export interface Profile {
   firstName?: string
   lastName?: string
   userId?: number | string
+  profileImage?: string
 }

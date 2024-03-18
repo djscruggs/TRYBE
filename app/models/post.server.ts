@@ -40,7 +40,7 @@ export const loadPostSummary = async (postId: string | number): Promise<Array<Re
     }
   })
 }
-export const loadUserPosts = async (userId: string | number) => {
+export const loadUserPosts = async (userId: string | number): Promise<Post[]> => {
   const uid = Number(userId)
   return await prisma.post.findMany({
     where: {
@@ -53,7 +53,7 @@ export const loadUserPosts = async (userId: string | number) => {
     }
   })
 }
-export const deletePost = async (postId: string | number) => {
+export const deletePost = async (postId: string | number): Promise<Post> => {
   const id = Number(postId)
   return await prisma.post.delete({
     where: {

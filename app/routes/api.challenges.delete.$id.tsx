@@ -11,7 +11,6 @@ export async function action ({
   await deleteChallenge(params.id)
   return json({ message: `Deleted challenge ${params.id}` }, 204)
 }
-export const loader: LoaderFunction = async ({ request }) => {
-  const currentUser = await requireCurrentUser(request)
+export const loader: LoaderFunction = async (args) => {
   return json({ message: 'This route does not accept GET requests' }, 200)
 }

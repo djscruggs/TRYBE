@@ -1,11 +1,11 @@
 import { requireCurrentUser } from '~/models/auth.server'
-import { json, type LoaderFunction, type ActionFunction } from '@remix-run/node'
+import { json, type LoaderFunction, type ActionFunction, type ActionFunctionArgs } from '@remix-run/node'
 import { prisma } from '../models/prisma.server'
 import { type Like } from '@prisma/client'
 
-export const action: ActionFunction = async ({ request }) => {
-  const currentUser = await requireCurrentUser(request)
-  const formData = await request.formData()
+export const action: ActionFunction = async (args: ActionFunctionArgs) => {
+  const currentUser = await requireCurrentUser(args)
+  const formData = await args.request.formData()
   const challengeId: number | null = formData.get('challengeId') ? parseInt(formData.get('challengeId')) : null
   const commentId: number | null = formData.get('commentId') ? parseInt(formData.get('commentId')) : null
   const postId: number | null = formData.get('postId') ? parseInt(formData.get('postId')) : null
@@ -45,7 +45,7 @@ export const action: ActionFunction = async ({ request }) => {
   return json(like)
 }
 
-export const loader: LoaderFunction = async ({ request }) => {
-  void requireCurrentUser(request)
+export const loader: LoaderFunction = async (args) => {
+  void requireCurrentUser(args)
   return json({ message: 'This route does not accept GET requests' }, 200)
 }

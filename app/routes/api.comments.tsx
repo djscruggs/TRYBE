@@ -2,9 +2,9 @@ import { createComment } from '~/models/comment.server'
 import { requireCurrentUser } from '~/models/auth.server'
 import { json, type LoaderFunction, type ActionFunction } from '@remix-run/node'
 
-export const action: ActionFunction = async ({ request }) => {
-  const currentUser = await requireCurrentUser(request)
-  const formData = await request.formData()
+export const action: ActionFunction = async (args) => {
+  const currentUser = await requireCurrentUser(args)
+  const formData = await args.request.formData()
   const data = {
     body: formData.get('body'),
     user: { connect: { id: currentUser?.id } },
@@ -14,7 +14,6 @@ export const action: ActionFunction = async ({ request }) => {
   return json(result)
 }
 
-export const loader: LoaderFunction = async ({ request }) => {
-  void requireCurrentUser(request)
+export const loader: LoaderFunction = async (args) => {
   return json({ message: 'This route does not accept GET requests' }, 200)
 }

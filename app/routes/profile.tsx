@@ -1,31 +1,23 @@
-
-import { requireCurrentUser } from "../models/auth.server"
-import { LoaderFunction } from '@remix-run/node'
-import { CurrentUserContext } from '../utils/CurrentUserContext';
-import { loadUserCreatedChallenges } from "~/models/challenge.server";
-import { useLoaderData, Link, Outlet } from '@remix-run/react'
-import { useContext } from "react";
-import { json } from "@remix-run/node";
-export const loader: LoaderFunction = async ({ request, params }) => {
-  const currentUser = await requireCurrentUser(request)
+import { requireCurrentUser } from '../models/auth.server'
+import { type LoaderFunction, json, type LoaderFunctionArgs } from '@remix-run/node'
+import { loadUserCreatedChallenges } from '~/models/challenge.server'
+import React from 'react'
+import { UserProfile } from '@clerk/clerk-react'
+export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
+  const currentUser = await requireCurrentUser(args)
   const result = await loadUserCreatedChallenges(currentUser?.id)
-  if(!result){
-    const error = {loadingError: 'Unable to load challenges'}
+  if (!result) {
+    const error = { loadingError: 'Unable to load challenges' }
     return json(error)
   }
   return json(result)
 }
 
-
-export default function Profile({ children }: { children: React.ReactNode }) {
-  const {currentUser} = useContext(CurrentUserContext)
-  const {data, error} = useLoaderData<[] | {loadingError: string}>(loader)
-  return  (
-            <>
-              <h1>
-                I am Profile
-              </h1>
-
-            </>
-          )
-  }
+export default function Profile () {
+  return (
+      <>
+      <h1>Profile</h1>
+      <UserProfile path="/profile" routing="path" />
+      </>
+  )
+}

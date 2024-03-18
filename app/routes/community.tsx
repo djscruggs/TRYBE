@@ -4,8 +4,8 @@ import { useLoaderData } from '@remix-run/react';
 import { CurrentUserContext } from '../utils/CurrentUserContext';
 import { useContext } from "react";
 
-export const loader: LoaderFunction = async ({ request }) => {
-  return await requireCurrentUser(request)
+export const loader: LoaderFunction = async (args) => {
+  return await requireCurrentUser(args)
 }
 export default function Community({ children }: { children: React.ReactNode }) {
   const {currentUser } = useContext(CurrentUserContext)

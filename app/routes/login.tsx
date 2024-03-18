@@ -7,11 +7,12 @@ import * as React from 'react'
 import { FormField } from '~/components/form-field'
 import { Button } from '@material-tailwind/react'
 
-export const loader: LoaderFunction = async ({ request }) => {
+export const loader: LoaderFunction = async (args) => {
   // If there's already a currentUser in the session, redirect to the home page
-  return (await requireCurrentUser(request)) ? redirect('/home') : null
+  return (await requireCurrentUser(args)) ? redirect('/home') : null
 }
-export const action: ActionFunction = async ({ request }) => {
+export const action: ActionFunction = async (args) => {
+  const request = args.request
   const form = await request.formData()
   const email = form.get('email')
   const password = form.get('password')

@@ -1,10 +1,9 @@
 import { useLocation, Outlet } from '@remix-run/react'
-import { useState, useEffect, useContext } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import NavLinks from './navlinks'
 import { AnimatePresence, motion } from 'framer-motion'
-import UserAvatar from '../components/useravatar'
 import { CurrentUserContext } from '../utils/CurrentUserContext'
-
+import { UserButton } from '@clerk/clerk-react'
 const LayoutWeb = () => {
   const location = useLocation()
   const { currentUser } = useContext(CurrentUserContext)
@@ -45,7 +44,7 @@ const LayoutWeb = () => {
             <div className={`flex-grow pt-4 ${currentUser ? 'ml-20' : 'ml-0'}`}>
               { currentUser &&
                 <div className='absolute right-0 mr-4'>
-                  <UserAvatar className='cursor-pointer'/>
+                  <UserButton afterSignOutUrl="/"/>
                 </div>
               }
                  <Outlet />

@@ -122,7 +122,9 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
         }
       }
     }
-    toSubmit.set('coverPhoto', String(formData.coverPhoto))
+    if (formData.coverPhoto) {
+      toSubmit.set('coverPhoto', formData.coverPhoto)
+    }
     if (file !== null) {
       toSubmit.append('photo', file)
     }

@@ -23,7 +23,7 @@ const LayoutMobile = (): JSX.Element => {
   const [showNav, setShowNav] = useState(true)
   const location = useLocation()
   useEffect(() => {
-    if (['/', '/register', '/login'].includes(location.pathname)) {
+    if (['/', '/register', '/login', '/signup', '/signin'].includes(location.pathname)) {
       setShowNav(false)
     } else {
       setShowNav(true)

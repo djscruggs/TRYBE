@@ -13,7 +13,8 @@ model User {
   id      Int      @id @default(autoincrement())
   email   String   @unique
   role    Role     @default(USER)
-  password String
+  password String?
+  lastLogin DateTime?
   createdAt DateTime @default(now())
   updatetAt DateTime @updatedAt
   posts   Post[]
@@ -22,11 +23,14 @@ model User {
   profile Profile?
   comments Comment[]
   likes Like[]
+  clerkId String?
+  @@index([clerkId])
 }
 model Profile {
   id     Int    @id @default(autoincrement())
   firstName String
   lastName  String
+  profileImage String?
   user   User   @relation(fields: [userId], references: [id])
   userId Int    @unique
 }

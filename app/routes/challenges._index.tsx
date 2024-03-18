@@ -6,9 +6,9 @@ import { Button } from '@material-tailwind/react'
 import CardChallenge from '~/components/cardChallenge'
 import { CurrentUserContext } from '~/utils/CurrentUserContext'
 import React, { useContext } from 'react'
+
 export const loader: LoaderFunction = async ({ request, params }) => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-
   const result = await fetchChallengeSummaries() as { error?: string }
   if (!result || (result.error != null)) {
     const error = { loadingError: 'Unable to load challenges' }

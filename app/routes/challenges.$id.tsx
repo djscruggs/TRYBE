@@ -1,10 +1,10 @@
 import { loadChallengeSummary } from '~/models/challenge.server'
 import { Outlet, useLoaderData, Link, useNavigate, useLocation } from '@remix-run/react'
 import React, { useContext, useState } from 'react'
-import { getUser } from '../models/auth.server'
+import { requireCurrentUser } from '../models/auth.server'
 import type { ObjectData } from '~/utils/types.server'
 import type { Challenge } from '~/utils/types.client'
-import { json, type LoaderFunction } from '@remix-run/node'
+import { json, type LoaderFunction, type LoaderFunctionArgs } from '@remix-run/node'
 import axios from 'axios'
 import { toast } from 'react-hot-toast'
 import { colorToClassName, convertlineTextToHtml, iconStyle } from '~/utils/helpers'
@@ -28,8 +28,9 @@ interface ChallengObjectData {
   hasLiked: boolean
 }
 
-export const loader: LoaderFunction = async ({ request, params }) => {
-  const currentUser = await getUser(request)
+export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
+  const currentUser = await requireCurrentUser(args)
+  const { params } = args
   if (!params.id) {
     return null
   }
@@ -121,6 +122,7 @@ export default function ViewChallenge (): JSX.Element {
 
     const url = `/api/challenges/join-unjoin/${data.challenge.id as string | number}`
     const response = await axios.post(url)
+    console.log('api response', response)
     setIsMember(response.data.result === 'joined')
     setLoading(false)
     // probably should use revalidate instead but this is quicker to add
@@ -183,7 +185,7 @@ export default function ViewChallenge (): JSX.Element {
       </div>
 
     </div>
-    {data.challenge.userId === currentUser?.id && (
+    {data.challenge.userId !== currentUser?.id && (
       <>
         <button
             onClick={toggleJoin}

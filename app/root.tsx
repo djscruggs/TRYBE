@@ -7,8 +7,8 @@ import {
   Scripts,
   ScrollRestoration,
   useRouteError,
-  isRouteErrorResponse
-  , useLoaderData
+  isRouteErrorResponse,
+  useLoaderData
 } from '@remix-run/react'
 import { withEmotionCache } from '@emotion/react'
 import { useEffect, useState } from 'react'
@@ -20,6 +20,7 @@ import type { LinksFunction, LoaderFunction, LoaderFunctionArgs, MetaFunction } 
 import { type User } from './utils/types.client'
 import { Toaster, toast } from 'react-hot-toast'
 import { getUser } from './models/auth.server'
+import { getUserByClerkId } from './models/user.server'
 import { rootAuthLoader } from '@clerk/remix/ssr.server'
 import { ClerkApp, ClerkErrorBoundary } from '@clerk/remix'
 interface DocumentProps {
@@ -38,23 +39,26 @@ export const meta: MetaFunction = () => {
     { viewport: 'width=device-width,initial-scale=1' }
   ]
 }
+
 // export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
 //   return await rootAuthLoader(args)
 // }
 export const loader: LoaderFunction = async args => {
+  const ENV = {
+    CLERK_PUBLISHABLE_KEY: process.env.CLERK_PUBLISHABLE_KEY
+  }
+
   return await rootAuthLoader(args, async ({ request }) => {
-    const user = await getUser(request)
     const auth = request.auth
-    return { user, auth }
+    if (auth?.userId) {
+      const user = await getUserByClerkId(auth.userId)
+      return { user, auth, ENV }
+    } else {
+      const user = await getUser(request)
+      return { user, auth, ENV }
+    }
   })
 }
-// export const loader = async ({ request }: LoaderFunctionArgs) => {
-//   const user = await getUser(request)
-//   const auth = rootAuthLoader(({ request }) => {
-//     return request.auth
-//   })
-//   return { user, auth }
-// }
 const Document = withEmotionCache(({ children, title }: DocumentProps, emotionCache) => {
   return (
     <html lang="en">
@@ -84,11 +88,8 @@ const Document = withEmotionCache(({ children, title }: DocumentProps, emotionCa
 
 // https://remix.run/docs/en/main/route/component
 // https://remix.run/docs/en/main/file-conventions/routes
-function App () {
+function App (): JSX.Element {
   const { user } = useLoaderData<{ user: User }>()
-  const { auth } = useLoaderData<{ auth: Auth }>()
-  console.log('auth', auth)
-  console.log('user', user)
   const [currentUser, setCurrentUser] = useState<User | null>(user)
   useEffect(() => {
     setCurrentUser(user)
