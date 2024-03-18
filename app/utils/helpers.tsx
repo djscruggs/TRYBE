@@ -44,6 +44,15 @@ export function colorToClassName (color: string, defaultColor: string): string {
   }
   return colorMap[lower]
 }
+export function buttonColorFromContainer (containerColor: string, defaultColor: string): string {
+  if (!containerColor) return defaultColor
+  const containerColorLower = containerColor.toLowerCase()
+  if (['red'].includes(containerColorLower)) {
+    return 'gray-200'
+  } else {
+    return 'red'
+  }
+}
 export function textColorFromContainer (containerColor: string, defaultColor: string): string {
   if (!containerColor) return defaultColor
   const containerColorLower = containerColor.toLowerCase()

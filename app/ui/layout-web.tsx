@@ -44,7 +44,11 @@ const LayoutWeb = () => {
             <div className={`flex-grow pt-4 ${currentUser ? 'ml-20' : 'ml-0'}`}>
               { currentUser &&
                 <div className='absolute right-0 mr-4'>
-                  <UserButton afterSignOutUrl="/"/>
+                  <UserButton
+                    afterSignOutUrl="/"
+                    userProfileUrl="/profile"
+                    userProfileMode="navigation"
+                    />
                 </div>
               }
                  <Outlet />

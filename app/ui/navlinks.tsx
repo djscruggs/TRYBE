@@ -1,27 +1,26 @@
 // NavLinks.tsx
-import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { Form } from "@remix-run/react";
-import { Button } from "@material-tailwind/react";
-import { 
-        BellIcon,
-        HomeIcon,
-        TrophyIcon,
-        UserGroupIcon,
-        UsersIcon,
-        IdentificationIcon,
-        EnvelopeIcon,
-        PowerIcon,
-        SunIcon
-              } from '@heroicons/react/24/outline'
+import React from 'react'
+import { Link, useLocation } from 'react-router-dom'
+import { Form } from '@remix-run/react'
+import { Button } from '@material-tailwind/react'
+import {
+  BellIcon,
+  HomeIcon,
+  TrophyIcon,
+  UserGroupIcon,
+  UsersIcon,
+  IdentificationIcon,
+  EnvelopeIcon,
+  PowerIcon,
+  SunIcon
+} from '@heroicons/react/24/outline'
 import { CurrentUserContext } from '../utils/CurrentUserContext'
-import { useContext } from 'react';
-
+import { useContext } from 'react'
 
 const NavLinks = () => {
-  const {currentUser} = useContext(CurrentUserContext)
+  const { currentUser } = useContext(CurrentUserContext)
   const location = useLocation()
-  
+
   return (
       <>
       {currentUser &&
@@ -62,18 +61,18 @@ const NavLinks = () => {
             <span className="cursor-pointer">Profile</span>
           </Link>
         </div>
-        <div className=" bottom-0  w-24 h-20 flex items-center justify-center flex-col text-darkgrey text-center mb-4 hover:bg-gray-300 p-2 rounded-lg">
+        {/* <div className=" bottom-0  w-24 h-20 flex items-center justify-center flex-col text-darkgrey text-center mb-4 hover:bg-gray-300 p-2 rounded-lg">
           <Form action="/logout"  method="post">
             <Button type="submit" className='flex items-center flex-col bg-inherit shadow-none hover:shadow-none'>
               <PowerIcon className='h-8 w-8 cursor-pointer text-darkgrey' />
               <span className='bg-inherit text-darkgrey font-normal text-base mt-2 normal-case'>Logout</span>
             </Button>
           </Form>
-        </div>
+        </div> */}
       </div>
       }
       </>
-    );
-};
+  )
+}
 
-export default NavLinks;
+export default NavLinks

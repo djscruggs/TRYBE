@@ -161,12 +161,15 @@ export const challengeSchema =
                         .enum(['DAILY', 'WEEKDAYS', 'ALTERNATING', 'WEEKLY', 'CUSTOM']),
                       coverPhoto: z
                         .string()
+                        .nullable()
                         .optional(),
                       icon: z
                         .string()
+                        .nullable()
                         .optional(),
                       color: z
                         .string()
+                        .nullable()
                         .optional(),
                       reminders: z
                         .boolean()

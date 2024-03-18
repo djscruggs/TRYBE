@@ -8,7 +8,7 @@ import { SlShareAlt } from 'react-icons/sl'
 import { CiChat1 } from 'react-icons/ci'
 import { FaRegCalendarAlt, FaUserFriends, FaRegHeart } from 'react-icons/fa'
 import { type ChallengeSummary } from '../utils/types.client'
-import { colorToClassName, textColorFromContainer, getIconOptionsForColor } from '~/utils/helpers'
+import { colorToClassName, textColorFromContainer, getIconOptionsForColor, buttonColorFromContainer } from '~/utils/helpers'
 import { CurrentUserContext } from '../utils/CurrentUserContext'
 import { Link, useNavigate } from '@remix-run/react'
 
@@ -17,6 +17,8 @@ export default function CardChallenge ({ challenge }: { challenge: ChallengeSumm
   const navigate = useNavigate()
   const textColor = textColorFromContainer(challenge.color, 'black')
   const bgColor = colorToClassName(challenge.color, 'red')
+  const buttonColor = buttonColorFromContainer(bgColor, 'white')
+  const buttonTextColor = textColorFromContainer(buttonColor, 'red')
   const goToChallenge = (): void => {
     navigate(`/challenges/${challenge.id}`)
   }
@@ -41,7 +43,7 @@ export default function CardChallenge ({ challenge }: { challenge: ChallengeSumm
               <div className="flex flex-col items-center col-span-2">
                 <div className={`mt-2 font-bold text-${textColor}`}>{challenge.name}</div>
                 {currentUser && challenge.userId === currentUser.id && (<Link className={`underline text-xs text-${textColor}`} to = {`/challenges/${challenge.id}/edit`}>edit</Link>)}
-                <Button onClick={goToChallenge} className={'bg-red p-3 py-2 rounded-full mt-3'}>Sign up!</Button>
+                <Button onClick={goToChallenge} className={`bg-${buttonColor} text-${buttonTextColor} p-3 py-2 rounded-full mt-3`}>Sign up!</Button>
               </div>
             </div>
           </Card>
