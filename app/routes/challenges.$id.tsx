@@ -185,7 +185,7 @@ export default function ViewChallenge (): JSX.Element {
       </div>
 
     </div>
-    {data.challenge.userId !== currentUser?.id && (
+    {data.challenge.userId === currentUser?.id && (
       <>
         <button
             onClick={toggleJoin}

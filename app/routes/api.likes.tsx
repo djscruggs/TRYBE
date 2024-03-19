@@ -9,13 +9,14 @@ export const action: ActionFunction = async (args: ActionFunctionArgs) => {
   const challengeId: number | null = formData.get('challengeId') ? parseInt(formData.get('challengeId')) : null
   const commentId: number | null = formData.get('commentId') ? parseInt(formData.get('commentId')) : null
   const postId: number | null = formData.get('postId') ? parseInt(formData.get('postId')) : null
+  const noteId: number | null = formData.get('noteId') ? parseInt(formData.get('noteId')) : null
   let where: prisma.likeWhere = {}
 
   if (formData.get('unlike')) {
     where = { userId: currentUser?.id }
     if (challengeId) where.challengeId = challengeId
     if (commentId) where.commentId = commentId
-    if (postId) where.postId = postId
+    if (noteId) where.noteId = noteId
     const result = await prisma.like.deleteMany({ where })
     return json(result)
   }
@@ -31,9 +32,9 @@ export const action: ActionFunction = async (args: ActionFunctionArgs) => {
     data.comment = { connect: { id: commentId } }
     where.commentId = commentId
   }
-  if (postId) {
-    data.post = { connect: { id: postId } }
-    where.postId = postId
+  if (noteId) {
+    data.note = { connect: { id: noteId } }
+    where.noteId = noteId
   }
   // first see if it already exists
   const existingLike = await prisma.like.findFirst({ where })

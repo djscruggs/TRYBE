@@ -26,6 +26,13 @@ export interface ChallengeData {
   published?: boolean
   userId: string | number
 }
+export interface ChallengeSummary extends ChallengeData {
+  _count: {
+    likes: number
+    members: number
+    comments: number
+  }
+}
 export interface Comment {
   id: string | number
   userId: string | number
@@ -33,6 +40,19 @@ export interface Comment {
   content: string
   createdAt: Date
   updatedAt: Date
+}
+export interface Note {
+  id?: number
+  userId?: string | number
+  body: string | null
+  createdAt?: Date
+  updatedAt?: Date
+}
+export interface NoteSummary extends Note {
+  _count: {
+    likes: number
+    comments: number
+  }
 }
 export interface ErrorObject extends Record<string, { _errors: string[] }> {}
 

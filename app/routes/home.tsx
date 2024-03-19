@@ -1,23 +1,71 @@
 import { CurrentUserContext } from '../utils/CurrentUserContext'
-import React, { useContext } from 'react'
+import React, { useContext, useState } from 'react'
 import UserAvatar from '../components/useravatar'
-
+import FormNote from '../components/form-note'
+import { useLoaderData } from '@remix-run/react'
 import FeedCommunityCard from '~/components/feedcommunitycard'
 import FeedPostCard from '~/components/feedpostcard'
+import type { ChallengeSummary, NoteSummary } from '../utils/types.server'
 import { useMobileSize } from '../utils/useMobileSize'
 import { requireCurrentUser } from '../models/auth.server'
 import { type LoaderFunction } from '@remix-run/node'
 import FeedChallengeCard from '~/components/feedchallengecard'
-
+import { prisma } from '../models/prisma.server'
+import CardChallenge from '../components/cardChallenge'
+import CardNote from '~/components/cardNote'
 export const loader: LoaderFunction = async (args) => {
   // if currentUser isn't authenticated, this will redirect to login
-  return await requireCurrentUser(args)
+  const currentUser = await requireCurrentUser(args)
+  // challenges
+  const rawChallenges = await prisma.challenge.findMany({
+    orderBy: [{ createdAt: 'desc' }],
+    include: {
+      user: true,
+      _count: {
+        select: { members: true, comments: true, likes: true }
+      }
+    }
+
+  })
+  const challenges = rawChallenges.map(challenge => {
+    return {
+      ...challenge,
+      type: 'challenge'
+    }
+  })
+  const rawNotes = await prisma.note.findMany({
+    orderBy: [{ createdAt: 'desc' }],
+    include: {
+      user: true,
+      _count: {
+        select: { replies: true, likes: true }
+      }
+    }
+  })
+  const notes = rawNotes.map(note => {
+    return {
+      ...note,
+      type: 'note'
+    }
+  })
+  return { challenges, notes }
 }
 
+interface FeedItem extends ChallengeSummary, NoteSummary {
+  type: 'challenge' | 'note'
+}
 export default function Home (): JSX.Element {
+  const { challenges, notes } = useLoaderData() as { challenges: FeedItem[], notes: FeedItem[] }
+  const combinedArray = [...challenges, ...notes].map(item => ({
+    ...item
+  })).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+  const [feedItems, setFeedItems] = useState<FeedItem[]>(combinedArray)
   const { currentUser } = useContext(CurrentUserContext)
   const isMobile = useMobileSize()
-
+  if (!feedItems) {
+    return <p>Loading...</p>
+  }
+  console.log(feedItems)
   return (
          <>
             <div className='max-w-lg px-2'>
@@ -35,15 +83,26 @@ export default function Home (): JSX.Element {
                   <div className="flex-grow-0">
                      <h2 className="flex-grow-0">Updates</h2>
                   </div>
-                  <div className="flex-grow-0">
-                     <select>
-                        <option>Filter</option>
-                        <option>Challenges</option>
-                        <option>Events</option>
-                     </select>
-                  </div>
+
                </div>
             </div>
+            <div className=" pl-2 max-w-md">
+               <FormNote />
+            </div>
+
+            {feedItems.map(item => {
+              if (item.type === 'challenge') {
+                return (<div className="flex items-center pl-0 mt-10 max-w-lg" key={item.id}>
+                <CardChallenge challenge={item as ChallengeSummary} />
+                </div>)
+              }
+              if (item.type === 'note') {
+                return (<div className="flex items-center pl-0 mt-10 max-w-lg" key={item.id}>
+                <CardNote note={item} />
+                </div>)
+              }
+            })}
+
             <div className="flex items-center pl-0 mt-10 max-w-lg">
                <div className="ml-4 flex-grow text-2xl ">
                   <FeedChallengeCard />

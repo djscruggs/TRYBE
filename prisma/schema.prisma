@@ -9,30 +9,57 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
 model User {
-  id      Int      @id @default(autoincrement())
-  email   String   @unique
-  role    Role     @default(USER)
-  password String?
-  lastLogin DateTime?
-  createdAt DateTime @default(now())
-  updatetAt DateTime @updatedAt
-  posts   Post[]
-  challenges Challenge[]  //challenges that the user as created
+  id               Int               @id @default(autoincrement())
+  email            String            @unique
+  role             Role              @default(USER)
+  password         String?
+  lastLogin        DateTime?
+  createdAt        DateTime          @default(now())
+  updatetAt        DateTime          @updatedAt
+  posts            Post[]
+  challenges       Challenge[] //challenges that the user as created
   memberChallenges MemberChallenge[] //challenges that the user is a member of
-  profile Profile?
-  comments Comment[]
-  likes Like[]
-  clerkId String?
+  profile          Profile?
+  comments         Comment[]
+  likes            Like[]
+  clerkId          String?
+  Note             Note[]
+
   @@index([clerkId])
 }
+
 model Profile {
-  id     Int    @id @default(autoincrement())
-  firstName String
-  lastName  String
+  id           Int     @id @default(autoincrement())
+  firstName    String
+  lastName     String
   profileImage String?
-  user   User   @relation(fields: [userId], references: [id])
-  userId Int    @unique
+  user         User    @relation(fields: [userId], references: [id])
+  userId       Int     @unique
+}
+
+model Note {
+  id          Int        @id @default(autoincrement())
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  publishAt   DateTime   @default(now())
+  body        String?    @db.Text
+  published   Boolean    @default(false)
+  user        User       @relation(fields: [userId], references: [id])
+  userId      Int
+  replyToId   Int?
+  replyTo     Note?      @relation("ReplyTo", fields: [replyToId], references: [id])
+  replies     Note[]     @relation("ReplyTo")
+  challenge   Challenge? @relation(fields: [challengeId], references: [id])
+  challengeId Int?
+  likes       Like[]
+  comment     Comment?   @relation(fields: [commentId], references: [id])
+  commentId   Int?
+
+  // indexes for faster sorting by user
+  @@index([userId])
+  @@index([userId, createdAt])
 }
 
 model Post {
@@ -41,89 +68,100 @@ model Post {
   updatedAt  DateTime   @updatedAt
   publishAt  DateTime   @default(now())
   title      String
-  body       String?       @db.Text
+  body       String?    @db.Text
   published  Boolean    @default(false)
   user       User       @relation(fields: [userId], references: [id])
   userId     Int
   categories Category[]
   comments   Comment[]
-  likes Like[]
+  likes      Like[]
+
   // indexes for faster sorting by user
   @@index([userId])
   @@index([userId, createdAt])
 }
+
 model Challenge {
-  id         Int        @id @default(autoincrement())
-  name       String
-  description String?       @db.Text
-  mission String?       @db.Text
-  startAt  DateTime   @default(now())
-  endAt  DateTime?
-  frequency Frequency @default(DAILY)   
-  coverPhoto String?
-  icon        String?
-  color       String?
-  reminders   Boolean  @default(false)
-  syncCalendar Boolean @default(false)
-  createdAt  DateTime   @default(now())
-  updatedAt  DateTime   @updatedAt
-  publishAt  DateTime   @default(now())
-  published  Boolean    @default(false)
-  user       User       @relation(fields: [userId], references: [id])
-  userId     Int
-  members    MemberChallenge[]
-  comments   Comment[]
-  likes Like[]
+  id           Int               @id @default(autoincrement())
+  name         String
+  description  String?           @db.Text
+  mission      String?           @db.Text
+  startAt      DateTime          @default(now())
+  endAt        DateTime?
+  frequency    Frequency         @default(DAILY)
+  coverPhoto   String?
+  icon         String?
+  color        String?
+  reminders    Boolean           @default(false)
+  syncCalendar Boolean           @default(false)
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+  publishAt    DateTime          @default(now())
+  published    Boolean           @default(false)
+  user         User              @relation(fields: [userId], references: [id])
+  userId       Int
+  members      MemberChallenge[]
+  comments     Comment[]
+  likes        Like[]
+  notes        Note[]
+
   // indexes for faster sorting by user
   @@index([userId])
   @@index([userId, updatedAt])
 }
-model MemberChallenge{
-  user User @relation(fields: [userId], references: [id])
-  userId    Int
-  challenge Challenge? @relation(fields: [challengeId], references: [id])
+
+model MemberChallenge {
+  user        User       @relation(fields: [userId], references: [id])
+  userId      Int
+  challenge   Challenge? @relation(fields: [challengeId], references: [id])
   challengeId Int
-  createdAt  DateTime   @default(now())
+  createdAt   DateTime   @default(now())
+
   @@id([challengeId, userId])
   @@index([userId])
   @@index([userId, createdAt])
 }
 
 model Comment {
-  id         Int        @id @default(autoincrement())
-  createdAt  DateTime   @default(now())
-  updatedAt  DateTime   @updatedAt
-  body       String
-  user       User       @relation(fields: [userId], references: [id])
-  userId     Int
-  post       Post?       @relation(fields: [postId], references: [id])
-  postId     Int?
-  challenge  Challenge?       @relation(fields: [challengeId], references: [id])
-  challengeId     Int?
-  likes Like[]
+  id          Int        @id @default(autoincrement())
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  body        String
+  user        User       @relation(fields: [userId], references: [id])
+  userId      Int
+  post        Post?      @relation(fields: [postId], references: [id])
+  postId      Int?
+  challenge   Challenge? @relation(fields: [challengeId], references: [id])
+  challengeId Int?
+  likes       Like[]
+  notes       Note[]
+
   // indexes for faster sorting by user
   @@index([userId])
   @@index([challengeId])
   @@index([userId, createdAt])
 }
+
 model Like {
-  id         Int        @id @default(autoincrement())
-  createdAt  DateTime   @default(now())
-  user       User       @relation(fields: [userId], references: [id])
-  userId     Int        
-  post       Post?       @relation(fields: [postId], references: [id])
-  postId     Int?
-  challenge  Challenge?       @relation(fields: [challengeId], references: [id])
-  challengeId     Int?
-  comment Comment?       @relation(fields: [commentId], references: [id])
-  commentId Int?
+  id          Int        @id @default(autoincrement())
+  createdAt   DateTime   @default(now())
+  user        User       @relation(fields: [userId], references: [id])
+  userId      Int
+  post        Post?      @relation(fields: [postId], references: [id])
+  postId      Int?
+  note        Note?      @relation(fields: [noteId], references: [id])
+  noteId      Int?
+  challenge   Challenge? @relation(fields: [challengeId], references: [id])
+  challengeId Int?
+  comment     Comment?   @relation(fields: [commentId], references: [id])
+  commentId   Int?
+
   // indexes for faster sorting by user
   @@index([userId])
   @@index([challengeId])
-  @@index([postId])
+  @@index([noteId])
   @@index([commentId])
 }
-
 
 model Category {
   id    Int    @id @default(autoincrement())
@@ -135,6 +173,7 @@ enum Role {
   USER
   ADMIN
 }
+
 enum Frequency {
   DAILY
   WEEKDAYS
