@@ -21,7 +21,7 @@
     "build-storybook": "storybook build"
   },
   "dependencies": {
-    "@clerk/remix": "^3.2.0",
+    "@clerk/remix": "^4.0.0-beta.34",
     "@emotion/cache": "latest",
     "@emotion/react": "^11.11.3",
     "@emotion/server": "latest",

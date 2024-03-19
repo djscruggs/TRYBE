@@ -1,9 +1,7 @@
-import React from "react";
+import React from 'react'
+import { Link } from '@remix-run/react'
 
-import { Button } from "@material-tailwind/react";
-import { Link } from "@remix-run/react";
-
-export const WelcomePage = () => {
+export const WelcomePage = (): JSX.Element => {
   return (
     <div className="welcome-page -mt-4">
       <div className="overlap">
@@ -18,18 +16,18 @@ export const WelcomePage = () => {
             <div className="ellipse-3" />
           </div>
         </div>
-        <Link to="login">
+        <Link to="signin">
           <div className="already-have-account cursor-pointer">
           <div className="div-wrapper">
             <p className="p">I already have an account</p>
           </div>
         </div>
         </Link>
-        <Link to="/register">
+        <Link to="/signup">
         <img
           className="sign-up-button cursor-pointer"
           alt="Sign up button"
-          
+
           src="https://c.animaapp.com/ZqyGLRPh/img/sign-up-button@2x.png"
         />
         </Link>
@@ -42,5 +40,5 @@ export const WelcomePage = () => {
         <div className="text-wrapper-2">TRYBE</div>
       </div>
     </div>
-  );
-};
+  )
+}

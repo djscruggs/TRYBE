@@ -1,11 +1,28 @@
 import React from 'react'
-import { SignIn } from '@clerk/remix'
+import { type LoaderFunction, type LoaderFunctionArgs, redirect } from '@remix-run/node'
+import { SignIn } from '@clerk/clerk-react'
+import { getAuth } from '@clerk/remix/ssr.server'
+
+export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
+  const { userId } = await getAuth(args)
+  if (userId) {
+    return redirect('/')
+  }
+  return null
+}
 
 export default function SignInPage (): JSX.Element {
   return (
-    <div>
-      <h1>Sign In route</h1>
-      <SignIn />
+    <div className="h-full justify-center items-center flex flex-col gap-y-4">
+
+      <SignIn
+      appearance={{
+        elements: {
+          formButtonPrimary:
+            'bg-red hover:bg-yellow text-sm normal-case'
+        }
+      }}
+      />
     </div>
   )
 }

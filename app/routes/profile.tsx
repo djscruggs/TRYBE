@@ -1,32 +1,38 @@
-import { requireCurrentUser } from '../models/auth.server'
-import { type LoaderFunction, json, type LoaderFunctionArgs } from '@remix-run/node'
-import { loadUserCreatedChallenges } from '~/models/challenge.server'
 import React from 'react'
+import { type LoaderFunction, type LoaderFunctionArgs, redirect } from '@remix-run/node'
 import { UserProfile } from '@clerk/clerk-react'
+import { getAuth } from '@clerk/remix/ssr.server'
+import { ClerkLoading, ClerkLoaded } from '@clerk/remix'
+
 export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
-  const currentUser = await requireCurrentUser(args)
-  const result = await loadUserCreatedChallenges(currentUser?.id)
-  if (!result) {
-    const error = { loadingError: 'Unable to load challenges' }
-    return json(error)
+  const auth = await getAuth(args)
+  console.log('userId', auth.userId)
+  if (!auth.userId) {
+    return redirect('/signin')
   }
-  return json(result)
+  return auth
 }
 
 export default function Profile (): JSX.Element {
   return (
-      <>
-      <h1>Profile</h1>
-      <UserProfile
-        path="/profile"
-        routing="path"
-        appearance={{
-          variables: {
-            colorPrimary: '#FABFC4',
-            colorText: '#6b7280'
-          }
-        }}
-        />
-      </>
+    <div className="h-full justify-center items-center flex flex-col">
+      <ClerkLoading>
+        <p>Loading...</p>
+      </ClerkLoading>
+
+        <UserProfile
+          path="/profile"
+          routing="path"
+          appearance={{
+            variables: {
+              colorPrimary: '#FABFC4',
+              colorText: '#6b7280'
+            },
+            formButtonPrimary:
+                'bg-slate-500 hover:bg-slate-400 text-sm normal-case'
+          }}
+          />
+
+    </div>
   )
 }

@@ -15,15 +15,15 @@ export interface User {
 }
 
 export interface Challenge {
-  id: number | string
-  name: string
-  description: string
-  mission: string
-  color: string
-  userId: number | string
-  duration: number
-  unit: string
-  icon: string
+  id?: number
+  name?: string
+  description?: string
+  mission?: string
+  color?: string
+  userId?: number
+  duration?: number
+  unit?: string
+  icon?: string
 }
 export interface ChallengeSummary extends Challenge {
   _count: {

@@ -34,7 +34,7 @@ function ClerkAndLayout (): JSX.Element {
   const isMobileSize = useMobileSize()
   const navigate = useNavigate()
   return (
-        <ClerkProvider navigate={navigate} publishableKey={data.ENV.CLERK_PUBLISHABLE_KEY}>
+        <ClerkProvider navigate={navigate} publishableKey={data.ENV.CLERK_PUBLISHABLE_KEY} signInUrl='/signin'>
           {isMobileSize ? <LayoutMobile /> : <LayoutWeb />}
         </ClerkProvider>)
 }

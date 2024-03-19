@@ -15,23 +15,29 @@ import { Link, useNavigate } from '@remix-run/react'
 export default function CardChallenge ({ challenge }: { challenge: ChallengeSummary }): JSX.Element {
   const { currentUser } = useContext(CurrentUserContext)
   const navigate = useNavigate()
-  const textColor = textColorFromContainer(challenge.color, 'black')
+  const textColor = textColorFromContainer(challenge.color, 'white')
   const bgColor = colorToClassName(challenge.color, 'red')
   const buttonColor = buttonColorFromContainer(bgColor, 'white')
   const buttonTextColor = textColorFromContainer(buttonColor, 'red')
   const goToChallenge = (): void => {
-    navigate(`/challenges/${challenge.id}`)
+    const url = `/challenges/${challenge.id}`
+    if (currentUser) {
+      navigate(url)
+    } else {
+      localStorage.setItem('redirect', url)
+      navigate('/signup')
+    }
   }
   const iconOptions: Record<string, JSX.Element> = getIconOptionsForColor(bgColor)
   return (
-    <div className="mt-2 w-md border-0 drop-shadow-none mr-2">
+    <div className="mt-2 border-0 drop-shadow-none mr-2 w-full">
       <div className="drop-shadow-none">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Card className={`md:col-span-2 bg-${bgColor} p-2 border-1 drop-shadow-lg border-gray rounded-md`}>
             <div className="grid grid-cols-3 gap-4">
             <div className="flex flex-col justify-center items-center col-span-1">
-                <div className={`bg-transparent border-2 border-${textColor} rounded-full w-16 h-16 flex items-center justify-center`}>
-                 {iconOptions[challenge.icon]}
+                <div className={`bg-transparent border-2 border-${textColor} text-${textColor} rounded-full w-16 h-16 flex items-center justify-center`}>
+                 {iconOptions[challenge.icon] || <GiShinyApple className={`text-${textColor} h-8 w-8`} />}
                 </div>
                 <div className="flex justify-center items-center mt-2">
                   <FaRegCalendarAlt className={`text-${textColor} h-4 w-4 mr-1`} />

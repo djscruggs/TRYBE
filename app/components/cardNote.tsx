@@ -1,8 +1,8 @@
 import React, { useContext } from 'react'
 import {
-  Card,
-  Button
+  Card
 } from '@material-tailwind/react'
+import { useUser } from '@clerk/clerk-react'
 import type { Note } from '../utils/types.server'
 import { SlShareAlt } from 'react-icons/sl'
 import { CiChat1 } from 'react-icons/ci'
@@ -11,16 +11,19 @@ import { Link, useNavigate } from '@remix-run/react'
 
 export default function CardNote ({ note }: { note: Note }): JSX.Element {
   const { currentUser } = useContext(CurrentUserContext)
+  const user = useUser()
+  console.log(user)
   const navigate = useNavigate()
   const goToNote = (): void => {
     navigate(`/notes/${note.id}`)
   }
   return (
-    <div className="mt-2 w-md border-0 drop-shadow-none mr-2">
+    <div className={'mt-2 w-full border-0  drop-shadow-none mr-2'}>
       <div className="drop-shadow-none">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Card className={'md:col-span-2 p-2 border-1 drop-shadow-lg border-gray rounded-md'}>
+          <Card className={`md:col-span-2 p-2 border-1 drop-shadow-lg  border border-${currentUser?.id === note.userId ? 'green-500' : 'gray'} rounded-md`}>
             {note.body}
+            {currentUser?.id === note.userId && <div className="mt-4 text-xs text-gray-500"><Link className='underline' to={`/notes/${note.id}/edit`}>edit</Link> <Link className='underline' to={`/notes/${note.id}/delete`}>delete</Link></div>}
           </Card>
         </div>
         {/* <span className="text-xs text-gray-500">2 hours ago</span> */}

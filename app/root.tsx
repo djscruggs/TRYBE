@@ -22,7 +22,7 @@ import { Toaster, toast } from 'react-hot-toast'
 import { getUser } from './models/auth.server'
 import { getUserByClerkId } from './models/user.server'
 import { rootAuthLoader } from '@clerk/remix/ssr.server'
-import { ClerkApp, ClerkErrorBoundary } from '@clerk/remix'
+import { ClerkApp } from '@clerk/remix'
 interface DocumentProps {
   children: React.ReactNode
   title?: string
@@ -39,24 +39,17 @@ export const meta: MetaFunction = () => {
     { viewport: 'width=device-width,initial-scale=1' }
   ]
 }
-
-// export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
-//   return await rootAuthLoader(args)
-// }
 export const loader: LoaderFunction = async args => {
   const ENV = {
     CLERK_PUBLISHABLE_KEY: process.env.CLERK_PUBLISHABLE_KEY
   }
-
   return await rootAuthLoader(args, async ({ request }) => {
     const auth = request.auth
     if (auth?.userId) {
       const user = await getUserByClerkId(auth.userId)
       return { user, auth, ENV }
-    } else {
-      const user = await getUser(request)
-      return { user, auth, ENV }
     }
+    return { ENV }
   })
 }
 const Document = withEmotionCache(({ children, title }: DocumentProps, emotionCache) => {
@@ -109,8 +102,7 @@ function App (): JSX.Element {
 export default ClerkApp(App)
 
 // https://remix.run/docs/en/main/route/error-boundary
-export const ErrorBoundary = ClerkErrorBoundary()
-export function ErrorBoundaryOld (): JSX.Element {
+export function ErrorBoundary (): JSX.Element {
   const error = useRouteError()
 
   if (isRouteErrorResponse(error)) {
@@ -128,14 +120,16 @@ export function ErrorBoundaryOld (): JSX.Element {
     }
 
     return (
-      <Document title={`${error.status} ${error.statusText}`}>
-        <Layout>
-          <h1>
-            {error.status}: {error.statusText}
-          </h1>
-          {message}
-        </Layout>
+
+     <Document title={`${error.status} ${error.statusText}`}>
+      <div className="flex flex-col justify-start items-start mr-8">
+      <h1>
+        {error.status}: {error.statusText}
+      </h1>
+      {message}
+      </div>
       </Document>
+
     )
   }
 
@@ -143,14 +137,13 @@ export function ErrorBoundaryOld (): JSX.Element {
     console.error(error)
     return (
       <Document title="Error!">
-        <Layout>
           <div>
             <h1>There was an error</h1>
             <p>{error.message}</p>
             <hr />
             <p>Hey, developer, you should replace this with what you want yourcurrentUsers to see.</p>
           </div>
-        </Layout>
+
       </Document>
     )
   }

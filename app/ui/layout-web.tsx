@@ -1,28 +1,12 @@
 import { useLocation, Outlet } from '@remix-run/react'
 import React, { useState, useEffect, useContext } from 'react'
 import NavLinks from './navlinks'
-import { AnimatePresence, motion } from 'framer-motion'
 import { CurrentUserContext } from '../utils/CurrentUserContext'
 import { UserButton } from '@clerk/clerk-react'
-const LayoutWeb = () => {
-  const location = useLocation()
+const LayoutWeb = (): JSX.Element => {
   const { currentUser } = useContext(CurrentUserContext)
-  const [animate, setAnimate] = useState(true)
-
-  // turn off animation on login and register OR if Link to includes animate state
-  useEffect(() => {
-    // Check if the key exists in location.state
-    if (location.state && 'animate' in location.state) {
-      // If the key exists, use its value to set animateIt
-      setAnimate(location.state.animate)
-    } else if (['/register', '/login'].includes(location.pathname)) {
-      setAnimate(false)
-    } else {
-      // If the key doesn't exist, set animateIt to true
-      setAnimate(true)
-    }
-  }, [location.pathname])
-
+  const location = useLocation()
+  console.log('location', location)
   return (
           <div className='flex min-h-screen'>
             {currentUser &&
@@ -38,38 +22,19 @@ const LayoutWeb = () => {
                 </div>
               </div>
             </div>
-
             }
-
-            <div className={`flex-grow pt-4 ${currentUser ? 'ml-20' : 'ml-0'}`}>
+            <div className={`flex-grow pt-4 ${currentUser ?? location.pathname !== '/' ? 'ml-20' : 'ml-0'}`}>
               { currentUser &&
                 <div className='absolute right-0 mr-4'>
                   <UserButton
-                    afterSignOutUrl="/"
+                    showName={true}
+                    afterSignOutUrl="/logout"
                     userProfileUrl="/profile"
                     userProfileMode="navigation"
                     />
                 </div>
               }
                  <Outlet />
-              {/* <AnimatePresence mode='wait' initial={false}>
-                  {animate &&
-                  <motion.main
-                  key={useLocation().pathname}
-                  initial={{opacity: 0}}
-                  animate={{opacity: 1}}
-                  // exit={{opacity: 0}}
-                  transition={{duration: 0.3}}
-                  >
-                  <Outlet />
-                  </motion.main>
-                  }
-                  {!animate &&
-                  <motion.main>
-                  <Outlet />
-                  </motion.main>
-                  }
-              </AnimatePresence> */}
             </div>
           </div>
   )

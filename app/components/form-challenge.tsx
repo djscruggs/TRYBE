@@ -231,6 +231,7 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
             <div className='hidden'>
               <div className='text-purple-400 bg-purple-400 border-purple-400'>purple</div>
               <div className='text-blue-gray-50 bg-blue-gray-50 border-blue-gray-50'>blue-gray</div>
+              <div className='text-white bg-white border-white'>white</div>
               <div className='bg-gradient-to-b from-purple-400 to-white'>gradient</div>
               <div className='text-pink-300 bg-pink-300 border-pink-300'>pink</div>
               <div className='bg-gradient-to-b from-pink-300 to-white'>gradient</div>

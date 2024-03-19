@@ -17,7 +17,7 @@ export const loader: LoaderFunction = async (args) => {
   // if currentUser isn't authenticated, this will redirect to login
   const currentUser = await requireCurrentUser(args)
   // challenges
-  const rawChallenges = await prisma.challenge.findMany({
+  const challenges = await prisma.challenge.findMany({
     orderBy: [{ createdAt: 'desc' }],
     include: {
       user: true,
@@ -27,13 +27,7 @@ export const loader: LoaderFunction = async (args) => {
     }
 
   })
-  const challenges = rawChallenges.map(challenge => {
-    return {
-      ...challenge,
-      type: 'challenge'
-    }
-  })
-  const rawNotes = await prisma.note.findMany({
+  const notes = await prisma.note.findMany({
     orderBy: [{ createdAt: 'desc' }],
     include: {
       user: true,
@@ -42,20 +36,11 @@ export const loader: LoaderFunction = async (args) => {
       }
     }
   })
-  const notes = rawNotes.map(note => {
-    return {
-      ...note,
-      type: 'note'
-    }
-  })
   return { challenges, notes }
 }
 
-interface FeedItem extends ChallengeSummary, NoteSummary {
-  type: 'challenge' | 'note'
-}
 export default function Home (): JSX.Element {
-  const { challenges, notes } = useLoaderData() as { challenges: FeedItem[], notes: FeedItem[] }
+  const { challenges, notes } = useLoaderData()
   const combinedArray = [...challenges, ...notes].map(item => ({
     ...item
   })).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
@@ -91,12 +76,11 @@ export default function Home (): JSX.Element {
             </div>
 
             {feedItems.map(item => {
-              if (item.type === 'challenge') {
+              if ('mission' in item) {
                 return (<div className="flex items-center pl-0 mt-10 max-w-lg" key={item.id}>
                 <CardChallenge challenge={item as ChallengeSummary} />
                 </div>)
-              }
-              if (item.type === 'note') {
+              } else {
                 return (<div className="flex items-center pl-0 mt-10 max-w-lg" key={item.id}>
                 <CardNote note={item} />
                 </div>)
