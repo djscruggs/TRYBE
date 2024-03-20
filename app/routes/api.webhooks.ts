@@ -2,6 +2,7 @@
 import { json, type LoaderFunction, type ActionFunction } from '@remix-run/node'
 import { updateUser, createUser, deleteUser } from '../models/user.server'
 import { Webhook } from 'svix'
+import { prisma } from '../models/prisma.server'
 
 // @see https://clerk.com/docs/integrations/webhooks/sync-data
 // {
@@ -63,8 +64,10 @@ export const action: ActionFunction = async ({ request }) => {
   console.log(`Webhook with type ${bodyJson.type}`)
   try {
     if (bodyJson.type === 'user.created') {
+      // email_addresses is an array, but one is primary
+      // set it by finding the one that matches the primary_email_address_id
       const data = {
-        email: bodyJson.data.email_addresses[0].email_address,
+        email: bodyJson.data.email_addresses.find((address: any) => address.id === bodyJson.data.primary_email_address_id),
         firstName: bodyJson.data.first_name,
         lastName: bodyJson.data.last_name,
         clerkId: bodyJson.data.id,
@@ -74,6 +77,42 @@ export const action: ActionFunction = async ({ request }) => {
       console.log('data to create', data)
       const user = await createUser(data)
       console.log('user', user)
+    }
+    if (bodyJson.type === 'user.updated') {
+      // first get user id from clerk id
+      const user = await prisma.user.findFirst({
+        where: {
+          clerkId: bodyJson.data.id
+        },
+        include: {
+          profile: true
+        }
+      })
+      // first check that email address hasn't changed
+      const primaryEmailAddress = bodyJson.data.email_addresses.find((address: any) => address.id === bodyJson.data.primary_email_address_id)
+      // update email address
+      await prisma.user.update({
+        where: {
+          id: user?.id
+        },
+        data: {
+          email: primaryEmailAddress
+        }
+      })
+      // update profile
+      const profileId = user?.profile.id
+      const data = {
+        firstName: bodyJson.data.first_name,
+        lastName: bodyJson.data.last_name,
+        profileImage: bodyJson.data.image_url
+      }
+      const profile = await prisma.profile.update({
+        where: {
+          id: profileId
+        },
+        data
+      })
+      console.log('profile', profile)
     }
     if (bodyJson.type === 'session.created') {
       console.log('updating lastLogin')

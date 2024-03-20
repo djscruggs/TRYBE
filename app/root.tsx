@@ -18,7 +18,7 @@ import stylesheet from './output.css'
 import datepickerStyle from 'react-datepicker/dist/react-datepicker.css'
 import type { LinksFunction, LoaderFunction, LoaderFunctionArgs, MetaFunction } from '@remix-run/node'
 import { type User } from './utils/types.client'
-import { Toaster, toast } from 'react-hot-toast'
+import { Toaster } from 'react-hot-toast'
 import { getUser } from './models/auth.server'
 import { getUserByClerkId } from './models/user.server'
 import { rootAuthLoader } from '@clerk/remix/ssr.server'
@@ -49,7 +49,6 @@ export const loader: LoaderFunction = async args => {
     if (auth?.userId) {
       const user = await getUserByClerkId(auth.userId)
       if (!user) {
-        console.log('user not found')
         return { user: null, auth: null, ENV }
       }
       return { user, auth, ENV }
@@ -89,7 +88,6 @@ const Document = withEmotionCache(({ children, title }: DocumentProps, emotionCa
 function App (): JSX.Element {
   const { user, auth } = useLoaderData<{ user: User }>()
   const [currentUser, setCurrentUser] = useState<User | null>(user)
-  console.log(auth)
   useEffect(() => {
     setCurrentUser(user)
   }, [user])
