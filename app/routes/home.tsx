@@ -7,7 +7,6 @@ import FeedCommunityCard from '~/components/feedcommunitycard'
 import FeedPostCard from '~/components/feedpostcard'
 import type { ChallengeSummary, NoteSummary } from '../utils/types.server'
 import { useMobileSize } from '../utils/useMobileSize'
-import { requireCurrentUser } from '../models/auth.server'
 import { type LoaderFunction } from '@remix-run/node'
 import FeedChallengeCard from '~/components/feedchallengecard'
 import { prisma } from '../models/prisma.server'
@@ -15,7 +14,6 @@ import CardChallenge from '../components/cardChallenge'
 import CardNote from '~/components/cardNote'
 export const loader: LoaderFunction = async (args) => {
   // if currentUser isn't authenticated, this will redirect to login
-  const currentUser = await requireCurrentUser(args)
   // challenges
   const challenges = await prisma.challenge.findMany({
     orderBy: [{ createdAt: 'desc' }],
@@ -71,10 +69,11 @@ export default function Home (): JSX.Element {
 
                </div>
             </div>
-            <div className=" pl-2 max-w-md">
-               <FormNote />
-            </div>
-
+            {currentUser &&
+              <div className=" pl-2 max-w-md">
+                <FormNote />
+              </div>
+            }
             {feedItems.map(item => {
               if ('mission' in item) {
                 return (<div className="flex items-center pl-0 mt-10 max-w-lg" key={item.id}>

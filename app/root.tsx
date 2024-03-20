@@ -45,8 +45,13 @@ export const loader: LoaderFunction = async args => {
   }
   return await rootAuthLoader(args, async ({ request }) => {
     const auth = request.auth
+
     if (auth?.userId) {
       const user = await getUserByClerkId(auth.userId)
+      if (!user) {
+        console.log('user not found')
+        return { user: null, auth: null, ENV }
+      }
       return { user, auth, ENV }
     }
     return { ENV }
@@ -82,8 +87,9 @@ const Document = withEmotionCache(({ children, title }: DocumentProps, emotionCa
 // https://remix.run/docs/en/main/route/component
 // https://remix.run/docs/en/main/file-conventions/routes
 function App (): JSX.Element {
-  const { user } = useLoaderData<{ user: User }>()
+  const { user, auth } = useLoaderData<{ user: User }>()
   const [currentUser, setCurrentUser] = useState<User | null>(user)
+  console.log(auth)
   useEffect(() => {
     setCurrentUser(user)
   }, [user])
@@ -137,11 +143,10 @@ export function ErrorBoundary (): JSX.Element {
     console.error(error)
     return (
       <Document title="Error!">
-          <div>
-            <h1>There was an error</h1>
-            <p>{error.message}</p>
-            <hr />
-            <p>Hey, developer, you should replace this with what you want yourcurrentUsers to see.</p>
+          <div style={{ margin: '100px', padding: '25%' }}>
+            <h1 style={{ fontSize: '1rem', color: 'red' }}>There was an error</h1>
+            <p style={{ fontSize: '2rem' }}>{error.message}</p>
+
           </div>
 
       </Document>

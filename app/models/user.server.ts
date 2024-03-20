@@ -2,14 +2,38 @@
 import bcrypt from 'bcryptjs'
 import type { RegisterForm } from '../utils/types.server'
 import { prisma } from './prisma.server'
-import { Webhook } from 'svix'
+console.log(prisma)
 
-export const createUser = async (user: RegisterForm | prisma.UserCreateInput): Promise<{ id: string, email: string }> => {
+export const createUser = async (user: RegisterForm | prisma.UserCreateInput): Promise<{ id: number, email: string }> => {
+  return { created: true }
+  // console.log('prisma.user', prisma.user)
+  // let passwordHash = null
+  // if (user.password) {
+  //   passwordHash = await bcrypt.hash(String(user.password), 10)
+  // }
+  // console.log('in createUser, submitted user is', user)
+  // const data = {
+  //   email: user.email,
+  //   password: passwordHash,
+  //   clerkId: user.clerkId,
+  //   profile: {
+  //     create: {
+  //       firstName: user.firstName,
+  //       lastName: user.lastName,
+  //       profileImage: user.profileImage
+  //     }
+  //   }
+  // }
+  // console.log('data', data)
+  // const newUser = await prisma.user.create({ data })
+  // console.log('newUser', newUser)
+  // return { id: newUser.id, email: user.email }
+}
+export const createUser2 = async (user: RegisterForm | prisma.UserCreateInput): Promise<{ id: string, email: string }> => {
   let passwordHash = null
   if (user.password) {
     passwordHash = await bcrypt.hash(String(user.password), 10)
   }
-  console.log('in createUser, data is', user)
   const newUser = await prisma.user.create({
     data: {
       email: user.email,
@@ -24,6 +48,7 @@ export const createUser = async (user: RegisterForm | prisma.UserCreateInput): P
       }
     }
   })
+  console.log('newUser', newUser)
   return { id: newUser.id, email: user.email }
 }
 export const loadUser = async (userId: string): Promise<prisma.User> => {
@@ -66,5 +91,6 @@ export const deleteUser = async (user: prisma.UserUpdateInput): Promise<prisma.U
   } else if (user.clerkId) {
     where = { clerkId: user.clerkId }
   }
+  console.log('in delete where is', where)
   return await prisma.user.deleteMany({ where })
 }

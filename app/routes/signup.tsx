@@ -5,14 +5,16 @@ import { getAuth } from '@clerk/remix/ssr.server'
 
 export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
   const { userId } = await getAuth(args)
-  if (!userId) {
-    return redirect('/signin')
+  console.log('userId', userId)
+  if (userId) {
+    return redirect('/home')
   }
   return null
 }
 export default function SignUpPage (): JSX.Element {
+  console.log('SignUpPage')
   return (
-    <div className="h-full justify-center items-center flex flex-col gap-y-4">
+    <div className="h-full border border-red justify-center items-center flex flex-col gap-y-4">
       <SignUp
       appearance={{
         variables: {

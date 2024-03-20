@@ -5,7 +5,7 @@
     "setup": "prisma generate && prisma migrate deploy",
     "styles": " npx tailwindcss -i ./app/tailwind.css -o ./app/output.css --watch",
     "build": "find ./ -name \".DS_Store\" -print -delete; remix build",
-    "dev": "find ./ -name \".DS_Store\" -print -delete; NODE_ENV=development remix dev --manual",
+    "dev": "find ./ -name \".DS_Store\" -print -delete; remix dev",
     "start": "find ./ -name \".DS_Store\" -print -delete; remix-serve ./build/index.js",
     "test": "vitest",
     "lint": "eslint .",

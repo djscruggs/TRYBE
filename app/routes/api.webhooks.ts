@@ -71,7 +71,9 @@ export const action: ActionFunction = async ({ request }) => {
         profileImage: bodyJson.data.image_url,
         lastLogin: new Date()
       }
-      await createUser(data)
+      console.log('data to create', data)
+      const user = await createUser(data)
+      console.log('user', user)
     }
     if (bodyJson.type === 'session.created') {
       console.log('updating lastLogin')
