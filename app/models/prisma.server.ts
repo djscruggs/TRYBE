@@ -2,6 +2,7 @@ import { PrismaClient } from '@prisma/client'
 
 let prisma: PrismaClient
 declare global {
+  // eslint-disable-next-line no-var, @typescript-eslint/naming-convention
   var __db: PrismaClient | undefined
 }
 
