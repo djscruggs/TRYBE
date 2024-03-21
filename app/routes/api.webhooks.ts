@@ -66,8 +66,9 @@ export const action: ActionFunction = async ({ request }) => {
     if (bodyJson.type === 'user.created') {
       // email_addresses is an array, but one is primary
       // set it by finding the one that matches the primary_email_address_id
+      const primaryEmailAddress = bodyJson.data.email_addresses.find((address: any) => address.id === bodyJson.data.primary_email_address_id).email_address
       const data = {
-        email: bodyJson.data.email_addresses.find((address: any) => address.id === bodyJson.data.primary_email_address_id),
+        email: primaryEmailAddress,
         firstName: bodyJson.data.first_name,
         lastName: bodyJson.data.last_name,
         clerkId: bodyJson.data.id,
@@ -76,7 +77,6 @@ export const action: ActionFunction = async ({ request }) => {
       }
       console.log('data to create', data)
       const user = await createUser(data)
-      console.log('user', user)
     }
     if (bodyJson.type === 'user.updated') {
       // first get user id from clerk id
@@ -88,9 +88,9 @@ export const action: ActionFunction = async ({ request }) => {
           profile: true
         }
       })
-      // first check that email address hasn't changed
-      const primaryEmailAddress = bodyJson.data.email_addresses.find((address: any) => address.id === bodyJson.data.primary_email_address_id)
       // update email address
+      const primaryEmailAddress = bodyJson.data.email_addresses.find((address: any) => address.id === bodyJson.data.primary_email_address_id).email_address
+      console.log('primaryEmailAddress', primaryEmailAddress)
       await prisma.user.update({
         where: {
           id: user?.id
@@ -106,13 +106,12 @@ export const action: ActionFunction = async ({ request }) => {
         lastName: bodyJson.data.last_name,
         profileImage: bodyJson.data.image_url
       }
-      const profile = await prisma.profile.update({
+      await prisma.profile.update({
         where: {
           id: profileId
         },
         data
       })
-      console.log('profile', profile)
     }
     if (bodyJson.type === 'session.created') {
       console.log('updating lastLogin')
