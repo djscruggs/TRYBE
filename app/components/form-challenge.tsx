@@ -12,9 +12,9 @@ import DatePicker from 'react-datepicker'
 import { addDays } from 'date-fns'
 import { toast } from 'react-hot-toast'
 import axios from 'axios'
-import { colorToClassName, getIconOptionsForColor } from '~/utils/helpers'
+import { colorToClassName, getIconOptionsForColor, handleImageUpload } from '~/utils/helpers'
 import { useRevalidator } from 'react-router-dom'
-import { TiDelete } from 'react-icons/ti'
+
 interface Errors {
   name?: string
   description?: string
@@ -157,26 +157,7 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
   const [fileDataURL, setFileDataURL] = useState<string | null>(formData.coverPhoto ? String(formData.coverPhoto) : null)
 
   const handlePhoto = (e: ChangeEvent<HTMLInputElement>): void => {
-    const { files } = e.target
-    if (!files) return
-    const image = files[0]
-    if (image.size > 1_000_000) {
-      toast.error('Image must be less than 1MB')
-      return
-    }
-    setFile(image)
-    const fileReader = new FileReader()
-    fileReader.onload = (e) => {
-      const result = e.target?.result
-      if (result) {
-        if (typeof result === 'string') {
-          setFileDataURL(result)
-        } else {
-          setFileDataURL(null)
-        }
-      }
-    }
-    fileReader.readAsDataURL(image)
+    handleImageUpload(e, setFile, setFileDataURL)
   }
   const removePhoto = (): void => {
     setFile(null)

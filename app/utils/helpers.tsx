@@ -5,6 +5,8 @@ import { FaRegLightbulb } from 'react-icons/fa6'
 import { RiMentalHealthLine } from 'react-icons/ri'
 import { PiBarbellLight } from 'react-icons/pi'
 import { IoFishOutline } from 'react-icons/io5'
+import type { ChangeEvent } from 'react'
+import { toast } from 'react-hot-toast'
 
 // helper  function that converts booleans, integers and dates from strings to the proper type
 export function convertStringValues (obj: any): any {
@@ -117,4 +119,30 @@ export function convertlineTextToHtml (text: string | undefined): React.ReactNod
       ))}
     </div>
   )
+}
+
+export function handleImageUpload (
+  e: ChangeEvent<HTMLInputElement>,
+  setFile: (file: File | null) => void,
+  setFileDataURL: (dataURL: string | null) => void): void {
+  const { files } = e.target
+  if (!files) return
+  const image = files[0]
+  if (image.size > 1_000_000) {
+    toast.error('Image must be less than 1MB')
+    return
+  }
+  setFile(image)
+  const fileReader = new FileReader()
+  fileReader.onload = (e) => {
+    const result = e.target?.result
+    if (result) {
+      if (typeof result === 'string') {
+        setFileDataURL(result)
+      } else {
+        setFileDataURL(null)
+      }
+    }
+  }
+  fileReader.readAsDataURL(image)
 }

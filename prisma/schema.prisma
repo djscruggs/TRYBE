@@ -54,6 +54,7 @@ model Note {
   challenge   Challenge? @relation(fields: [challengeId], references: [id])
   challengeId Int?
   likes       Like[]
+  image       String?
   comment     Comment?   @relation(fields: [commentId], references: [id])
   commentId   Int?
 

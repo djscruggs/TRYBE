@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useState } from 'react'
 import {
   Card
 } from '@material-tailwind/react'
@@ -8,20 +8,25 @@ import { SlShareAlt } from 'react-icons/sl'
 import { CiChat1 } from 'react-icons/ci'
 import { CurrentUserContext } from '../utils/CurrentUserContext'
 import { Link, useNavigate } from '@remix-run/react'
+import { Lightbox } from 'react-modal-image'
+import { FormNote } from './form-note'
 
 export default function CardNote ({ note }: { note: Note }): JSX.Element {
   const { currentUser } = useContext(CurrentUserContext)
   const user = useUser()
+  const [showLightbox, setShowLightbox] = useState(false)
   const navigate = useNavigate()
   const goToNote = (): void => {
     navigate(`/notes/${note.id}`)
   }
   return (
+    <>
     <div className={'mt-2 w-full border-0  drop-shadow-none mr-2'}>
       <div className="drop-shadow-none">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Card className={`md:col-span-2 p-2 border-1 drop-shadow-lg  border border-${currentUser?.id === note.userId ? 'green-500' : 'gray'} rounded-md`}>
             {note.body}
+            {note.image && <img src={`${note.image}?${Date.now()}`} alt="note picture" className="max-w-[200px]" onClick={() => { setShowLightbox(true) }} />}
             {currentUser?.id === note.userId && <div className="mt-4 text-xs text-gray-500"><Link className='underline' to={`/notes/${note.id}/edit`}>edit</Link> <Link className='underline' to={`/notes/${note.id}/delete`}>delete</Link></div>}
           </Card>
         </div>
@@ -45,5 +50,7 @@ export default function CardNote ({ note }: { note: Note }): JSX.Element {
         </div>
       </div>
     </div>
+    {(note.image && showLightbox) && <Lightbox medium={note.image} large={note.image} alt="note photo" onClose={() => { setShowLightbox(false) }}/>}
+    </>
   )
 }

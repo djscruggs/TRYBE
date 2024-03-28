@@ -45,6 +45,10 @@ export interface Note {
   id?: number
   userId?: string | number
   body: string | null
+  image?: string | null
+  challengeId?: string | number
+  replyToId?: string | number
+  commentId?: string | number
   createdAt?: Date
   updatedAt?: Date
 }

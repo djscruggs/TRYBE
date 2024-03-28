@@ -1,18 +1,43 @@
-import React, { useState } from 'react'
+import React, { useState, useRef } from 'react'
 import { Form, useNavigate } from '@remix-run/react'
 import axios from 'axios'
 import { FormField } from './form-field'
+import { handleImageUpload } from '~/utils/helpers'
 import { Button } from '@material-tailwind/react'
-interface FormCommentProps {
+import { MdOutlineAddPhotoAlternate } from 'react-icons/md'
+interface FormNoteProps {
   challengeId: string | number
   afterSave?: () => void
   onCancel?: () => void
 }
+interface NoteForm {
+  body: string
+  image: File | null
+}
 
-export default function FormNote (props: FormCommentProps): JSX.Element {
+export default function FormNote (props: FormNoteProps): JSX.Element {
+  const { challengeId, afterSave, onCancel } = props
   const [body, setBody] = useState('')
   const [error, setError] = useState('')
   const navigate = useNavigate()
+  const imageRef = useRef<HTMLInputElement>(null)
+  const [formData, setFormData] = useState<NoteForm | null>(null)
+  const [file, setFile] = useState<File | null>(null)
+  const [fileDataURL, setFileDataURL] = useState<string | null>(null)
+
+  const imageDialog = (): void => {
+    console.log(imageRef)
+    if (imageRef.current) {
+      imageRef.current.click()
+    }
+  }
+  const handleImage = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    handleImageUpload(e, setFile, setFileDataURL)
+  }
+  // const setImage = (ev: React.ChangeEvent<HTMLInputElement>): void => {
+  //   console.log(ev)
+  //   handlePhotoUpload(ev, setImage, setFileDataURL)
+  // }
 
   async function handleSubmit (ev: React.FormEvent<HTMLFormElement>): Promise<void> {
     ev.preventDefault()
@@ -21,21 +46,29 @@ export default function FormNote (props: FormCommentProps): JSX.Element {
     }
     const formData = new FormData()
     formData.append('body', body)
+    if (challengeId) {
+      formData.append('challengeId', challengeId.toString())
+    }
+    if (file) {
+      formData.append('image', file)
+    }
     console.log('formData', formData)
     const result = await axios.post('/api/notes', formData)
     console.log('result', result)
-    console.log(result)
     setBody('')
-    if (props.afterSave) {
-      props.afterSave()
+    setFile(null)
+    setFileDataURL(null)
+    if (afterSave) {
+      afterSave()
     } else {
       navigate('.')
     }
   }
-  const handleCancel = (ev: React.FormEvent<HTMLFormElement>): void => {
+  const handleCancel = (ev: React.MouseEvent<HTMLButtonElement, MouseEvent>): void => {
     ev.preventDefault()
-    if (props.onCancel) {
-      props.onCancel()
+    setBody('')
+    if (onCancel) {
+      onCancel()
     }
   }
   return (
@@ -54,9 +87,11 @@ export default function FormNote (props: FormCommentProps): JSX.Element {
           }}
           error={error}
           />
-
+        <input type="file" name="image" hidden ref={imageRef} onChange={handleImage} accept="image/*"/>
+        <MdOutlineAddPhotoAlternate onClick={imageDialog} className='text-2xl cursor-pointer float-right' />
+        {fileDataURL && <img src={fileDataURL} alt="preview" className='w-24 h-24' />}
         <Button type="submit" placeholder='Save' className="bg-red">Save</Button>
-        {props.onCancel && (
+        {body && (
           <button onClick={handleCancel} className="mt-2 text-sm underline ml-2">cancel</button>
         )}
 

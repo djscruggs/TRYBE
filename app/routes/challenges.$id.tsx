@@ -148,7 +148,7 @@ export default function ViewChallenge (): JSX.Element {
 
     <div className={`max-w-sm border border-transparent border-b-inherit rounded-md bg-gradient-to-b from-${color} to-90%`}>
       <div className={'mb-2 mt-0.5 flex justify-center max-h-80 '}>
-          {data.challenge.coverPhoto && <img src={data.challenge.coverPhoto} alt={`${data.challenge.name as string} cover photo`} className="w-full rounded-sm" />}
+          {data.challenge.coverPhoto && <img src={`${data.challenge.coverPhoto}?${Date.now()}`} alt={`${data.challenge.name as string} cover photo`} className="w-full rounded-sm" />}
       </div>
       <div className="mb-6 px-4 flex flex-col justify-center">
       {data.challenge.icon && <div className="mb-2 flex justify-center">{iconOptions[data.challenge.icon as string]}</div>}
