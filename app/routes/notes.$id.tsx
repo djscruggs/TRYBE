@@ -64,7 +64,7 @@ export default function ViewNote (): JSX.Element {
   }
 
   return (
-    <div className='max-w-[600px] mt-10'>
+    <div className='max-w-[400px] mt-10'>
       <CardNote note={data.note} />
     </div>
   )

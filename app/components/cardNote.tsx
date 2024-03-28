@@ -7,7 +7,7 @@ import type { Note } from '../utils/types.server'
 import { SlShareAlt } from 'react-icons/sl'
 import { CiChat1 } from 'react-icons/ci'
 import { CurrentUserContext } from '../utils/CurrentUserContext'
-import { Link, useNavigate } from '@remix-run/react'
+import { Link, useNavigate, useLocation } from '@remix-run/react'
 import { Lightbox } from 'react-modal-image'
 import FormNote from './form-note'
 
@@ -16,9 +16,12 @@ export default function CardNote ({ note }: { note: Note }): JSX.Element {
   const user = useUser()
   const [showLightbox, setShowLightbox] = useState(false)
   const [editing, setEditing] = useState(false)
+  const location = useLocation()
+  const isOwnRoute = location.pathname === `/notes/${note.id}`
 
   const navigate = useNavigate()
   const goToNote = (): void => {
+    if (isOwnRoute) return
     navigate(`/notes/${note.id}`)
   }
   const handlePhotoClick = (event: any): void => {
@@ -35,7 +38,7 @@ export default function CardNote ({ note }: { note: Note }): JSX.Element {
   return (
     <>
     <div className={'mt-2 w-full border-0  drop-shadow-none mr-2'}>
-      <div className="drop-shadow-none cursor-pointer" onClick={goToNote}>
+      <div className={`drop-shadow-none ${!isOwnRoute ? 'cursor-pointer' : ''}`} onClick={goToNote}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Card className={`md:col-span-2 p-2 border-1 drop-shadow-lg  border border-${currentUser?.id === note.userId ? 'green-500' : 'gray'} rounded-md`}>
             {note.body}
