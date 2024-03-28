@@ -14,6 +14,7 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
 }
 
 export default function SignInPage (): JSX.Element {
+  console.log('in signing')
   return (
     <div className="h-full justify-center items-center flex flex-col gap-y-4">
 

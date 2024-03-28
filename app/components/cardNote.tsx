@@ -12,7 +12,6 @@ import { Link, useNavigate } from '@remix-run/react'
 export default function CardNote ({ note }: { note: Note }): JSX.Element {
   const { currentUser } = useContext(CurrentUserContext)
   const user = useUser()
-  console.log(user)
   const navigate = useNavigate()
   const goToNote = (): void => {
     navigate(`/notes/${note.id}`)

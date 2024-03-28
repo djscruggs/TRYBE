@@ -1,12 +1,11 @@
 import { useLocation, Outlet } from '@remix-run/react'
-import React, { useState, useEffect, useContext } from 'react'
+import React, { useContext } from 'react'
 import NavLinks from './navlinks'
 import { CurrentUserContext } from '../utils/CurrentUserContext'
 import { UserButton } from '@clerk/clerk-react'
 const LayoutWeb = (): JSX.Element => {
   const { currentUser } = useContext(CurrentUserContext)
   const location = useLocation()
-  console.log('location', location)
   return (
           <div className='flex min-h-screen'>
             {currentUser &&

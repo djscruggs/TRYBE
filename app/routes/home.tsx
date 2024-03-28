@@ -12,7 +12,12 @@ import FeedChallengeCard from '~/components/feedchallengecard'
 import { prisma } from '../models/prisma.server'
 import CardChallenge from '../components/cardChallenge'
 import CardNote from '~/components/cardNote'
-export const loader: LoaderFunction = async (args) => {
+
+interface FeedLoaderData {
+  challenges: ChallengeSummary[]
+  notes: NoteSummary[]
+};
+export const loader: LoaderFunction = async (args): Promise<FeedLoaderData> => {
   // if currentUser isn't authenticated, this will redirect to login
   // challenges
   const challenges = await prisma.challenge.findMany({
@@ -38,7 +43,7 @@ export const loader: LoaderFunction = async (args) => {
 }
 
 export default function Home (): JSX.Element {
-  const { challenges, notes } = useLoaderData()
+  const { challenges, notes } = useLoaderData() as FeedLoaderData
   const combinedArray = [...challenges, ...notes].map(item => ({
     ...item
   })).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
@@ -48,7 +53,6 @@ export default function Home (): JSX.Element {
   if (!feedItems) {
     return <p>Loading...</p>
   }
-  console.log(feedItems)
   return (
          <>
             <div className='max-w-lg px-2'>
