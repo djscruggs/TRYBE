@@ -3,27 +3,23 @@ import { Form, useNavigate } from '@remix-run/react'
 import axios from 'axios'
 import { FormField } from './form-field'
 import { handleImageUpload } from '~/utils/helpers'
+import { type Note } from '~/models/note.server'
 import { Button } from '@material-tailwind/react'
 import { MdOutlineAddPhotoAlternate } from 'react-icons/md'
 interface FormNoteProps {
-  challengeId: string | number
   afterSave?: () => void
   onCancel?: () => void
-}
-interface NoteForm {
-  body: string
-  image: File | null
+  note?: Note
 }
 
 export default function FormNote (props: FormNoteProps): JSX.Element {
-  const { challengeId, afterSave, onCancel } = props
-  const [body, setBody] = useState('')
+  const { afterSave, onCancel, note } = props
+  const [body, setBody] = useState(note?.body || '')
   const [error, setError] = useState('')
   const navigate = useNavigate()
   const imageRef = useRef<HTMLInputElement>(null)
-  const [formData, setFormData] = useState<NoteForm | null>(null)
   const [file, setFile] = useState<File | null>(null)
-  const [fileDataURL, setFileDataURL] = useState<string | null>(null)
+  const [fileDataURL, setFileDataURL] = useState<string | null>(note?.image ? note.image : null)
 
   const imageDialog = (): void => {
     console.log(imageRef)
@@ -34,10 +30,6 @@ export default function FormNote (props: FormNoteProps): JSX.Element {
   const handleImage = (e: React.ChangeEvent<HTMLInputElement>): void => {
     handleImageUpload(e, setFile, setFileDataURL)
   }
-  // const setImage = (ev: React.ChangeEvent<HTMLInputElement>): void => {
-  //   console.log(ev)
-  //   handlePhotoUpload(ev, setImage, setFileDataURL)
-  // }
 
   async function handleSubmit (ev: React.FormEvent<HTMLFormElement>): Promise<void> {
     ev.preventDefault()
