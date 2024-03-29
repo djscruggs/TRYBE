@@ -29,6 +29,19 @@ export const loadNote = async (noteId: string | number): Promise<Note | null> =>
     }
   })
 }
+export const loadRepost = async (replyToId: string | number, userId: string | number, body: string | null): Promise<Note | null> => {
+  const id = Number(replyToId)
+  console.log('id im loadRepost', id)
+  console.log('userID im loadRepost', userId)
+  console.log('body im loadRepost', body)
+  return await prisma.note.findFirst({
+    where: {
+      replyToId: Number(replyToId),
+      userId: Number(userId),
+      body
+    }
+  })
+}
 export const loadNoteSummary = async (noteId: string | number): Promise<Array<Record<string, any>>> => {
   const id = Number(noteId)
   return await prisma.note.findUnique({
@@ -37,7 +50,7 @@ export const loadNoteSummary = async (noteId: string | number): Promise<Array<Re
     },
     include: {
       _count: {
-        select: { replies: true, likes: true }
+        select: { replies: { where: { isRepost: false } }, likes: true }
       },
       replyTo: true
     }

@@ -10,10 +10,14 @@ interface FormNoteProps {
   afterSave?: () => void
   onCancel?: () => void
   note?: Note
+  replytoId?: number
+  prompt?: string
+  isRepost?: boolean
 }
 
 export default function FormNote (props: FormNoteProps): JSX.Element {
-  const { afterSave, onCancel, note } = props
+  const { afterSave, onCancel, note, prompt } = props
+  const placeholder = prompt ?? 'What\'s on your mind?'
   const [body, setBody] = useState(note?.body || '')
   const [error, setError] = useState('')
   const navigate = useNavigate()
@@ -68,7 +72,7 @@ export default function FormNote (props: FormNoteProps): JSX.Element {
       <Form method="post" onSubmit={handleSubmit}>
       <FormField
           name='note'
-          placeholder="What's on your mind?"
+          placeholder={placeholder}
           type='textarea'
           rows={3}
           required={true}
@@ -83,9 +87,8 @@ export default function FormNote (props: FormNoteProps): JSX.Element {
         <MdOutlineAddPhotoAlternate onClick={imageDialog} className='text-2xl cursor-pointer float-right' />
         {fileDataURL && <img src={fileDataURL} alt="preview" className='w-24 h-24' />}
         <Button type="submit" placeholder='Save' className="bg-red">Save</Button>
-        {body && (
+
           <button onClick={handleCancel} className="mt-2 text-sm underline ml-2">cancel</button>
-        )}
 
       </Form>
     </div>

@@ -1,4 +1,4 @@
-import { loadNoteSummary } from '~/models/note.server'
+import { loadNoteSummary, loadRepost } from '~/models/note.server'
 import { Outlet, useLoaderData, Link, useNavigate, useLocation } from '@remix-run/react'
 import React, { useContext, useState } from 'react'
 import CardNote from '~/components/cardNote'
@@ -25,10 +25,12 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
   }
   const result = await loadNoteSummary(params.id)
   if (!result) {
-    const error = { loadingError: 'Challenge not found' }
+    const error = { loadingError: 'Note not found' }
     return json(error)
   }
   // load memberships & likes for current user if it exists
+  let hasReposted = false
+  let hasLiked = false
   if (currentUser) {
     // has the user liked this note?
     const likes = await prisma.like.count({
@@ -37,11 +39,24 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
         userId: currentUser.id
       }
     })
-    console.log('likes', likes)
+    hasLiked = likes > 0
+    // has the user reposted this note?
+    const reposted = await loadRepost(parseInt(params.id), currentUser?.id, null)
+    console.log('reposted', reposted)
+    if (reposted) {
+      hasReposted = true
+    }
   }
-  // if it's a reply fetch the original note
+  // get cound of resposts
+  const repostCount = await prisma.note.count({
+    where: {
+      replyToId: parseInt(params.id),
+      body: null
+    }
+  })
+  console.log('repostCount', repostCount)
   console.log(result)
-  const data: NoteObjectData = { note: result }
+  const data: NoteObjectData = { note: result, hasLiked, hasReposted, repostCount }
   return json(data)
 }
 export default function ViewNote (): JSX.Element {
@@ -49,11 +64,7 @@ export default function ViewNote (): JSX.Element {
   if (location.pathname.includes('edit')) {
     return <Outlet />
   }
-  const isComments = location.pathname.includes('comments')
-  const { currentUser } = useContext(CurrentUserContext)
-  const navigate = useNavigate()
-  const revalidator = useRevalidator()
-  const [loading, setLoading] = useState<boolean>(false)
+
   const data: ObjectData = useLoaderData() as ObjectData
   if (!data) {
     return <p>No data.</p>
@@ -64,10 +75,9 @@ export default function ViewNote (): JSX.Element {
   if (!data?.note) {
     return <p>Loading...</p>
   }
-
   return (
     <div className='max-w-[400px] mt-10'>
-      <CardNote note={data.note} />
+      <CardNote note={data.note} repostCount={data.repostCount} hasLiked={Boolean(data.hasLiked)} hasReposted={Boolean(data.hasReposted)} />
     </div>
   )
 }
