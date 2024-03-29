@@ -39,6 +39,8 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
     })
     console.log('likes', likes)
   }
+  // if it's a reply fetch the original note
+  console.log(result)
   const data: NoteObjectData = { note: result }
   return json(data)
 }

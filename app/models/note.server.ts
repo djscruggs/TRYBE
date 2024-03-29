@@ -38,7 +38,8 @@ export const loadNoteSummary = async (noteId: string | number): Promise<Array<Re
     include: {
       _count: {
         select: { replies: true, likes: true }
-      }
+      },
+      replyTo: true
     }
   })
 }
