@@ -10,13 +10,14 @@ interface FormNoteProps {
   afterSave?: () => void
   onCancel?: () => void
   note?: Note
-  replytoId?: number
+  replyToId?: number
   prompt?: string
   isRepost?: boolean
 }
 
 export default function FormNote (props: FormNoteProps): JSX.Element {
-  const { afterSave, onCancel, note, prompt } = props
+  const { afterSave, onCancel, note, prompt, replyToId } = props
+  console.log(props)
   const placeholder = prompt ?? 'What\'s on your mind?'
   const [body, setBody] = useState(note?.body || '')
   const [error, setError] = useState('')
@@ -40,15 +41,21 @@ export default function FormNote (props: FormNoteProps): JSX.Element {
     if (body.length < 10) {
       setError('Note must be at least 10 characters long')
     }
+    console.log('replyToId', replyToId)
     const formData = new FormData()
     formData.append('body', body)
-    if (challengeId) {
-      formData.append('challengeId', challengeId.toString())
+    if (note) {
+      formData.append('id', note.id.toString())
+    }
+    if (note) {
+      formData.append('id', note.id.toString())
+    }
+    if (replyToId) {
+      formData.append('replyToId', replyToId.toString())
     }
     if (file) {
       formData.append('image', file)
     }
-    console.log('formData', formData)
     const result = await axios.post('/api/notes', formData)
     console.log('result', result)
     setBody('')

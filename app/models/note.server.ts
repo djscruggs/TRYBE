@@ -11,9 +11,10 @@ export const createNote = async (
   })
 }
 export const updateNote = async (note: prisma.noteCreateInput): Promise<Note> => {
+  const { id, ...data } = note
   return await prisma.note.update({
-    where: { id: note.id },
-    data: note
+    where: { id },
+    data
   })
 }
 export const loadNote = async (noteId: string | number): Promise<Note | null> => {

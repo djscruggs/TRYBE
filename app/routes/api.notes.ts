@@ -9,11 +9,16 @@ export const action: ActionFunction = async (args) => {
 
   const request = args.request
   const rawData = await unstable_parseMultipartFormData(request, uploadHandler)
+  for (const [key, value] of rawData.entries()) {
+    console.log(key, value)
+  }
   const image = rawData.get('image')
-  console.log(rawData)
   const data = {
     body: rawData.get('body'),
     user: { connect: { id: currentUser?.id } }
+  }
+  if (rawData.get('id')) {
+    data.id = parseInt(rawData.get('id'))
   }
   if (rawData.get('challengeId')) {
     data.challenge = { connect: { id: parseInt(rawData.get('challengeId')) } }
@@ -22,17 +27,21 @@ export const action: ActionFunction = async (args) => {
     data.comment = { connect: { id: parseInt(rawData.get('commentId')) } }
   }
   if (rawData.get('replyToId')) {
+    console.log('setting reply to id')
     data.replyTo = { connect: { id: parseInt(rawData.get('replyToId')) } }
   }
-  console.log('data', data)
-  const result = await createNote(data)
+  let result
+  if (data.id) {
+    result = await updateNote(data)
+  } else {
+    result = await createNote(data)
+  }
   if (image) {
     const nameNoExt = image.name.split('.')[0]
     const webPath = await writeFile(image, nameNoExt)
     result.image = webPath
   }
   const updated = await updateNote(result)
-  console.log('returning', updated)
   return json(updated)
 }
 

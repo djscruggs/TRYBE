@@ -42,7 +42,6 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
     hasLiked = likes > 0
     // has the user reposted this note?
     const reposted = await loadRepost(parseInt(params.id), currentUser?.id, null)
-    console.log('reposted', reposted)
     if (reposted) {
       hasReposted = true
     }
@@ -54,14 +53,22 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
       body: null
     }
   })
-  console.log('repostCount', repostCount)
-  console.log(result)
-  const data: NoteObjectData = { note: result, hasLiked, hasReposted, repostCount }
+  // get replies
+  const replies = await prisma.note.findMany({
+    where: {
+      replyToId: parseInt(params.id),
+      body: {
+        not: null
+      }
+    }
+  })
+  const data: NoteObjectData = { note: result, hasLiked, hasReposted, repostCount, replies }
   return json(data)
 }
+
 export default function ViewNote (): JSX.Element {
   const location = useLocation()
-  if (location.pathname.includes('edit')) {
+  if (location.pathname.includes('edit') || location.pathname.includes('quote')) {
     return <Outlet />
   }
 
@@ -75,9 +82,17 @@ export default function ViewNote (): JSX.Element {
   if (!data?.note) {
     return <p>Loading...</p>
   }
+  console.log('replies', data.replies)
   return (
+    <>
     <div className='max-w-[400px] mt-10'>
       <CardNote note={data.note} repostCount={data.repostCount} hasLiked={Boolean(data.hasLiked)} hasReposted={Boolean(data.hasReposted)} />
     </div>
+    <div className='max-w-[400px]'>
+      {data.replies?.map((reply) => {
+        return <CardNote key={reply.id} note={reply} isReplyTo={true} />
+      })}
+    </div>
+    </>
   )
 }
