@@ -41,12 +41,12 @@ export default function FormNote (props: FormNoteProps): JSX.Element {
     }
 
     const formData = new FormData()
-    formData.append('body', body)
+    formData.append('body', body as string)
     if (note) {
-      formData.append('id', note.id.toString())
+      formData.append('id', note.id.toString() as string)
     }
     if (note) {
-      formData.append('id', note.id.toString())
+      formData.append('id', note.id.toString() as string)
     }
     if (replyToId) {
       formData.append('replyToId', replyToId.toString())
@@ -54,7 +54,7 @@ export default function FormNote (props: FormNoteProps): JSX.Element {
     if (file) {
       formData.append('image', file)
     }
-    const result = await axios.post('/api/notes', formData)
+    await axios.post('/api/notes', formData)
     setBody('')
     setFile(null)
     setFileDataURL(null)
