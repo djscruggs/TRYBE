@@ -1,8 +1,8 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useState, useEffect } from 'react'
 import {
-  Card
+  Card,
+  Avatar
 } from '@material-tailwind/react'
-import { useUser } from '@clerk/clerk-react'
 import type { Note } from '../utils/types.server'
 import { SlShareAlt } from 'react-icons/sl'
 import { AiOutlineRetweet } from 'react-icons/ai'
@@ -15,6 +15,7 @@ import { toast } from 'react-hot-toast'
 import FormNote from './form-note'
 import axios from 'axios'
 import { useRevalidator } from 'react-router-dom'
+import { loadUser } from '../models/user.server'
 
 interface CardNoteProps {
   note: Note
@@ -28,15 +29,15 @@ interface CardNoteProps {
 export default function CardNote (props: CardNoteProps): JSX.Element {
   const { currentUser } = useContext(CurrentUserContext)
   const { note, isReplyTo, showReplies, hasLiked, hasReposted, repostCount } = props
-  const user = useUser()
   const [showLightbox, setShowLightbox] = useState(false)
   const [editing, setEditing] = useState(false)
   const location = useLocation()
-  const isOwnRoute = isReplyTo || location.pathname === `/notes/${note.id}`
+  const isOwnRoute = isReplyTo ?? location.pathname === `/notes/${note.id}`
   const [repostMenu, setRepostMenu] = useState(false)
   const [addReply, setAddReply] = useState(false)
   const revalidator = useRevalidator()
   const navigate = useNavigate()
+
   const goToNote = (): void => {
     setRepostMenu(false)
     if (isOwnRoute) return
@@ -49,10 +50,23 @@ export default function CardNote (props: CardNoteProps): JSX.Element {
     event.stopPropagation()
     setShowLightbox(true)
   }
+  const handleEdit = (event: any): void => {
+    event.preventDefault()
+    event.stopPropagation()
+    setEditing(true)
+  }
   const handleDelete = (event: any): void => {
     event.preventDefault()
     event.stopPropagation()
-    alert('delete not implemented yet')
+    axios.delete(`/api/notes/delete/${note.id}`)
+      .then(() => {
+        toast.success('Note deleted')
+        revalidator.revalidate()
+      })
+      .catch(error => {
+        toast.error('Error deleting note')
+        console.error('Error deleting note:', error)
+      })
   }
   const handleReply = (event: any): void => {
     setAddReply(true)
@@ -81,7 +95,7 @@ export default function CardNote (props: CardNoteProps): JSX.Element {
       revalidator.revalidate()
     } catch (error) {
       toast.error('Error reposting note')
-      console.log(error)
+      console.error(error)
     }
   }
   const handleQuote = (event: any): void => {
@@ -108,35 +122,38 @@ export default function CardNote (props: CardNoteProps): JSX.Element {
       <div className={`drop-shadow-none ${!isOwnRoute ? 'cursor-pointer' : ''}`} onClick={goToNote}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Card className={`md:col-span-2 p-2 border-1 drop-shadow-lg  border border-${currentUser?.id === note.userId && !isReplyTo && !isQuote ? 'green-500' : 'gray'} rounded-md`}>
-            {note.body}
-            {note.image && <img src={`${note.image}?${Date.now()}`} alt="note picture" className="cursor-pointer max-w-[200px]" onClick={handlePhotoClick} />}
-            {currentUser && !isQuote &&
-              <>
-              <div className="mt-4 text-xs text-gray-500">
-                <span className='underline cursor-pointer' onClick={handleReply}>
-                    <GoComment className='inline mr-1 h-6 w-6' />
-                </span>
-                <div className='relative inline'>
-                  <AiOutlineRetweet className={`cursor-pointer h-6 w-6 inline ${hasReposted ? 'text-green-500' : 'text-gray'}`} onClick={handleRepostMenu} />
-                  {repostCount}
-                  {repostMenu &&
-                    <div className='absolute left-0 top-4 bg-white border border-gray rounded-md w-[90px]'>
-                    <p className='cursor-pointer hover:bg-gray-100 p-2' onClick={handleRepost}>{hasReposted ? 'Clear repost' : 'Repost'}</p>
-                    <p className='cursor-pointer hover:bg-gray-100 p-2' onClick={handleQuote}>Quote</p>
+            <div className="flex items-start">
+              <AvatarChooser note={note}/>
+              <div className="flex flex-col w-full">
+              {note.body}
+              {note.image && <img src={`${note.image}?${Date.now()}`} alt="note picture" className="cursor-pointer max-w-[200px]" onClick={handlePhotoClick} />}
+              {currentUser && !isQuote &&
+                <div className="mt-8 text-xs text-gray-500 align-self-end flex justify-between w-full">
+                  <div>
+                    <span className='underline cursor-pointer' onClick={handleReply}>
+                      <GoComment className='inline mr-1 h-6 w-6' />
+                    </span>
+                    <div className='relative inline'>
+                      <AiOutlineRetweet className={`cursor-pointer h-6 w-6 inline ${hasReposted ? 'text-green-500' : 'text-gray'}`} onClick={handleRepostMenu} />
+                      {repostCount}
+                      {repostMenu &&
+                        <div className='absolute left-0 top-4 bg-white border border-gray rounded-md w-[90px]'>
+                          <p className='cursor-pointer hover:bg-gray-100 p-2' onClick={handleRepost}>{hasReposted ? 'Clear repost' : 'Repost'}</p>
+                          <p className='cursor-pointer hover:bg-gray-100 p-2' onClick={handleQuote}>Quote</p>
+                        </div>
+                      }
+                    </div>
                   </div>
-                  }
-                </div>
                 {currentUser?.id === note.userId &&
-                  <div className='float-right'>
-                    <span className='underline cursor-pointer mr-1' onClick={() => { setEditing(true) }}>edit</span>
+                  <div className='flex justify-end'>
+                    <span className='underline cursor-pointer mr-1' onClick={handleEdit}>edit</span>
                     <span className='underline cursor-pointer mr-1' onClick={handleDelete}>delete</span>
                   </div>
                 }
+                </div>
+              }
               </div>
-
-              </>
-
-            }
+            </div>
           </Card>
         </div>
         {/* <span className="text-xs text-gray-500">2 hours ago</span> */}
@@ -172,5 +189,43 @@ export default function CardNote (props: CardNoteProps): JSX.Element {
     }
     {(note.image && showLightbox) && <Lightbox medium={note.image} large={note.image} alt="note photo" onClose={() => { setShowLightbox(false) }}/>}
     </>
+  )
+}
+
+function AvatarChooser ({ note }: { note: Note }): JSX.Element {
+  const [loading, setLoading] = useState(!note.user?.profile)
+  const [profile, setProfile] = useState(note.user?.profile)
+  useEffect(() => {
+    if (!profile) {
+      setLoading(true)
+      axios.get(`/api/users/${note.userId}`)
+        .then(res => {
+          setProfile(res.data.profile)
+        })
+        .catch(err => {
+          console.error('error', err)
+        }).finally(() => {
+          setLoading(false)
+        })
+    }
+  }, [note.userId])
+  if (loading) {
+    return <div className="w-12 h-12 rounded-full bg-gray-500 flex items-center justify-center mr-8 flex-shrink-0 flex-grow-0">
+
+    </div>
+  }
+
+  const avatarImg = profile?.profileImage ? `${profile.profileImage}?${Date.now()}` : ''
+  if (avatarImg) {
+    return <Avatar src={avatarImg} className='mr-8'/>
+  }
+
+  return (
+      <div className="w-12 h-12 rounded-full bg-gray-500 flex items-center justify-center mr-8 flex-shrink-0 flex-grow-0">
+        {loading || !profile
+          ? ''
+          : <span className="text-white">{`${profile.firstName[0]}${profile.lastName[0]}`}</span>
+        }
+      </div>
   )
 }

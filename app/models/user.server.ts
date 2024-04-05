@@ -24,17 +24,20 @@ export const createUser = async (user: RegisterForm | prisma.UserCreateInput): P
   return { id: newUser.id, email: user.email }
 }
 
-export const loadUser = async (userId: string): Promise<prisma.User> => {
+export const loadUser = async (userId: string | number | undefined): Promise<prisma.User> => {
+  if (!userId) return null
   try {
     const user = await prisma.user.findUnique({
-      where: { id: userId },
+      where: { id: Number(userId) },
       select: { id: true, email: true, profile: true, memberChallenges: true }
     })
     return user
-  } catch {
+  } catch (err) {
+    console.log('error loading user', err)
     return null
   }
 }
+
 export const getUserByClerkId = async (clerkId: string): Promise<prisma.User> => {
   return await prisma.user.findFirst({ where: { clerkId }, include: { profile: true } })
 }

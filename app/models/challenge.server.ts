@@ -50,8 +50,9 @@ export const loadUserCreatedChallenges = async (userId: string | number) => {
     }
   })
 }
-export const deleteChallenge = async (challengeId: string | number) => {
+export const deleteChallenge = async (challengeId: string | number, userId: string | number): Promise<ChallengeData> => {
   const id = Number(challengeId)
+  const uid = Number(userId)
   // load the challenge first so you can get a handle to the coverPhoto
   const challenge = await prisma.challenge.findUnique({
     where: { id }
@@ -75,7 +76,8 @@ export const deleteChallenge = async (challengeId: string | number) => {
   }
   return await prisma.challenge.delete({
     where: {
-      id
+      id,
+      userId: uid
     }
   })
 }

@@ -23,7 +23,11 @@ export const loader: LoaderFunction = async (args): Promise<FeedLoaderData> => {
   const challenges = await prisma.challenge.findMany({
     orderBy: [{ createdAt: 'desc' }],
     include: {
-      user: true,
+      user: {
+        include: {
+          profile: true
+        }
+      },
       _count: {
         select: { members: true, comments: true, likes: true }
       }
@@ -33,7 +37,11 @@ export const loader: LoaderFunction = async (args): Promise<FeedLoaderData> => {
   const notes = await prisma.note.findMany({
     orderBy: [{ createdAt: 'desc' }],
     include: {
-      user: true,
+      user: {
+        include: {
+          profile: true
+        }
+      },
       _count: {
         select: { replies: true, likes: true }
       }
@@ -81,12 +89,12 @@ export default function Home (): JSX.Element {
             {feedItems.map(item => {
               if ('mission' in item) {
                 return (<div className="flex items-center pl-0 mt-10 max-w-lg" key={item.id}>
-                <CardChallenge challenge={item as ChallengeSummary} />
-                </div>)
+                          <CardChallenge challenge={item as ChallengeSummary} />
+                        </div>)
               } else {
                 return (<div className="flex items-center pl-0 mt-10 max-w-lg" key={item.id}>
-                <CardNote note={item} />
-                </div>)
+                          <CardNote note={item} />
+                        </div>)
               }
             })}
 

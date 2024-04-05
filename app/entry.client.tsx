@@ -1,37 +1,34 @@
-import React, { useEffect } from 'react';
-import * as ReactDOM from 'react-dom/client';
-import { RemixBrowser, useLocation, useMatches } from '@remix-run/react';
-import { CacheProvider } from '@emotion/react';
-import ClientStyleContext from './ClientStyleContext';
-import createEmotionCache from './createEmotionCache';
-import { ThemeProvider } from "@material-tailwind/react";
-
-
-
+import React from 'react'
+import * as ReactDOM from 'react-dom/client'
+import { RemixBrowser } from '@remix-run/react'
+import { CacheProvider } from '@emotion/react'
+import ClientStyleContext from './ClientStyleContext'
+import createEmotionCache from './createEmotionCache'
+import { ThemeProvider } from '@material-tailwind/react'
 
 interface ClientCacheProviderProps {
-  children: React.ReactNode;
+  children: React.ReactNode
 }
-function ClientCacheProvider({ children }: ClientCacheProviderProps) {
-  const [cache, setCache] = React.useState(createEmotionCache());
+function ClientCacheProvider ({ children }: ClientCacheProviderProps): JSX.Element {
+  const [cache, setCache] = React.useState(createEmotionCache())
 
   const clientStyleContextValue = React.useMemo(
     () => ({
-      reset() {
-        setCache(createEmotionCache());
-      },
+      reset () {
+        setCache(createEmotionCache())
+      }
     }),
-    [],
-  );
+    []
+  )
 
   return (
     <ClientStyleContext.Provider value={clientStyleContextValue}>
       <CacheProvider value={cache}>{children}</CacheProvider>
     </ClientStyleContext.Provider>
-  );
+  )
 }
 
-const hydrate = () => {
+const hydrate = (): void => {
   React.startTransition(() => {
     ReactDOM.hydrateRoot(
       document,
@@ -39,15 +36,15 @@ const hydrate = () => {
         <ThemeProvider>
           <RemixBrowser />
         </ThemeProvider>
-      </ClientCacheProvider>,
-    );
-  });
-};
+      </ClientCacheProvider>
+    )
+  })
+}
 
 if (window.requestIdleCallback) {
-  window.requestIdleCallback(hydrate);
+  window.requestIdleCallback(hydrate)
 } else {
   // Safari doesn't support requestIdleCallback
   // https://caniuse.com/requestidlecallback
-  window.setTimeout(hydrate, 1);
+  window.setTimeout(hydrate, 1)
 }

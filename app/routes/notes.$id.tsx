@@ -23,11 +23,12 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
   if (!params.id) {
     return null
   }
-  const result = await loadNoteSummary(params.id)
-  if (!result) {
+  const note = await loadNoteSummary(params.id)
+  if (!note) {
     const error = { loadingError: 'Note not found' }
     return json(error)
   }
+  console.log(note)
   // load memberships & likes for current user if it exists
   let hasReposted = false
   let hasLiked = false
@@ -35,13 +36,13 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
     // has the user liked this note?
     const likes = await prisma.like.count({
       where: {
-        noteId: parseInt(params.id),
+        noteId: note.id,
         userId: currentUser.id
       }
     })
     hasLiked = likes > 0
     // has the user reposted this note?
-    const reposted = await loadRepost(parseInt(params.id), currentUser?.id, null)
+    const reposted = await loadRepost(note.id, currentUser.id, null)
     if (reposted) {
       hasReposted = true
     }
@@ -49,20 +50,27 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
   // get cound of resposts
   const repostCount = await prisma.note.count({
     where: {
-      replyToId: parseInt(params.id),
+      replyToId: note.id,
       body: null
     }
   })
   // get replies
   const replies = await prisma.note.findMany({
     where: {
-      replyToId: parseInt(params.id),
+      replyToId: note.id,
       body: {
         not: null
       }
+    },
+    include: {
+      user: {
+        include: {
+          profile: true
+        }
+      }
     }
   })
-  const data: NoteObjectData = { note: result, hasLiked, hasReposted, repostCount, replies }
+  const data: NoteObjectData = { note, hasLiked, hasReposted, repostCount, replies }
   return json(data)
 }
 
@@ -73,6 +81,7 @@ export default function ViewNote (): JSX.Element {
   }
 
   const data: ObjectData = useLoaderData() as ObjectData
+  console.log('data', data)
   if (!data) {
     return <p>No data.</p>
   }
@@ -82,7 +91,6 @@ export default function ViewNote (): JSX.Element {
   if (!data?.note) {
     return <p>Loading...</p>
   }
-  console.log('replies', data.replies)
   return (
     <>
     <div className='max-w-[400px] mt-10'>

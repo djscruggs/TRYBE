@@ -30,11 +30,19 @@ export const loadNote = async (noteId: string | number): Promise<Note | null> =>
     }
   })
 }
+
+export const deleteNote = async (noteId: string | number, userId: string | number): Promise<Note> => {
+  const id = Number(noteId)
+  const uid = Number(userId)
+  return await prisma.note.delete({
+    where: {
+      id,
+      userId: uid
+    }
+  })
+}
 export const loadRepost = async (replyToId: string | number, userId: string | number, body: string | null): Promise<Note | null> => {
   const id = Number(replyToId)
-  console.log('id im loadRepost', id)
-  console.log('userID im loadRepost', userId)
-  console.log('body im loadRepost', body)
   return await prisma.note.findFirst({
     where: {
       replyToId: Number(replyToId),
@@ -43,19 +51,25 @@ export const loadRepost = async (replyToId: string | number, userId: string | nu
     }
   })
 }
-export const loadNoteSummary = async (noteId: string | number): Promise<Array<Record<string, any>>> => {
+export const loadNoteSummary = async (noteId: string | number): Promise<Record<string, any> | null> => {
   const id = Number(noteId)
-  return await prisma.note.findUnique({
+  const note = await prisma.note.findUnique({
     where: {
       id
     },
     include: {
+      user: {
+        include: {
+          profile: true
+        }
+      },
       _count: {
         select: { replies: { where: { isRepost: false } }, likes: true }
       },
       replyTo: true
     }
   })
+  return note
 }
 export const loadUserNotes = async (userId: string | number): Promise<Note[]> => {
   const uid = Number(userId)
@@ -67,14 +81,6 @@ export const loadUserNotes = async (userId: string | number): Promise<Note[]> =>
       _count: {
         select: { replies: true, likes: true }
       }
-    }
-  })
-}
-export const deleteNote = async (noteId: string | number): Promise<Note> => {
-  const id = Number(noteId)
-  return await prisma.note.delete({
-    where: {
-      id
     }
   })
 }
