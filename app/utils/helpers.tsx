@@ -8,6 +8,15 @@ import { IoFishOutline } from 'react-icons/io5'
 import type { ChangeEvent } from 'react'
 import { toast } from 'react-hot-toast'
 
+export const copyToClipboard = async (text: string): Promise<void> => {
+  try {
+    await navigator.clipboard.writeText(text)
+    toast.success('Link copied to clipboard')
+  } catch (error) {
+    toast.error('Error copying to clipboard')
+    console.error(error)
+  }
+}
 // helper  function that converts booleans, integers and dates from strings to the proper type
 export function convertStringValues (obj: any): any {
   const result: any = {}

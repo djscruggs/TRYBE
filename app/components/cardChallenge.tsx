@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useState, useEffect, useRef } from 'react'
 import {
   Card,
   Button
@@ -11,6 +11,7 @@ import { type ChallengeSummary } from '../utils/types.client'
 import { colorToClassName, textColorFromContainer, getIconOptionsForColor, buttonColorFromContainer } from '~/utils/helpers'
 import { CurrentUserContext } from '../utils/CurrentUserContext'
 import { Link, useNavigate } from '@remix-run/react'
+import ShareMenu from './shareMenu'
 
 export default function CardChallenge ({ challenge }: { challenge: ChallengeSummary }): JSX.Element {
   const { currentUser } = useContext(CurrentUserContext)
@@ -19,6 +20,16 @@ export default function CardChallenge ({ challenge }: { challenge: ChallengeSumm
   const bgColor = colorToClassName(challenge.color, 'red')
   const buttonColor = buttonColorFromContainer(bgColor, 'white')
   const buttonTextColor = textColorFromContainer(buttonColor, 'red')
+  const [shareMenu, setShareMenu] = useState(false)
+  useEffect(() => {
+    function handleClickEvent (event: MouseEvent): void {
+      setShareMenu(false)
+    }
+    document.addEventListener('click', handleClickEvent)
+    return () => {
+      document.removeEventListener('click', handleClickEvent)
+    }
+  }, [shareMenu])
   const goToChallenge = (): void => {
     const url = `/challenges/${challenge.id}`
     if (currentUser) {
@@ -28,9 +39,12 @@ export default function CardChallenge ({ challenge }: { challenge: ChallengeSumm
       navigate('/signup')
     }
   }
+  const getFullUrl = (): string => {
+    return `${window.location.origin}/challenges/${challenge.id}`
+  }
   const iconOptions: Record<string, JSX.Element> = getIconOptionsForColor(bgColor)
   return (
-    <div className="mt-2 border-0 drop-shadow-none mr-2 w-full">
+    <div className="mt-2 border-0 drop-shadow-none mr-2 w-full" onClick={() => { setShareMenu(false) }}>
       <div className="drop-shadow-none">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Card className={`md:col-span-2 bg-${bgColor} p-2 border-1 drop-shadow-lg border-gray rounded-md`}>
@@ -70,8 +84,7 @@ export default function CardChallenge ({ challenge }: { challenge: ChallengeSumm
           <span className="text-xs" onClick={goToChallenge}>{challenge._count.likes} likes</span>
         </div>
         <div className="flex justify-center items-center cursor-pointer">
-          <SlShareAlt className="text-gray text-sm mr-1" />
-          <span className="text-xs">Share</span>
+          <ShareMenu copyUrl={getFullUrl()} itemType='challenge' itemId={challenge.id}/>
         </div>
       </div>
     </div>

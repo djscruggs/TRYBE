@@ -26,7 +26,6 @@ export default function FormNote (props: FormNoteProps): JSX.Element {
   const [fileDataURL, setFileDataURL] = useState<string | null>(note?.image ? note.image : null)
 
   const imageDialog = (): void => {
-    console.log(imageRef)
     if (imageRef.current) {
       imageRef.current.click()
     }
@@ -92,8 +91,9 @@ export default function FormNote (props: FormNoteProps): JSX.Element {
         <MdOutlineAddPhotoAlternate onClick={imageDialog} className='text-2xl cursor-pointer float-right' />
         {fileDataURL && <img src={fileDataURL} alt="preview" className='w-24 h-24' />}
         <Button type="submit" placeholder='Save' className="bg-red">Save</Button>
-
-          <button onClick={handleCancel} className="mt-2 text-sm underline ml-2">cancel</button>
+          {onCancel &&
+            <button onClick={handleCancel} className="mt-2 text-sm underline ml-2">cancel</button>
+          }
 
       </Form>
     </div>

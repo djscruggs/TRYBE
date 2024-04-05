@@ -28,7 +28,6 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
     const error = { loadingError: 'Note not found' }
     return json(error)
   }
-  console.log(note)
   // load memberships & likes for current user if it exists
   let hasReposted = false
   let hasLiked = false
@@ -81,7 +80,6 @@ export default function ViewNote (): JSX.Element {
   }
 
   const data: ObjectData = useLoaderData() as ObjectData
-  console.log('data', data)
   if (!data) {
     return <p>No data.</p>
   }

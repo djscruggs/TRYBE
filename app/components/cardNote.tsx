@@ -15,7 +15,7 @@ import { toast } from 'react-hot-toast'
 import FormNote from './form-note'
 import axios from 'axios'
 import { useRevalidator } from 'react-router-dom'
-import { loadUser } from '../models/user.server'
+import ShareMenu from './shareMenu'
 
 interface CardNoteProps {
   note: Note
@@ -106,7 +106,11 @@ export default function CardNote (props: CardNoteProps): JSX.Element {
   }
   const afterSave = (): void => {
     setEditing(false)
+    setAddReply(false)
     revalidator.revalidate()
+  }
+  const getFullUrl = (): string => {
+    return `${window.location.origin}/notes/${note.id}`
   }
   return (
     <>
@@ -160,7 +164,7 @@ export default function CardNote (props: CardNoteProps): JSX.Element {
       </div>
       {(currentUser && addReply) &&
       <div className='mt-2 w-full border-0  drop-shadow-none mr-2'>
-        <FormNote replyToId={note.id} onCancel={() => { setAddReply(false) }} prompt='Add your response' />
+        <FormNote replyToId={note.id} afterSave={afterSave} onCancel={() => { setAddReply(false) }} prompt='Add your response' />
       </div>
       }
       {/* don't show likes etc if this is a reply or a reply is being added */}
@@ -169,7 +173,7 @@ export default function CardNote (props: CardNoteProps): JSX.Element {
         <hr />
         <div className="grid grid-cols-3 text-center py-2 cursor-pointer">
           <div className="flex justify-center items-center">
-          <Link to={`/notes/${note.id}/comments#comments`}>
+          <Link to={`/notes/${note.id}`}>
             <CiChat1 className="text-gray mr-1 inline" />
             <span className="text-xs">{note._count?.replies} replies</span>
             </Link>
@@ -179,8 +183,8 @@ export default function CardNote (props: CardNoteProps): JSX.Element {
           <span className={`text-xs ${hasLiked ? 'text-red-500' : ''}`} onClick={goToNote}>{note._count?.likes} likes</span>
           </div>
           <div className="flex justify-center items-center cursor-pointer">
-            <SlShareAlt className="text-gray text-sm mr-1" />
-            <span className="text-xs">Share</span>
+            <ShareMenu copyUrl={getFullUrl()} itemType='note' itemId={note.id}/>
+
           </div>
         </div>
       </>
