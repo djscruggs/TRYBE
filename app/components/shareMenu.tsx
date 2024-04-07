@@ -15,7 +15,7 @@ export default function ShareMenu (props: ShareMenuProps): JSX.Element {
   const navigate = useNavigate()
   const shareOnTimeline = (): void => {
     if (itemType === 'challenge') {
-      navigate(`/challenges/${itemId}/quote`)
+      navigate(`/challenges/${itemId}/share`)
     } else if (itemType === 'note') {
       navigate(`/notes/${itemId}/quote`)
     }

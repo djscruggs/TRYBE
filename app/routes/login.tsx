@@ -4,7 +4,7 @@ import { Form, Link, useActionData } from '@remix-run/react'
 import { login, requireCurrentUser } from '~/models/auth.server'
 import { validateEmail } from '~/models/validators.server'
 import * as React from 'react'
-import { FormField } from '~/components/form-field'
+import { FormField } from '~/components/formField'
 import { Button } from '@material-tailwind/react'
 
 export const loader: LoaderFunction = async (args) => {

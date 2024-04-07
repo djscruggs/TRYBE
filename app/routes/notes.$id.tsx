@@ -1,16 +1,11 @@
 import { loadNoteSummary, loadRepost } from '~/models/note.server'
-import { Outlet, useLoaderData, Link, useNavigate, useLocation } from '@remix-run/react'
-import React, { useContext, useState } from 'react'
+import { Outlet, useLoaderData, useLocation } from '@remix-run/react'
+import React from 'react'
 import CardNote from '~/components/cardNote'
 import { requireCurrentUser } from '../models/auth.server'
 import type { ObjectData, Note } from '~/utils/types.server'
 import { json, type LoaderFunction, type LoaderFunctionArgs } from '@remix-run/node'
-import axios from 'axios'
-import { toast } from 'react-hot-toast'
-import { CurrentUserContext } from '../utils/CurrentUserContext'
-import { Spinner } from '@material-tailwind/react'
 import { prisma } from '../models/prisma.server'
-import { useRevalidator } from 'react-router-dom'
 
 interface NoteObjectData {
   note: Note
@@ -24,6 +19,7 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
     return null
   }
   const note = await loadNoteSummary(params.id)
+  console.log('note in loader', note)
   if (!note) {
     const error = { loadingError: 'Note not found' }
     return json(error)

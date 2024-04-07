@@ -1,7 +1,7 @@
 import { CurrentUserContext } from '../utils/CurrentUserContext'
 import React, { useContext, useState } from 'react'
 import UserAvatar from '../components/useravatar'
-import FormNote from '../components/form-note'
+import FormNote from '../components/formNote'
 import { useLoaderData } from '@remix-run/react'
 import FeedCommunityCard from '~/components/feedcommunitycard'
 import FeedPostCard from '~/components/feedpostcard'
@@ -42,6 +42,7 @@ export const loader: LoaderFunction = async (args): Promise<FeedLoaderData> => {
           profile: true
         }
       },
+      challenge: true,
       _count: {
         select: { replies: true, likes: true }
       }

@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Form, useNavigate } from '@remix-run/react'
 import axios from 'axios'
-import { FormField } from './form-field'
+import { FormField } from './formField'
 import { Button } from '@material-tailwind/react'
 interface FormCommentProps {
   challengeId: string | number

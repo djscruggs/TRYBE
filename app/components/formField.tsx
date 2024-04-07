@@ -1,6 +1,6 @@
 // app/components/form-field.tsx
 import React, { useEffect, useState } from 'react'
-import ShowPasswordButton from './show-password-button'
+import ShowPasswordButton from './showPasswordButton'
 
 interface FormFieldProps {
   name: string

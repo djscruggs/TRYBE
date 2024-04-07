@@ -13,7 +13,12 @@ import { CurrentUserContext } from '../utils/CurrentUserContext'
 import { Link, useNavigate } from '@remix-run/react'
 import ShareMenu from './shareMenu'
 
-export default function CardChallenge ({ challenge }: { challenge: ChallengeSummary }): JSX.Element {
+interface CardChallengeProps {
+  challenge: ChallengeSummary
+  isShare?: boolean
+}
+
+export default function CardChallenge ({ challenge, isShare }: CardChallengeProps): JSX.Element {
   const { currentUser } = useContext(CurrentUserContext)
   const navigate = useNavigate()
   const textColor = textColorFromContainer(challenge.color, 'white')
@@ -43,12 +48,14 @@ export default function CardChallenge ({ challenge }: { challenge: ChallengeSumm
                 <div className={`bg-transparent border-2 border-${textColor} text-${textColor} rounded-full w-16 h-16 flex items-center justify-center`}>
                  {iconOptions[challenge.icon] || <GiShinyApple className={`text-${textColor} h-8 w-8`} />}
                 </div>
+                {!isShare &&
                 <div className="flex justify-center items-center mt-2">
                   <FaRegCalendarAlt className={`text-${textColor} h-4 w-4 mr-1`} />
                   <span className={`text-${textColor} text-xs pr-4`}>7 days</span>
                   <FaUserFriends className={`text-${textColor} h-4 w-4`} />
                   <span className={`text-${textColor} text-xs pl-2`}>{challenge._count.members}</span>
                 </div>
+                }
               </div>
               <div className="flex flex-col items-center col-span-2">
                 <div className={`mt-2 font-bold text-${textColor}`}>{challenge.name}</div>
@@ -60,23 +67,27 @@ export default function CardChallenge ({ challenge }: { challenge: ChallengeSumm
         </div>
         {/* <span className="text-xs text-gray-500">2 hours ago</span> */}
       </div>
-      <hr />
-      <div className="grid grid-cols-3 text-center py-2 cursor-pointer">
-        <div className="flex justify-center items-center">
-        <Link to={`/challenges/${challenge.id}/comments#comments`}>
-          <CiChat1 className="text-gray mr-1 inline" />
-          <span className="text-xs">{challenge._count.comments} comments</span>
-          </Link>
+      {!isShare &&
+      <>
+        <hr />
+        <div className="grid grid-cols-3 text-center py-2 cursor-pointer">
+          <div className="flex justify-center items-center">
+          <Link to={`/challenges/${challenge.id}/comments#comments`}>
+            <CiChat1 className="text-gray mr-1 inline" />
+            <span className="text-xs">{challenge._count.comments} comments</span>
+            </Link>
+          </div>
+          <div className="flex justify-center items-center cursor-pointer">
+            {/* Replace with the actual heart icon import */}
+            <FaRegHeart className="text-gray text-sm mr-1" />
+            <span className="text-xs" onClick={goToChallenge}>{challenge._count.likes} likes</span>
+          </div>
+          <div className="flex justify-center items-center cursor-pointer">
+            <ShareMenu copyUrl={getFullUrl()} itemType='challenge' itemId={challenge.id}/>
+          </div>
         </div>
-        <div className="flex justify-center items-center cursor-pointer">
-          {/* Replace with the actual heart icon import */}
-          <FaRegHeart className="text-gray text-sm mr-1" />
-          <span className="text-xs" onClick={goToChallenge}>{challenge._count.likes} likes</span>
-        </div>
-        <div className="flex justify-center items-center cursor-pointer">
-          <ShareMenu copyUrl={getFullUrl()} itemType='challenge' itemId={challenge.id}/>
-        </div>
-      </div>
+      </>
+      }
     </div>
   )
 }

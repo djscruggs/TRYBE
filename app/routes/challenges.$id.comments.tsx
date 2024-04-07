@@ -3,7 +3,7 @@ import { useParams, useLoaderData, json } from '@remix-run/react'
 import { CurrentUserContext } from '~/utils/CurrentUserContext'
 import { type LoaderFunction } from '@remix-run/server-runtime'
 import { fetchComments } from '~/models/comment.server'
-import FormComment from '~/components/form-comment'
+import FormComment from '~/components/formComment'
 import { useRevalidator } from 'react-router-dom'
 export const loader: LoaderFunction = async ({ request, params }) => {
   const result = await fetchComments({ challengeId: params.id })

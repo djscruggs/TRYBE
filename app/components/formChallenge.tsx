@@ -7,7 +7,7 @@ import React, {
 import { Form, useNavigate } from '@remix-run/react'
 import type { ObjectData } from '~/utils/types.server'
 import { Button, Select, Option } from '@material-tailwind/react'
-import { FormField } from '~/components/form-field'
+import { FormField } from '~/components/formField'
 import DatePicker from 'react-datepicker'
 import { addDays } from 'date-fns'
 import { toast } from 'react-hot-toast'

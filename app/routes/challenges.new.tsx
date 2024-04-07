@@ -1,5 +1,5 @@
 import React, { useContext } from 'react'
-import ChallengeForm from '~/components/form-challenge'
+import ChallengeForm from '~/components/formChallenge'
 import { requireCurrentUser } from '../models/auth.server'
 import { type LoaderFunction } from '@remix-run/node'
 import { CurrentUserContext } from '../utils/CurrentUserContext'

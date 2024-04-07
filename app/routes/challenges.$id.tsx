@@ -21,7 +21,7 @@ import { LiaUserFriendsSolid } from 'react-icons/lia'
 import { prisma } from '../models/prisma.server'
 import { TbHeartFilled } from 'react-icons/tb'
 import { useRevalidator } from 'react-router-dom'
-
+import FormNote from '~/components/formNote'
 interface ChallengObjectData {
   challenge: Challenge
   isMember: boolean
@@ -63,9 +63,10 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
 }
 export default function ViewChallenge (): JSX.Element {
   const location = useLocation()
-  if (location.pathname.includes('edit')) {
+  if (location.pathname.includes('edit') || location.pathname.includes('share')) {
     return <Outlet />
   }
+
   const isComments = location.pathname.includes('comments')
   const { currentUser } = useContext(CurrentUserContext)
   const navigate = useNavigate()
@@ -145,7 +146,6 @@ export default function ViewChallenge (): JSX.Element {
   const color = colorToClassName(data.challenge?.color as string, 'red')
   return (
     <>
-
     <div className={`max-w-sm border border-transparent border-b-inherit rounded-md bg-gradient-to-b from-${color} to-90%`}>
       <div className={'mb-2 mt-0.5 flex justify-center max-h-80 '}>
           {data.challenge.coverPhoto && <img src={`${data.challenge.coverPhoto}?${Date.now()}`} alt={`${data.challenge.name as string} cover photo`} className="w-full rounded-sm" />}
@@ -185,49 +185,49 @@ export default function ViewChallenge (): JSX.Element {
       </div>
 
     </div>
-    {data.challenge.userId === currentUser?.id && (
-      <>
-        <button
-            onClick={toggleJoin}
-            className={`mt-8 bg-${color} text-white rounded-md p-2 text-xs`}>
-              {isMember ? 'Leave Challenge' : 'Join this Challenge'}
-          </button>
-          {loading && <Spinner className="h-4 w-4 ml-1 inline" />}
-      </>
-    )}
-    <div className="my-2 text-sm max-w-sm pl-0">
-      <div className='flex flex-row justify-left'>
-        <div >
-          <TbHeartFilled className={`h-5 w-5 cursor-pointer ${data.hasLiked ? 'text-red' : 'text-grey'}`} onClick={handleLike}/>
-        </div>
-
-        {data.challenge._count.comments > 0 && !isComments && (
-          <div className="underline ml-4">
-
-              <Link to={`/challenges/${data.challenge.id}/comments#comments`}>
-                <CiChat1 className="h-5 w-5 -mt-1 text-gray mr-1 inline" />
-                {data.challenge._count.comments} comments
-              </Link>
+      {data.challenge.userId === currentUser?.id && (
+        <>
+          <button
+              onClick={toggleJoin}
+              className={`mt-8 bg-${color} text-white rounded-md p-2 text-xs`}>
+                {isMember ? 'Leave Challenge' : 'Join this Challenge'}
+            </button>
+            {loading && <Spinner className="h-4 w-4 ml-1 inline" />}
+        </>
+      )}
+      <div className="my-2 text-sm max-w-sm pl-0">
+        <div className='flex flex-row justify-left'>
+          <div >
+            <TbHeartFilled className={`h-5 w-5 cursor-pointer ${data.hasLiked ? 'text-red' : 'text-grey'}`} onClick={handleLike}/>
           </div>
-        )}
-        {data.challenge._count?.members > 0 && (
-        <div>
-          <LiaUserFriendsSolid className="text-gray h-5 w-5 inline ml-4 -mt-1 mr-1" />
-          <Link className="underline" to={`/challenges/${data.challenge.id}/members`}>
-            {data.challenge._count.members} members
-          </Link>
+
+          {data.challenge._count.comments > 0 && !isComments && (
+            <div className="underline ml-4">
+
+                <Link to={`/challenges/${data.challenge.id}/comments#comments`}>
+                  <CiChat1 className="h-5 w-5 -mt-1 text-gray mr-1 inline" />
+                  {data.challenge._count.comments} comments
+                </Link>
+            </div>
+          )}
+          {data.challenge._count?.members > 0 && (
+          <div>
+            <LiaUserFriendsSolid className="text-gray h-5 w-5 inline ml-4 -mt-1 mr-1" />
+            <Link className="underline" to={`/challenges/${data.challenge.id}/members`}>
+              {data.challenge._count.members} members
+            </Link>
+          </div>
+          )}
         </div>
-        )}
       </div>
-    </div>
-    {data.challenge._count.comments == 0 && !isComments && (
-      <div className="w-full">
-        No comments yet. <Link to={`/challenges/${data.challenge.id}/comments`} className="underline">Add comment</Link>
+      {data.challenge._count.comments == 0 && !isComments && (
+        <div className="w-full">
+          No comments yet. <Link to={`/challenges/${data.challenge.id}/comments`} className="underline">Add comment</Link>
+        </div>
+      )}
+      <div className='mb-16'>
+        <Outlet />
       </div>
-    )}
-    <div className='mb-16'>
-    <Outlet />
-    </div>
 </>
   )
 }

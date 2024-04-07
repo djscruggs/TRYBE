@@ -52,6 +52,7 @@ export interface Note {
   isRepost?: boolean
   createdAt?: Date
   updatedAt?: Date
+  challenge?: Challenge
 }
 export interface NoteSummary extends Note {
   _count: {
@@ -61,7 +62,7 @@ export interface NoteSummary extends Note {
 }
 export interface ErrorObject extends Record<string, { _errors: string[] }> {}
 
-// generic interface thatandles responses from server loading a single object
+// generic interface that handles responses from server loading a single object
 export interface ObjectData {
   errors?: ErrorObject
   formData?: Record<string, string | number | boolean | Date | null | undefined> | undefined

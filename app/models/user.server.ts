@@ -42,21 +42,19 @@ export const getUserByClerkId = async (clerkId: string): Promise<prisma.User> =>
   return await prisma.user.findFirst({ where: { clerkId }, include: { profile: true } })
 }
 export const updateUser = async (object: prisma.UserUpdateInput): Promise<prisma.User> => {
-  const { id, clerkId, ...data } = object.user
-  if (!id && !clerkId) {
+  const id = object?.id
+  const clerkId = object?.clerkId
+  const data = { ...object }
+  if (id === undefined && clerkId === undefined) {
     throw new Error('User ID or Clerk ID is required')
   }
-  console.log('updating user with id & clerkId', id, clerkId)
   let where: prisma.UserWhereInput
   if (id) {
     where = { id }
   } else if (clerkId) {
     where = { clerkId }
   }
-  const include = { profiles: true }
-  console.log('in update where is', where)
-  console.log('in update data is', data)
-  return await prisma.user.updateMany({ where, data, include })
+  return await prisma.user.updateMany({ where, data })
 }
 export const deleteUser = async (user: prisma.UserUpdateInput): Promise<prisma.User> => {
   if (!user.id && !user.clerkId) {

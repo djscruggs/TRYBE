@@ -1,4 +1,4 @@
-import ChallengeForm from '~/components/form-challenge'
+import ChallengeForm from '~/components/formChallenge'
 import React, { useMatches } from '@remix-run/react'
 import { type ObjectData } from '~/utils/types.server'
 
