@@ -19,7 +19,6 @@ export default function Profile (): JSX.Element {
       <ClerkLoading>
         <p>Loading...</p>
       </ClerkLoading>
-
         <UserProfile
           path="/profile"
           routing="path"

@@ -64,7 +64,7 @@ export default function Home (): JSX.Element {
   }
   return (
          <>
-            <div className='max-w-lg px-2'>
+            <div className='w-full max-w-lg px-2'>
                <div className="flex items-center pl-0 mt-10 max-w-lg">
                   <div className="flex-grow-0 justify-self-start">
                      <UserAvatar size={isMobile ? 'md' : 'xxl'} />
@@ -83,17 +83,17 @@ export default function Home (): JSX.Element {
                </div>
             </div>
             {currentUser &&
-              <div className=" pl-2 max-w-md">
+              <div className="w-full pl-2 max-w-lg">
                 <FormNote />
               </div>
             }
             {feedItems.map(item => {
               if ('mission' in item) {
-                return (<div className="flex items-center pl-0 mt-10 max-w-lg" key={item.id}>
+                return (<div className="flex items-center pl-0 mt-10 w-full max-w-lg" key={item.id}>
                           <CardChallenge challenge={item as ChallengeSummary} />
                         </div>)
               } else {
-                return (<div className="flex items-center pl-0 mt-10 max-w-lg" key={item.id}>
+                return (<div className="flex items-center pl-0 mt-10 w-full max-w-lg" key={item.id}>
                           <CardNote note={item} />
                         </div>)
               }
