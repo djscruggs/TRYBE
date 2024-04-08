@@ -96,6 +96,7 @@ model Challenge {
   color        String?
   reminders    Boolean           @default(false)
   syncCalendar Boolean           @default(false)
+  public       Boolean           @default(false)
   createdAt    DateTime          @default(now())
   updatedAt    DateTime          @updatedAt
   publishAt    DateTime          @default(now())

@@ -2,8 +2,9 @@ import { deleteNote } from '~/models/note.server'
 import { requireCurrentUser } from '~/models/auth.server'
 import { json, type LoaderFunction, type ActionFunctionArgs } from '@remix-run/node'
 
-export async function action ({ params, request }: ActionFunctionArgs) {
-  const user = await requireCurrentUser({ request })
+export async function action (args: ActionFunctionArgs) {
+  const { params } = args
+  const user = await requireCurrentUser(args)
   try {
     await deleteNote(Number(params?.id), Number(user?.id))
     return json({ message: `Deleted note ${params?.id}` }, 204)

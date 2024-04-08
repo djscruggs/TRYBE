@@ -36,7 +36,6 @@ export default function CardNote (props: CardNoteProps): JSX.Element {
   const [addReply, setAddReply] = useState(false)
   const revalidator = useRevalidator()
   const navigate = useNavigate()
-  console.log(note)
   const goToNote = (): void => {
     setRepostMenu(false)
     if (isOwnRoute) return

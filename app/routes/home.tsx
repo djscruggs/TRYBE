@@ -98,22 +98,6 @@ export default function Home (): JSX.Element {
                         </div>)
               }
             })}
-
-            <div className="flex items-center pl-0 mt-10 max-w-lg">
-               <div className="ml-4 flex-grow text-2xl ">
-                  <FeedChallengeCard />
-               </div>
-            </div>
-            <div className="flex items-center pl-0 mt-10 max-w-lg">
-               <div className="ml-4 flex-grow text-2xl ">
-                  <FeedCommunityCard />
-               </div>
-            </div>
-            <div className="flex items-center pl-0 mt-10 max-w-lg">
-               <div className="ml-4 flex-grow text-2xl ">
-                  <FeedPostCard />
-               </div>
-            </div>
          </>
   )
 }

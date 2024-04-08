@@ -6,7 +6,7 @@ import React, {
 } from 'react'
 import { Form, useNavigate } from '@remix-run/react'
 import type { ObjectData } from '~/utils/types.server'
-import { Button, Select, Option } from '@material-tailwind/react'
+import { Button, Select, Option, Radio } from '@material-tailwind/react'
 import { FormField } from '~/components/formField'
 import DatePicker from 'react-datepicker'
 import { addDays } from 'date-fns'
@@ -42,7 +42,17 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
     }))
   }
   const handleChange = (event: ChangeEvent<HTMLInputElement | HTMLSelectElement>): void => {
+    console.log('event', event.target)
     const { name, value } = event.target
+    console.log('name', name)
+    console.log('value', value)
+    if (name === 'public') {
+      setFormData((prevFormData: ObjectData) => ({
+        ...prevFormData,
+        [name]: value === 'true'
+      }))
+      return
+    }
     setFormData((prevFormData: ObjectData) => ({
       ...prevFormData,
       [name]: value
@@ -206,6 +216,7 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
       />
     )
   }
+  console.log('formData', formData)
   return (
           <Form method="post" ref={challengeForm} encType="multipart/form-data" onSubmit={handleSubmit}>
             {/* this is here so tailwind generates the correct classes, should be moveed to tailwind.config.js file */}
@@ -244,6 +255,27 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
                 </div>
                 {/* material-tailwind <Select> element doesn't populate an actual HTML input element, so this hidden field captres the value for submission */}
                 <input type="hidden" name='frequency' value={formData.frequency} />
+                <div className="relative mb-2 max-w-[400px] text-sm">
+                  <label htmlFor='public'>Who can join?</label>
+                  <div className="flex items-center space-x-2">
+                    <Radio
+                      name='public'
+                      value='true'
+                      checked={formData.public === true}
+                      onChange={handleChange}
+                    />
+                    <span>Anyone</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Radio
+                      name='public'
+                      value='false'
+                      checked={formData.public === false}
+                      onChange={handleChange}
+                    />
+                    <span>Invite only</span>
+                  </div>
+                </div>
                 <div className="max-w-[300px] relative flex mb-2">
                   <Select
                     label="Select frequency"

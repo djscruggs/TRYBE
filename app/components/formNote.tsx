@@ -22,7 +22,6 @@ export default function FormNote (props: FormNoteProps): JSX.Element {
   if (note?.challenge) {
     challenge = note.challenge
   }
-  console.log('challenge', challenge)
   const placeholder = prompt ?? 'What\'s on your mind?'
   const [body, setBody] = useState(note?.body || '')
   const [error, setError] = useState('')
@@ -63,14 +62,14 @@ export default function FormNote (props: FormNoteProps): JSX.Element {
     if (file) {
       formData.append('image', file)
     }
-    await axios.post('/api/notes', formData)
+    const result = await axios.post('/api/notes', formData)
     setBody('')
     setFile(null)
     setFileDataURL(null)
     if (afterSave) {
       afterSave()
     } else {
-      navigate('.')
+      navigate('/notes/' + result.data.id)
     }
   }
   const handleCancel = (ev: React.MouseEvent<HTMLButtonElement, MouseEvent>): void => {
@@ -80,7 +79,6 @@ export default function FormNote (props: FormNoteProps): JSX.Element {
       onCancel()
     }
   }
-  console.log('note in form', note)
   return (
     <div className='w-full'>
       <Form method="post" onSubmit={handleSubmit}>
@@ -100,7 +98,7 @@ export default function FormNote (props: FormNoteProps): JSX.Element {
         <input type="file" name="image" hidden ref={imageRef} onChange={handleImage} accept="image/*"/>
 
         <MdOutlineAddPhotoAlternate onClick={imageDialog} className='text-2xl cursor-pointer float-right' />
-        {fileDataURL && <img src={fileDataURL} alt="preview" className='w-24 h-24' />}
+        {fileDataURL && <img src={fileDataURL} alt="preview" className='h-24 mb-2' />}
         <Button type="submit" placeholder='Save' className="bg-red">Save</Button>
           {onCancel &&
             <button onClick={handleCancel} className="mt-2 text-sm underline ml-2">cancel</button>

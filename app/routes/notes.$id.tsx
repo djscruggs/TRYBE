@@ -19,7 +19,6 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
     return null
   }
   const note = await loadNoteSummary(params.id)
-  console.log('note in loader', note)
   if (!note) {
     const error = { loadingError: 'Note not found' }
     return json(error)
