@@ -53,7 +53,7 @@ model Note {
   replies     Note[]     @relation("ReplyTo")
   challenge   Challenge? @relation(fields: [challengeId], references: [id])
   challengeId Int?
-  isRepost    Boolean    @default(false)
+  isShare    Boolean    @default(false)
   likes       Like[]
   image       String?
   comment     Comment?   @relation(fields: [commentId], references: [id])

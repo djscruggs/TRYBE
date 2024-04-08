@@ -65,7 +65,7 @@ export const loadNoteSummary = async (noteId: string | number): Promise<Record<s
       },
       challenge: true,
       _count: {
-        select: { replies: { where: { isRepost: false } }, likes: true }
+        select: { replies: { where: { isShare: false } }, likes: true }
       },
       replyTo: true
     }

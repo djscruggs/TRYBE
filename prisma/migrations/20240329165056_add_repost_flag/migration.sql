@@ -1,2 +1,2 @@
 -- AlterTable
-ALTER TABLE "Note" ADD COLUMN     "isRepost" BOOLEAN NOT NULL DEFAULT false;
+ALTER TABLE "Note" ADD COLUMN     "isShare" BOOLEAN NOT NULL DEFAULT false;

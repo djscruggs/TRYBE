@@ -14,7 +14,7 @@ interface FormNoteProps {
   challenge?: Challenge
   replyToId?: number
   prompt?: string
-  isRepost?: boolean
+  isShare?: boolean
 }
 
 export default function FormNote (props: FormNoteProps): JSX.Element {

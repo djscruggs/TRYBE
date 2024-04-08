@@ -85,7 +85,7 @@ export default function CardNote (props: CardNoteProps): JSX.Element {
   //     formData.append('unrepost', 'true')
   //   }
   //   formData.append('replyToId', note.id?.toString())
-  //   formData.append('isRepost', 'true')
+  //   formData.append('isShare', 'true')
 
   //   try {
   //     const result = await axios.post(`/api/notes/${note.id}/repost`, formData)

@@ -49,7 +49,7 @@ export interface Note {
   challengeId?: string | number
   replyToId?: string | number
   commentId?: string | number
-  isRepost?: boolean
+  isShare?: boolean
   createdAt?: Date
   updatedAt?: Date
   challenge?: Challenge
