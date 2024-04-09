@@ -60,6 +60,7 @@ export default function CardNote (props: CardNoteProps): JSX.Element {
       .then(() => {
         toast.success('Note deleted')
         revalidator.revalidate()
+        navigate('/home')
       })
       .catch(error => {
         toast.error('Error deleting note')
@@ -112,23 +113,35 @@ export default function CardNote (props: CardNoteProps): JSX.Element {
   }
   return (
     <>
-    {note.replyTo &&
+    {note.replyTo && !note.isShare &&
       <div className='mb-6'>
         <p className='text-sm'>In reply to</p>
         <CardNote note={note.replyTo} isReplyTo={true} />
       </div>
     }
     {editing
-      ? <FormNote note={note} onCancel={() => { setEditing(false) }} afterSave={afterSave} />
+      ? <>
+      <FormNote note={note} onCancel={() => { setEditing(false) }} afterSave={afterSave} />
+      {note.replyTo && note.isShare &&
+          <div className='mt-6'>
+            <CardNote note={note.replyTo} isReplyTo={true} />
+          </div>
+      }
+      {note.challenge &&
+          <div className='mt-2'>
+            <CardChallenge challenge={note.challenge} isShare={true}/>
+          </div>
+        }
+      </>
       : <div className={'mt-2 w-full border-0  drop-shadow-none mr-2'}>
       <div className={`drop-shadow-none ${!isOwnRoute ? 'cursor-pointer' : ''}`} onClick={goToNote}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Card className={`md:col-span-2 p-2 border-1 drop-shadow-lg  border border-${currentUser?.id === note.userId && !isReplyTo && !isQuote ? 'green-500' : 'gray'} rounded-md`}>
             <div className="flex items-start">
               <AvatarChooser note={note}/>
-              <div className="flex flex-col w-full">
+              <div className="flex flex-col w-full h-full">
               {note.body}
-              {note.image && <img src={`${note.image}?${Date.now()}`} alt="note picture" className="cursor-pointer max-w-[200px]" onClick={handlePhotoClick} />}
+              {note.image && <img src={`${note.image}?${Date.now()}`} alt="note picture" className="mt-4 cursor-pointer max-w-[200px]" onClick={handlePhotoClick} />}
               {note.challenge &&
                 <div className='mt-2'>
                   <CardChallenge challenge={note.challenge} isShare={true}/>
@@ -142,10 +155,16 @@ export default function CardNote (props: CardNoteProps): JSX.Element {
               }
               </div>
             </div>
+            {note.replyTo && note.isShare &&
+              <div className='mt-6 ml-10'>
+                <CardNote note={note.replyTo} isReplyTo={true} />
+              </div>
+            }
           </Card>
         </div>
         {/* <span className="text-xs text-gray-500">2 hours ago</span> */}
       </div>
+
       {(currentUser && addReply) &&
       <div className='mt-2 w-full border-0  drop-shadow-none mr-2'>
         <FormNote replyToId={note.id} afterSave={afterSave} onCancel={() => { setAddReply(false) }} prompt='Add your response' />

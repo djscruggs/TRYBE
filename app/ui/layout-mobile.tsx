@@ -44,17 +44,17 @@ const LayoutMobile = (): JSX.Element => {
     hideMenu()
   }
   return (
-            <div className="max-w-screen flex flex-col justify-between h-screen p-0" onClick={hideMenu}>
+            <div className="max-w-screen flex flex-col min-h-screen p-0" onClick={hideMenu}>
                 {showNav &&
-                <div className="flex justify-end items-start mb-4 pt-2 pr-0">
-                    <MagnifyingGlassIcon className='w-6 mr-4' />
+                <div className="flex justify-between items-start mb-4 pt-2 pr-0">
+                    <MagnifyingGlassIcon className='w-6 mr-4 ml-2' />
                     <BellIcon className='w-6 mr-4' />
                     <Link to="/messages">
                     <ChatBubbleLeftRightIcon className='w-6 mr-4' />
                     </Link>
                 </div>
                 }
-                <div className="flex flex-col items-center min-h-fit pb-16 px-2">
+                <div className="flex flex-col items-center justify-start pb-16 px-2">
                     <Outlet />
                     {/* <AnimatePresence mode='wait' initial={false}>
                         <motion.main

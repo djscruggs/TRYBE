@@ -1,5 +1,5 @@
 // app/components/form-field.tsx
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import ShowPasswordButton from './showPasswordButton'
 
 interface FormFieldProps {
@@ -13,6 +13,7 @@ interface FormFieldProps {
   required?: boolean
   autoComplete?: string
   autoFocus?: boolean
+  autoResize?: boolean
   rows?: number
   cols?: number
 }
@@ -28,6 +29,7 @@ export function FormField ({
   required = false,
   autoComplete = '',
   autoFocus = false,
+  autoResize = false,
   cols = 30,
   rows = 10
 
@@ -41,6 +43,14 @@ export function FormField ({
   if (type === 'password' && passwordVisible) {
     localType = 'text'
   }
+  const textRef = useRef<HTMLTextAreaElement>(null)
+  useEffect(() => {
+    if (textRef.current) {
+      textRef.current.style.height = '90px'
+      const scrollHeight = textRef.current.scrollHeight
+      textRef.current.style.height = scrollHeight + 'px'
+    }
+  }, [value])
 
   return <>
       <label htmlFor={name} className="block text-blue-600">{label}</label>
@@ -62,6 +72,7 @@ export function FormField ({
             required={required}
             autoFocus = {autoFocus}
             maxLength={65535}
+            ref={textRef}
           >
           {value}
         </textarea>

@@ -57,7 +57,7 @@ export interface Note {
 export interface NoteSummary extends Note {
   _count: {
     likes: number
-    comments: number
+    replies?: number
   }
 }
 export interface ErrorObject extends Record<string, { _errors: string[] }> {}

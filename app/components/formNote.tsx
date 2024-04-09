@@ -15,6 +15,7 @@ interface FormNoteProps {
   replyToId?: number
   prompt?: string
   isShare?: boolean
+  forwardRef?: React.RefObject<HTMLTextAreaElement>
 }
 
 export default function FormNote (props: FormNoteProps): JSX.Element {
@@ -55,6 +56,7 @@ export default function FormNote (props: FormNoteProps): JSX.Element {
     }
     if (replyToId) {
       formData.append('replyToId', replyToId.toString())
+      formData.append('isShare', 'true')
     }
     if (challenge) {
       formData.append('challengeId', challenge.id.toString())
@@ -79,11 +81,13 @@ export default function FormNote (props: FormNoteProps): JSX.Element {
       onCancel()
     }
   }
+
   return (
     <div className='w-full'>
       <Form method="post" onSubmit={handleSubmit}>
       <FormField
           name='note'
+          autoResize={true}
           placeholder={placeholder}
           type='textarea'
           rows={3}

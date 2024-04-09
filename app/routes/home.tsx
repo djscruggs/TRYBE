@@ -1,25 +1,21 @@
 import { CurrentUserContext } from '../utils/CurrentUserContext'
-import React, { useContext, useState } from 'react'
+import React, { useContext, useState, useEffect } from 'react'
 import UserAvatar from '../components/useravatar'
 import FormNote from '../components/formNote'
-import { useLoaderData } from '@remix-run/react'
-import FeedCommunityCard from '~/components/feedcommunitycard'
-import FeedPostCard from '~/components/feedpostcard'
+import { useLoaderData, useNavigate } from '@remix-run/react'
 import type { ChallengeSummary, NoteSummary } from '../utils/types.server'
 import { useMobileSize } from '../utils/useMobileSize'
 import { type LoaderFunction } from '@remix-run/node'
-import FeedChallengeCard from '~/components/feedchallengecard'
 import { prisma } from '../models/prisma.server'
 import CardChallenge from '../components/cardChallenge'
 import CardNote from '~/components/cardNote'
+import { useRevalidator } from 'react-router-dom'
 
 interface FeedLoaderData {
   challenges: ChallengeSummary[]
   notes: NoteSummary[]
 };
 export const loader: LoaderFunction = async (args): Promise<FeedLoaderData> => {
-  // if currentUser isn't authenticated, this will redirect to login
-  // challenges
   const challenges = await prisma.challenge.findMany({
     orderBy: [{ createdAt: 'desc' }],
     include: {
@@ -42,24 +38,37 @@ export const loader: LoaderFunction = async (args): Promise<FeedLoaderData> => {
           profile: true
         }
       },
+      replyTo: true,
       challenge: true,
       _count: {
         select: { replies: true, likes: true }
       }
+
     }
   })
   return { challenges, notes }
 }
-
+interface FeedItem {
+  id?: string
+  createdAt?: Date
+  updatedAt?: Date
+}
 export default function Home (): JSX.Element {
-  const { challenges, notes } = useLoaderData() as FeedLoaderData
-  const combinedArray = [...challenges, ...notes].map(item => ({
-    ...item
-  })).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-  const [feedItems, setFeedItems] = useState<FeedItem[]>(combinedArray)
+  const { challenges, notes } = useLoaderData<FeedLoaderData>()
+  const [feedItems, setFeedItems] = useState<FeedItem[]>([])
+  useEffect(() => {
+    const combinedArray = [...challenges, ...notes].map(item => ({
+      ...item
+    })).sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
+    setFeedItems(combinedArray)
+  }, [challenges, notes])
   const { currentUser } = useContext(CurrentUserContext)
   const isMobile = useMobileSize()
-  if (!feedItems) {
+  const revalidator = useRevalidator()
+  const onSavePost = (): void => {
+    revalidator.revalidate()
+  }
+  if (!currentUser || !feedItems) {
     return <p>Loading...</p>
   }
   return (
@@ -84,7 +93,7 @@ export default function Home (): JSX.Element {
             </div>
             {currentUser &&
               <div className="w-full pl-2 max-w-lg">
-                <FormNote />
+                <FormNote afterSave={onSavePost} />
               </div>
             }
             {feedItems.map(item => {
