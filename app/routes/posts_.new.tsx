@@ -10,8 +10,8 @@ export const loader: LoaderFunction = async (args) => {
 export default function PostsNew ({ children }: { children: React.ReactNode }) {
   const { currentUser } = useContext(CurrentUserContext)
   return (
-          <>
+          <div className='w-full max-w-lg mt-10'>
             <FormNote />
-          </>
+          </div>
   )
 }

@@ -1,4 +1,4 @@
-
+import React from 'react'
 import * as ReactDOM from 'react-dom/client'
 import { RemixBrowser } from '@remix-run/react'
 import { CacheProvider } from '@emotion/react'
