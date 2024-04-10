@@ -1,6 +1,6 @@
 import { loadNoteSummary, loadRepost } from '~/models/note.server'
 import { Outlet, useLoaderData, useLocation } from '@remix-run/react'
-import React from 'react'
+
 import CardNote from '~/components/cardNote'
 import { requireCurrentUser } from '../models/auth.server'
 import type { ObjectData, Note } from '~/utils/types.server'

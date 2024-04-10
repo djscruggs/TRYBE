@@ -1,7 +1,7 @@
 import { useRouteLoaderData, useNavigate } from '@remix-run/react'
 import FormNote from '~/components/formNote'
 import CardNote from '../components/cardNote'
-import React from 'react'
+
 
 export default function NewNote ({ children }: { children: React.ReactNode }): JSX.Element {
   const data = useRouteLoaderData('routes/notes.$id')

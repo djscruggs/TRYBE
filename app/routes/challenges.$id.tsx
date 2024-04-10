@@ -81,7 +81,6 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
         userId: currentUser.id
       }
     })
-    console.log('count', checkinsCount)
   }
   const data: ChallengObjectData = { challenge: result, isMember: Boolean(memberships), hasLiked: Boolean(likes), checkinsCount, lastCheckin }
   return json(data)

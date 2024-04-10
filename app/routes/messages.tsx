@@ -1,4 +1,4 @@
-import React from 'react'
+
 import { requireCurrentUser } from '../models/auth.server'
 import { type LoaderFunction } from '@remix-run/node'
 

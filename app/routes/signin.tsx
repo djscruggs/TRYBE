@@ -1,4 +1,4 @@
-import React from 'react'
+
 import { type LoaderFunction, type LoaderFunctionArgs, redirect } from '@remix-run/node'
 import { SignIn } from '@clerk/clerk-react'
 import { getAuth } from '@clerk/remix/ssr.server'

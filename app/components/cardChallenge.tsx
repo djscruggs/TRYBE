@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect, useRef } from 'react'
+import { useContext, useState, useEffect, useRef } from 'react'
 import {
   Card,
   Button
@@ -16,9 +16,11 @@ import ShareMenu from './shareMenu'
 interface CardChallengeProps {
   challenge: ChallengeSummary
   isShare?: boolean
+  isMember?: boolean
 }
 
-export default function CardChallenge ({ challenge, isShare }: CardChallengeProps): JSX.Element {
+export default function CardChallenge ({ challenge, isShare, isMember }: CardChallengeProps): JSX.Element {
+  console.log('isMember for id', challenge.id, isMember)
   const { currentUser } = useContext(CurrentUserContext)
   const navigate = useNavigate()
   const textColor = textColorFromContainer(challenge.color, 'white')
@@ -60,7 +62,7 @@ export default function CardChallenge ({ challenge, isShare }: CardChallengeProp
               <div className="flex flex-col items-center col-span-2">
                 <div className={`mt-2 font-bold text-${textColor}`}>{challenge.name}</div>
                 {currentUser && challenge.userId === currentUser.id && (<Link className={`underline text-xs text-${textColor}`} to = {`/challenges/${challenge.id}/edit`}>edit</Link>)}
-                <Button onClick={goToChallenge} className={`bg-${buttonColor} text-${buttonTextColor} p-3 py-2 rounded-full mt-3`}>Sign up!</Button>
+                <Button onClick={goToChallenge} className={`bg-${buttonColor} text-${buttonTextColor} p-3 py-2 rounded-full mt-3`}>{isMember ? 'Check In' : 'Sign up!'}</Button>
               </div>
             </div>
           </Card>

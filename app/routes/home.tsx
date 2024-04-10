@@ -54,7 +54,18 @@ export const loader: LoaderFunction = async (args): Promise<FeedLoaderData> => {
 
     }
   })
-  return { challenges, notes }
+  const _memberships = await prisma.memberChallenge.findMany({
+    where: {
+      userId: currentUser.id
+    }
+  })
+  // creats an array that just has the challengeIds
+  const memberships = [
+    ..._memberships.map(membership => membership.challengeId),
+    ...challenges.filter(challenge => challenge.userId === currentUser.id).map(challenge => challenge.id)
+  ]
+
+  return { challenges, notes, memberships }
 }
 interface FeedItem {
   id?: string
@@ -62,7 +73,7 @@ interface FeedItem {
   updatedAt?: Date
 }
 export default function Home (): JSX.Element {
-  const { challenges, notes } = useLoaderData<FeedLoaderData>()
+  const { challenges, notes, memberships } = useLoaderData<FeedLoaderData>()
   const [feedItems, setFeedItems] = useState<FeedItem[]>([])
   useEffect(() => {
     const combinedArray = [...challenges, ...notes].map(item => ({
@@ -107,7 +118,7 @@ export default function Home (): JSX.Element {
             {feedItems.map(item => {
               if ('mission' in item) {
                 return (<div className="flex items-center pl-0 mt-10 w-full max-w-lg" key={item.id}>
-                          <CardChallenge challenge={item as ChallengeSummary} />
+                          <CardChallenge challenge={item as ChallengeSummary} isMember={memberships.includes(item.id)} />
                         </div>)
               } else {
                 return (<div className="flex items-center pl-0 mt-10 w-full max-w-lg" key={item.id}>

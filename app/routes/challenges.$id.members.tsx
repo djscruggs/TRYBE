@@ -1,4 +1,4 @@
-import React from 'react'
+
 import { useLoaderData, json } from '@remix-run/react'
 import { type LoaderFunction } from '@remix-run/server-runtime'
 import { fetchChallengeMembers } from '~/models/challenge.server'
