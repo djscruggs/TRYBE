@@ -21,6 +21,7 @@ import { LiaUserFriendsSolid } from 'react-icons/lia'
 import { prisma } from '../models/prisma.server'
 import { TbHeartFilled } from 'react-icons/tb'
 import { useRevalidator } from 'react-router-dom'
+import { formatDistanceToNow } from 'date-fns'
 import FormNote from '~/components/formNote'
 interface ChallengObjectData {
   challenge: Challenge
@@ -39,9 +40,11 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
     const error = { loadingError: 'Challenge not found' }
     return json(error)
   }
-  // load memberships & likes for current user if it exists
+  // load memberships, likes & checkins for current user if it exists
   let memberships = 0
   let likes = 0
+  let checkinsCount = 0
+  let lastCheckin = null
   if (currentUser) {
     const challengeId = params.id ? parseInt(params.id) : undefined
     memberships = await prisma.memberChallenge.count({
@@ -57,8 +60,30 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
         userId: currentUser.id
       }
     })
+    // has the user checked in for this challenge?
+    const _last = await prisma.checkIn.findMany({
+      take: 1,
+      where: {
+        challengeId,
+        userId: currentUser.id
+      },
+      orderBy: {
+        createdAt: 'desc'
+      }
+    })
+    if (_last) {
+      lastCheckin = _last[0]
+    }
+    // how many checkins
+    checkinsCount = await prisma.checkIn.count({
+      where: {
+        challengeId,
+        userId: currentUser.id
+      }
+    })
+    console.log('count', checkinsCount)
   }
-  const data: ChallengObjectData = { challenge: result, isMember: Boolean(memberships), hasLiked: Boolean(likes) }
+  const data: ChallengObjectData = { challenge: result, isMember: Boolean(memberships), hasLiked: Boolean(likes), checkinsCount, lastCheckin }
   return json(data)
 }
 export default function ViewChallenge (): JSX.Element {
@@ -72,7 +97,9 @@ export default function ViewChallenge (): JSX.Element {
   const navigate = useNavigate()
   const revalidator = useRevalidator()
   const [loading, setLoading] = useState<boolean>(false)
+  const [checkingIn, setCheckingIn] = useState<boolean>(false)
   const data: ObjectData = useLoaderData() as ObjectData
+  console.log(data)
   if (!data) {
     return <p>No data.</p>
   }
@@ -103,10 +130,19 @@ export default function ViewChallenge (): JSX.Element {
     }
   }
   const handleCheckIn = async (event: any): Promise<void> => {
+    setCheckingIn(true)
     event.preventDefault()
-    const url = `/api/challenges/${data.challenge.id as string | number}/checkin`
-    const response = await axios.post(url)
-    console.log('api response', response)
+    try {
+      const url = `/api/challenges/${data.challenge?.id as string | number}/checkin`
+      const response = await axios.post(url)
+      toast.success(response.data.message)
+    } catch (error) {
+      console.error(error)
+      toast.error(error.response.statusText)
+    } finally {
+      revalidator.revalidate()
+      setCheckingIn(false)
+    }
   }
   const handleLike = async (event: any): Promise<void> => {
     event.preventDefault()
@@ -185,13 +221,13 @@ export default function ViewChallenge (): JSX.Element {
         </div>
         )}
         <div className="mb-2 text-sm">
-          Check-in <span className="capitalize">{data.challenge.frequency.toLowerCase()}</span>
+          Checks in <span className="capitalize">{data.challenge.frequency.toLowerCase()}</span>
         </div>
 
       </div>
 
     </div>
-      {data.challenge.userId == currentUser?.id && (
+      {data.challenge.userId !== currentUser?.id && (
         <>
           <button
               onClick={toggleJoin}
@@ -201,12 +237,26 @@ export default function ViewChallenge (): JSX.Element {
             {loading && <Spinner className="h-4 w-4 ml-1 inline" />}
         </>
       )}
+
       <div className="my-2 text-sm max-w-sm pl-0">
+      {(isMember || data.challenge.userId === currentUser?.id) && (
+        <>
+        {data.checkinsCount > 0 && (
+          <div className="text-xs my-2">
+            Last checked in {formatDistanceToNow(data.lastCheckin?.createdAt as Date)} ago <br />
+            {data.checkinsCount} check-ins total
+          </div>
+        )}
         <button
-        onClick={handleCheckIn}
-        className={`bg-${color} text-white rounded-md p-2 text-xs`}>
-          Check-in
+          onClick={handleCheckIn}
+          disabled={checkingIn}
+          className='bg-red text-white rounded-md p-2 text-xs mb-2 disabled:bg-gray-400'
+        >
+          {checkingIn ? 'Checking In...' : 'Check In Now'}
         </button>
+
+        </>
+      )}
 
         <div className='flex flex-row justify-left'>
           <div >
