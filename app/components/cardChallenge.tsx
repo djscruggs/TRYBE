@@ -41,7 +41,7 @@ export default function CardChallenge ({ challenge, isShare }: CardChallengeProp
   return (
     <div className="mt-2 border-0 drop-shadow-none mr-2 w-full" >
       <div className="drop-shadow-none">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className={'grid grid-cols-1 md:grid-cols-2 gap-4 rounded-md p-1 bg-white'}>
           <Card className={`md:col-span-2 bg-${bgColor} p-2 border-1 drop-shadow-lg border-gray rounded-md`}>
             <div className="grid grid-cols-3 gap-4">
             <div className="flex flex-col justify-center items-center col-span-1">

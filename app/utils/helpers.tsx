@@ -53,7 +53,8 @@ export function colorToClassName (color: string | undefined, defaultColor: strin
     pink: 'pink-300',
     purple: 'purple-400'
   }
-  return colorMap[lower]
+  const baseColor = lower.split('-')[0]
+  return colorMap[baseColor]
 }
 export function buttonColorFromContainer (containerColor: string, defaultColor: string): string {
   if (!containerColor) return defaultColor
@@ -67,7 +68,7 @@ export function buttonColorFromContainer (containerColor: string, defaultColor: 
 export function textColorFromContainer (containerColor: string, defaultColor: string): string {
   if (!containerColor) return defaultColor
   const containerColorLower = containerColor.toLowerCase()
-  if (['red', 'blue', 'purple'].includes(containerColorLower)) {
+  if (['red', 'blue', 'purple', 'green', 'orange', 'pink'].includes(containerColorLower)) {
     return 'white'
   } else {
     return 'black'
@@ -75,7 +76,9 @@ export function textColorFromContainer (containerColor: string, defaultColor: st
 }
 
 export function iconStyle (color: string): string {
+  console.log('recevied', color)
   const bgColor = colorToClassName(color, 'red')
+  console.log('bgColor', bgColor)
   const textColor = ['yellow'].includes(bgColor) ? 'black' : 'white'
   return `h-12 w-12 text-${textColor} bg-${bgColor} rounded-full p-2`
 }

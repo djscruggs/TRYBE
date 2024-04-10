@@ -89,10 +89,16 @@ export const fetchChallenges = async (userId: string | number | undefined): Prom
     }
   })
 }
-export const fetchChallengeSummaries = async (userId?: string | number | undefined) => {
+export const fetchChallengeSummaries = async (userId?: string | number | undefined): Promise<ChallengeData[]> => {
   const uid = userId ? Number(userId) : undefined
+  const where = [{ public: true }]
+  if (uid) {
+    where.push({ userId: uid })
+  }
   const params: prisma.challengeFindManyArgs = {
-    where: userId ? { userId: uid } : undefined,
+    where: {
+      OR: where
+    },
     include: {
       _count: {
         select: { members: true, comments: true, likes: true }

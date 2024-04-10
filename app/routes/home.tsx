@@ -1,8 +1,9 @@
 import { CurrentUserContext } from '../utils/CurrentUserContext'
+import { requireCurrentUser } from '../models/auth.server'
 import React, { useContext, useState, useEffect } from 'react'
 import UserAvatar from '../components/useravatar'
 import FormNote from '../components/formNote'
-import { useLoaderData, useNavigate } from '@remix-run/react'
+import { useLoaderData } from '@remix-run/react'
 import type { ChallengeSummary, NoteSummary } from '../utils/types.server'
 import { useMobileSize } from '../utils/useMobileSize'
 import { type LoaderFunction } from '@remix-run/node'
@@ -16,8 +17,15 @@ interface FeedLoaderData {
   notes: NoteSummary[]
 };
 export const loader: LoaderFunction = async (args): Promise<FeedLoaderData> => {
+  const currentUser = await requireCurrentUser(args)
   const challenges = await prisma.challenge.findMany({
     orderBy: [{ createdAt: 'desc' }],
+    where: {
+      OR: [
+        { userId: currentUser.id },
+        { public: true }
+      ]
+    },
     include: {
       user: {
         include: {

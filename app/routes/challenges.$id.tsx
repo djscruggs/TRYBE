@@ -102,6 +102,12 @@ export default function ViewChallenge (): JSX.Element {
       toast.error('Delete failed')
     }
   }
+  const handleCheckIn = async (event: any): Promise<void> => {
+    event.preventDefault()
+    const url = `/api/challenges/${data.challenge.id as string | number}/checkin`
+    const response = await axios.post(url)
+    console.log('api response', response)
+  }
   const handleLike = async (event: any): Promise<void> => {
     event.preventDefault()
 
@@ -179,13 +185,13 @@ export default function ViewChallenge (): JSX.Element {
         </div>
         )}
         <div className="mb-2 text-sm">
-          Meets <span className="capitalize">{data.challenge.frequency.toLowerCase()}</span>
+          Check-in <span className="capitalize">{data.challenge.frequency.toLowerCase()}</span>
         </div>
 
       </div>
 
     </div>
-      {data.challenge.userId === currentUser?.id && (
+      {data.challenge.userId == currentUser?.id && (
         <>
           <button
               onClick={toggleJoin}
@@ -196,9 +202,15 @@ export default function ViewChallenge (): JSX.Element {
         </>
       )}
       <div className="my-2 text-sm max-w-sm pl-0">
+        <button
+        onClick={handleCheckIn}
+        className={`bg-${color} text-white rounded-md p-2 text-xs`}>
+          Check-in
+        </button>
+
         <div className='flex flex-row justify-left'>
           <div >
-            <TbHeartFilled className={`h-5 w-5 cursor-pointer ${data.hasLiked ? 'text-red' : 'text-grey'}`} onClick={handleLike}/>
+            <TbHeartFilled className={`h-5 w-5 cursor-pointer inline ${data.hasLiked ? 'text-red' : 'text-grey'}`} onClick={handleLike}/> {data.challenge._count.likes}
           </div>
 
           {data.challenge._count.comments > 0 && !isComments && (
@@ -210,14 +222,22 @@ export default function ViewChallenge (): JSX.Element {
                 </Link>
             </div>
           )}
-          {data.challenge._count?.members > 0 && (
+          {data.challenge._count?.members > 0
+            ? (
           <div>
-            <LiaUserFriendsSolid className="text-gray h-5 w-5 inline ml-4 -mt-1 mr-1" />
+
             <Link className="underline" to={`/challenges/${data.challenge.id}/members`}>
+            <LiaUserFriendsSolid className="text-gray h-5 w-5 inline ml-4 -mt-1 mr-1" />
               {data.challenge._count.members} members
             </Link>
           </div>
-          )}
+              )
+            : (
+            <div>
+              <LiaUserFriendsSolid className="text-gray h-5 w-5 inline ml-4 -mt-1 mr-1" />
+                No members yet
+            </div>
+              )}
         </div>
       </div>
       {data.challenge._count.comments == 0 && !isComments && (

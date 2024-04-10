@@ -136,7 +136,7 @@ export default function CardNote (props: CardNoteProps): JSX.Element {
       : <div className={'mt-2 w-full border-0  drop-shadow-none mr-2'}>
       <div className={`drop-shadow-none ${!isOwnRoute ? 'cursor-pointer' : ''}`} onClick={goToNote}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Card className={`md:col-span-2 p-2 border-1 drop-shadow-lg  border border-${currentUser?.id === note.userId && !isReplyTo && !isQuote ? 'green-500' : 'gray'} rounded-md`}>
+          <Card className={'md:col-span-2 p-2 border-1 drop-shadow-lg  border border-gray rounded-md'}>
             <div className="flex items-start">
               <AvatarChooser note={note}/>
               <div className="flex flex-col w-full h-full">
