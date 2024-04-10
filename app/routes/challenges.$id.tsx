@@ -98,7 +98,6 @@ export default function ViewChallenge (): JSX.Element {
   const [loading, setLoading] = useState<boolean>(false)
   const [checkingIn, setCheckingIn] = useState<boolean>(false)
   const data: ObjectData = useLoaderData() as ObjectData
-  console.log(data)
   if (!data) {
     return <p>No data.</p>
   }
@@ -164,7 +163,6 @@ export default function ViewChallenge (): JSX.Element {
 
     const url = `/api/challenges/join-unjoin/${data.challenge.id as string | number}`
     const response = await axios.post(url)
-    console.log('api response', response)
     setIsMember(response.data.result === 'joined')
     setLoading(false)
     // probably should use revalidate instead but this is quicker to add
