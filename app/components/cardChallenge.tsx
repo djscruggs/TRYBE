@@ -20,7 +20,6 @@ interface CardChallengeProps {
 }
 
 export default function CardChallenge ({ challenge, isShare, isMember }: CardChallengeProps): JSX.Element {
-  console.log('isMember for id', challenge.id, isMember)
   const { currentUser } = useContext(CurrentUserContext)
   const navigate = useNavigate()
   const textColor = textColorFromContainer(challenge.color, 'white')

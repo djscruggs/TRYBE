@@ -7,6 +7,9 @@ import CardChallenge from './cardChallenge'
 import { type Note, type Challenge } from '~/utils/types.client'
 import { Button } from '@material-tailwind/react'
 import { MdOutlineAddPhotoAlternate } from 'react-icons/md'
+import { BiVideoPlus, BiVideoOff } from 'react-icons/bi'
+import VideoRecorder from './videoRecorder'
+
 interface FormNoteProps {
   afterSave?: () => void
   onCancel?: () => void
@@ -23,14 +26,16 @@ export default function FormNote (props: FormNoteProps): JSX.Element {
   if (note?.challenge) {
     challenge = note.challenge
   }
+  const [showVideo, setShowVideo] = useState(false)
   const placeholder = prompt ?? 'What\'s on your mind?'
   const [body, setBody] = useState(note?.body || '')
+  const [btnDisabled, setBtnDisabled] = useState(false)
   const [error, setError] = useState('')
   const navigate = useNavigate()
   const imageRef = useRef<HTMLInputElement>(null)
   const [file, setFile] = useState<File | null>(null)
   const [fileDataURL, setFileDataURL] = useState<string | null>(note?.image ? note.image : null)
-
+  const [video, setVideo] = useState<File | null>(null)
   const imageDialog = (): void => {
     if (imageRef.current) {
       imageRef.current.click()
@@ -81,7 +86,7 @@ export default function FormNote (props: FormNoteProps): JSX.Element {
       onCancel()
     }
   }
-
+  console.log('parent video is', video)
   return (
     <div className='w-full'>
       <Form method="post" onSubmit={handleSubmit}>
@@ -101,12 +106,26 @@ export default function FormNote (props: FormNoteProps): JSX.Element {
           />
         <input type="file" name="image" hidden ref={imageRef} onChange={handleImage} accept="image/*"/>
 
+        {!showVideo && <BiVideoPlus onClick={() => { setShowVideo(true) }} className='ml-2 text-2xl cursor-pointer float-right' />}
+        {showVideo && <BiVideoOff onClick={() => { setShowVideo(false) }} className='ml-2 text-2xl cursor-pointer float-right' />}
         <MdOutlineAddPhotoAlternate onClick={imageDialog} className='text-2xl cursor-pointer float-right' />
+
         {fileDataURL && <img src={fileDataURL} alt="preview" className='h-24 mb-2' />}
-        <Button type="submit" placeholder='Save' className="bg-red">Save</Button>
-          {onCancel &&
-            <button onClick={handleCancel} className="mt-2 text-sm underline ml-2">cancel</button>
+        {video && !showVideo && <video src={URL.createObjectURL(video)} alt="preview" className='h-24 mb-2' />}
+        {showVideo &&
+        <div className='mt-6'>
+          <VideoRecorder onStart={() => { setBtnDisabled(true) }} onStop={() => { setBtnDisabled(false) }} onSave={setVideo} onFinish={() => { setShowVideo(false) }} />
+        </div>
+        }
+        <Button type="submit" placeholder='Save' className="bg-red disabled:gray-400" disabled={btnDisabled}>
+          {btnDisabled
+            ? 'Recording...'
+            : 'Save'
           }
+        </Button>
+        {onCancel &&
+          <button onClick={handleCancel} className="mt-2 text-sm underline ml-2">cancel</button>
+        }
         {challenge && <CardChallenge challenge={challenge} isShare={true}/>}
 
       </Form>
