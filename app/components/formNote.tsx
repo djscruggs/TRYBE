@@ -8,6 +8,7 @@ import { type Note, type Challenge } from '~/utils/types.client'
 import { Button } from '@material-tailwind/react'
 import { MdOutlineAddPhotoAlternate } from 'react-icons/md'
 import { BiVideoPlus, BiVideoOff } from 'react-icons/bi'
+import { TiDeleteOutline } from 'react-icons/ti'
 import VideoRecorder from './videoRecorder'
 
 interface FormNoteProps {
@@ -82,6 +83,9 @@ export default function FormNote (props: FormNoteProps): JSX.Element {
   const handleCancel = (ev: React.MouseEvent<HTMLButtonElement, MouseEvent>): void => {
     ev.preventDefault()
     setBody('')
+    setFile(null)
+    setFileDataURL(null)
+    setVideo(null)
     if (onCancel) {
       onCancel()
     }
@@ -110,12 +114,22 @@ export default function FormNote (props: FormNoteProps): JSX.Element {
         {showVideo && <BiVideoOff onClick={() => { setShowVideo(false) }} className='ml-2 text-2xl cursor-pointer float-right' />}
         <MdOutlineAddPhotoAlternate onClick={imageDialog} className='text-2xl cursor-pointer float-right' />
 
-        {fileDataURL && <img src={fileDataURL} alt="preview" className='h-24 mb-2' />}
-        {video && !showVideo && <video src={URL.createObjectURL(video)} alt="preview" className='h-24 mb-2' />}
+        {fileDataURL &&
+          <div className="relative w-fit">
+          <img src={fileDataURL} alt="image thumbnail" className='h-24 mb-2' />
+          <TiDeleteOutline onClick={() => { setFile(null); setFileDataURL(null) }} className='text-lg bg-white rounded-full text-red cursor-pointer absolute top-1 right-1' />
+          </div>
+        }
+        {video && !showVideo &&
+          <div className="relative w-fit">
+          <video src={URL.createObjectURL(video)} className='h-24 mb-2' />
+          <TiDeleteOutline onClick={() => { setVideo(null) }} className='text-lg bg-white rounded-full text-red cursor-pointer absolute top-1 right-1' />
+          </div>
+        }
         {showVideo &&
-        <div className='mt-6'>
-          <VideoRecorder onStart={() => { setBtnDisabled(true) }} onStop={() => { setBtnDisabled(false) }} onSave={setVideo} onFinish={() => { setShowVideo(false) }} />
-        </div>
+          <div className='mt-6'>
+            <VideoRecorder onStart={() => { setBtnDisabled(true) }} onStop={() => { setBtnDisabled(false) }} onSave={setVideo} onFinish={() => { setShowVideo(false) }} />
+          </div>
         }
         <Button type="submit" placeholder='Save' className="bg-red disabled:gray-400" disabled={btnDisabled}>
           {btnDisabled
@@ -123,7 +137,7 @@ export default function FormNote (props: FormNoteProps): JSX.Element {
             : 'Save'
           }
         </Button>
-        {onCancel &&
+        {(video || body || file) &&
           <button onClick={handleCancel} className="mt-2 text-sm underline ml-2">cancel</button>
         }
         {challenge && <CardChallenge challenge={challenge} isShare={true}/>}
