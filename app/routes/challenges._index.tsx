@@ -1,6 +1,6 @@
 import { requireCurrentUser } from '../models/auth.server'
 import { type LoaderFunction, json } from '@remix-run/node'
-import { useLoaderData, useNavigate } from '@remix-run/react'
+import { Link, useLoaderData, useNavigate } from '@remix-run/react'
 import { fetchChallengeSummaries } from '~/models/challenge.server'
 import { Button } from '@material-tailwind/react'
 import CardChallenge from '~/components/cardChallenge'
@@ -20,7 +20,6 @@ export const loader: LoaderFunction = async (args) => {
 }
 
 export default function ChallengesIndex (): JSX.Element {
-  const [filter, setFilter] = useState('all')
   const { currentUser } = useContext(CurrentUserContext)
   const navigate = useNavigate()
   const data: any = useLoaderData()
@@ -38,8 +37,7 @@ export default function ChallengesIndex (): JSX.Element {
             <div className="max-w-md">
             <p className="border border-red rounded-md p-4 bg-yellow">We celebrate the power of challenges to help focus, structure and kickstart our growth. When you don't have to do the heavy lifting of planning, scheduling and tracking, you can focus on just showing up, and that's where the magic and self-discovery unfolds!</p>
             {currentUser && <Button placeholder='New Challenge' size="sm" onClick={() => { navigate('./new') }} className="bg-red mb-4 mt-4">New</Button>}
-            <p>All Challenges</p>
-            <p>My Challenges</p>
+            <p className='text-red underling'><Link to='/challenges/mine'>My Challenges</Link></p>
             {(data?.length) > 0 &&
                data.map((challenge: any) => (
                 <p key={challenge.id}>

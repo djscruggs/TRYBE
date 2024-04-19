@@ -127,6 +127,9 @@ model MemberChallenge {
   challenge   Challenge? @relation(fields: [challengeId], references: [id])
   challengeId Int
   createdAt   DateTime   @default(now())
+  lastCheckin DateTime?
+  nextCheckIn DateTime
+  
 
   @@id([challengeId, userId])
   @@index([userId])
