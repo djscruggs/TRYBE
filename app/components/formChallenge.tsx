@@ -109,9 +109,9 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
     event.preventDefault()
     // validation
     const validation: Errors = {}
-    if (formData.name.trim() === '') { validation.name = 'Name is required' }
-    if (formData.description.trim() === '') { validation.description = 'Description is required' }
-    if (formData.mission.trim() === '') { validation.mission = 'Mission is required' }
+    if (!formData.name || formData.name.trim() === '') { validation.name = 'Name is required' }
+    if (!formData.description || formData.description.trim() === '') { validation.description = 'Description is required' }
+    if (!formData.mission || formData.mission.trim() === '') { validation.mission = 'Mission is required' }
     if (!formData.startAt) { validation.startAt = 'Start date is required' }
     if (!formData.endAt) { validation.endAt = 'End date is required' }
     if (Object.keys(validation).length > 0) {

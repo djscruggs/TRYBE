@@ -55,6 +55,13 @@ export interface Note {
   updatedAt?: Date
   challenge?: Challenge
 }
+export interface MemberChallenge {
+  userId?: number
+  challengeId?: number
+  createdAt?: Date
+  lastCheckIn?: Date
+  nextCheckIn?: Date
+}
 export interface NoteSummary extends Note {
   _count: {
     likes: number

@@ -1,10 +1,18 @@
 import { prisma } from './prisma.server'
 import type { ChallengeData, ChallengeSummary } from '~/utils/types.server'
 import z from 'zod'
+import { addDays, isFriday, isSaturday } from 'date-fns'
 
 export const createChallenge = async (challenge: prisma.challengeCreateInput): Promise<ChallengeData> => {
   const newChallenge = await prisma.challenge.create({
     data: challenge
+  })
+  // also create a membership for the user that created the challenge
+  await prisma.memberChallenge.create({
+    data: {
+      userId: challenge.userId,
+      challengeId: newChallenge.id
+    }
   })
   return newChallenge
 }
@@ -14,17 +22,17 @@ export const updateChallenge = async (challenge: prisma.challengeCreateInput): P
     data: challenge
   })
 }
-export const loadChallenge = async (challengeId: string | number, userId: string | number | undefined) => {
+export const loadChallenge = async (challengeId: number, userId?: number): Promise<ChallengeData | null> => {
   const id = Number(challengeId)
-  const uid = Number(userId)
+  const where: any = { id }
+  if (userId) {
+    where.userId = userId
+  }
   return await prisma.challenge.findUnique({
-    where: {
-      id,
-      userId: uid
-    }
+    where
   })
 }
-export const loadChallengeSummary = async (challengeId: string | number, counts = false): Promise<Array<Record<string, any>>> => {
+export const loadChallengeSummary = async (challengeId: string | number, counts = false): Promise<ChallengeSummary> => {
   const id = Number(challengeId)
   return await prisma.challenge.findUnique({
     where: {
@@ -106,6 +114,28 @@ export const fetchChallengeSummaries = async (userId?: string | number): Promise
     }
   }
   return await prisma.challenge.findMany(params)
+}
+export function calculateNextCheckin (challenge: ChallengeData): Date {
+  const today = new Date()
+  const frequency = challenge.frequency
+  let toAdd = 1
+  switch (frequency) {
+    case 'WEEKLY':
+      toAdd = 7
+      break
+    case 'ALTERNATING':
+      toAdd = 2
+      break
+    case 'WEEKDAYS':
+      if (isFriday(today)) {
+        toAdd = 3
+      } else if (isSaturday(today)) {
+        toAdd = 2
+      }
+      break
+  }
+  const nextCheckin = addDays(today, toAdd)
+  return nextCheckin
 }
 export const fetchMyChallenges = async (userId: string | number): Promise<ChallengeSummary[]> => {
   const uid = Number(userId)

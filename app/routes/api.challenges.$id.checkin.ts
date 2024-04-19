@@ -1,7 +1,7 @@
 import { prisma } from '../models/prisma.server'
 import { requireCurrentUser } from '~/models/auth.server'
 import { loadUser } from '~/models/user.server'
-import { loadChallenge } from '~/models/challenge.server'
+import { loadChallenge, calculateNextCheckin } from '~/models/challenge.server'
 import { json, type LoaderFunction } from '@remix-run/node'
 import type { ActionFunctionArgs } from '@remix-run/node' // or cloudflare/deno
 
@@ -12,23 +12,40 @@ export async function action (args: ActionFunctionArgs): Promise<prisma.challeng
       result: 'not-logged-in'
     }
   }
+
   const { params } = args
-  let canCheckIn = false
-  // allow user who created the challenge to check in even if not a member
-  const challenge = await loadChallenge(parseInt(params.id), currentUser.id)
-  if (challenge) {
-    canCheckIn = true
-  } else {
-    const user = await loadUser(currentUser.id)
-    canCheckIn = user.memberChallenges.filter((c) => c.challengeId === parseInt(params.id)).length > 0
+  const challenge = await loadChallenge(parseInt(params.id))
+  if (!challenge) {
+    // eslint-disable-next-line @typescript-eslint/no-throw-literal
+    throw new Response(null, {
+      status: 404,
+      statusText: 'Challenge not found'
+    })
   }
+  // allow user who created the challenge to check in even if not a member
+  const user = await loadUser(currentUser.id)
+  const canCheckIn = user.memberChallenges.filter((c) => c.challengeId === parseInt(challenge?.id)).length > 0
   if (canCheckIn) {
     const result = await prisma.checkIn.create({
       data: {
-        userId: currentUser.id,
+        userId: parseInt(currentUser.id),
         challengeId: parseInt(params.id)
       }
     })
+    // update last check in on subscription
+    const dateUpdate = await prisma.memberChallenge.update({
+      where: {
+        challengeId_userId: {
+          userId: currentUser.id,
+          challengeId: parseInt(params.id)
+        }
+      },
+      data: {
+        lastCheckIn: new Date(),
+        nextCheckIn: calculateNextCheckin(challenge)
+      }
+    })
+    console.log('dateUpdate', dateUpdate)
     return {
       message: 'Check-in successful',
       data: result

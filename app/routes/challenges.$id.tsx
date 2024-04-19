@@ -2,8 +2,8 @@ import { loadChallengeSummary } from '~/models/challenge.server'
 import { Outlet, useLoaderData, Link, useNavigate, useLocation } from '@remix-run/react'
 import React, { useContext, useState } from 'react'
 import { requireCurrentUser } from '../models/auth.server'
-import type { ObjectData } from '~/utils/types.server'
-import type { Challenge } from '~/utils/types.client'
+import type { ObjectData, MemberChallenge } from '~/utils/types.server'
+import type { ChallengeSummary } from '~/utils/types.client'
 import { json, type LoaderFunction, type LoaderFunctionArgs } from '@remix-run/node'
 import axios from 'axios'
 import { toast } from 'react-hot-toast'
@@ -21,12 +21,14 @@ import { LiaUserFriendsSolid } from 'react-icons/lia'
 import { prisma } from '../models/prisma.server'
 import { TbHeartFilled } from 'react-icons/tb'
 import { useRevalidator } from 'react-router-dom'
-import { formatDistanceToNow } from 'date-fns'
-import FormNote from '~/components/formNote'
+import { formatDistanceToNow, format, differenceInDays } from 'date-fns'
+
 interface ChallengObjectData {
-  challenge: Challenge
-  isMember: boolean
-  hasLiked: boolean
+  challenge?: ChallengeSummary
+  hasLiked?: boolean
+  membership?: MemberChallenge | null | undefined
+  checkInsCount?: number
+  isMember?: boolean
 }
 
 export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
@@ -41,63 +43,52 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
     return json(error)
   }
   // load memberships, likes & checkins for current user if it exists
-  let memberships = 0
   let likes = 0
-  let checkinsCount = 0
-  let lastCheckin = null
+  let checkInsCount = 0
+  let membership
   if (currentUser) {
     const challengeId = params.id ? parseInt(params.id) : undefined
-    memberships = await prisma.memberChallenge.count({
+    membership = await prisma.memberChallenge.findFirst({
       where: {
-        challengeId,
-        userId: currentUser.id
+        userId: Number(currentUser.id),
+        challengeId: Number(params.id)
       }
-    })
+    }) as MemberChallenge | null
     // has the user liked this challenge?
     likes = await prisma.like.count({
       where: {
         challengeId,
-        userId: currentUser.id
+        userId: Number(currentUser.id)
       }
     })
-    // has the user checked in for this challenge?
-    const _last = await prisma.checkIn.findMany({
-      take: 1,
-      where: {
-        challengeId,
-        userId: currentUser.id
-      },
-      orderBy: {
-        createdAt: 'desc'
-      }
-    })
-    if (_last) {
-      lastCheckin = _last[0]
+    // how many times has the user checked in for this challenge?
+    if (membership) {
+      checkInsCount = await prisma.checkIn.count({
+        where: {
+          challengeId,
+          userId: Number(currentUser.id)
+        }
+      })
     }
-    // how many checkins
-    checkinsCount = await prisma.checkIn.count({
-      where: {
-        challengeId,
-        userId: currentUser.id
-      }
-    })
   }
-  const data: ChallengObjectData = { challenge: result, isMember: Boolean(memberships), hasLiked: Boolean(likes), checkinsCount, lastCheckin }
+  const data: ChallengObjectData = { challenge: result, isMember: Boolean(membership?.userId), membership, hasLiked: Boolean(likes), checkInsCount }
   return json(data)
 }
 export default function ViewChallenge (): JSX.Element {
+  const data: ObjectData = useLoaderData() as ObjectData
+  const { challenge, membership, hasLiked, checkInsCount } = data as ChallengObjectData
   const location = useLocation()
   if (location.pathname.includes('edit') || location.pathname.includes('share')) {
     return <Outlet />
   }
-
   const isComments = location.pathname.includes('comments')
   const { currentUser } = useContext(CurrentUserContext)
   const navigate = useNavigate()
   const revalidator = useRevalidator()
   const [loading, setLoading] = useState<boolean>(false)
+  const [liking, setLiking] = useState<boolean>(false)
   const [checkingIn, setCheckingIn] = useState<boolean>(false)
-  const data: ObjectData = useLoaderData() as ObjectData
+
   if (!data) {
     return <p>No data.</p>
   }
@@ -108,17 +99,38 @@ export default function ViewChallenge (): JSX.Element {
     return <p>Loading...</p>
   }
 
-  const [isMember, setIsMember] = useState<boolean>(Boolean(data.isMember))
+  const [isMember, setIsMember] = useState(Boolean(data.isMember))
+
+  const formatNextCheckin = (): string => {
+    if (!membership?.nextCheckIn) {
+      return ''
+    }
+    const daysToNext = differenceInDays(membership.nextCheckIn, new Date())
+    if (daysToNext >= 4) {
+      return 'next ' + format(membership.nextCheckIn, 'cccc')
+    }
+    if (daysToNext <= 0) {
+      return 'today'
+    }
+    return format(membership.nextCheckIn, 'cccc')
+  }
+  const canCheckInNow = (): boolean => {
+    if (!membership) {
+      return false
+    }
+    const daysToNext = differenceInDays(membership.nextCheckIn, new Date())
+    return daysToNext <= 0
+  }
 
   const handleDelete = async (event: any): Promise<void> => {
     event.preventDefault()
     if (!confirm('Are you sure you want to delete this challenge?')) {
       return
     }
-    if (!data.challenge?.id) {
+    if (!challenge?.id) {
       throw new Error('cannot delete without an id')
     }
-    const url = `/api/challenges/delete/${data.challenge.id as string | number}`
+    const url = `/api/challenges/delete/${challenge.id as string | number}`
     const response = await axios.post(url)
     if (response.status === 204) {
       toast.success('Challenge deleted')
@@ -131,7 +143,7 @@ export default function ViewChallenge (): JSX.Element {
     setCheckingIn(true)
     event.preventDefault()
     try {
-      const url = `/api/challenges/${data.challenge?.id as string | number}/checkin`
+      const url = `/api/challenges/${challenge?.id as string | number}/checkin`
       const response = await axios.post(url)
       toast.success(response.data.message)
     } catch (error) {
@@ -144,24 +156,31 @@ export default function ViewChallenge (): JSX.Element {
   }
   const handleLike = async (event: any): Promise<void> => {
     event.preventDefault()
-
-    const form = new FormData()
-    form.append('challengeId', data.challenge.id as string | number)
-    if (data.hasLiked) {
-      form.append('unlike', true)
+    setLiking(true)
+    try {
+      const form = new FormData()
+      form.append('challengeId', challenge.id!)
+      if (hasLiked) {
+        form.append('unlike', true)
+      }
+      const url = '/api/likes'
+      await axios.post(url, form)
+      revalidator.revalidate()
+    } catch (error) {
+      console.error(error)
+      toast.error(error.response.statusText)
+    } finally {
+      setLiking(false)
     }
-    const url = '/api/likes'
-    const response = await axios.post(url, form)
-    revalidator.revalidate()
   }
   const toggleJoin = async (event: any): Promise<void> => {
     event.preventDefault()
-    if (!data.challenge?.id) {
+    if (!challenge?.id) {
       throw new Error('cannot join without an id')
     }
     setLoading(true)
 
-    const url = `/api/challenges/join-unjoin/${data.challenge.id as string | number}`
+    const url = `/api/challenges/join-unjoin/${challenge.id as string | number}`
     const response = await axios.post(url)
     setIsMember(response.data.result === 'joined')
     setLoading(false)
@@ -175,56 +194,56 @@ export default function ViewChallenge (): JSX.Element {
     day: 'numeric'
   }
   const iconOptions: Record<string, JSX.Element> = {
-    GiShinyApple: <GiShinyApple className={iconStyle(data.challenge?.color as string)} />,
-    GiMeditation: <GiMeditation className={iconStyle(data.challenge?.color as string)} />,
-    FaRegLightbulb: <FaRegLightbulb className={iconStyle(data.challenge?.color as string)} />,
-    RiMentalHealthLine: <RiMentalHealthLine className={iconStyle(data.challenge?.color as string)} />,
-    PiBarbellLight: <PiBarbellLight className={iconStyle(data.challenge?.color as string)} />,
-    IoFishOutline: <IoFishOutline className={iconStyle(data.challenge?.color as string)} />
+    GiShinyApple: <GiShinyApple className={iconStyle(challenge?.color)} />,
+    GiMeditation: <GiMeditation className={iconStyle(challenge?.color)} />,
+    FaRegLightbulb: <FaRegLightbulb className={iconStyle(challenge?.color)} />,
+    RiMentalHealthLine: <RiMentalHealthLine className={iconStyle(challenge?.color)} />,
+    PiBarbellLight: <PiBarbellLight className={iconStyle(challenge?.color)} />,
+    IoFishOutline: <IoFishOutline className={iconStyle(challenge?.color)} />
   }
-  const color = colorToClassName(data.challenge?.color as string, 'red')
+  const color = colorToClassName(challenge?.color, 'red')
   return (
     <>
     <div className={`max-w-sm border border-transparent border-b-inherit rounded-md bg-gradient-to-b from-${color} to-90%`}>
       <div className={'mb-2 mt-0.5 flex justify-center max-h-80 '}>
-          {data.challenge.coverPhoto && <img src={`${data.challenge.coverPhoto}?${Date.now()}`} alt={`${data.challenge.name as string} cover photo`} className="w-full rounded-sm" />}
+          {challenge.coverPhoto && <img src={`${challenge.coverPhoto}?${Date.now()}`} alt={`${challenge.name!} cover photo`} className="w-full rounded-sm" />}
       </div>
       <div className="mb-6 px-4 flex flex-col justify-center">
-      {data.challenge.icon && <div className="mb-2 flex justify-center">{iconOptions[data.challenge.icon as string]}</div>}
-        <h1 className='flex justify-center text-2xl'>{data.challenge.name as string}</h1>
-        {data.challenge.userId === currentUser?.id && (
+      {challenge.icon && <div className="mb-2 flex justify-center">{iconOptions[challenge.icon]}</div>}
+        <h1 className='flex justify-center text-2xl'>{challenge.name!}</h1>
+        {challenge.userId === currentUser?.id && (
           <div className="flex justify-center mt-2">
-            <Link className='underline text-red' to = {`/challenges/${data.challenge.id as string | number}/edit`}>edit</Link>&nbsp;&nbsp;
-            <Link className='underline text-red' onClick={handleDelete} to = {`/challenges/edit/${data.challenge.id as string | number}`}>delete</Link>&nbsp;&nbsp;
+            <Link className='underline text-red' to = {`/challenges/${challenge.id as string | number}/edit`}>edit</Link>&nbsp;&nbsp;
+            <Link className='underline text-red' onClick={handleDelete} to = {`/challenges/edit/${challenge.id as string | number}`}>delete</Link>&nbsp;&nbsp;
           </div>
         )}
       </div>
       <div className='p-4'>
         <div className="mb-2 text-sm">
-          {new Date(data.challenge.startAt).toLocaleDateString(undefined, dateOptions)} to {new Date(data.challenge.endAt).toLocaleDateString(undefined, dateOptions)}
+          {new Date(challenge.startAt).toLocaleDateString(undefined, dateOptions)} to {new Date(challenge.endAt).toLocaleDateString(undefined, dateOptions)}
         </div>
         <div className="mb-2">
           <div className='text-center text-sm font-bold'>About</div>
           <div className='text-left mb-4'>
-          {convertlineTextToHtml(data.challenge.description)}
+          {convertlineTextToHtml(challenge.description)}
           </div>
         </div>
-        {data.challenge.mission && (
+        {challenge.mission && (
         <div className="mb-2">
           <div className='text-center text-sm font-bold'>Mission</div>
           <div className='text-left mb-4'>
-          {convertlineTextToHtml(data.challenge.mission)}
+          {convertlineTextToHtml(challenge.mission)}
           </div>
         </div>
         )}
         <div className="mb-2 text-sm">
-          Checks in <span className="capitalize">{data.challenge.frequency.toLowerCase()}</span>
+          Checks in <span className="capitalize">{challenge.frequency.toLowerCase()}</span>
         </div>
 
       </div>
 
     </div>
-      {data.challenge.userId !== currentUser?.id && (
+      {challenge.userId !== currentUser?.id && (
         <>
           <button
               onClick={toggleJoin}
@@ -236,20 +255,21 @@ export default function ViewChallenge (): JSX.Element {
       )}
 
       <div className="my-2 text-sm max-w-sm pl-0">
-      {(isMember || data.challenge.userId === currentUser?.id) && (
+      {isMember && (
         <>
-        {data.checkinsCount > 0 && (
+        {membership?.lastCheckIn && (
           <div className="text-xs my-2">
-            Last checked in {formatDistanceToNow(data.lastCheckin?.createdAt as Date)} ago <br />
-            {data.checkinsCount} check-ins total
+            Last check-in: {formatDistanceToNow(membership.lastCheckIn)} ago <br />
+            {membership.nextCheckIn && <p>Next check-in: {formatNextCheckin()}</p>}
+            {Number(checkInsCount) > 0 && <p>{checkInsCount} check-ins total</p>}
           </div>
         )}
         <button
           onClick={handleCheckIn}
-          disabled={checkingIn}
+          disabled={checkingIn || !canCheckInNow()}
           className='bg-red text-white rounded-md p-2 text-xs mb-2 disabled:bg-gray-400'
         >
-          {checkingIn ? 'Checking In...' : 'Check In Now'}
+          {checkingIn ? 'Checking In...' : canCheckInNow() ? 'Check In Now' : 'Checked In'}
         </button>
 
         </>
@@ -257,25 +277,29 @@ export default function ViewChallenge (): JSX.Element {
 
         <div className='flex flex-row justify-left'>
           <div >
-            <TbHeartFilled className={`h-5 w-5 cursor-pointer inline ${data.hasLiked ? 'text-red' : 'text-grey'}`} onClick={handleLike}/> {data.challenge._count.likes}
+
+            {liking
+              ? <Spinner className="h-4 w-4 ml-1 inline" />
+              : <TbHeartFilled className={`h-5 w-5 cursor-pointer inline ${data.hasLiked ? 'text-red' : 'text-grey'}`} onClick={handleLike}/>
+            }
           </div>
 
-          {data.challenge._count.comments > 0 && !isComments && (
+          {challenge._count.comments > 0 && !isComments && (
             <div className="underline ml-4">
 
-                <Link to={`/challenges/${data.challenge.id}/comments#comments`}>
+                <Link to={`/challenges/${challenge.id}/comments#comments`}>
                   <CiChat1 className="h-5 w-5 -mt-1 text-gray mr-1 inline" />
-                  {data.challenge._count.comments} comments
+                  {challenge._count.comments} comments
                 </Link>
             </div>
           )}
-          {data.challenge._count?.members > 0
+          {challenge._count?.members > 0
             ? (
           <div>
 
-            <Link className="underline" to={`/challenges/${data.challenge.id}/members`}>
+            <Link className="underline" to={`/challenges/${challenge.id}/members`}>
             <LiaUserFriendsSolid className="text-gray h-5 w-5 inline ml-4 -mt-1 mr-1" />
-              {data.challenge._count.members} members
+              {challenge._count.members} members
             </Link>
           </div>
               )
@@ -287,9 +311,9 @@ export default function ViewChallenge (): JSX.Element {
               )}
         </div>
       </div>
-      {data.challenge._count.comments == 0 && !isComments && (
+      {challenge._count.comments == 0 && !isComments && (
         <div className="w-full">
-          No comments yet. <Link to={`/challenges/${data.challenge.id}/comments`} className="underline">Add comment</Link>
+          No comments yet. <Link to={`/challenges/${challenge.id}/comments`} className="underline">Add comment</Link>
         </div>
       )}
       <div className='mb-16'>
