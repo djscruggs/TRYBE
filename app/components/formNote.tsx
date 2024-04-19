@@ -116,14 +116,14 @@ export default function FormNote (props: FormNoteProps): JSX.Element {
 
         {fileDataURL &&
           <div className="relative w-fit">
-          <img src={fileDataURL} alt="image thumbnail" className='h-24 mb-2' />
-          <TiDeleteOutline onClick={() => { setFile(null); setFileDataURL(null) }} className='text-lg bg-white rounded-full text-red cursor-pointer absolute top-1 right-1' />
+            <img src={fileDataURL} alt="image thumbnail" className='h-24 mb-2' />
+            <TiDeleteOutline onClick={() => { setFile(null); setFileDataURL(null) }} className='text-lg bg-white rounded-full text-red cursor-pointer absolute top-1 right-1' />
           </div>
         }
         {video && !showVideo &&
           <div className="relative w-fit">
-          <video src={URL.createObjectURL(video)} className='h-24 mb-2' />
-          <TiDeleteOutline onClick={() => { setVideo(null) }} className='text-lg bg-white rounded-full text-red cursor-pointer absolute top-1 right-1' />
+            <video src={URL.createObjectURL(video)} className='h-24 mb-2' />
+            <TiDeleteOutline onClick={() => { setVideo(null) }} className='text-lg bg-white rounded-full text-red cursor-pointer absolute top-1 right-1' />
           </div>
         }
         {showVideo &&

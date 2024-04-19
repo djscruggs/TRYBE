@@ -71,13 +71,18 @@ model Post {
   updatedAt  DateTime   @updatedAt
   publishAt  DateTime   @default(now())
   title      String
-  body       String?    @db.Text
+  body       String?
+  image      String?    @db.Text
+  video      String?    @db.Text
+  embed      String?    @db.Text
   published  Boolean    @default(false)
   user       User       @relation(fields: [userId], references: [id])
   userId     Int
   categories Category[]
   comments   Comment[]
   likes      Like[]
+  challengeId Int?
+  challenge Challenge? @relation(fields: [challengeId], references: [id])
 
   // indexes for faster sorting by user
   @@index([userId])
@@ -109,6 +114,7 @@ model Challenge {
   likes        Like[]
   notes        Note[]
   checkIns     CheckIn[]
+  posts        Post[]
 
   // indexes for faster sorting by user
   @@index([userId])

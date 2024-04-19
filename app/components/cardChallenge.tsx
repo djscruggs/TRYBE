@@ -40,7 +40,7 @@ export default function CardChallenge ({ challenge, isShare, isMember }: CardCha
   }
   const iconOptions: Record<string, JSX.Element> = getIconOptionsForColor(bgColor)
   return (
-    <div className="mt-2 border-0 drop-shadow-none mr-2 w-full" >
+    <div className="mt-2 border-0 drop-shadow-none mr-2 w-full cursor-pointer" onClick={goToChallenge} >
       <div className="drop-shadow-none">
         <div className={'grid grid-cols-1 md:grid-cols-2 gap-4 rounded-md p-1 bg-white'}>
           <Card className={`md:col-span-2 bg-${bgColor} p-2 border-1 drop-shadow-lg border-gray rounded-md`}>
@@ -60,7 +60,6 @@ export default function CardChallenge ({ challenge, isShare, isMember }: CardCha
               </div>
               <div className="flex flex-col items-center col-span-2">
                 <div className={`mt-2 font-bold text-${textColor}`}>{challenge.name}</div>
-                {currentUser && challenge.userId === currentUser.id && (<Link className={`underline text-xs text-${textColor}`} to = {`/challenges/${challenge.id}/edit`}>edit</Link>)}
                 <Button onClick={goToChallenge} className={`bg-${buttonColor} text-${buttonTextColor} p-3 py-2 rounded-full mt-3`}>{isMember ? 'Check In' : 'Sign up!'}</Button>
               </div>
             </div>

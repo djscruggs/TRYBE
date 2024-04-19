@@ -1,5 +1,5 @@
 import { prisma } from './prisma.server'
-import type { ChallengeData } from '~/utils/types.server'
+import type { ChallengeData, ChallengeSummary } from '~/utils/types.server'
 import z from 'zod'
 
 export const createChallenge = async (challenge: prisma.challengeCreateInput): Promise<ChallengeData> => {
@@ -81,7 +81,7 @@ export const deleteChallenge = async (challengeId: string | number, userId: stri
     }
   })
 }
-export const fetchChallenges = async (userId: string | number | undefined): Promise<Challenge[]> => {
+export const fetchChallenges = async (userId: string | number): Promise<ChallengeData[]> => {
   const uid = userId ? Number(userId) : undefined
   return await prisma.challenge.findMany({
     where: {
@@ -89,9 +89,9 @@ export const fetchChallenges = async (userId: string | number | undefined): Prom
     }
   })
 }
-export const fetchChallengeSummaries = async (userId?: string | number | undefined): Promise<ChallengeData[]> => {
+export const fetchChallengeSummaries = async (userId?: string | number): Promise<ChallengeSummary[]> => {
   const uid = userId ? Number(userId) : undefined
-  const where = [{ public: true }]
+  const where: any[] = [{ public: true }]
   if (uid) {
     where.push({ userId: uid })
   }
@@ -106,6 +106,32 @@ export const fetchChallengeSummaries = async (userId?: string | number | undefin
     }
   }
   return await prisma.challenge.findMany(params)
+}
+export const fetchMyChallenges = async (userId: string | number): Promise<ChallengeSummary[]> => {
+  const uid = Number(userId)
+  const where = [{ userId: uid }]
+  const ownedChallenges = await fetchChallengeSummaries(where)
+  const memberChallenges = await prisma.memberChallenge.findMany(
+    {
+      where: { userId: uid },
+      include: {
+        challenge: {
+          include: {
+            _count: {
+              select: { members: true, comments: true, likes: true }
+            }
+          }
+        }
+      }
+    }
+  )
+  const memberships = memberChallenges.map(memberChallenge => {
+    memberChallenge.challenge.isMember = true as ChallengeSummary['isMember']
+    return memberChallenge.challenge
+  })
+  // de-dupe any overlap
+  const uniqueChallenges = [...new Map([...ownedChallenges, ...memberships].map(item => [item.id, item])).values()]
+  return uniqueChallenges
 }
 export const fetchChallengeMembers = async (cId: string | number): Promise<any> => {
   const params: prisma.memberChallengeFindManyArgs = {

@@ -32,6 +32,7 @@ export interface ChallengeSummary extends ChallengeData {
     members: number
     comments: number
   }
+  isMember?: boolean // optional indicator for if the user is a member of the challenge
 }
 export interface Comment {
   id: string | number
