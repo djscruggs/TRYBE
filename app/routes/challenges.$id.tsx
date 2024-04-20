@@ -2,8 +2,8 @@ import { loadChallengeSummary } from '~/models/challenge.server'
 import { Outlet, useLoaderData, Link, useNavigate, useLocation } from '@remix-run/react'
 import React, { useContext, useState } from 'react'
 import { requireCurrentUser } from '../models/auth.server'
-import type { ObjectData, MemberChallenge } from '~/utils/types.server'
-import type { ChallengeSummary } from '~/utils/types.client'
+import type { ObjectData, MemberChallenge } from '~/utils/types'
+import type { ChallengeSummary } from '~/utils/types'
 import { json, type LoaderFunction, type LoaderFunctionArgs } from '@remix-run/node'
 import axios from 'axios'
 import { toast } from 'react-hot-toast'
@@ -24,11 +24,12 @@ import { useRevalidator } from 'react-router-dom'
 import { formatDistanceToNow, format, differenceInDays } from 'date-fns'
 
 interface ChallengObjectData {
-  challenge?: ChallengeSummary
-  hasLiked?: boolean
-  membership?: MemberChallenge | null | undefined
-  checkInsCount?: number
-  isMember?: boolean
+  challenge: ChallengeSummary
+  hasLiked: boolean
+  membership: MemberChallenge | null | undefined
+  checkInsCount: number
+  isMember: boolean
+  loadingError: string | null
 }
 
 export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
@@ -75,8 +76,8 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
   return json(data)
 }
 export default function ViewChallenge (): JSX.Element {
-  const data: ObjectData = useLoaderData() as ObjectData
-  const { challenge, membership, hasLiked, checkInsCount } = data as ChallengObjectData
+  const data: ChallengObjectData = useLoaderData() as ChallengObjectData
+  const { challenge, membership, hasLiked, checkInsCount } = data
   const location = useLocation()
   if (location.pathname.includes('edit') || location.pathname.includes('share')) {
     return <Outlet />
@@ -100,6 +101,7 @@ export default function ViewChallenge (): JSX.Element {
   }
 
   const [isMember, setIsMember] = useState(Boolean(data.isMember))
+  const [isLiked, setIsLiked] = useState(Boolean(data.hasLiked))
 
   const formatNextCheckin = (): string => {
     if (!membership?.nextCheckIn) {
@@ -115,8 +117,8 @@ export default function ViewChallenge (): JSX.Element {
     return format(membership.nextCheckIn, 'cccc')
   }
   const canCheckInNow = (): boolean => {
-    if (!membership) {
-      return false
+    if (!membership?.nextCheckIn) {
+      return true
     }
     const daysToNext = differenceInDays(membership.nextCheckIn, new Date())
     return daysToNext <= 0
@@ -159,12 +161,13 @@ export default function ViewChallenge (): JSX.Element {
     setLiking(true)
     try {
       const form = new FormData()
-      form.append('challengeId', challenge.id!)
+      form.append('challengeId', challenge.id)
       if (hasLiked) {
-        form.append('unlike', true)
+        form.append('unlike', 'true')
       }
       const url = '/api/likes'
       await axios.post(url, form)
+      setIsLiked(!isLiked)
       revalidator.revalidate()
     } catch (error) {
       console.error(error)
@@ -280,7 +283,7 @@ export default function ViewChallenge (): JSX.Element {
 
             {liking
               ? <Spinner className="h-4 w-4 ml-1 inline" />
-              : <TbHeartFilled className={`h-5 w-5 cursor-pointer inline ${data.hasLiked ? 'text-red' : 'text-grey'}`} onClick={handleLike}/>
+              : <TbHeartFilled className={`h-5 w-5 cursor-pointer inline ${isLiked ? 'text-red' : 'text-grey'}`} onClick={handleLike}/>
             }
           </div>
 

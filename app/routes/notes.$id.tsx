@@ -3,7 +3,7 @@ import { Outlet, useLoaderData, useLocation } from '@remix-run/react'
 
 import CardNote from '~/components/cardNote'
 import { requireCurrentUser } from '../models/auth.server'
-import type { ObjectData, Note } from '~/utils/types.server'
+import type { ObjectData, Note } from '~/utils/types'
 import { json, type LoaderFunction, type LoaderFunctionArgs } from '@remix-run/node'
 import { prisma } from '../models/prisma.server'
 

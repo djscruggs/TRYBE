@@ -17,7 +17,7 @@ Testing uses Vitest and is configured based on [this excellent blog post](https:
 
 **Installation**
 
-Download the rep and do the following.
+Download or fork the repo and do the following.
 
 `cd [path to download directory]`
 

@@ -1,6 +1,6 @@
 // app/utils/user.server.ts
 import bcrypt from 'bcryptjs'
-import type { RegisterForm } from '../utils/types.server'
+import type { RegisterForm } from '../utils/types'
 import { prisma } from './prisma.server'
 
 export const createUser = async (user: RegisterForm | prisma.UserCreateInput): Promise<{ id: number, email: string }> => {
@@ -36,6 +36,15 @@ export const loadUser = async (userId: string | number | undefined): Promise<pri
     console.log('error loading user', err)
     return null
   }
+}
+
+export const fetchMemberChallenges = async (userId: number) => {
+  return await prisma.memberChallenge.findMany(
+    {
+      where: { userId },
+      include: { challenge: true }
+    }
+  )
 }
 
 export const getUserByClerkId = async (clerkId: string): Promise<prisma.User> => {

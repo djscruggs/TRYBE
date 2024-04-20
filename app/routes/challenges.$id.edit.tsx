@@ -1,6 +1,6 @@
 import ChallengeForm from '~/components/formChallenge'
 import React, { useMatches } from '@remix-run/react'
-import { type ObjectData } from '~/utils/types.server'
+import { type ObjectData } from '~/utils/types'
 
 export default function EditChallenge (): JSX.Element {
   const matches = useMatches()

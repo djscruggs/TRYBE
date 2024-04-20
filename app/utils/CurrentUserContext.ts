@@ -1,5 +1,5 @@
 import { createContext } from 'react'
-import { type User } from './types.client'
+import { type User } from './types'
 
 export interface CurrentUserContextType {
   currentUser: User | null

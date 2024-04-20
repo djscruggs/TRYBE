@@ -1,4 +1,71 @@
-// app/utils/types.server.ts
+// app/utils/types.ts
+export interface User {
+  id?: number | string
+  email: string
+  profile?: Profile
+  memberChallenges?: MemberChallenge[]
+}
+export interface Note {
+  id?: number
+  userId?: string | number
+  body: string | null
+  image?: string | null
+  challengeId?: string | number
+  replyToId?: string | number
+  commentId?: string | number
+  isShare?: boolean
+  createdAt?: Date
+  updatedAt?: Date
+  challenge?: Challenge
+}
+export interface Post {
+  id?: number
+  userId?: number
+  body: string | null
+  image?: string | null
+  video?: string | null
+  embed?: string | null
+  challengeId?: number | null
+  published?: boolean
+  publishAt?: Date | null
+  createdAt?: Date
+  updatedAt?: Date
+  challenge?: Challenge
+}
+export interface Challenge {
+  id?: number
+  name?: string
+  description?: string
+  mission?: string
+  color?: string
+  userId?: number
+  duration?: number
+  unit?: string
+  icon?: string
+}
+export interface ChallengeSummary extends Challenge {
+  Id: any | number | null | undefined
+  _count: {
+    members?: number
+    likes?: number
+    comments?: number
+  }
+}
+
+export interface MemberChallenge {
+  id?: number | string
+  userId: number | string
+  challengeId: number | string
+}
+
+export interface Profile {
+  id?: number | string
+  firstName?: string
+  lastName?: string
+  userId?: number | string
+  profileImage?: string
+}
+// app/utils/types.ts
 export interface RegisterForm {
   email: string
   password?: string
@@ -26,14 +93,7 @@ export interface ChallengeData {
   published?: boolean
   userId: string | number
 }
-export interface ChallengeSummary extends ChallengeData {
-  _count: {
-    likes: number
-    members: number
-    comments: number
-  }
-  isMember?: boolean // optional indicator for if the user is a member of the challenge
-}
+
 export interface Comment {
   id: string | number
   userId: string | number
@@ -42,26 +102,7 @@ export interface Comment {
   createdAt: Date
   updatedAt: Date
 }
-export interface Note {
-  id?: number
-  userId?: string | number
-  body: string | null
-  image?: string | null
-  challengeId?: string | number
-  replyToId?: string | number
-  commentId?: string | number
-  isShare?: boolean
-  createdAt?: Date
-  updatedAt?: Date
-  challenge?: Challenge
-}
-export interface MemberChallenge {
-  userId?: number
-  challengeId?: number
-  createdAt?: Date
-  lastCheckIn?: Date
-  nextCheckIn?: Date
-}
+
 export interface NoteSummary extends Note {
   _count: {
     likes: number

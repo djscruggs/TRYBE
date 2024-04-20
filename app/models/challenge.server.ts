@@ -1,5 +1,5 @@
 import { prisma } from './prisma.server'
-import type { ChallengeData, ChallengeSummary } from '~/utils/types.server'
+import type { ChallengeData, ChallengeSummary } from '~/utils/types'
 import z from 'zod'
 import { addDays, isFriday, isSaturday } from 'date-fns'
 
@@ -139,8 +139,16 @@ export function calculateNextCheckin (challenge: ChallengeData): Date {
 }
 export const fetchMyChallenges = async (userId: string | number): Promise<ChallengeSummary[]> => {
   const uid = Number(userId)
-  const where = [{ userId: uid }]
-  const ownedChallenges = await fetchChallengeSummaries(where)
+  const ownedChallenges = await prisma.challenge.findMany({
+    where: {
+      userId: uid
+    },
+    include: {
+      _count: {
+        select: { members: true, comments: true, likes: true }
+      }
+    }
+  })
   const memberChallenges = await prisma.memberChallenge.findMany(
     {
       where: { userId: uid },

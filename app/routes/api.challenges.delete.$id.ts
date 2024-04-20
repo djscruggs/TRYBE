@@ -1,4 +1,4 @@
-import type { ErrorObject, ObjectData } from '~/utils/types.server'
+import type { ErrorObject, ObjectData } from '~/utils/types'
 
 import { requireCurrentUser } from '~/models/auth.server'
 import { deleteChallenge } from '~/models/challenge.server'

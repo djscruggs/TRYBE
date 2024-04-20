@@ -4,10 +4,9 @@ import {
   Button
 } from '@material-tailwind/react'
 import { GiShinyApple } from 'react-icons/gi'
-import { SlShareAlt } from 'react-icons/sl'
 import { CiChat1 } from 'react-icons/ci'
 import { FaRegCalendarAlt, FaUserFriends, FaRegHeart } from 'react-icons/fa'
-import { type ChallengeSummary } from '../utils/types.client'
+import { type ChallengeSummary } from '../utils/types'
 import { colorToClassName, textColorFromContainer, getIconOptionsForColor, buttonColorFromContainer } from '~/utils/helpers'
 import { CurrentUserContext } from '../utils/CurrentUserContext'
 import { Link, useNavigate } from '@remix-run/react'

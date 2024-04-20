@@ -4,7 +4,7 @@ import {
   Avatar
 } from '@material-tailwind/react'
 import CardChallenge from './cardChallenge'
-import type { Note } from '../utils/types.server'
+import type { Note } from '../utils/types'
 // import { AiOutlineRetweet } from 'react-icons/ai'
 // import { GoComment } from 'react-icons/go'
 import { CiChat1 } from 'react-icons/ci'

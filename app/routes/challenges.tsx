@@ -1,16 +1,12 @@
-import { requireCurrentUser } from '../models/auth.server'
 import { type LoaderFunction } from '@remix-run/node'
-
-import { useLoaderData, Outlet, useNavigate } from '@remix-run/react'
-import { CurrentUserContext } from '../utils/CurrentUserContext'
-import { useContext } from 'react'
+import { Outlet } from '@remix-run/react'
 
 export const loader: LoaderFunction = async (args) => {
   // if thecurrentUser isn't authenticated, this will redirect to login
   return null
 }
 
-export default function ChallengesLayout ({ children }: { children: React.ReactNode }) {
+export default function ChallengesLayout ({ children }: { children: React.ReactNode }): JSX.Element {
   return (
           <>
             <div className="mt-10">
