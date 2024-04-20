@@ -134,7 +134,7 @@ export function convertlineTextToHtml (text: string | undefined): React.ReactNod
 export function handleImageUpload (
   e: ChangeEvent<HTMLInputElement>,
   setFile: (file: File | null) => void,
-  setFileDataURL: (dataURL: string | null) => void): void {
+  setFileDataURL?: (dataURL: string | null) => void): void {
   const { files } = e.target
   if (!files) return
   const image = files[0]
@@ -146,11 +146,13 @@ export function handleImageUpload (
   const fileReader = new FileReader()
   fileReader.onload = (e) => {
     const result = e.target?.result
-    if (result) {
-      if (typeof result === 'string') {
-        setFileDataURL(result)
-      } else {
-        setFileDataURL(null)
+    if (setFileDataURL) {
+      if (result) {
+        if (typeof result === 'string') {
+          setFileDataURL(result)
+        } else {
+          setFileDataURL(null)
+        }
       }
     }
   }

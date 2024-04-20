@@ -1,4 +1,4 @@
-import { createNote, updateNote } from '~/models/note.server'
+import { createPost, updatePost } from '~/models/post.server'
 import { requireCurrentUser } from '~/models/auth.server'
 import { json, type LoaderFunction, type ActionFunction } from '@remix-run/node'
 import { unstable_parseMultipartFormData } from '@remix-run/node'
@@ -15,6 +15,7 @@ export const action: ActionFunction = async (args) => {
   const image = rawData.get('image')
   const data = {
     body: rawData.get('body'),
+    title: rawData.get('title'),
     user: { connect: { id: currentUser?.id } }
   }
   if (rawData.get('id')) {
@@ -23,18 +24,11 @@ export const action: ActionFunction = async (args) => {
   if (rawData.get('challengeId')) {
     data.challenge = { connect: { id: parseInt(rawData.get('challengeId')) } }
   }
-  if (rawData.get('commentId')) {
-    data.comment = { connect: { id: parseInt(rawData.get('commentId')) } }
-  }
-  if (rawData.get('replyToId')) {
-    console.log('setting reply to id')
-    data.replyTo = { connect: { id: parseInt(rawData.get('replyToId')) } }
-  }
   let result
   if (data.id) {
-    result = await updateNote(data)
+    result = await updatePost(data)
   } else {
-    result = await createNote(data)
+    result = await createPost(data)
   }
   if (image) {
     const nameNoExt = image.name.split('.')[0]
@@ -43,7 +37,7 @@ export const action: ActionFunction = async (args) => {
   } else {
     result.image = null
   }
-  const updated = await updateNote(result)
+  const updated = await updatePost(result)
   return json(updated)
 }
 

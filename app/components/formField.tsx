@@ -9,6 +9,7 @@ interface FormFieldProps {
   type?: string
   value?: any
   onChange?: (...args: any) => any
+  onKeyDown?: (...args: any) => any
   error?: string
   required?: boolean
   autoComplete?: string
@@ -25,15 +26,16 @@ export function FormField ({
   type = 'text',
   value = '',
   onChange = () => { },
+  onKeyDown = () => { },
   error = '',
   required = false,
   autoComplete = '',
   autoFocus = false,
-  autoResize = false,
   cols = 30,
   rows = 10
 
 }: FormFieldProps): JSX.Element {
+  console.log('onKeyDown', onKeyDown)
   const [errorText, setErrorText] = useState(error)
   useEffect(() => {
     setErrorText(error)
@@ -46,12 +48,11 @@ export function FormField ({
   const textRef = useRef<HTMLTextAreaElement>(null)
   useEffect(() => {
     if (textRef.current) {
-      textRef.current.style.height = '90px'
+      textRef.current.style.height = `${rows}rem`
       const scrollHeight = textRef.current.scrollHeight
       textRef.current.style.height = scrollHeight + 'px'
     }
   }, [value])
-
   return <>
       <label htmlFor={name} className="block text-blue-600">{label}</label>
       {localType === 'textarea'
@@ -68,6 +69,7 @@ export function FormField ({
             cols={cols}
             rows={rows}
             value={value}
+            onKeyDown={onKeyDown}
             autoComplete={autoComplete}
             required={required}
             autoFocus = {autoFocus}
@@ -86,6 +88,8 @@ export function FormField ({
           type={localType}
           id={name}
           name={name}
+          onKeyDown={onKeyDown}
+          placeholder={placeholder}
           required={required}
           className={`w-full p-2 rounded-md my-1 border ${(errorText.length > 0) ? ' border-red' : ''}`}
           value={value}

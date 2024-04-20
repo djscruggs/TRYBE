@@ -37,15 +37,15 @@ export default function FormPost (props: FormPostProps): JSX.Element {
   const [errors, setErrors] = useState<Errors>({})
   const [btnDisabled, setBtnDisabled] = useState(false)
   const [error, setError] = useState('')
+  const [image, setImage] = useState<File | null>(null)
+  const [video, setVideo] = useState<File | null>(null)
   const navigate = useNavigate()
   const imageRef = useRef<HTMLInputElement>(null)
-  const [file, setFile] = useState<File | null>(null)
-  const [imageDataURL, setFileDataURL] = useState<string | null>(post?.image ? post.image : null)
-  const [video, setVideo] = useState<File | null>(null)
   const [showDatePicker, setShowDatePicker] = useState(false)
   const [formData, setFormData] = useState(post ?? {
     published: true,
     publishAt: null,
+    title: '',
     body: '',
     userId: currentUser?.id,
     challengeId: challenge ? challenge.Id : null,
@@ -58,8 +58,15 @@ export default function FormPost (props: FormPostProps): JSX.Element {
       imageRef.current.click()
     }
   }
+  const handleChange = (event: any): void => {
+    const { name, value } = event.target
+    setFormData(prevFormData => ({
+      ...prevFormData,
+      [name]: value
+    }))
+  }
   const handleImage = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    handleImageUpload(e, setFile, setFileDataURL)
+    handleImageUpload(e, setImage)
   }
   const handlePublish = (event: any): void => {
     setFormData(prevFormData => ({
@@ -88,9 +95,11 @@ export default function FormPost (props: FormPostProps): JSX.Element {
     if (challenge?.id) {
       formData2.append('challengeId', challenge.id.toString())
     }
-    if (file) {
-      formData2.append('image', file)
+    if (image) {
+      formData2.append('image', image)
     }
+    console.log('submitting')
+    return null
     const result = await axios.post('/api/posts', formData)
     if (afterSave) {
       afterSave()
@@ -122,22 +131,28 @@ export default function FormPost (props: FormPostProps): JSX.Element {
   }
   const handleCancel = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>): void => {
     event.preventDefault()
-    setBody('')
-    setFile(null)
-    setFileDataURL(null)
-    setVideo(null)
     if (onCancel) {
       onCancel()
+    } else {
+      navigate(-1)
     }
   }
   return (
     <div className='w-full'>
       <Form method="post" onSubmit={handleSubmit}>
-
       <FormField
-          name='post'
+        name='title'
+        type='text'
+        placeholder='Enter a Title'
+        required={true}
+        value={formData.title}
+        onChange={handleChange}
+      />
+      <FormField
+          name='body'
           autoResize={true}
           type='textarea'
+          placeholder='Enter the text of your post'
           rows={10}
           required={true}
           value={body}
@@ -153,10 +168,10 @@ export default function FormPost (props: FormPostProps): JSX.Element {
         {showVideo && <BiVideoOff onClick={() => { setShowVideo(false) }} className='ml-2 text-2xl cursor-pointer float-right' />}
         <MdOutlineAddPhotoAlternate onClick={imageDialog} className='text-2xl cursor-pointer float-right' />
 
-        {imageDataURL &&
+        {image &&
           <div className="relative w-fit">
-            <img src={imageDataURL} alt="image thumbnail" className='h-24 mb-2' />
-            <TiDeleteOutline onClick={() => { setFile(null); setFileDataURL(null) }} className='text-lg bg-white rounded-full text-red cursor-pointer absolute top-1 right-1' />
+            <img src={URL.createObjectURL(image)} alt="image thumbnail" className='h-24 mb-2' />
+            <TiDeleteOutline onClick={() => { setImage(null) }} className='text-lg bg-white rounded-full text-red cursor-pointer absolute top-1 right-1' />
           </div>
         }
         {video && !showVideo &&
@@ -174,11 +189,11 @@ export default function FormPost (props: FormPostProps): JSX.Element {
           <fieldset>
           <legend>Publish:</legend>
           <label className="flex w-full cursor-pointer items-center p-0">
-            <Radio name="publishAt" value="immediately" onClick={handlePublishAt} checked={!showDatePicker} crossOrigin={undefined}/>
+            <Radio name="publishAt" value="immediately" onClick={handlePublishAt} defaultChecked={!showDatePicker} crossOrigin={undefined}/>
             Immediately
           </label>
           <label className="flex w-full cursor-pointer items-center px-0 py-2">
-            <Radio name="publishAt" value="date" onClick={handlePublishAt} checked={showDatePicker} crossOrigin={undefined}/>
+            <Radio name="publishAt" value="date" onClick={handlePublishAt} defaultChecked={showDatePicker} crossOrigin={undefined}/>
             On Date
           </label>
           </fieldset>
@@ -206,9 +221,9 @@ export default function FormPost (props: FormPostProps): JSX.Element {
         <Button type="submit" onClick={handleDraft} className="bg-yellow text-black ml-2 disabled:gray-400" disabled={btnDisabled}>
         Save Draft
         </Button>
-        {(video ?? body ?? file) &&
-          <button className="mt-2 text-sm underline ml-2">cancel</button>
-        }
+        <Button type="submit" onClick={handleCancel} className="bg-red ml-2 disabled:gray-400" disabled={btnDisabled}>
+        Cancel
+        </Button>
 
       </Form>
 
