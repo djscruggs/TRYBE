@@ -14,8 +14,8 @@ const VideoRecorder = ({ onStart, onStop, onSave, onFinish }: VideoRecorderProps
   const mediaRecorder = useRef(null)
   const liveVideoFeed = useRef(null)
   const [recordingStatus, setRecordingStatus] = useState('inactive')
-  const [stream, setStream] = useState(null)
-  const [recordedVideo, setRecordedVideo] = useState(null)
+  const [stream, setStream] = useState<MediaStream>()
+  const [recordedVideo, setRecordedVideo] = useState<string | null>(null)
   const [videoFile, setVideoFile] = useState<File | null>(null)
   const [videoChunks, setVideoChunks] = useState([])
 
@@ -92,7 +92,6 @@ const VideoRecorder = ({ onStart, onStop, onSave, onFinish }: VideoRecorderProps
     await getCameraPermission()
 
     const media = new MediaRecorder(stream, { mimeType })
-
     mediaRecorder.current = media
 
     mediaRecorder.current.start()
@@ -104,7 +103,7 @@ const VideoRecorder = ({ onStart, onStop, onSave, onFinish }: VideoRecorderProps
       if (event.data.size === 0) return
       localVideoChunks.push(event.data)
     }
-
+    console.log(mediaRecorder)
     setVideoChunks(localVideoChunks)
   }
 
@@ -113,6 +112,7 @@ const VideoRecorder = ({ onStart, onStop, onSave, onFinish }: VideoRecorderProps
       onStop()
     }
     setRecordingStatus('recorded')
+
     mediaRecorder.current.stop()
 
     mediaRecorder.current.onstop = () => {
@@ -127,9 +127,11 @@ const VideoRecorder = ({ onStart, onStop, onSave, onFinish }: VideoRecorderProps
   }
   const saveVideo = (): void => {
     onSave(videoFile)
+    const tracks = stream.getTracks()
+    tracks.forEach(track => { track.stop() })
+
     onFinish()
   }
-  console.log(recordedVideo)
   return (
     <>
     {isMobileDevice()

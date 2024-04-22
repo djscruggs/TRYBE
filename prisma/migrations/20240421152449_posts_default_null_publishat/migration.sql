@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Post" ALTER COLUMN "publishAt" DROP NOT NULL,
+ALTER COLUMN "publishAt" DROP DEFAULT;

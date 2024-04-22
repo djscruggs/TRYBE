@@ -2,7 +2,11 @@ import { promises as fs } from 'fs'
 import { unstable_composeUploadHandlers, unstable_createFileUploadHandler, unstable_createMemoryUploadHandler } from '@remix-run/node'
 
 export async function writeFile (file: any, nameWithoutExtension: string): Promise<string> {
-  const ext = file.type.split('/').at(-1)
+  let ext = file.type.split('/').at(-1)
+  // check if it's a webm file - video file types have extra encoding stuff at the end so you can't use just the last element
+  if (ext.includes('webm')) {
+    ext = 'webm'
+  }
   const fullName = `${nameWithoutExtension}.${ext}`
   const directory = `${process.cwd()}/public/uploads`
   const src = file.filepath
@@ -29,7 +33,7 @@ function escapeRegExp (string: string): string {
 
 export const uploadHandler = unstable_composeUploadHandlers(
   unstable_createFileUploadHandler({
-    maxPartSize: 5_000_000,
+    maxPartSize: 10_000_000,
     file: ({ filename }) => filename
   }),
   // parse everything else into memory

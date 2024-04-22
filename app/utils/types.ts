@@ -21,30 +21,39 @@ export interface Note {
 export interface Post {
   id?: number
   userId?: number
-  body: string | null
+  title?: string | null
+  body?: string | null
   image?: string | null
   video?: string | null
   embed?: string | null
+  public?: boolean
   challengeId?: number | null
   published?: boolean
   publishAt?: Date | null
   createdAt?: Date
   updatedAt?: Date
   challenge?: Challenge
+  user?: User
 }
 export interface Challenge {
-  id?: number
-  name?: string
-  description?: string
-  mission?: string
-  color?: string
-  userId?: number
-  duration?: number
-  unit?: string
-  icon?: string
+  name: string | null
+  description: string | null
+  mission: string | null
+  startAt: Date
+  endAt?: Date | null
+  frequency?: 'DAILY' | 'WEEKDAYS' | 'ALTERNATING' | 'WEEKLY' | 'CUSTOM'
+  coverPhoto?: string | null
+  icon?: string | null
+  color?: string | null
+  reminders?: boolean
+  syncCalendar?: boolean
+  publishAt?: Date
+  published?: boolean
+  public?: boolean
+  userId: string | number
 }
 export interface ChallengeSummary extends Challenge {
-  Id: any | number | null | undefined
+  id: number | null | undefined
   _count: {
     members?: number
     likes?: number
@@ -76,22 +85,6 @@ export interface LoginForm {
   email: string
   password: string
   request: Request
-}
-export interface ChallengeData {
-  name: string | null
-  description: string | null
-  mission: string | null
-  startAt: Date
-  endAt?: Date | null
-  frequency?: 'DAILY' | 'WEEKDAYS' | 'ALTERNATING' | 'WEEKLY' | 'CUSTOM'
-  coverPhoto?: string | null
-  icon?: string | null
-  color?: string | null
-  reminders?: boolean
-  syncCalendar?: boolean
-  publishAt?: Date
-  published?: boolean
-  userId: string | number
 }
 
 export interface Comment {

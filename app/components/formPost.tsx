@@ -11,11 +11,13 @@ import { TiDeleteOutline } from 'react-icons/ti'
 import VideoRecorder from './videoRecorder'
 import DatePicker from 'react-datepicker'
 import { CurrentUserContext } from '../utils/CurrentUserContext'
+import { toast } from 'react-hot-toast'
 
 interface FormPostProps {
   afterSave?: () => void
   onCancel?: () => void
   post?: Post
+  locale?: string
   challenge: ChallengeSummary | null
   forwardRef?: React.RefObject<HTMLTextAreaElement>
 }
@@ -31,12 +33,11 @@ interface Errors {
 
 export default function FormPost (props: FormPostProps): JSX.Element {
   const { currentUser } = useContext(CurrentUserContext)
-  const { afterSave, onCancel, post, challenge } = props
+  const { afterSave, onCancel, post, challenge, locale } = props
   const [showVideo, setShowVideo] = useState(false)
   const [body, setBody] = useState(post?.body ?? '')
   const [errors, setErrors] = useState<Errors>({})
-  const [btnDisabled, setBtnDisabled] = useState(false)
-  const [error, setError] = useState('')
+  const [saving, setSaving] = useState(false)
   const [image, setImage] = useState<File | null>(null)
   const [video, setVideo] = useState<File | null>(null)
   const navigate = useNavigate()
@@ -45,14 +46,16 @@ export default function FormPost (props: FormPostProps): JSX.Element {
   const [formData, setFormData] = useState(post ?? {
     published: true,
     publishAt: null,
+    public: true,
     title: '',
     body: '',
     userId: currentUser?.id,
-    challengeId: challenge ? challenge.Id : null,
+    challengeId: challenge ? challenge.id : null,
     embed: '',
     video: '',
     image: ''
   })
+  const localDateFormat = locale === 'en-US' ? 'MM-dd-YYYY h:mm a' : 'dd-MM-YYYY HH:MM'
   const imageDialog = (): void => {
     if (imageRef.current) {
       imageRef.current.click()
@@ -80,31 +83,58 @@ export default function FormPost (props: FormPostProps): JSX.Element {
       published: false
     }))
   }
+  const validate = (): boolean => {
+    if (!formData) {
+      throw new Error('no form data submitted')
+    }
+    console.log(formData)
+    if (Number(formData?.body?.length) < 10) {
+      const errors = {
+        body: 'Post must be at least 10 characters long'
+      }
+      console.log(errors)
+      setErrors(errors)
+      return false
+    }
+    return true
+  }
   async function handleSubmit (event: React.FormEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault()
-    console.log(formData)
-    if (formData?.body.length < 10) {
-      setError('Post must be at least 10 characters long')
+    if (!validate()) {
+      console.log('not valid')
+      return
     }
+    try {
+      setSaving(true)
+      const toSubmit = new FormData()
+      Object.entries(formData).forEach(([key, value]) => {
+        if (key !== 'image' && key !== 'video') {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+          toSubmit.append(String(key), value)
+        }
+      })
 
-    const formData2 = new FormData()
-    formData2.append('body', body)
-    if (post?.id) {
-      formData2.append('id', post.id.toString())
-    }
-    if (challenge?.id) {
-      formData2.append('challengeId', challenge.id.toString())
-    }
-    if (image) {
-      formData2.append('image', image)
-    }
-    console.log('submitting')
-    return null
-    const result = await axios.post('/api/posts', formData)
-    if (afterSave) {
-      afterSave()
-    } else {
-      navigate('/posts/' + result.data.id)
+      if (image) {
+        toSubmit.append('image', image)
+      }
+      if (video) {
+        toSubmit.append('video', video)
+      }
+      console.log('video', video)
+      const result = await axios.post('/api/posts', toSubmit)
+      console.log(result)
+      toast.success('Post saved')
+      if (afterSave) {
+        afterSave()
+      } else {
+        navigate('/posts/' + result.data.id)
+      }
+    } catch (error) {
+      console.log('error')
+      console.error(error)
+      toast.error(error)
+    } finally {
+      setSaving(false)
     }
   }
 
@@ -155,12 +185,9 @@ export default function FormPost (props: FormPostProps): JSX.Element {
           placeholder='Enter the text of your post'
           rows={10}
           required={true}
-          value={body}
-          onChange={(event) => {
-            setBody(String(event.target.value))
-            return event.target.value
-          }}
-          error={error}
+          value={formData.body}
+          onChange={handleChange}
+          error={errors.body}
           />
         <input type="file" name="image" hidden ref={imageRef} onChange={handleImage} accept="image/*"/>
 
@@ -182,7 +209,7 @@ export default function FormPost (props: FormPostProps): JSX.Element {
         }
         {showVideo &&
           <div className='mt-6'>
-            <VideoRecorder onStart={() => { setBtnDisabled(true) }} onStop={() => { setBtnDisabled(false) }} onSave={setVideo} onFinish={() => { setShowVideo(false) }} />
+            <VideoRecorder onStart={() => { setSaving(true) }} onStop={() => { setSaving(false) }} onSave={setVideo} onFinish={() => { setShowVideo(false) }} />
           </div>
         }
         <div className='my-4'>
@@ -202,7 +229,7 @@ export default function FormPost (props: FormPostProps): JSX.Element {
             <DatePicker
               name='startAt'
               required={true}
-              dateFormat="MM-dd-YYYY h:mm:ss a"
+              dateFormat={localDateFormat}
               showTimeSelect
               minDate={new Date()}
               selected={formData.publishAt ?? new Date()}
@@ -212,16 +239,19 @@ export default function FormPost (props: FormPostProps): JSX.Element {
           </div>
           }
         </div>
-        <Button type="submit" onClick={handlePublish} className="bg-blue disabled:gray-400" disabled={btnDisabled}>
-          {btnDisabled
+        <Button type="submit" onClick={handlePublish} className="bg-blue disabled:gray-400" disabled={saving}>
+          {saving
             ? 'Publishing...'
             : 'Publish Now'
           }
         </Button>
-        <Button type="submit" onClick={handleDraft} className="bg-yellow text-black ml-2 disabled:gray-400" disabled={btnDisabled}>
-        Save Draft
+        <Button type="submit" onClick={handleDraft} className="bg-yellow text-black ml-2 disabled:gray-400" disabled={saving}>
+          {saving
+            ? 'Saving'
+            : 'Save Draft'
+          }
         </Button>
-        <Button type="submit" onClick={handleCancel} className="bg-red ml-2 disabled:gray-400" disabled={btnDisabled}>
+        <Button type="submit" onClick={handleCancel} className="bg-red ml-2 disabled:gray-400" disabled={saving}>
         Cancel
         </Button>
 

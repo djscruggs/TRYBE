@@ -2,15 +2,14 @@ import { loadChallengeSummary } from '~/models/challenge.server'
 import { Outlet, useLoaderData, Link, useNavigate, useLocation } from '@remix-run/react'
 import React, { useContext, useState } from 'react'
 import { requireCurrentUser } from '../models/auth.server'
-import type { ObjectData, MemberChallenge } from '~/utils/types'
-import type { ChallengeSummary } from '~/utils/types'
+import type { ObjectData, MemberChallenge, ChallengeSummary, Post } from '~/utils/types'
 import { json, type LoaderFunction, type LoaderFunctionArgs } from '@remix-run/node'
 import axios from 'axios'
 import { toast } from 'react-hot-toast'
 import { colorToClassName, convertlineTextToHtml, iconStyle } from '~/utils/helpers'
 import { type DateTimeFormatOptions } from 'intl'
 import { CurrentUserContext } from '../utils/CurrentUserContext'
-import { Spinner } from '@material-tailwind/react'
+import { Spinner, Button } from '@material-tailwind/react'
 import { GiShinyApple, GiMeditation } from 'react-icons/gi'
 import { FaRegLightbulb } from 'react-icons/fa6'
 import { RiMentalHealthLine } from 'react-icons/ri'
@@ -22,6 +21,7 @@ import { prisma } from '../models/prisma.server'
 import { TbHeartFilled } from 'react-icons/tb'
 import { useRevalidator } from 'react-router-dom'
 import { formatDistanceToNow, format, differenceInDays } from 'date-fns'
+import CardPost from '~/components/cardPost'
 
 interface ChallengObjectData {
   challenge: ChallengeSummary
@@ -29,6 +29,7 @@ interface ChallengObjectData {
   membership: MemberChallenge | null | undefined
   checkInsCount: number
   isMember: boolean
+  posts: Post[]
   loadingError: string | null
 }
 
@@ -72,12 +73,27 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
       })
     }
   }
-  const data: ChallengObjectData = { challenge: result, isMember: Boolean(membership?.userId), membership, hasLiked: Boolean(likes), checkInsCount }
+  // load posts
+  const posts = await prisma.post.findMany({
+    where: {
+      AND: {
+        challengeId: Number(params.id),
+        published: true,
+        OR: [
+          { publishAt: null },
+          { publishAt: { lte: new Date() } }
+        ]
+      }
+    },
+    orderBy: { createdAt: 'desc' }
+  })
+  console.log(posts)
+  const data: ChallengObjectData = { challenge: result, isMember: Boolean(membership?.userId), membership, hasLiked: Boolean(likes), checkInsCount, posts }
   return json(data)
 }
 export default function ViewChallenge (): JSX.Element {
   const data: ChallengObjectData = useLoaderData() as ChallengObjectData
-  const { challenge, membership, hasLiked, checkInsCount } = data
+  const { challenge, membership, hasLiked, checkInsCount, posts } = data
   const location = useLocation()
   if (location.pathname.includes('edit') || location.pathname.includes('share')) {
     return <Outlet />
@@ -246,6 +262,7 @@ export default function ViewChallenge (): JSX.Element {
       </div>
 
     </div>
+
       {challenge.userId !== currentUser?.id && (
         <>
           <button
@@ -314,11 +331,21 @@ export default function ViewChallenge (): JSX.Element {
               )}
         </div>
       </div>
+      {!isComments && challenge.userId === currentUser?.id && (
+        <Button className={`bg-${color} p-2`} onClick={() => { navigate(`/posts/new/challenge/${challenge.id}`) }}>
+          Post an Update
+        </Button>
+      )}
       {challenge._count.comments == 0 && !isComments && (
         <div className="w-full">
           No comments yet. <Link to={`/challenges/${challenge.id}/comments`} className="underline">Add comment</Link>
         </div>
       )}
+      {posts.map((post) => {
+        return (<div className='max-w-sm'>
+          <CardPost key={`post-${post.id}`} post={post}/>
+        </div>)
+      })}
       <div className='mb-16'>
         <Outlet />
       </div>

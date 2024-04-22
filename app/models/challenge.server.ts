@@ -1,9 +1,9 @@
 import { prisma } from './prisma.server'
-import type { ChallengeData, ChallengeSummary } from '~/utils/types'
+import type { Challenge, ChallengeSummary } from '~/utils/types'
 import z from 'zod'
 import { addDays, isFriday, isSaturday } from 'date-fns'
 
-export const createChallenge = async (challenge: prisma.challengeCreateInput): Promise<ChallengeData> => {
+export const createChallenge = async (challenge: prisma.challengeCreateInput): Promise<Challenge> => {
   const newChallenge = await prisma.challenge.create({
     data: challenge
   })
@@ -16,13 +16,13 @@ export const createChallenge = async (challenge: prisma.challengeCreateInput): P
   })
   return newChallenge
 }
-export const updateChallenge = async (challenge: prisma.challengeCreateInput): Promise<ChallengeData> => {
+export const updateChallenge = async (challenge: prisma.challengeCreateInput): Promise<Challenge> => {
   return await prisma.challenge.update({
     where: { id: challenge.id },
     data: challenge
   })
 }
-export const loadChallenge = async (challengeId: number, userId?: number): Promise<ChallengeData | null> => {
+export const loadChallenge = async (challengeId: number, userId?: number): Promise<Challenge | null> => {
   const id = Number(challengeId)
   const where: any = { id }
   if (userId) {
@@ -58,7 +58,7 @@ export const loadUserCreatedChallenges = async (userId: string | number) => {
     }
   })
 }
-export const deleteChallenge = async (challengeId: string | number, userId: string | number): Promise<ChallengeData> => {
+export const deleteChallenge = async (challengeId: string | number, userId: string | number): Promise<Challenge> => {
   const id = Number(challengeId)
   const uid = Number(userId)
   // load the challenge first so you can get a handle to the coverPhoto
@@ -89,7 +89,7 @@ export const deleteChallenge = async (challengeId: string | number, userId: stri
     }
   })
 }
-export const fetchChallenges = async (userId: string | number): Promise<ChallengeData[]> => {
+export const fetchChallenges = async (userId: string | number): Promise<Challenge[]> => {
   const uid = userId ? Number(userId) : undefined
   return await prisma.challenge.findMany({
     where: {
@@ -115,7 +115,7 @@ export const fetchChallengeSummaries = async (userId?: string | number): Promise
   }
   return await prisma.challenge.findMany(params)
 }
-export function calculateNextCheckin (challenge: ChallengeData): Date {
+export function calculateNextCheckin (challenge: Challenge): Date {
   const today = new Date()
   const frequency = challenge.frequency
   let toAdd = 1

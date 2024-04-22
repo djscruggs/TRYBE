@@ -35,7 +35,6 @@ export function FormField ({
   rows = 10
 
 }: FormFieldProps): JSX.Element {
-  console.log('onKeyDown', onKeyDown)
   const [errorText, setErrorText] = useState(error)
   useEffect(() => {
     setErrorText(error)

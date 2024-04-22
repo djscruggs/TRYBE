@@ -69,13 +69,14 @@ model Post {
   id         Int        @id @default(autoincrement())
   createdAt  DateTime   @default(now())
   updatedAt  DateTime   @updatedAt
-  publishAt  DateTime   @default(now())
+  publishAt  DateTime?  
   title      String
   body       String?
   image      String?    @db.Text
   video      String?    @db.Text
   embed      String?    @db.Text
   published  Boolean    @default(false)
+  public     Boolean    @default(false)
   user       User       @relation(fields: [userId], references: [id])
   userId     Int
   categories Category[]

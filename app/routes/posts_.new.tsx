@@ -1,4 +1,5 @@
 import { requireCurrentUser } from '../models/auth.server'
+import getUserLocale from 'get-user-locale'
 import { Outlet, useLoaderData } from '@remix-run/react'
 import { CurrentUserContext } from '../utils/CurrentUserContext'
 import type { ChallengeSummary } from '~/utils/types'
@@ -9,8 +10,10 @@ import FormPost from '../components/formPost'
 
 interface LoaderData {
   challenge: ChallengeSummary | null
+  locale: string
 };
 export const loader: LoaderFunction = async (args: LoaderFunctionArgs): Promise<LoaderData> => {
+  const locale = getUserLocale()
   const user = await requireCurrentUser(args)
   const params = args.params
   let challenge = null
@@ -18,13 +21,13 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs): Promise<
   if (params?.challengeId) {
     challenge = await loadChallengeSummary(params.challengeId, !!user?.id)
   }
-  return { challenge }
+  return { challenge, locale }
 }
 
 export default function PostsNew ({ children }: { children: React.ReactNode }): JSX.Element {
-  const data = useLoaderData<typeof loader>()
+  const data: LoaderData = useLoaderData<typeof loader>()
   const navigate = useNavigate()
-  const challenge = (data as LoaderData)?.challenge
+  const { challenge, locale } = data
   const afterSave = (): void => {
     navigate(-1)
   }
@@ -35,7 +38,7 @@ export default function PostsNew ({ children }: { children: React.ReactNode }): 
             <p>Post an update for {challenge.name}</p>
           }
           <div className='w-full max-w-lg mt-10'>
-            <FormPost challenge={challenge} onCancel={afterSave} afterSave={afterSave}/>
+            <FormPost challenge={challenge} locale={locale} onCancel={afterSave} afterSave={afterSave}/>
           </div>
           </>
   )

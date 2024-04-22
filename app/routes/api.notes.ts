@@ -37,7 +37,7 @@ export const action: ActionFunction = async (args) => {
     result = await createNote(data)
   }
   if (image) {
-    const nameNoExt = image.name.split('.')[0]
+    const nameNoExt = `note-${result.id}`
     const webPath = await writeFile(image, nameNoExt)
     result.image = webPath
   } else {
