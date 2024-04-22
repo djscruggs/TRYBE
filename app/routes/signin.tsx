@@ -1,4 +1,3 @@
-
 import { type LoaderFunction, type LoaderFunctionArgs, redirect } from '@remix-run/node'
 import { SignIn } from '@clerk/clerk-react'
 import { getAuth } from '@clerk/remix/ssr.server'
@@ -16,7 +15,7 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
 export default function SignInPage (): JSX.Element {
   console.log('in signing')
   return (
-    <div className="h-full justify-center items-center flex flex-col gap-y-4">
+    <div className="justify-center items-center flex flex-col gap-y-4 h-screen">
 
       <SignIn
       appearance={{

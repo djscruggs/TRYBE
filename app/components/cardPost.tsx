@@ -8,6 +8,7 @@ import type { Post } from '../utils/types'
 // import { AiOutlineRetweet } from 'react-icons/ai'
 // import { GoComment } from 'react-icons/go'
 import { CiChat1 } from 'react-icons/ci'
+import { convertlineTextToHtml } from '~/utils/helpers'
 import { CurrentUserContext } from '../utils/CurrentUserContext'
 import { Link, useNavigate, useLocation } from '@remix-run/react'
 import { Lightbox } from 'react-modal-image'
@@ -23,11 +24,13 @@ interface CardPostProps {
   hasLiked?: boolean
   hasReposted?: boolean
   repostCount?: number
+  fullPost?: boolean
 }
 
 export default function CardPost (props: CardPostProps): JSX.Element {
   const { currentUser } = useContext(CurrentUserContext)
-  const { post, isReplyTo, hasLiked, hasReposted, repostCount } = props
+  const { post, isReplyTo, hasLiked, fullPost } = props
+  console.log(post)
   const [showLightbox, setShowLightbox] = useState(false)
   const [editing, setEditing] = useState(false)
   const location = useLocation()
@@ -67,7 +70,7 @@ export default function CardPost (props: CardPostProps): JSX.Element {
         console.error('Error deleting post:', error)
       })
   }
-  const shortBody = post.body?.length > 200 ? post.body.replace(/^(.{200}[^\s]*).*/, '$1') : post.body
+  const shortBody = !fullPost && post.body?.length > 200 ? post.body.replace(/^(.{200}[^\s]*).*/, '$1') : post.body
   const afterSave = (): void => {
     setEditing(false)
     setAddReply(false)
@@ -100,7 +103,8 @@ export default function CardPost (props: CardPostProps): JSX.Element {
               <AvatarChooser post={post}/>
               <div className="flex flex-col w-full h-full">
               <div className='font-bold my-2'>{post.title}</div>
-              {shortBody}
+              {convertlineTextToHtml(String(shortBody))}
+              <div className='mt-4'>
               {post.video && <video className="recorded" src={post.video} controls></video>}
               {post.image && <img src={`${post.image}?${Date.now()}`} alt="post picture" className="mt-4 cursor-pointer max-w-[200px]" onClick={handlePhotoClick} />}
               {post.challenge &&
@@ -108,6 +112,7 @@ export default function CardPost (props: CardPostProps): JSX.Element {
                   <CardChallenge challenge={post.challenge} isShare={true}/>
                 </div>
               }
+              </div>
               {currentUser?.id === post.userId &&
                 <div className="mt-2 text-xs text-gray-500 w-full text-right">
                     <span className='underline cursor-pointer mr-1' onClick={handleEdit}>edit</span>

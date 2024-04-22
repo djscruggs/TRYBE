@@ -131,18 +131,18 @@ export function convertlineTextToHtml (text: string | undefined): React.ReactNod
   )
 }
 
-export function handleImageUpload (
+export function handleFileUpload (
   e: ChangeEvent<HTMLInputElement>,
   setFile: (file: File | null) => void,
   setFileDataURL?: (dataURL: string | null) => void): void {
   const { files } = e.target
   if (!files) return
-  const image = files[0]
-  if (image.size > 1_000_000) {
-    toast.error('Image must be less than 1MB')
+  const file = files[0]
+  if (file.size > 20_000_000) {
+    toast.error('File size must be less than 20MB')
     return
   }
-  setFile(image)
+  setFile(file)
   const fileReader = new FileReader()
   fileReader.onload = (e) => {
     const result = e.target?.result
@@ -156,5 +156,5 @@ export function handleImageUpload (
       }
     }
   }
-  fileReader.readAsDataURL(image)
+  fileReader.readAsDataURL(file)
 }

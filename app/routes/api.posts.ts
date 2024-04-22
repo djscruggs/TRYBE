@@ -22,10 +22,6 @@ export const action: ActionFunction = async (args) => {
   if (challengeId) {
     challenge = await loadChallenge(challengeId) as Challenge
   }
-  console.log('published', rawData.get('published'))
-  const image = rawData.get('image') as File
-  const video = rawData.get('video') as File
-  console.log('video is ', video)
   const data: Partial<Post> = {
     body: rawData.get('body')?.toString() ?? null,
     title: rawData.get('title')?.toString() ?? '',
@@ -37,8 +33,21 @@ export const action: ActionFunction = async (args) => {
     data.challengeId = challenge.id
     data.public = Boolean(challenge.public)
   }
+  // check if there is a video/image OR if it should be deleted
+  let image, video
+  if (rawData.get('image') === 'delete') {
+    data.image = null
+  } else if (rawData.get('image')) {
+    image = rawData.get('image') as File
+  }
+  if (rawData.get('video') === 'delete') {
+    data.video = null
+  } else if (rawData.get('video')) {
+    video = rawData.get('video') as File
+  }
   let result
   if (rawData.get('id')) {
+    data.id = Number(rawData.get('id'))
     result = await updatePost(data)
   } else {
     result = await createPost(data)
@@ -47,15 +56,11 @@ export const action: ActionFunction = async (args) => {
     const imgNoExt = `post-${result.id}-image`
     const imgPath = await writeFile(image, imgNoExt)
     result.image = imgPath
-  } else {
-    result.image = null
   }
   if (video?.name) {
     const vidNoExt = `post-${result.id}-video`
     const vidPath = await writeFile(video, vidNoExt)
     result.video = vidPath
-  } else {
-    result.video = null
   }
   const updated = await updatePost(result)
   console.log(updated)

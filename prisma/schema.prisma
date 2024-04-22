@@ -57,6 +57,7 @@ model Note {
   isShare    Boolean    @default(false)
   likes       Like[]
   image       String?
+  video       String?    
   comment     Comment?   @relation(fields: [commentId], references: [id])
   commentId   Int?
 
@@ -72,8 +73,8 @@ model Post {
   publishAt  DateTime?  
   title      String
   body       String?
-  image      String?    @db.Text
-  video      String?    @db.Text
+  image      String?    
+  video      String?    
   embed      String?    @db.Text
   published  Boolean    @default(false)
   public     Boolean    @default(false)
@@ -99,6 +100,7 @@ model Challenge {
   endAt        DateTime?
   frequency    Frequency         @default(DAILY)
   coverPhoto   String?
+  video        String?           
   icon         String?
   color        String?
   reminders    Boolean           @default(false)

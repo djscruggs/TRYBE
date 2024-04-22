@@ -1,11 +1,11 @@
 import { useState, useRef, useEffect } from 'react'
-
+import { handleFileUpload } from '~/utils/helpers'
 const mimeType = 'video/webm; codecs="opus,vp8"'
 interface VideoRecorderProps {
-  onStart?: () => void
-  onStop?: () => void
-  onSave?: (video: File) => void
-  onFinish?: () => void
+  onStart: () => void
+  onStop: () => void
+  onSave: (video: File | null) => void
+  onFinish: () => void
 }
 
 const VideoRecorder = ({ onStart, onStop, onSave, onFinish }: VideoRecorderProps): JSX.Element => {
@@ -13,6 +13,7 @@ const VideoRecorder = ({ onStart, onStop, onSave, onFinish }: VideoRecorderProps
 
   const mediaRecorder = useRef(null)
   const liveVideoFeed = useRef(null)
+  const videoUpload = useRef(null)
   const [recordingStatus, setRecordingStatus] = useState('inactive')
   const [stream, setStream] = useState<MediaStream>()
   const [recordedVideo, setRecordedVideo] = useState<string | null>(null)
@@ -37,6 +38,13 @@ const VideoRecorder = ({ onStart, onStop, onSave, onFinish }: VideoRecorderProps
       setPermission(false)
     })
   }, [])
+
+  // need this to handle setting video file during upload on mobile device
+  useEffect(() => {
+    if (isMobileDevice()) {
+      onSave(videoFile)
+    }
+  }, [videoFile])
 
   const getCameraPermission = async (): Promise<void> => {
     setRecordedVideo(null)
@@ -125,6 +133,9 @@ const VideoRecorder = ({ onStart, onStop, onSave, onFinish }: VideoRecorderProps
       setVideoChunks([])
     }
   }
+  const handleVideoUpload = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    handleFileUpload(e, setVideoFile, setRecordedVideo)
+  }
   const saveVideo = (): void => {
     onSave(videoFile)
     const tracks = stream.getTracks()
@@ -132,11 +143,48 @@ const VideoRecorder = ({ onStart, onStop, onSave, onFinish }: VideoRecorderProps
 
     onFinish()
   }
+  console.log(videoFile)
+  const fileInput = (): JSX.Element => {
+    const textColor = 'white'
+    return (
+      <input type="file"
+        name="video"
+        ref={videoUpload}
+        onChange={handleVideoUpload}
+        accept="video/*"
+        capture
+        className={`text-sm text-${textColor}
+                  file:text-white
+                    file:mr-5 file:py-2 file:px-6
+                    file:rounded-full file:border-0
+                    file:text-sm file:font-medium
+                    file:bg-blue-50 file:text-blue-700
+                    file:cursor-pointer file:bg-blue
+                    hover:file:bg-red`}
+      />
+    )
+  }
   return (
     <>
     {isMobileDevice()
       ? (
-        <input type="file" name="video_file" accept="video/*" capture />
+        <>
+          {recordedVideo
+            ? (
+                  <div className="mb-4">
+                    <video className="recorded" src={recordedVideo} controls></video>
+                  </div>
+              )
+            : null
+          }
+          <div className="flex flex-col items-center justify-end">
+            <p className="text-2xl text-blue-gray-500 text-center">{recordedVideo ? 'Choose a different video' : 'Record or upload a video'}</p>
+            <div className='mt-10 ml-36'>
+              {fileInput()}
+            </div>
+          </div>
+
+        </>
         )
       : (
       <>
@@ -145,18 +193,18 @@ const VideoRecorder = ({ onStart, onStop, onSave, onFinish }: VideoRecorderProps
                   <p>Allow access to your camera to record a video</p>
             )
           : null}
-      <div className="block min-h-[390px] relative justify-center">
+      <div className="block min-h-[310px] relative justifys-center">
 
             {!recordedVideo &&
-              <div className='border-2 border-gray-300 rounded-lg'>
+              <div className='border-2 border-gray-300 rounded-lg h-[3'>
                 <video ref={liveVideoFeed} autoPlay></video>
               </div>
             }
             {recordedVideo
               ? (
-                <div className="recorded-player">
-                  <video className="recorded" src={recordedVideo} controls></video>
-                </div>
+
+                  <video className="h-full" src={recordedVideo} controls></video>
+
                 )
               : null}
 

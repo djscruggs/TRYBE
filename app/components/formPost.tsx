@@ -2,7 +2,7 @@ import React, { useMemo, useState, useRef, useContext } from 'react'
 import { Form, useNavigate } from '@remix-run/react'
 import axios from 'axios'
 import { FormField } from './formField'
-import { handleImageUpload } from '~/utils/helpers'
+import { handleFileUpload } from '~/utils/helpers'
 import { type Post, type ChallengeSummary } from '~/utils/types'
 import { Button, Radio } from '@material-tailwind/react'
 import { MdOutlineAddPhotoAlternate } from 'react-icons/md'
@@ -15,11 +15,11 @@ import { CurrentUserContext } from '../utils/CurrentUserContext'
 import { toast } from 'react-hot-toast'
 
 interface FormPostProps {
-  afterSave?: () => void
-  onCancel?: () => void
+  afterSave?: () => void | null
+  onCancel?: () => void | null
   post?: Post
   locale?: string
-  challenge: ChallengeSummary | null
+  challenge?: ChallengeSummary | null
   forwardRef?: React.RefObject<HTMLTextAreaElement>
 }
 interface Errors {
@@ -70,7 +70,7 @@ export default function FormPost (props: FormPostProps): JSX.Element {
     }))
   }
   const handleImage = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    handleImageUpload(e, setImage)
+    handleFileUpload(e, setImage)
   }
   const handlePublish = (event: any): void => {
     setFormData(prevFormData => ({
@@ -99,6 +99,43 @@ export default function FormPost (props: FormPostProps): JSX.Element {
     }
     return true
   }
+  const correctImageUrl = (): string => {
+    if (image) {
+      return URL.createObjectURL(image)
+    } else if (formData.image && formData.image !== 'delete') {
+      return formData.image
+    }
+    return ''
+  }
+  const deleteCorrectImage = (): void => {
+    if (image) {
+      setImage(null)
+    }
+    if (formData.image) {
+      setFormData(prevFormData => ({
+        ...prevFormData,
+        image: 'delete'
+      }))
+    }
+  }
+  const correctVideoUrl = (): string => {
+    if (video) {
+      return URL.createObjectURL(video)
+    } else if (formData.video) {
+      return formData.video
+    }
+    return ''
+  }
+  const deleteCorrectVideo = (): void => {
+    if (video) {
+      setVideo(null)
+    } else if (formData.video) {
+      setFormData(prevFormData => ({
+        ...prevFormData,
+        video: 'delete'
+      }))
+    }
+  }
   async function handleSubmit (event: React.FormEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault()
     if (!validate()) {
@@ -115,15 +152,13 @@ export default function FormPost (props: FormPostProps): JSX.Element {
         }
       })
 
-      if (image) {
-        toSubmit.append('image', image)
+      if (image ?? formData.image) {
+        toSubmit.append('image', image ?? formData.image as File | string)
       }
-      if (video) {
-        toSubmit.append('video', video)
+      if (video ?? formData.video) {
+        toSubmit.append('video', video ?? formData.video as File | string)
       }
-      console.log('video', video)
       const result = await axios.post('/api/posts', toSubmit)
-      console.log(result)
       toast.success('Post saved')
       if (afterSave) {
         afterSave()
@@ -131,7 +166,6 @@ export default function FormPost (props: FormPostProps): JSX.Element {
         navigate('/posts/' + result.data.id)
       }
     } catch (error) {
-      console.log('error')
       console.error(error)
       toast.error(error)
     } finally {
@@ -169,8 +203,8 @@ export default function FormPost (props: FormPostProps): JSX.Element {
     }
   }
   const renderVideo = useMemo(() => (
-    <VideoPreview video={video} onClear={() => { setVideo(null) }} />
-  ), [video])
+    <VideoPreview video={formData.video ? formData.video : video} onClear={deleteCorrectVideo} />
+  ), [video, formData.video])
 
   return (
     <div className='w-full'>
@@ -200,17 +234,17 @@ export default function FormPost (props: FormPostProps): JSX.Element {
         {showVideo && <BiVideoOff onClick={() => { setShowVideo(false) }} className='ml-2 text-2xl cursor-pointer float-right' />}
         <MdOutlineAddPhotoAlternate onClick={imageDialog} className='text-2xl cursor-pointer float-right' />
 
-        {image &&
+        {correctImageUrl() &&
           <div className="relative w-fit">
-            <img src={URL.createObjectURL(image)} alt="image thumbnail" className='h-24 mb-2' />
-            <TiDeleteOutline onClick={() => { setImage(null) }} className='text-lg bg-white rounded-full text-red cursor-pointer absolute top-1 right-1' />
+            <img src={correctImageUrl()} alt="image thumbnail" className='h-24 mb-2' />
+            <TiDeleteOutline onClick={deleteCorrectImage} className='text-lg bg-white rounded-full text-red cursor-pointer absolute top-1 right-1' />
           </div>
         }
-        {video && !showVideo &&
+        {(video ?? formData.video) && !showVideo &&
           renderVideo
         }
         {showVideo &&
-          <div className='mt-6'>
+          <div>
             <VideoRecorder onStart={() => { setSaving(true) }} onStop={() => { setSaving(false) }} onSave={setVideo} onFinish={() => { setShowVideo(false) }} />
           </div>
         }

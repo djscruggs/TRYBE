@@ -10,6 +10,7 @@ export interface Note {
   userId?: string | number
   body: string | null
   image?: string | null
+  video?: string | null
   challengeId?: string | number
   replyToId?: string | number
   commentId?: string | number

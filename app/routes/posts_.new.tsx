@@ -28,9 +28,6 @@ export default function PostsNew ({ children }: { children: React.ReactNode }): 
   const data: LoaderData = useLoaderData<typeof loader>()
   const navigate = useNavigate()
   const { challenge, locale } = data
-  const afterSave = (): void => {
-    navigate(-1)
-  }
 
   return (
           <>
@@ -38,7 +35,11 @@ export default function PostsNew ({ children }: { children: React.ReactNode }): 
             <p>Post an update for {challenge.name}</p>
           }
           <div className='w-full max-w-lg mt-10'>
-            <FormPost challenge={challenge} locale={locale} onCancel={afterSave} afterSave={afterSave}/>
+            {challenge // only navigate if there is a challenge attached to this post
+              ? <FormPost challenge={challenge} locale={locale} onCancel={() => { navigate(-1) }} afterSave={() => { navigate(-1) }}/>
+              : <FormPost locale={locale}/>
+            }
+
           </div>
           </>
   )

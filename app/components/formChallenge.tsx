@@ -12,7 +12,7 @@ import DatePicker from 'react-datepicker'
 import { addDays } from 'date-fns'
 import { toast } from 'react-hot-toast'
 import axios from 'axios'
-import { colorToClassName, getIconOptionsForColor, handleImageUpload } from '~/utils/helpers'
+import { colorToClassName, getIconOptionsForColor, handleFileUpload } from '~/utils/helpers'
 import { useRevalidator } from 'react-router-dom'
 
 interface Errors {
@@ -169,7 +169,7 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
   const [fileDataURL, setFileDataURL] = useState<string | null>(formData.coverPhoto ? String(formData.coverPhoto) : null)
 
   const handlePhoto = (e: ChangeEvent<HTMLInputElement>): void => {
-    handleImageUpload(e, setFile, setFileDataURL)
+    handleFileUpload(e, setFile, setFileDataURL)
   }
   const removePhoto = (): void => {
     setFile(null)

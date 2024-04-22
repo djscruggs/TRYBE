@@ -1,8 +1,8 @@
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useMemo } from 'react'
 import { Form, useNavigate } from '@remix-run/react'
 import axios from 'axios'
 import { FormField } from './formField'
-import { handleImageUpload } from '~/utils/helpers'
+import { handleFileUpload } from '~/utils/helpers'
 import CardChallenge from './cardChallenge'
 import { type Note, type Challenge } from '~/utils/types'
 import { Button } from '@material-tailwind/react'
@@ -10,6 +10,7 @@ import { MdOutlineAddPhotoAlternate } from 'react-icons/md'
 import { BiVideoPlus, BiVideoOff } from 'react-icons/bi'
 import { TiDeleteOutline } from 'react-icons/ti'
 import VideoRecorder from './videoRecorder'
+import VideoPreview from './videoPreview'
 
 interface FormNoteProps {
   afterSave?: () => void
@@ -34,10 +35,10 @@ export default function FormNote (props: FormNoteProps): JSX.Element {
   const [error, setError] = useState('')
   const navigate = useNavigate()
   const imageRef = useRef<HTMLInputElement>(null)
-  const [image, setImage] = useState<File | null>(null)
+  const [image, setImage] = useState<File | string | null>(null)
   const [imageUrl, setImageUrl] = useState<string | null>(note?.image ? note.image : null)
 
-  const [video, setVideo] = useState<File | null>(null)
+  const [video, setVideo] = useState<File | string | null>(null)
   const [videoUrl, setVideoUrl] = useState<string | null>(note?.video ? note.video : null)
   const imageDialog = (): void => {
     if (imageRef.current) {
@@ -45,7 +46,15 @@ export default function FormNote (props: FormNoteProps): JSX.Element {
     }
   }
   const handleImage = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    handleImageUpload(e, setImage, setImageUrl)
+    handleFileUpload(e, setImage, setImageUrl)
+  }
+  const deleteImage = (): voide => {
+    setImage('delete')
+    setImageUrl(null)
+  }
+  const deleteVideo = (): voide => {
+    setVideo('delete')
+    setVideoUrl(null)
   }
   const handleKeyDown = async (event: React.KeyboardEvent<HTMLFormElement>): void => {
     if (event.key === 'Enter' && event.metaKey) {
@@ -85,6 +94,9 @@ export default function FormNote (props: FormNoteProps): JSX.Element {
       if (image) {
         formData.append('image', image)
       }
+      if (video) {
+        formData.append('image', image)
+      }
       const result = await axios.post('/api/notes', formData)
       setBody('')
       setImage(null)
@@ -110,6 +122,9 @@ export default function FormNote (props: FormNoteProps): JSX.Element {
       onCancel()
     }
   }
+  const renderVideo = useMemo(() => (
+    <VideoPreview video={video} onClear={deleteVideo} />
+  ), [video, videoUrl])
   console.log('parent video is', video)
   return (
     <div className='w-full'>
@@ -138,7 +153,7 @@ export default function FormNote (props: FormNoteProps): JSX.Element {
         {imageUrl &&
           <div className="relative w-fit">
             <img src={imageUrl} alt="image thumbnail" className='h-24 mb-2' />
-            <TiDeleteOutline onClick={() => { setImage(null); setImageUrl(null) }} className='text-lg bg-white rounded-full text-red cursor-pointer absolute top-1 right-1' />
+            <TiDeleteOutline onClick={deleteImage} className='text-lg bg-white rounded-full text-red cursor-pointer absolute top-1 right-1' />
           </div>
         }
         {videoUrl && !showVideo &&
@@ -146,6 +161,9 @@ export default function FormNote (props: FormNoteProps): JSX.Element {
             <video src={videoUrl} className='h-24 mb-2' />
             <TiDeleteOutline onClick={() => { setVideo(null); setVideoUrl(null) }} className='text-lg bg-white rounded-full text-red cursor-pointer absolute top-1 right-1' />
           </div>
+        }
+        {(video ?? formData.video) && !showVideo &&
+          renderVideo
         }
         {showVideo &&
           <div className='mt-6'>

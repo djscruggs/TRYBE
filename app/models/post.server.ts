@@ -27,7 +27,7 @@ export const loadPost = async (postId: string | number): Promise<Post | null> =>
     }
   })
 }
-export const loadPostSummary = async (postId: string | number): Promise<Array<Record<string, any>>> => {
+export const loadPostSummary = async (postId: string | number): Promise<Post | null> => {
   const id = Number(postId)
   return await prisma.post.findUnique({
     where: {
@@ -36,7 +36,8 @@ export const loadPostSummary = async (postId: string | number): Promise<Array<Re
     include: {
       _count: {
         select: { comments: true, likes: true }
-      }
+      },
+      challenge: true
     }
   })
 }

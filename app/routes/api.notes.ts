@@ -12,7 +12,6 @@ export const action: ActionFunction = async (args) => {
   for (const [key, value] of rawData.entries()) {
     console.log(key, value)
   }
-  const image = rawData.get('image')
   const data = {
     body: rawData.get('body'),
     user: { connect: { id: currentUser?.id } }
@@ -35,6 +34,18 @@ export const action: ActionFunction = async (args) => {
     result = await updateNote(data)
   } else {
     result = await createNote(data)
+  }
+  // check if there is a video/image OR if it should be deleted
+  let image, video
+  if (rawData.get('image') === 'delete') {
+    data.image = null
+  } else if (rawData.get('image')) {
+    image = rawData.get('image') as File
+  }
+  if (rawData.get('video') === 'delete') {
+    data.video = null
+  } else if (rawData.get('video')) {
+    video = rawData.get('video') as File
   }
   if (image) {
     const nameNoExt = `note-${result.id}`

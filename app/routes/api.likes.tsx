@@ -6,10 +6,10 @@ import { type Like } from '@prisma/client'
 export const action: ActionFunction = async (args: ActionFunctionArgs) => {
   const currentUser = await requireCurrentUser(args)
   const formData = await args.request.formData()
-  const challengeId: number | null = formData.get('challengeId') ? parseInt(formData.get('challengeId')) : null
-  const commentId: number | null = formData.get('commentId') ? parseInt(formData.get('commentId')) : null
-  const postId: number | null = formData.get('postId') ? parseInt(formData.get('postId')) : null
-  const noteId: number | null = formData.get('noteId') ? parseInt(formData.get('noteId')) : null
+  const challengeId: number | null = formData.get('challengeId') ? Number(formData.get('challengeId')) : null
+  const commentId: number | null = formData.get('commentId') ? Number(formData.get('commentId')) : null
+  const postId: number | null = formData.get('postId') ? Number(formData.get('postId')) : null
+  const noteId: number | null = formData.get('noteId') ? Number(formData.get('noteId')) : null
   let where: prisma.likeWhere = {}
 
   if (formData.get('unlike')) {
@@ -31,6 +31,10 @@ export const action: ActionFunction = async (args: ActionFunctionArgs) => {
   if (commentId) {
     data.comment = { connect: { id: commentId } }
     where.commentId = commentId
+  }
+  if (postId) {
+    data.post = { connect: { id: postId } }
+    where.postId = postId
   }
   if (noteId) {
     data.note = { connect: { id: noteId } }

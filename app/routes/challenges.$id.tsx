@@ -90,7 +90,6 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
     orderBy: { createdAt: 'desc' }
   })
   const locale = getUserLocale()
-  console.log(posts)
   const data: ChallengObjectData = { challenge: result, isMember: Boolean(membership?.userId), membership, hasLiked: Boolean(likes), checkInsCount, posts, locale }
   return json(data)
 }
