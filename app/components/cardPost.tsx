@@ -67,7 +67,7 @@ export default function CardPost (props: CardPostProps): JSX.Element {
         console.error('Error deleting post:', error)
       })
   }
-
+  const shortBody = post.body?.length > 200 ? post.body.replace(/^(.{200}[^\s]*).*/, '$1') : post.body
   const afterSave = (): void => {
     setEditing(false)
     setAddReply(false)
@@ -99,7 +99,9 @@ export default function CardPost (props: CardPostProps): JSX.Element {
             <div className="flex items-start">
               <AvatarChooser post={post}/>
               <div className="flex flex-col w-full h-full">
-              {post.body}
+              <div className='font-bold my-2'>{post.title}</div>
+              {shortBody}
+              {post.video && <video className="recorded" src={post.video} controls></video>}
               {post.image && <img src={`${post.image}?${Date.now()}`} alt="post picture" className="mt-4 cursor-pointer max-w-[200px]" onClick={handlePhotoClick} />}
               {post.challenge &&
                 <div className='mt-2'>

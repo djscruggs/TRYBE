@@ -139,56 +139,56 @@ const VideoRecorder = ({ onStart, onStop, onSave, onFinish }: VideoRecorderProps
         <input type="file" name="video_file" accept="video/*" capture />
         )
       : (
-    <>
-      {!permission
-        ? (
-                <p>Allow access to your camera to record a video</p>
-          )
-        : null}
-    <div className="block ">
+      <>
+        {!permission
+          ? (
+                  <p>Allow access to your camera to record a video</p>
+            )
+          : null}
+      <div className="block min-h-[390px] relative justify-center">
 
-          {!recordedVideo &&
-            <div className='border-2 border-gray-300 rounded-lg '>
-              <video ref={liveVideoFeed} autoPlay></video>
-            </div>
-          }
-          {recordedVideo
-            ? (
-              <div className="recorded-player">
-                <video className="recorded" src={recordedVideo} controls></video>
+            {!recordedVideo &&
+              <div className='border-2 border-gray-300 rounded-lg'>
+                <video ref={liveVideoFeed} autoPlay></video>
               </div>
-              )
-            : null}
-            <div className='flex justify-center my-4'>
-              {recordingStatus === 'inactive' &&
-                <>
-                <button className='bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded' onClick={startRecording} type="button">
-                    Start Recording
-                </button>
-                <button className='bg-red hover:bg-green-700 text-white font-bold py-2 px-4 rounded ml-2' onClick={onFinish} type="button">
-                  Never Mind
-                </button>
-                </>
-              }
-              {recordingStatus === 'recording' &&
-                  <button className='bg-red hover:bg-green-700 text-white font-bold py-2 px-4 rounded' onClick={stopRecording} type="button">
-                    Stop Recording
-                  </button>
-              }
-              {recordingStatus === 'recorded' &&
-                <>
-                <button className='bg-red text-white font-bold py-2 px-4 rounded' onClick={reset} type="button">
-                  Discard
-                </button>
-                <button className='bg-green-700 text-white font-bold py-2 px-4 rounded ml-2' onClick={saveVideo} type="button">
-                  Looks Good 👍
-                </button>
-                </>
-              }
-              </div>
+            }
+            {recordedVideo
+              ? (
+                <div className="recorded-player">
+                  <video className="recorded" src={recordedVideo} controls></video>
+                </div>
+                )
+              : null}
 
-    </div>
-    </>
+      </div>
+      <div className='w-full flex justify-center'>
+        {recordingStatus === 'inactive' &&
+          <>
+          <button className='bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded' onClick={startRecording} type="button">
+              Start Recording
+          </button>
+          <button className='bg-red hover:bg-green-700 text-white font-bold py-2 px-4 rounded ml-2' onClick={onFinish} type="button">
+            Never Mind
+          </button>
+          </>
+        }
+        {recordingStatus === 'recording' &&
+            <button className='bg-red hover:bg-green-700 text-white font-bold py-2 px-4 rounded' onClick={stopRecording} type="button">
+              Stop Recording
+            </button>
+        }
+        {recordingStatus === 'recorded' &&
+          <>
+          <button className='bg-red text-white font-bold py-2 px-4 rounded' onClick={reset} type="button">
+            Discard
+          </button>
+          <button className='bg-green-700 text-white font-bold py-2 px-4 rounded ml-2' onClick={saveVideo} type="button">
+            Looks Good 👍
+          </button>
+          </>
+        }
+      </div>
+      </>
         )}
     </>
   )

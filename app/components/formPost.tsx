@@ -1,4 +1,4 @@
-import React, { useState, useRef, useContext } from 'react'
+import React, { useMemo, useState, useRef, useContext } from 'react'
 import { Form, useNavigate } from '@remix-run/react'
 import axios from 'axios'
 import { FormField } from './formField'
@@ -9,6 +9,7 @@ import { MdOutlineAddPhotoAlternate } from 'react-icons/md'
 import { BiVideoPlus, BiVideoOff } from 'react-icons/bi'
 import { TiDeleteOutline } from 'react-icons/ti'
 import VideoRecorder from './videoRecorder'
+import VideoPreview from './videoPreview'
 import DatePicker from 'react-datepicker'
 import { CurrentUserContext } from '../utils/CurrentUserContext'
 import { toast } from 'react-hot-toast'
@@ -167,6 +168,10 @@ export default function FormPost (props: FormPostProps): JSX.Element {
       navigate(-1)
     }
   }
+  const renderVideo = useMemo(() => (
+    <VideoPreview video={video} onClear={() => { setVideo(null) }} />
+  ), [video])
+
   return (
     <div className='w-full'>
       <Form method="post" onSubmit={handleSubmit}>
@@ -202,10 +207,7 @@ export default function FormPost (props: FormPostProps): JSX.Element {
           </div>
         }
         {video && !showVideo &&
-          <div className="relative w-fit">
-            <video src={URL.createObjectURL(video)} className='h-24 mb-2' />
-            <TiDeleteOutline onClick={() => { setVideo(null) }} className='text-lg bg-white rounded-full text-red cursor-pointer absolute top-1 right-1' />
-          </div>
+          renderVideo
         }
         {showVideo &&
           <div className='mt-6'>
