@@ -22,15 +22,17 @@ import { TbHeartFilled } from 'react-icons/tb'
 import { useRevalidator } from 'react-router-dom'
 import { formatDistanceToNow, format, differenceInDays } from 'date-fns'
 import CardPost from '~/components/cardPost'
+import getUserLocale from 'get-user-locale'
 
 interface ChallengObjectData {
-  challenge: ChallengeSummary
-  hasLiked: boolean
-  membership: MemberChallenge | null | undefined
-  checkInsCount: number
-  isMember: boolean
-  posts: Post[]
-  loadingError: string | null
+  challenge?: ChallengeSummary
+  hasLiked?: boolean
+  membership?: MemberChallenge | null | undefined
+  checkInsCount?: number
+  isMember?: boolean
+  posts?: Post[]
+  loadingError?: string | null
+  locale?: string
 }
 
 export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
@@ -87,8 +89,9 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
     },
     orderBy: { createdAt: 'desc' }
   })
+  const locale = getUserLocale()
   console.log(posts)
-  const data: ChallengObjectData = { challenge: result, isMember: Boolean(membership?.userId), membership, hasLiked: Boolean(likes), checkInsCount, posts }
+  const data: ChallengObjectData = { challenge: result, isMember: Boolean(membership?.userId), membership, hasLiked: Boolean(likes), checkInsCount, posts, locale }
   return json(data)
 }
 export default function ViewChallenge (): JSX.Element {

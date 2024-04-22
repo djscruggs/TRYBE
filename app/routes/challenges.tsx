@@ -1,5 +1,6 @@
 import { type LoaderFunction } from '@remix-run/node'
 import { Outlet } from '@remix-run/react'
+import getUserLocale from 'get-user-locale'
 
 export const loader: LoaderFunction = async (args) => {
   // if thecurrentUser isn't authenticated, this will redirect to login

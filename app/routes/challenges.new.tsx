@@ -3,16 +3,24 @@ import ChallengeForm from '~/components/formChallenge'
 import { requireCurrentUser } from '../models/auth.server'
 import { type LoaderFunction } from '@remix-run/node'
 import { CurrentUserContext } from '../utils/CurrentUserContext'
+import getUserLocale from 'get-user-locale'
+import { useLoaderData } from '@remix-run/react'
 
-export const loader: LoaderFunction = async (args) => {
+interface LoaderData {
+  locale?: string
+}
+export const loader: LoaderFunction = async (args): Promise<LoaderData> => {
+  await requireCurrentUser(args)
   // if thecurrentUser isn't authenticated, this will redirect to login
-  return await requireCurrentUser(args)
+  const locale = getUserLocale()
+  return { locale }
 }
 
-export default function NewChallenge () {
+export default function NewChallenge (): JSX.Element {
   const { currentUser } = useContext(CurrentUserContext)
+  const { locale } = useLoaderData<LoaderData>()
   const formData = { userId: currentUser?.id }
   return (
-    <ChallengeForm object={formData}/>
+    <ChallengeForm object={formData} locale={locale}/>
   )
 }

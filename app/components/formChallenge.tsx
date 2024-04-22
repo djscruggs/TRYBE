@@ -22,6 +22,7 @@ interface Errors {
   startAt?: string
   endAt?: string
   coverPhoto?: string
+  locale?: string
 }
 
 export default function FormChallenge (props: ObjectData): JSX.Element {
@@ -34,7 +35,8 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
   const challenge = { ...props.challenge }
   delete challenge._count
   const [formData, setFormData] = useState(challenge)
-
+  console.log(props)
+  const localDateFormat = props.locale === 'en-US' ? 'MM-dd-YYYY' : 'dd-MM-YYYY'
   function selectDate (name: string, value: Date): void {
     setFormData((prevFormData: ObjectData) => ({
       ...prevFormData,
@@ -297,7 +299,7 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
                     <DatePicker
                       name='startAt'
                       required={true}
-                      dateFormat="MM-dd-YYYY"
+                      dateFormat={localDateFormat}
                       minDate={new Date()}
                       selected={formData.startAt ? new Date(formData.startAt) : null}
                       onChange={(date: Date) => { selectDate('startAt', date) }}
@@ -315,7 +317,7 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
                       name='endAt'
                       required={true}
                       placeholderText='At least one week long'
-                      dateFormat="MM-dd-YYYY"
+                      dateFormat={localDateFormat}
                       minDate={formData.startAt ? addDays(new Date(formData.startAt), 7) : addDays(new Date(), 7)}
                       selected={formData.endAt ? new Date(formData.endAt) : null}
                       onChange={(date: Date) => { selectDate('endAt', date) }}

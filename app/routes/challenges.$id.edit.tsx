@@ -5,15 +5,14 @@ import { type ObjectData } from '~/utils/types'
 export default function EditChallenge (): JSX.Element {
   const matches = useMatches()
   // based on https://jankraus.net/2022/04/16/access-remix-route-data-in-other-routes/
-  const data: ObjectData = matches.find((match) => match.id === 'routes/challenges.$id')?.data
-  if (data?.loadingError) {
-    return <h1>{data.loadingError}</h1>
+  const { loadingError, challenge, locale } = matches.find((match) => match.id === 'routes/challenges.$id')?.data as ObjectData
+  if (loadingError) {
+    return <h1>{loadingError}</h1>
   }
-
-  if (!data?.challenge) {
+  if (!challenge) {
     return <p>Loading.</p>
   }
   return (
-    <ChallengeForm challenge={data.challenge}/>
+    <ChallengeForm challenge={challenge} locale={locale}/>
   )
 }
