@@ -104,6 +104,10 @@ export interface Comment {
   createdAt: Date
   updatedAt: Date
   user?: User
+  replies?: Comment[]
+  replyToId?: number
+  replyTo?: Comment
+  threadDepth?: number
 }
 
 export interface NoteSummary extends Note {

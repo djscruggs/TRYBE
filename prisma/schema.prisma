@@ -168,6 +168,10 @@ model Comment {
   challengeId Int?
   likes       Like[]
   notes       Note[]
+  replyToId   Int?
+  replyTo     Comment?   @relation("ReplyTo", fields: [replyToId], references: [id])
+  threadDepth Int        @default(0)
+  replies     Comment[]  @relation("ReplyTo")
 
   // indexes for faster sorting by user
   @@index([userId])

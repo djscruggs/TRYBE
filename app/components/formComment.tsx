@@ -9,13 +9,14 @@ import { Button } from '@material-tailwind/react'
 interface FormCommentProps {
   challengeId?: number
   postId?: number
+  replyToId?: number
   afterSave: (comment: Comment) => void
   onCancel?: () => void
   comment?: Comment
 }
 
 export default function FormComment (props: FormCommentProps): JSX.Element {
-  let { comment, challengeId, postId } = props
+  let { comment, challengeId, postId, replyToId } = props
   if (comment) {
     challengeId = comment.challengeId
     postId = comment.postId
@@ -32,6 +33,9 @@ export default function FormComment (props: FormCommentProps): JSX.Element {
       const formData = new FormData()
       formData.append('body', body)
 
+      if (replyToId) {
+        formData.append('replyToId', String(replyToId))
+      }
       if (challengeId) {
         formData.append('challengeId', String(challengeId))
       }

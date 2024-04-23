@@ -54,14 +54,14 @@ export const updateComment = async (comment: prisma.commentCreateInput): Promise
     return error
   }
 }
-export const loadComment = async (commentId: string | number, userId: string | number | undefined): Promise<prisma.comment> => {
+export const loadComment = async (commentId: string | number, userId?: string | number | undefined): Promise<prisma.comment> => {
   const id = Number(commentId)
-  const uid = Number(userId)
+  const where: prisma.commentWhereUniqueInput = { id }
+  if (userId) {
+    where.userId = Number(userId)
+  }
   return await prisma.comment.findUnique({
-    where: {
-      id,
-      userId: uid
-    },
+    where,
     include: {
       user: {
         include: {

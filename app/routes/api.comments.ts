@@ -19,24 +19,37 @@ export const action: ActionFunction = async (args) => {
     body: formData.get('body'),
     user: { connect: { id: currentUser?.id } }
   }
-  console.log('postId', formData.get('postId'))
-  console.log('challengeId', formData.get('challengeId'))
-
-  if (formData.get('postId')) {
-    data.post = { connect: { id: Number(formData.get('postId')) } }
-  }
-  if (formData.get('challengeId')) {
-    data.challenge = { connect: { id: Number(formData.get('challengeId')) } }
-  }
-  if (!data.challenge && !data.post) {
-    return json({ message: 'Post id or callenge id is required' }, 400)
-  }
   if (formData.get('id')) {
     data.id = Number(formData.get('id'))
   }
-  console.log('data', data)
+  // if this is a reply, the other relations will come from the parent
+  const replyToId = formData.get('replyToId')
+  if (!replyToId) {
+    if (formData.get('postId')) {
+      data.post = { connect: { id: Number(formData.get('postId')) } }
+    }
+    if (formData.get('challengeId')) {
+      data.challenge = { connect: { id: Number(formData.get('challengeId')) } }
+    }
+    if (!data.challenge && !data.post) {
+      return json({ message: 'Post id or callenge id is required' }, 400)
+    }
+  }
+  if (replyToId) {
+    console.log('replyToId', replyToId)
+    data.replyTo = { connect: { id: Number(replyToId) } }
+    // increment the thread depth, requires fetching the parent comment
+    const parentComment = await loadComment(replyToId as number)
+    const { postId, challengeId } = parentComment
+    if (postId) {
+      data.post = { connect: { id: postId } }
+    }
+    if (challengeId) {
+      data.challenge = { connect: { id: challengeId } }
+    }
+    data.threadDepth = parentComment.threadDepth >= 5 ? 5 : parentComment.threadDepth + 1
+  }
   const result = data.id ? await updateComment(data) : await createComment(data)
-  console.log(result)
   // refresh the comment to include user info attached
   const comment = await loadComment(result.id as number, result.userId as number)
   return json(comment)

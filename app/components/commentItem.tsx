@@ -16,12 +16,15 @@ export default function CommentItem (props: CommentsProps): JSX.Element {
   const [liking, setLiking] = useState(false)
   const [isLiked, setIsLiked] = useState(false)
   const [deleting, setDeleting] = useState(false)
-
   const [showForm, setShowForm] = useState(false)
+  const [replying, setReplying] = useState(false)
   const { currentUser } = useContext(CurrentUserContext)
   const handleEdit = (): void => {
     if (!comment || deleting) return
     setShowForm(true)
+  }
+  const handleReply = (): void => {
+    setReplying(true)
   }
   const handleDelete = async (): Promise<void> => {
     if (!comment) return
@@ -54,25 +57,39 @@ export default function CommentItem (props: CommentsProps): JSX.Element {
       <FormComment afterSave={afterSave} onCancel={() => { setShowForm(false) }} comment={comment} />
         )
       : (
-    <div className="w-full" key={`comment-${comment.id}`}>
-      <div className='relative mb-2 p-2 border border-gray-200 break-all rounded-md even:bg-white odd:bg-gray-50'>
-        {comment.user?.id === currentUser?.id &&
-          <div className="text-xs text-gray-500 w-sm flex text-right justify-end absolute top-2 right-2">
-            <span className='underline cursor-pointer mr-1' onClick={handleEdit}>edit</span>
-            {deleting ? <Spinner className='h-4 w-4' /> : <span className='underline cursor-pointer mr-1' onClick={handleDelete}>delete</span>}
+      <>
+      <div className="w-full" key={`comment-${comment.id}`}>
+        <div className='relative mb-2 p-2 border border-gray-200 break-all rounded-md even:bg-white odd:bg-gray-50'>
+          {comment.user?.id === currentUser?.id &&
+            <div className="text-xs text-gray-500 w-sm flex text-right justify-end absolute top-2 right-2">
+              <span className='underline cursor-pointer mr-1' onClick={handleEdit}>edit</span>
+              {deleting ? <Spinner className='h-4 w-4' /> : <span className='underline cursor-pointer mr-1' onClick={handleDelete}>delete</span>}
+            </div>
+          }
+          <div className='flex'>
+            <div className='flex-shrink-0'>
+              <Avatar src={comment.user?.profile?.profileImage} className='mr-2' size='sm'/>
+            </div>
+            <div className='flex-grow'>
+            <div className='text-xs mb-2'>{comment.user?.profile?.firstName} {comment.user?.profile?.lastName}</div>
+              <div> {convertlineTextToHtml(comment.body)}</div>
+            </div>
           </div>
-        }
-        <div className='flex'>
-          <div className='flex-shrink-0'>
-            <Avatar src={comment.user?.profile?.profileImage} className='mr-2' size='sm'/>
-          </div>
-          <div className='flex-grow'>
-          <div className='text-xs mb-2'>{comment.user?.profile?.firstName} {comment.user?.profile?.lastName}</div>
-            <div> {convertlineTextToHtml(comment.body)}</div>
-          </div>
+
         </div>
       </div>
-    </div>
+      {currentUser?.id && comment.threadDepth < 5 &&
+      <div className='pl-4 mb-4'>
+        {replying
+          ? <FormComment afterSave={afterSave} onCancel={() => { setReplying(false) }} replyToId={comment.id} />
+          : <div className='flex justify-end'>
+            <span className='underline text-xs cursor-pointer mr-1' onClick={handleReply}>reply</span>
+          </div>
+            }
+          </div>
+
+      }
+      </>
         )
   }
   </>
