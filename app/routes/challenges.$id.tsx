@@ -87,8 +87,14 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
         ]
       }
     },
+    include: {
+      _count: {
+        select: { comments: true, likes: true }
+      }
+    },
     orderBy: { createdAt: 'desc' }
   })
+  console.log(posts)
   const locale = getUserLocale()
   const data: ChallengObjectData = { challenge: result, isMember: Boolean(membership?.userId), membership, hasLiked: Boolean(likes), checkInsCount, posts, locale }
   return json(data)
@@ -348,7 +354,7 @@ export default function ViewChallenge (): JSX.Element {
       {posts.map((post) => {
         return (
             <div key={`post-${post.id}`} className='max-w-sm md:max-w-md lg:max-w-lg'>
-              <CardPost post={post}/>
+              <CardPost post={post} hideMeta={true}/>
             </div>
         )
       })}

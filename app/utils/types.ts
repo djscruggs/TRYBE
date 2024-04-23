@@ -97,11 +97,13 @@ export interface LoginForm {
 
 export interface Comment {
   id: number
+  body: string
   userId: number
   challengeId: number
-  content: string
+  postId: number
   createdAt: Date
   updatedAt: Date
+  user?: User
 }
 
 export interface NoteSummary extends Note {

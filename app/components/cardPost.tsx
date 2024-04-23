@@ -2,10 +2,8 @@ import React, { useContext, useState, useEffect } from 'react'
 import {
   Card,
   Avatar,
-  Spinner,
-  Dialog
+  Spinner
 } from '@material-tailwind/react'
-import CardChallenge from './cardChallenge'
 import type { Post } from '../utils/types'
 // import { AiOutlineRetweet } from 'react-icons/ai'
 // import { GoComment } from 'react-icons/go'
@@ -19,6 +17,7 @@ import FormPost from './formPost'
 import axios from 'axios'
 import { useRevalidator } from 'react-router-dom'
 import ShareMenu from './shareMenu'
+import { TbHeartFilled } from 'react-icons/tb'
 
 interface CardPostProps {
   post: Post
@@ -26,20 +25,17 @@ interface CardPostProps {
   hasLiked?: boolean
   fullPost?: boolean
   locale?: string // used in editing
+  hideMeta?: boolean
 }
 
 export default function CardPost (props: CardPostProps): JSX.Element {
   const { currentUser } = useContext(CurrentUserContext)
-  const { post, hasLiked, fullPost, locale, isShare } = props
+  const { post, hasLiked, fullPost, locale, isShare, hideMeta } = props
   const [showLightbox, setShowLightbox] = useState(false)
   const [editing, setEditing] = useState(false)
-  const [videoDialog, setVideoDialog] = useState(false)
-  const handleVideoDialog = (event: any): void => {
-    event.preventDefault()
-    event.stopPropagation()
-    setVideoDialog(!videoDialog)
-  }
-
+  const [liking, setLiking] = useState(false)
+  const [isLiked, setIsLiked] = useState(hasLiked)
+  const [totalLikes, setTotalLikes] = useState(post._count?.likes)
   const location = useLocation()
   const isOwnRoute = location.pathname === `/posts/${post.id}`
   const revalidator = useRevalidator()
@@ -48,7 +44,6 @@ export default function CardPost (props: CardPostProps): JSX.Element {
     if (isOwnRoute) return
     navigate(`/posts/${post.id}`)
   }
-  const isQuote = location.pathname === `/posts/${post.id}/quote`
   const handlePhotoClick = (event: any): void => {
     event.preventDefault()
     event.stopPropagation()
@@ -58,6 +53,26 @@ export default function CardPost (props: CardPostProps): JSX.Element {
     event.preventDefault()
     event.stopPropagation()
     setEditing(true)
+  }
+  const handleLike = async (event: any): Promise<void> => {
+    event.preventDefault()
+    setLiking(true)
+    try {
+      const form = new FormData()
+      form.append('postId', String(post.id))
+      if (hasLiked) {
+        form.append('unlike', 'true')
+      }
+      const url = '/api/likes'
+      await axios.post(url, form)
+      setIsLiked(!isLiked)
+      setTotalLikes(isLiked ? totalLikes - 1 : totalLikes + 1)
+    } catch (error) {
+      console.error(error)
+      toast.error(error.response.statusText)
+    } finally {
+      setLiking(false)
+    }
   }
   const handleDelete = (event: any): void => {
     event.preventDefault()
@@ -97,11 +112,11 @@ export default function CardPost (props: CardPostProps): JSX.Element {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Card className={'md:col-span-2 p-2 border-1 drop-shadow-lg  border border-gray rounded-md relative'}>
             {!post.published &&
-            <>
-            <div className='bg-yellow w-full p-0 text-center absolute left-0 top-0 b-4'>Draft</div>
-            {/* spacer to push down the conent below */}
-            <div className='h-6'> </div>
-            </>
+              <>
+              <div className='bg-yellow w-full p-0 text-center absolute left-0 top-0 b-4'>Draft</div>
+              {/* spacer to push down the conent below */}
+              <div className='h-6'> </div>
+              </>
             }
             <div className="flex items-start">
               <AvatarChooser post={post}/>
@@ -126,22 +141,28 @@ export default function CardPost (props: CardPostProps): JSX.Element {
         </div>
         {/* <span className="text-xs text-gray-500">2 hours ago</span> */}
       </div>
-      {!isShare &&
+      {!isShare && !hideMeta &&
         <>
           <hr />
           <div className="grid grid-cols-3 text-center py-2 cursor-pointer w-full">
             <div className="flex justify-center items-center">
               <Link to={`/posts/${post.id}/comments#comments`}>
               <CiChat1 className="text-gray mr-1 inline" />
-              <span className="text-xs">{post._count.comments} comments</span>
+              <span className="text-xs">{post._count?.comments} comments</span>
               </Link>
             </div>
             <div className="flex justify-center items-center cursor-pointer">
-              <span className={`text-xs ${hasLiked ? 'text-red-500' : ''}`}>{post._count?.likes} likes</span>
+
+            {liking
+              ? <Spinner className="h-4 w-4 ml-1 inline" />
+              : <><TbHeartFilled className={`h-5 w-5 cursor-pointer inline ${isLiked ? 'text-red' : 'text-grey'}`} onClick={handleLike}/> <span className='text-xs ml-1'>{totalLikes}</span></>
+            }
             </div>
+            {post.public && post.published &&
             <div className="flex justify-center items-center cursor-pointer">
               <ShareMenu copyUrl={getFullUrl()} itemType='post' itemId={post.id}/>
             </div>
+            }
           </div>
         </>
       }

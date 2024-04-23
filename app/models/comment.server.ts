@@ -1,8 +1,8 @@
 import { prisma } from './prisma.server'
 
 interface FetchCommentsParams {
-  challengeId?: string | number
-  postId?: string | number
+  challengeId?: number
+  postId?: number
 }
 
 export const fetchComments = async (params: FetchCommentsParams): Promise<prisma.comment[]> => {
@@ -13,8 +13,8 @@ export const fetchComments = async (params: FetchCommentsParams): Promise<prisma
   const comments = await prisma.comment.findMany({
     where: {
       OR: [
-        { challengeId: challengeId ? parseInt(challengeId) : undefined },
-        { postId: postId ? parseInt(postId) : undefined }
+        { challengeId: challengeId ? Number(challengeId) : undefined },
+        { postId: postId ? Number(postId) : undefined }
       ]
     },
     include: {
@@ -29,6 +29,7 @@ export const fetchComments = async (params: FetchCommentsParams): Promise<prisma
 }
 
 export const createComment = async (comment: prisma.commentCreateInput): Promise<prisma.comment> => {
+  console.log('comment data', comment)
   try {
     const newComment = await prisma.comment.create({
       data: comment
@@ -40,9 +41,11 @@ export const createComment = async (comment: prisma.commentCreateInput): Promise
   }
 }
 export const updateComment = async (comment: prisma.commentCreateInput): Promise<prisma.comment> => {
+  const id = Number(comment.id)
+  delete comment.id
   try {
     const newComment = await prisma.comment.update({
-      where: { id: comment.id },
+      where: { id },
       data: comment
     })
     return newComment
@@ -58,6 +61,13 @@ export const loadComment = async (commentId: string | number, userId: string | n
     where: {
       id,
       userId: uid
+    },
+    include: {
+      user: {
+        include: {
+          profile: true
+        }
+      }
     }
   })
 }

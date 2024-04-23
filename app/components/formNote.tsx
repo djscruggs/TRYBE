@@ -133,7 +133,7 @@ export default function FormNote (props: FormNoteProps): JSX.Element {
   const renderVideo = useMemo(() => (
     <VideoPreview video={video} onClear={deleteVideo} />
   ), [video, videoUrl])
-  console.log('parent video is', video)
+
   return (
     <div className='w-full'>
       <Form method="post" onSubmit={handleSubmit}>

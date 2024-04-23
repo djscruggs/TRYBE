@@ -60,9 +60,10 @@ export default function ViewPost (): JSX.Element {
   }
   return (
     <>
-    <div className='max-w-[400px] md:max-w-md mt-10'>
+    <div className='max-w-[400px] md:max-w-lg mt-10'>
       <CardPost post={post} hasLiked={Boolean(hasLiked)} locale={locale} fullPost={true} />
     </div>
+    <Outlet />
 
     </>
   )

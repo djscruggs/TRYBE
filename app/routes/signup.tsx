@@ -1,4 +1,3 @@
-
 import { type LoaderFunction, type LoaderFunctionArgs, redirect } from '@remix-run/node'
 import { SignUp } from '@clerk/clerk-react'
 import { getAuth } from '@clerk/remix/ssr.server'
@@ -12,7 +11,6 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
   return null
 }
 export default function SignUpPage (): JSX.Element {
-  console.log('SignUpPage')
   return (
     <div className="h-full justify-center items-center flex flex-col gap-y-4">
       <SignUp

@@ -18,6 +18,7 @@ import FormNote from './formNote'
 import axios from 'axios'
 import { useRevalidator } from 'react-router-dom'
 import ShareMenu from './shareMenu'
+import { convertlineTextToHtml } from '~/utils/helpers'
 
 interface CardNoteProps {
   note: Note
@@ -35,12 +36,6 @@ export default function CardNote (props: CardNoteProps): JSX.Element {
   const location = useLocation()
   const isOwnRoute = isReplyTo ?? location.pathname === `/notes/${note.id}`
   const [addReply, setAddReply] = useState(false)
-  const [videoDialog, setVideoDialog] = useState(false)
-  const handleVideoDialog = (event: any): void => {
-    event.preventDefault()
-    event.stopPropagation()
-    setVideoDialog(!videoDialog)
-  }
   const revalidator = useRevalidator()
   const navigate = useNavigate()
   const goToNote = (): void => {
@@ -148,7 +143,7 @@ export default function CardNote (props: CardNoteProps): JSX.Element {
             <div className="flex items-start">
               <AvatarChooser note={note}/>
               <div className="flex flex-col w-full h-full">
-                {note.body}
+                {convertlineTextToHtml(note.body)}
                 {note.video && <video className="recorded" src={note.video} onClick={(event) => { event?.stopPropagation() }} controls />}
                 {note.image && <img src={`${note.image}?${Date.now()}`} alt="note picture" className="mt-4 cursor-pointer max-w-[200px]" onClick={handlePhotoClick} />}
                 {note.challenge &&
