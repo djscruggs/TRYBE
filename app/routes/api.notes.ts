@@ -3,6 +3,7 @@ import { requireCurrentUser } from '~/models/auth.server'
 import { json, type LoaderFunction, type ActionFunction } from '@remix-run/node'
 import { unstable_parseMultipartFormData } from '@remix-run/node'
 import { uploadHandler, writeFile } from '~/utils/uploadFile'
+import { type Note } from '@prisma/client'
 
 export const action: ActionFunction = async (args) => {
   const currentUser = await requireCurrentUser(args)
@@ -12,8 +13,8 @@ export const action: ActionFunction = async (args) => {
   for (const [key, value] of rawData.entries()) {
     console.log(key, value)
   }
-  const data = {
-    body: rawData.get('body'),
+  const data: Note = {
+    body: rawData.get('body') as string ?? null,
     user: { connect: { id: currentUser?.id } }
   }
   if (rawData.get('id')) {
@@ -35,24 +36,31 @@ export const action: ActionFunction = async (args) => {
   } else {
     result = await createNote(data)
   }
+  console.log('raw video is', rawData.get('video'))
   // check if there is a video/image OR if it should be deleted
   let image, video
   if (rawData.get('image') === 'delete') {
-    data.image = null
+    result.image = null
   } else if (rawData.get('image')) {
     image = rawData.get('image') as File
   }
   if (rawData.get('video') === 'delete') {
-    data.video = null
+    result.video = null
   } else if (rawData.get('video')) {
     video = rawData.get('video') as File
   }
+  console.log('data.video is ', result.video)
+  console.log('video is', video)
+
   if (image) {
-    const nameNoExt = `note-${result.id}`
-    const webPath = await writeFile(image, nameNoExt)
-    result.image = webPath
-  } else {
-    result.image = null
+    const imgNoExt = `note-${result.id}-image`
+    const imgPath = await writeFile(image, imgNoExt)
+    result.image = imgPath
+  }
+  if (video) {
+    const vidNoExt = `note-${result.id}-video`
+    const vidPath = await writeFile(video, vidNoExt)
+    result.video = vidPath
   }
   const updated = await updateNote(result)
   return json(updated)

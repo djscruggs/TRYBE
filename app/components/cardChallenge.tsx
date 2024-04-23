@@ -6,14 +6,14 @@ import {
 import { GiShinyApple } from 'react-icons/gi'
 import { CiChat1 } from 'react-icons/ci'
 import { FaRegCalendarAlt, FaUserFriends, FaRegHeart } from 'react-icons/fa'
-import { type ChallengeSummary } from '../utils/types'
+import { type ChallengeSummary, type Challenge } from '../utils/types'
 import { colorToClassName, textColorFromContainer, getIconOptionsForColor, buttonColorFromContainer } from '~/utils/helpers'
 import { CurrentUserContext } from '../utils/CurrentUserContext'
 import { Link, useNavigate } from '@remix-run/react'
 import ShareMenu from './shareMenu'
 
 interface CardChallengeProps {
-  challenge: ChallengeSummary
+  challenge: ChallengeSummary | Challenge
   isShare?: boolean
   isMember?: boolean
 }

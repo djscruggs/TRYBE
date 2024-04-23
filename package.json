@@ -85,6 +85,7 @@
     "@types/react": "18.2.42",
     "@types/react-datepicker": "^4.19.5",
     "@types/react-dom": "^18.2.19",
+    "@types/react-modal-image": "^2.6.3",
     "@types/react-test-renderer": "^18.0.7",
     "@typescript-eslint/eslint-plugin": "^6.21.0",
     "@vitejs/plugin-react": "^4.2.1",

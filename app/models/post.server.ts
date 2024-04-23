@@ -54,11 +54,13 @@ export const loadUserPosts = async (userId: string | number): Promise<Post[]> =>
     }
   })
 }
-export const deletePost = async (postId: string | number): Promise<Post> => {
+export const deletePost = async (postId: number, userId: number): Promise<Post> => {
   const id = Number(postId)
+  const uid = Number(userId)
   return await prisma.post.delete({
     where: {
-      id
+      id,
+      userId: uid
     }
   })
 }

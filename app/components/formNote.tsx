@@ -48,11 +48,12 @@ export default function FormNote (props: FormNoteProps): JSX.Element {
   const handleImage = (e: React.ChangeEvent<HTMLInputElement>): void => {
     handleFileUpload(e, setImage, setImageUrl)
   }
-  const deleteImage = (): voide => {
+  const deleteImage = (): void => {
     setImage('delete')
     setImageUrl(null)
   }
-  const deleteVideo = (): voide => {
+  const deleteVideo = (): void => {
+    console.log('setting to delete')
     setVideo('delete')
     setVideoUrl(null)
   }
@@ -74,6 +75,7 @@ export default function FormNote (props: FormNoteProps): JSX.Element {
     if (!validate()) {
       return
     }
+    console.log('video is', video)
     setBtnDisabled(true)
     try {
       const formData = new FormData()
@@ -95,8 +97,9 @@ export default function FormNote (props: FormNoteProps): JSX.Element {
         formData.append('image', image)
       }
       if (video) {
-        formData.append('image', image)
+        formData.append('video', video)
       }
+
       const result = await axios.post('/api/notes', formData)
       setBody('')
       setImage(null)
@@ -159,10 +162,10 @@ export default function FormNote (props: FormNoteProps): JSX.Element {
         {videoUrl && !showVideo &&
           <div className="relative w-fit">
             <video src={videoUrl} className='h-24 mb-2' />
-            <TiDeleteOutline onClick={() => { setVideo(null); setVideoUrl(null) }} className='text-lg bg-white rounded-full text-red cursor-pointer absolute top-1 right-1' />
+            <TiDeleteOutline onClick={deleteVideo} className='text-lg bg-white rounded-full text-red cursor-pointer absolute top-1 right-1' />
           </div>
         }
-        {(video ?? formData.video) && !showVideo &&
+        {video && !showVideo &&
           renderVideo
         }
         {showVideo &&

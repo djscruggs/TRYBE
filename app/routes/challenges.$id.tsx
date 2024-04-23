@@ -165,9 +165,11 @@ export default function ViewChallenge (): JSX.Element {
     try {
       const url = `/api/challenges/${challenge?.id as string | number}/checkin`
       const response = await axios.post(url)
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       toast.success(response.data.message)
     } catch (error) {
       console.error(error)
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       toast.error(error.response.statusText)
     } finally {
       revalidator.revalidate()
@@ -179,7 +181,7 @@ export default function ViewChallenge (): JSX.Element {
     setLiking(true)
     try {
       const form = new FormData()
-      form.append('challengeId', challenge.id)
+      form.append('challengeId', String(challenge.id))
       if (hasLiked) {
         form.append('unlike', 'true')
       }
@@ -225,7 +227,7 @@ export default function ViewChallenge (): JSX.Element {
   const color = colorToClassName(challenge?.color, 'red')
   return (
     <>
-    <div className={`max-w-sm border border-transparent border-b-inherit rounded-md bg-gradient-to-b from-${color} to-90%`}>
+    <div className={`max-w-sm md:max-w-md lg:max-w-lg border border-transparent border-b-inherit rounded-md bg-gradient-to-b from-${color} to-90%`}>
       <div className={'mb-2 mt-0.5 flex justify-center max-h-80 '}>
           {challenge.coverPhoto && <img src={`${challenge.coverPhoto}?${Date.now()}`} alt={`${challenge.name!} cover photo`} className="w-full rounded-sm" />}
       </div>
@@ -344,9 +346,11 @@ export default function ViewChallenge (): JSX.Element {
         </div>
       )}
       {posts.map((post) => {
-        return (<div className='max-w-sm'>
-          <CardPost key={`post-${post.id}`} post={post}/>
-        </div>)
+        return (
+            <div key={`post-${post.id}`} className='max-w-sm md:max-w-md lg:max-w-lg'>
+              <CardPost post={post}/>
+            </div>
+        )
       })}
       <div className='mb-16'>
         <Outlet />

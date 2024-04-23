@@ -1,7 +1,9 @@
 import React, { useContext, useState, useEffect } from 'react'
 import {
   Card,
-  Avatar
+  Avatar,
+  Spinner,
+  Dialog
 } from '@material-tailwind/react'
 import CardChallenge from './cardChallenge'
 import type { Post } from '../utils/types'
@@ -20,33 +22,33 @@ import ShareMenu from './shareMenu'
 
 interface CardPostProps {
   post: Post
-  isReplyTo?: boolean
   hasLiked?: boolean
-  hasReposted?: boolean
-  repostCount?: number
   fullPost?: boolean
+  locale?: string // used in editing
 }
 
 export default function CardPost (props: CardPostProps): JSX.Element {
   const { currentUser } = useContext(CurrentUserContext)
-  const { post, isReplyTo, hasLiked, fullPost } = props
-  console.log(post)
+  const { post, hasLiked, fullPost, locale } = props
   const [showLightbox, setShowLightbox] = useState(false)
   const [editing, setEditing] = useState(false)
+  const [videoDialog, setVideoDialog] = useState(false)
+  const handleVideoDialog = (event: any): void => {
+    event.preventDefault()
+    event.stopPropagation()
+    setVideoDialog(!videoDialog)
+  }
+
   const location = useLocation()
-  const isOwnRoute = isReplyTo ?? location.pathname === `/posts/${post.id}`
-  const [repostMenu, setRepostMenu] = useState(false)
-  const [addReply, setAddReply] = useState(false)
+  const isOwnRoute = location.pathname === `/posts/${post.id}`
   const revalidator = useRevalidator()
   const navigate = useNavigate()
   const goToPost = (): void => {
-    setRepostMenu(false)
     if (isOwnRoute) return
     navigate(`/posts/${post.id}`)
   }
   const isQuote = location.pathname === `/posts/${post.id}/quote`
   const handlePhotoClick = (event: any): void => {
-    setRepostMenu(false)
     event.preventDefault()
     event.stopPropagation()
     setShowLightbox(true)
@@ -72,46 +74,43 @@ export default function CardPost (props: CardPostProps): JSX.Element {
   }
   const shortBody = !fullPost && post.body?.length > 200 ? post.body.replace(/^(.{200}[^\s]*).*/, '$1') : post.body
   const afterSave = (): void => {
-    setEditing(false)
-    setAddReply(false)
     revalidator.revalidate()
+    console.log('state', revalidator.state)
+    setEditing(false)
   }
   const getFullUrl = (): string => {
     return `${window.location.origin}/posts/${post.id}`
+  }
+  if (revalidator.state === 'loading') {
+    return <Spinner className="h-4 w-4" />
   }
   return (
     <>
     {editing
       ? <>
-      <FormPost post={post} onCancel={() => { setEditing(false) }} afterSave={afterSave} />
-      {post.replyTo && post.isShare &&
-          <div className='mt-6'>
-            <CardPost post={post.replyTo} isReplyTo={true} />
-          </div>
-      }
-      {post.challenge &&
-          <div className='mt-2'>
-            <CardChallenge challenge={post.challenge} isShare={true}/>
-          </div>
-        }
+      <FormPost post={post} onCancel={() => { setEditing(false) }} afterSave={afterSave} locale={locale} />
+
       </>
       : <div className={'mt-2 w-full border-0  drop-shadow-none mr-2'}>
       <div className={`drop-shadow-none ${!isOwnRoute ? 'cursor-pointer' : ''}`} onClick={goToPost}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Card className={'md:col-span-2 p-2 border-1 drop-shadow-lg  border border-gray rounded-md'}>
+          <Card className={'md:col-span-2 p-2 border-1 drop-shadow-lg  border border-gray rounded-md relative'}>
+            {!post.published &&
+            <>
+            <div className='bg-yellow w-full p-0 text-center absolute left-0 top-0 b-4'>Draft</div>
+            {/* spacer to push down the conent below */}
+            <div className='h-6'> </div>
+            </>
+            }
             <div className="flex items-start">
               <AvatarChooser post={post}/>
               <div className="flex flex-col w-full h-full">
               <div className='font-bold my-2'>{post.title}</div>
               {convertlineTextToHtml(String(shortBody))}
               <div className='mt-4'>
-              {post.video && <video className="recorded" src={post.video} controls></video>}
+              {post.video && <video className="recorded" src={post.video} onClick={(event) => { event?.stopPropagation() }} controls />}
+
               {post.image && <img src={`${post.image}?${Date.now()}`} alt="post picture" className="mt-4 cursor-pointer max-w-[200px]" onClick={handlePhotoClick} />}
-              {post.challenge &&
-                <div className='mt-2'>
-                  <CardChallenge challenge={post.challenge} isShare={true}/>
-                </div>
-              }
               </div>
               {currentUser?.id === post.userId &&
                 <div className="mt-2 text-xs text-gray-500 w-full text-right">
@@ -121,32 +120,21 @@ export default function CardPost (props: CardPostProps): JSX.Element {
               }
               </div>
             </div>
-            {post.replyTo && post.isShare &&
-              <div className='mt-6 ml-10'>
-                <CardPost post={post.replyTo} isReplyTo={true} />
-              </div>
-            }
+
           </Card>
         </div>
         {/* <span className="text-xs text-gray-500">2 hours ago</span> */}
       </div>
-
-      {/* don't show likes etc if this is a reply or a reply is being added */}
-      {(!isReplyTo && !addReply && !isQuote) &&
-      <>
-        <hr />
-        <div className="grid grid-cols-3 text-center py-2 cursor-pointer">
-          <div className="flex justify-center items-center cursor-pointer">
-
-          <span className={`text-xs ${hasLiked ? 'text-red-500' : ''}`} onClick={goToPost}>{post._count?.likes} likes</span>
-          </div>
-          <div className="flex justify-center items-center cursor-pointer">
-            <ShareMenu copyUrl={getFullUrl()} itemType='post' itemId={post.id}/>
-
-          </div>
+  <hr />
+      <div className="grid grid-cols-3 text-center py-2 cursor-pointer">
+        <div className="flex justify-center items-center cursor-pointer">
+        <span className={`text-xs ${hasLiked ? 'text-red-500' : ''}`} onClick={goToPost}>{post._count?.likes} likes</span>
         </div>
-      </>
-      }
+        <div className="flex justify-center items-center cursor-pointer">
+          <ShareMenu copyUrl={getFullUrl()} itemType='post' itemId={post.id}/>
+        </div>
+      </div>
+
     </div>
     }
     {(post.image && showLightbox) && <Lightbox medium={post.image} large={post.image} alt="post photo" onClose={() => { setShowLightbox(false) }}/>}

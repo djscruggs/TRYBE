@@ -13,11 +13,14 @@ export interface Note {
   video?: string | null
   challengeId?: string | number
   replyToId?: string | number
+  replyTo?: Note
   commentId?: string | number
   isShare?: boolean
   createdAt?: Date
   updatedAt?: Date
   challenge?: Challenge
+  user?: User
+  _count: any
 }
 export interface Post {
   id?: number
@@ -66,6 +69,8 @@ export interface MemberChallenge {
   id?: number | string
   userId: number | string
   challengeId: number | string
+  lastCheckIn?: Date
+  nextCheckIn?: Date
 }
 
 export interface Profile {

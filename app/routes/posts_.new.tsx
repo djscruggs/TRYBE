@@ -1,7 +1,6 @@
 import { requireCurrentUser } from '../models/auth.server'
 import getUserLocale from 'get-user-locale'
-import { Outlet, useLoaderData } from '@remix-run/react'
-import { CurrentUserContext } from '../utils/CurrentUserContext'
+import { useLoaderData } from '@remix-run/react'
 import type { ChallengeSummary } from '~/utils/types'
 import { useNavigate } from 'react-router-dom'
 import { type LoaderFunction, type LoaderFunctionArgs } from '@remix-run/node'

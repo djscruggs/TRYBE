@@ -31,7 +31,7 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
     const likes = await prisma.like.count({
       where: {
         noteId: note.id,
-        userId: currentUser.id
+        userId: Number(currentUser.id)
       }
     })
     hasLiked = likes > 0
@@ -86,10 +86,10 @@ export default function ViewNote (): JSX.Element {
   }
   return (
     <>
-    <div className='max-w-[400px] mt-10'>
+    <div className='max-w-[400px] md:max-w-md lg:max-w-lg mt-10'>
       <CardNote note={data.note} repostCount={data.repostCount} hasLiked={Boolean(data.hasLiked)} hasReposted={Boolean(data.hasReposted)} />
     </div>
-    <div className='max-w-[400px]'>
+    <div className='max-w-[400px] md:max-w-md lg:max-w-lg'>
       {data.replies?.map((reply) => {
         return <CardNote key={reply.id} note={reply} isReplyTo={true} />
       })}

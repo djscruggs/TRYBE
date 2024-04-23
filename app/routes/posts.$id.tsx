@@ -6,10 +6,12 @@ import { requireCurrentUser } from '../models/auth.server'
 import type { Post } from '~/utils/types'
 import { json, type LoaderFunction, type LoaderFunctionArgs } from '@remix-run/node'
 import { prisma } from '../models/prisma.server'
+import getUserLocale from 'get-user-locale'
 
-interface PostObjectData {
+export interface PostData {
   post: Post | null
   hasLiked: boolean
+  locale?: string
   loadingError?: string
 }
 
@@ -19,6 +21,7 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
   if (!params.id) {
     return null
   }
+  const locale = getUserLocale()
   const post: Post | null = await loadPostSummary(params.id)
   // error if no post OR it's not a preview by the user who created it
   if (!post || (!post.published && post.userId !== currentUser?.id)) {
@@ -38,7 +41,7 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
     hasLiked = likes > 0
   }
 
-  const data: PostObjectData = { post, hasLiked }
+  const data: PostData = { post, hasLiked, locale }
   return json(data)
 }
 
@@ -48,7 +51,7 @@ export default function ViewPost (): JSX.Element {
     return <Outlet />
   }
 
-  const { post, hasLiked, loadingError } = useLoaderData() as PostObjectData
+  const { post, hasLiked, loadingError, locale } = useLoaderData() as PostData
   if (loadingError) {
     return <h1>{loadingError}</h1>
   }
@@ -57,8 +60,8 @@ export default function ViewPost (): JSX.Element {
   }
   return (
     <>
-    <div className='max-w-[400px] mt-10'>
-      <CardPost post={post} hasLiked={Boolean(hasLiked)} fullPost={true} />
+    <div className='max-w-[400px] md:max-w-md mt-10'>
+      <CardPost post={post} hasLiked={Boolean(hasLiked)} locale={locale} fullPost={true} />
     </div>
 
     </>

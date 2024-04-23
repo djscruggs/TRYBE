@@ -36,7 +36,6 @@ export default function FormPost (props: FormPostProps): JSX.Element {
   const { currentUser } = useContext(CurrentUserContext)
   const { afterSave, onCancel, post, challenge, locale } = props
   const [showVideo, setShowVideo] = useState(false)
-  const [body, setBody] = useState(post?.body ?? '')
   const [errors, setErrors] = useState<Errors>({})
   const [saving, setSaving] = useState(false)
   const [image, setImage] = useState<File | null>(null)
@@ -57,6 +56,7 @@ export default function FormPost (props: FormPostProps): JSX.Element {
     image: ''
   })
   const localDateFormat = locale === 'en-US' ? 'MM-dd-YYYY h:mm a' : 'dd-MM-YYYY HH:MM'
+  // this triggers the browser's upload file dialog, not a modal
   const imageDialog = (): void => {
     if (imageRef.current) {
       imageRef.current.click()
@@ -146,17 +146,15 @@ export default function FormPost (props: FormPostProps): JSX.Element {
       setSaving(true)
       const toSubmit = new FormData()
       Object.entries(formData).forEach(([key, value]) => {
-        if (key !== 'image' && key !== 'video') {
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-          toSubmit.append(String(key), value)
-        }
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        toSubmit.set(String(key), value)
       })
 
-      if (image ?? formData.image) {
-        toSubmit.append('image', image ?? formData.image as File | string)
+      if (image) {
+        toSubmit.set('image', image)
       }
-      if (video ?? formData.video) {
-        toSubmit.append('video', video ?? formData.video as File | string)
+      if (video) {
+        toSubmit.set('video', video)
       }
       const result = await axios.post('/api/posts', toSubmit)
       toast.success('Post saved')
@@ -284,7 +282,7 @@ export default function FormPost (props: FormPostProps): JSX.Element {
         <Button type="submit" onClick={handleDraft} className="bg-yellow text-black ml-2 disabled:gray-400" disabled={saving}>
           {saving
             ? 'Saving'
-            : 'Save Draft'
+            : formData.published ? 'Unpublish' : 'Save Draft'
           }
         </Button>
         <Button type="submit" onClick={handleCancel} className="bg-red ml-2 disabled:gray-400" disabled={saving}>

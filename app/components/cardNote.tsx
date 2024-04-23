@@ -1,7 +1,9 @@
 import React, { useContext, useState, useEffect } from 'react'
 import {
   Card,
-  Avatar
+  Avatar,
+  Spinner,
+  Dialog
 } from '@material-tailwind/react'
 import CardChallenge from './cardChallenge'
 import type { Note } from '../utils/types'
@@ -32,18 +34,21 @@ export default function CardNote (props: CardNoteProps): JSX.Element {
   const [editing, setEditing] = useState(false)
   const location = useLocation()
   const isOwnRoute = isReplyTo ?? location.pathname === `/notes/${note.id}`
-  const [repostMenu, setRepostMenu] = useState(false)
   const [addReply, setAddReply] = useState(false)
+  const [videoDialog, setVideoDialog] = useState(false)
+  const handleVideoDialog = (event: any): void => {
+    event.preventDefault()
+    event.stopPropagation()
+    setVideoDialog(!videoDialog)
+  }
   const revalidator = useRevalidator()
   const navigate = useNavigate()
   const goToNote = (): void => {
-    setRepostMenu(false)
     if (isOwnRoute) return
     navigate(`/notes/${note.id}`)
   }
   const isQuote = location.pathname === `/notes/${note.id}/quote`
   const handlePhotoClick = (event: any): void => {
-    setRepostMenu(false)
     event.preventDefault()
     event.stopPropagation()
     setShowLightbox(true)
@@ -111,6 +116,9 @@ export default function CardNote (props: CardNoteProps): JSX.Element {
   const getFullUrl = (): string => {
     return `${window.location.origin}/notes/${note.id}`
   }
+  if (revalidator.state === 'loading') {
+    return <Spinner className="h-4 w-4" />
+  }
   return (
     <>
     {note.replyTo && !note.isShare &&
@@ -140,19 +148,20 @@ export default function CardNote (props: CardNoteProps): JSX.Element {
             <div className="flex items-start">
               <AvatarChooser note={note}/>
               <div className="flex flex-col w-full h-full">
-              {note.body}
-              {note.image && <img src={`${note.image}?${Date.now()}`} alt="note picture" className="mt-4 cursor-pointer max-w-[200px]" onClick={handlePhotoClick} />}
-              {note.challenge &&
-                <div className='mt-2'>
-                  <CardChallenge challenge={note.challenge} isShare={true}/>
-                </div>
-              }
-              {currentUser?.id === note.userId &&
-                <div className="mt-2 text-xs text-gray-500 w-full text-right">
-                    <span className='underline cursor-pointer mr-1' onClick={handleEdit}>edit</span>
-                    <span className='underline cursor-pointer mr-1' onClick={handleDelete}>delete</span>
-                </div>
-              }
+                {note.body}
+                {note.video && <video className="recorded" src={note.video} onClick={(event) => { event?.stopPropagation() }} controls />}
+                {note.image && <img src={`${note.image}?${Date.now()}`} alt="note picture" className="mt-4 cursor-pointer max-w-[200px]" onClick={handlePhotoClick} />}
+                {note.challenge &&
+                  <div className='mt-2'>
+                    <CardChallenge challenge={note.challenge} isShare={true}/>
+                  </div>
+                }
+                {currentUser?.id === note.userId &&
+                  <div className="mt-2 text-xs text-gray-500 w-full text-right">
+                      <span className='underline cursor-pointer mr-1' onClick={handleEdit}>edit</span>
+                      <span className='underline cursor-pointer mr-1' onClick={handleDelete}>delete</span>
+                  </div>
+                }
               </div>
             </div>
             {note.replyTo && note.isShare &&
@@ -186,8 +195,7 @@ export default function CardNote (props: CardNoteProps): JSX.Element {
           <span className={`text-xs ${hasLiked ? 'text-red-500' : ''}`} onClick={goToNote}>{note._count?.likes} likes</span>
           </div>
           <div className="flex justify-center items-center cursor-pointer">
-            <ShareMenu copyUrl={getFullUrl()} itemType='note' itemId={note.id}/>
-
+            <ShareMenu copyUrl={getFullUrl()} itemType='note' itemId={Number(note.id)}/>
           </div>
         </div>
       </>
@@ -207,6 +215,7 @@ function AvatarChooser ({ note }: { note: Note }): JSX.Element {
       setLoading(true)
       axios.get(`/api/users/${note.userId}`)
         .then(res => {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
           setProfile(res.data.profile)
         })
         .catch(err => {
@@ -229,7 +238,7 @@ function AvatarChooser ({ note }: { note: Note }): JSX.Element {
 
   return (
       <div className="w-12 h-12 rounded-full bg-gray-500 flex items-center justify-center mr-8 flex-shrink-0 flex-grow-0">
-        {loading || !profile
+        {loading || !profile?.firstName || !profile.lastName
           ? ''
           : <span className="text-white">{`${profile.firstName[0]}${profile.lastName[0]}`}</span>
         }

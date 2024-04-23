@@ -15,7 +15,7 @@ const VideoRecorder = ({ onStart, onStop, onSave, onFinish }: VideoRecorderProps
   const liveVideoFeed = useRef(null)
   const videoUpload = useRef(null)
   const [recordingStatus, setRecordingStatus] = useState('inactive')
-  const [stream, setStream] = useState<MediaStream>()
+  const [stream, setStream] = useState<MediaStream | null>()
   const [recordedVideo, setRecordedVideo] = useState<string | null>(null)
   const [videoFile, setVideoFile] = useState<File | null>(null)
   const [videoChunks, setVideoChunks] = useState([])
@@ -139,11 +139,16 @@ const VideoRecorder = ({ onStart, onStop, onSave, onFinish }: VideoRecorderProps
   const saveVideo = (): void => {
     onSave(videoFile)
     const tracks = stream.getTracks()
-    tracks.forEach(track => { track.stop() })
-
+    if (tracks) {
+      tracks.forEach(track => { track.stop() })
+    }
+    setStream(null)
+    if (liveVideoFeed?.current?.srcObject) {
+      liveVideoFeed.current.srcObject = null
+    }
     onFinish()
   }
-  console.log(videoFile)
+  console.log(liveVideoFeed)
   const fileInput = (): JSX.Element => {
     const textColor = 'white'
     return (

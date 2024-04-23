@@ -92,7 +92,7 @@ export default function Home (): JSX.Element {
   }
   return (
          <>
-            <div className='w-full max-w-lg px-2'>
+            <div className='w-full max-w-2xl px-2'>
                <div className="flex items-center pl-0 mt-10 max-w-lg">
                   <div className="flex-grow-0 justify-self-start">
                      <UserAvatar size={isMobile ? 'md' : 'xxl'} />
@@ -103,12 +103,7 @@ export default function Home (): JSX.Element {
                   </div>
                   }
                   </div>
-                  <div className="flex items-center justify-between w-full max-w-lg mt-10">
-                  <div className="flex-grow-0">
-                     <h2 className="flex-grow-0">Updates</h2>
-                  </div>
 
-               </div>
             </div>
             {currentUser &&
               <div className="w-full pl-2 max-w-lg">
