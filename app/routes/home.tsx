@@ -48,6 +48,7 @@ export const loader: LoaderFunction = async (args): Promise<FeedLoaderData> => {
       },
       replyTo: true,
       challenge: true,
+      post: true,
       _count: {
         select: { replies: true, likes: true }
       }
@@ -112,11 +113,11 @@ export default function Home (): JSX.Element {
             }
             {feedItems.map(item => {
               if ('mission' in item) {
-                return (<div className="flex items-center pl-0 mt-10 w-full max-w-lg" key={item.id}>
+                return (<div className="flex items-center pl-0 mt-10 w-full max-w-lg" key={`challenge-${item.id}`}>
                           <CardChallenge challenge={item as ChallengeSummary} isMember={memberships.includes(item.id)} />
                         </div>)
               } else {
-                return (<div className="flex items-center pl-0 mt-10 w-full max-w-lg" key={item.id}>
+                return (<div className="flex items-center pl-0 mt-10 w-full max-w-lg" key={`note-${item.id}`}>
                           <CardNote note={item} />
                         </div>)
               }

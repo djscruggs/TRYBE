@@ -1,6 +1,4 @@
-
 import FormNote from '~/components/formNote'
-import CardChallenge from '~/components/cardChallenge'
 import { useNavigate, useRouteLoaderData } from '@remix-run/react'
 
 export default function ViewChallengeMembers (): JSX.Element {

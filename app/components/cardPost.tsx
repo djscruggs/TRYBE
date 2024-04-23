@@ -22,6 +22,7 @@ import ShareMenu from './shareMenu'
 
 interface CardPostProps {
   post: Post
+  isShare?: boolean
   hasLiked?: boolean
   fullPost?: boolean
   locale?: string // used in editing
@@ -29,7 +30,7 @@ interface CardPostProps {
 
 export default function CardPost (props: CardPostProps): JSX.Element {
   const { currentUser } = useContext(CurrentUserContext)
-  const { post, hasLiked, fullPost, locale } = props
+  const { post, hasLiked, fullPost, locale, isShare } = props
   const [showLightbox, setShowLightbox] = useState(false)
   const [editing, setEditing] = useState(false)
   const [videoDialog, setVideoDialog] = useState(false)
@@ -112,7 +113,7 @@ export default function CardPost (props: CardPostProps): JSX.Element {
 
               {post.image && <img src={`${post.image}?${Date.now()}`} alt="post picture" className="mt-4 cursor-pointer max-w-[200px]" onClick={handlePhotoClick} />}
               </div>
-              {currentUser?.id === post.userId &&
+              {currentUser?.id === post.userId && !isShare &&
                 <div className="mt-2 text-xs text-gray-500 w-full text-right">
                     <span className='underline cursor-pointer mr-1' onClick={handleEdit}>edit</span>
                     <span className='underline cursor-pointer mr-1' onClick={handleDelete}>delete</span>
@@ -125,16 +126,25 @@ export default function CardPost (props: CardPostProps): JSX.Element {
         </div>
         {/* <span className="text-xs text-gray-500">2 hours ago</span> */}
       </div>
-  <hr />
-      <div className="grid grid-cols-3 text-center py-2 cursor-pointer">
-        <div className="flex justify-center items-center cursor-pointer">
-        <span className={`text-xs ${hasLiked ? 'text-red-500' : ''}`} onClick={goToPost}>{post._count?.likes} likes</span>
-        </div>
-        <div className="flex justify-center items-center cursor-pointer">
-          <ShareMenu copyUrl={getFullUrl()} itemType='post' itemId={post.id}/>
-        </div>
-      </div>
-
+      {!isShare &&
+        <>
+          <hr />
+          <div className="grid grid-cols-3 text-center py-2 cursor-pointer w-full">
+            <div className="flex justify-center items-center">
+              <Link to={`/posts/${post.id}/comments#comments`}>
+              <CiChat1 className="text-gray mr-1 inline" />
+              <span className="text-xs">{post._count.comments} comments</span>
+              </Link>
+            </div>
+            <div className="flex justify-center items-center cursor-pointer">
+              <span className={`text-xs ${hasLiked ? 'text-red-500' : ''}`}>{post._count?.likes} likes</span>
+            </div>
+            <div className="flex justify-center items-center cursor-pointer">
+              <ShareMenu copyUrl={getFullUrl()} itemType='post' itemId={post.id}/>
+            </div>
+          </div>
+        </>
+      }
     </div>
     }
     {(post.image && showLightbox) && <Lightbox medium={post.image} large={post.image} alt="post photo" onClose={() => { setShowLightbox(false) }}/>}

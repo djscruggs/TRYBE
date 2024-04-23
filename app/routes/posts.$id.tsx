@@ -47,7 +47,7 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
 
 export default function ViewPost (): JSX.Element {
   const location = useLocation()
-  if (location.pathname.includes('edit')) {
+  if (location.pathname.includes('share')) {
     return <Outlet />
   }
 

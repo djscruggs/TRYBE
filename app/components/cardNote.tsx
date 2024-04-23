@@ -2,10 +2,10 @@ import React, { useContext, useState, useEffect } from 'react'
 import {
   Card,
   Avatar,
-  Spinner,
-  Dialog
+  Spinner
 } from '@material-tailwind/react'
 import CardChallenge from './cardChallenge'
+import CardPost from './cardPost'
 import type { Note } from '../utils/types'
 // import { AiOutlineRetweet } from 'react-icons/ai'
 // import { GoComment } from 'react-icons/go'
@@ -154,6 +154,11 @@ export default function CardNote (props: CardNoteProps): JSX.Element {
                 {note.challenge &&
                   <div className='mt-2'>
                     <CardChallenge challenge={note.challenge} isShare={true}/>
+                  </div>
+                }
+                {note.post &&
+                  <div className='mt-2'>
+                    <CardPost post={note.post} isShare={true}/>
                   </div>
                 }
                 {currentUser?.id === note.userId &&

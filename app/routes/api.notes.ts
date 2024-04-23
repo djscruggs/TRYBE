@@ -23,6 +23,9 @@ export const action: ActionFunction = async (args) => {
   if (rawData.get('challengeId')) {
     data.challenge = { connect: { id: parseInt(rawData.get('challengeId')) } }
   }
+  if (rawData.get('postId')) {
+    data.post = { connect: { id: parseInt(rawData.get('postId')) } }
+  }
   if (rawData.get('commentId')) {
     data.comment = { connect: { id: parseInt(rawData.get('commentId')) } }
   }

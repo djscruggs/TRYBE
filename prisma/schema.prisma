@@ -54,6 +54,8 @@ model Note {
   replies     Note[]     @relation("ReplyTo")
   challenge   Challenge? @relation(fields: [challengeId], references: [id])
   challengeId Int?
+  post   Post? @relation(fields: [postId], references: [id])
+  postId Int?
   isShare    Boolean    @default(false)
   likes       Like[]
   image       String?
@@ -81,6 +83,7 @@ model Post {
   user       User       @relation(fields: [userId], references: [id])
   userId     Int
   categories Category[]
+  notes      Note[]
   comments   Comment[]
   likes      Like[]
   challengeId Int?

@@ -4,7 +4,8 @@ import axios from 'axios'
 import { FormField } from './formField'
 import { handleFileUpload } from '~/utils/helpers'
 import CardChallenge from './cardChallenge'
-import { type Note, type Challenge } from '~/utils/types'
+import CardPost from './cardPost'
+import { type Note, type Challenge, type Post } from '~/utils/types'
 import { Button } from '@material-tailwind/react'
 import { MdOutlineAddPhotoAlternate } from 'react-icons/md'
 import { BiVideoPlus, BiVideoOff } from 'react-icons/bi'
@@ -17,6 +18,7 @@ interface FormNoteProps {
   onCancel?: () => void
   note?: Note
   challenge?: Challenge
+  post?: Post
   replyToId?: number
   prompt?: string
   isShare?: boolean
@@ -24,7 +26,7 @@ interface FormNoteProps {
 }
 
 export default function FormNote (props: FormNoteProps): JSX.Element {
-  let { afterSave, onCancel, note, challenge, prompt, replyToId } = props
+  let { afterSave, onCancel, note, challenge, prompt, replyToId, post } = props
   if (note?.challenge) {
     challenge = note.challenge
   }
@@ -57,7 +59,7 @@ export default function FormNote (props: FormNoteProps): JSX.Element {
     setVideo('delete')
     setVideoUrl(null)
   }
-  const handleKeyDown = async (event: React.KeyboardEvent<HTMLFormElement>): void => {
+  const handleKeyDown = async (event: React.KeyboardEvent<HTMLFormElement>): Promise<void> => {
     if (event.key === 'Enter' && event.metaKey) {
       event.preventDefault()
       await handleSubmit(event)
@@ -92,6 +94,9 @@ export default function FormNote (props: FormNoteProps): JSX.Element {
       }
       if (challenge) {
         formData.append('challengeId', challenge.id.toString())
+      }
+      if (post) {
+        formData.append('postId', post.id.toString())
       }
       if (image) {
         formData.append('image', image)
@@ -183,6 +188,7 @@ export default function FormNote (props: FormNoteProps): JSX.Element {
           <button onClick={handleCancel} className="mt-2 text-sm underline ml-2">cancel</button>
         }
         {challenge && <CardChallenge challenge={challenge} isShare={true}/>}
+        {post && <CardPost post={post} isShare={true}/>}
 
       </Form>
 

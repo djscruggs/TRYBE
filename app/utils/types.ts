@@ -7,18 +7,20 @@ export interface User {
 }
 export interface Note {
   id?: number
-  userId?: string | number
+  userId?: number
   body: string | null
   image?: string | null
   video?: string | null
-  challengeId?: string | number
-  replyToId?: string | number
+  challengeId?: number
+  challenge?: Challenge
+  postId?: number
+  post?: Post
+  replyToId?: number
   replyTo?: Note
-  commentId?: string | number
+  commentId?: number
   isShare?: boolean
   createdAt?: Date
   updatedAt?: Date
-  challenge?: Challenge
   user?: User
   _count: any
 }
@@ -54,7 +56,7 @@ export interface Challenge {
   publishAt?: Date
   published?: boolean
   public?: boolean
-  userId: string | number
+  userId: number
 }
 export interface ChallengeSummary extends Challenge {
   id: number | null | undefined
@@ -94,9 +96,9 @@ export interface LoginForm {
 }
 
 export interface Comment {
-  id: string | number
-  userId: string | number
-  challengeId: string | number
+  id: number
+  userId: number
+  challengeId: number
   content: string
   createdAt: Date
   updatedAt: Date
@@ -113,8 +115,8 @@ export interface ErrorObject extends Record<string, { _errors: string[] }> {}
 // generic interface that handles responses from server loading a single object
 export interface ObjectData {
   errors?: ErrorObject
-  formData?: Record<string, string | number | boolean | Date | null | undefined> | undefined
-  object?: Record<string, string | number | boolean | Date | null | undefined> | undefined
+  formData?: Record<string, number | boolean | Date | null | undefined> | undefined
+  object?: Record<string, number | boolean | Date | null | undefined> | undefined
   loadingError?: string | undefined
-  [key: string]: null | string | number | boolean | Date | undefined | Record<string, string | number | boolean | Date | null | undefined> | undefined
+  [key: string]: null | number | boolean | Date | undefined | Record<string, number | boolean | Date | null | undefined> | undefined
 }
