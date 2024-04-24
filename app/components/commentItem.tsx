@@ -6,13 +6,16 @@ import { convertlineTextToHtml } from '~/utils/helpers'
 import { toast } from 'react-hot-toast'
 import axios from 'axios'
 import type { Comment } from '~/utils/types'
+import Comments from './commentsContainer'
 
 interface CommentsProps {
-  comment?: Comment | null
+  comment: Comment | null
 }
 
 export default function CommentItem (props: CommentsProps): JSX.Element {
   const [comment, setComment] = useState<Comment | null>(props.comment ?? null)
+  const [replies, setReplies] = useState<Comment[]>(comment?.replies ?? [])
+  const [firstReply, setFirstReply] = useState<Comment | null>(null)
   const [liking, setLiking] = useState(false)
   const [isLiked, setIsLiked] = useState(false)
   const [deleting, setDeleting] = useState(false)
@@ -22,9 +25,6 @@ export default function CommentItem (props: CommentsProps): JSX.Element {
   const handleEdit = (): void => {
     if (!comment || deleting) return
     setShowForm(true)
-  }
-  const handleReply = (): void => {
-    setReplying(true)
   }
   const handleDelete = async (): Promise<void> => {
     if (!comment) return
@@ -45,9 +45,20 @@ export default function CommentItem (props: CommentsProps): JSX.Element {
     }
   }
   const afterSave = (comment: Comment): void => {
-    // refresh comment after save
     setComment(comment)
     setShowForm(false)
+  }
+  const afterSaveReply = async (reply: Comment): void => {
+    // refresh comment after save
+    if (firstReply) {
+      const newReplies = [firstReply].concat(replies)
+      setReplies(newReplies)
+    }
+    setFirstReply(reply)
+    setReplying(false)
+  }
+  const allowReplies = (): boolean => {
+    return Boolean(currentUser?.id && comment.threadDepth < 5)
   }
   if (!comment) return <></>
   return (
@@ -58,7 +69,7 @@ export default function CommentItem (props: CommentsProps): JSX.Element {
         )
       : (
       <>
-      <div className="w-full" key={`comment-${comment.id}`}>
+      <div className="w-full" >
         <div className='relative mb-2 p-2 border border-gray-200 break-all rounded-md even:bg-white odd:bg-gray-50'>
           {comment.user?.id === currentUser?.id &&
             <div className="text-xs text-gray-500 w-sm flex text-right justify-end absolute top-2 right-2">
@@ -78,17 +89,18 @@ export default function CommentItem (props: CommentsProps): JSX.Element {
 
         </div>
       </div>
-      {currentUser?.id && comment.threadDepth < 5 &&
+      {allowReplies() &&
       <div className='pl-4 mb-4'>
         {replying
-          ? <FormComment afterSave={afterSave} onCancel={() => { setReplying(false) }} replyToId={comment.id} />
+          ? <FormComment afterSave={afterSaveReply} onCancel={() => { setReplying(false) }} replyToId={comment.id} />
           : <div className='flex justify-end'>
-            <span className='underline text-xs cursor-pointer mr-1' onClick={handleReply}>reply</span>
+            <span className='underline text-xs cursor-pointer mr-1' onClick={() => { setReplying(true) }}>reply</span>
           </div>
-            }
-          </div>
+        }
+      </div>
 
       }
+      {replies && <div className='pl-4'><Comments firstComment={firstReply} comments={replies} /></div>}
       </>
         )
   }

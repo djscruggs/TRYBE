@@ -12,20 +12,107 @@ export const fetchComments = async (params: FetchCommentsParams): Promise<prisma
   }
   const comments = await prisma.comment.findMany({
     where: {
-      OR: [
-        { challengeId: challengeId ? Number(challengeId) : undefined },
-        { postId: postId ? Number(postId) : undefined }
-      ]
+      AND: {
+        replyToId: null,
+        OR: [
+          { challengeId: challengeId ? Number(challengeId) : undefined },
+          { postId: postId ? Number(postId) : undefined }
+        ]
+      }
+    },
+    orderBy: {
+      createdAt: 'desc'
     },
     include: {
       user: {
         include: {
           profile: true
         }
+      },
+      replies: {
+        include: {
+          user: {
+            include: {
+              profile: true
+            }
+          },
+          replies: {
+            include: {
+              user: {
+                include: {
+                  profile: true
+                }
+              },
+              replies: {
+                include: {
+                  user: {
+                    include: {
+                      profile: true
+                    }
+                  },
+                  replies: {
+                    include: {
+                      user: {
+                        include: {
+                          profile: true
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     }
   })
   return comments
+}
+export const fetchReplies = async (commentId: string | number): Promise<prisma.comment[]> => {
+  const id = Number(commentId)
+  return await prisma.comment.findUnique({
+    where: { id },
+    orderBy: {
+      createdAt: 'desc'
+    },
+    replies: {
+      include: {
+        user: {
+          include: {
+            profile: true
+          }
+        },
+        replies: {
+          include: {
+            user: {
+              include: {
+                profile: true
+              }
+            },
+            replies: {
+              include: {
+                user: {
+                  include: {
+                    profile: true
+                  }
+                },
+                replies: {
+                  include: {
+                    user: {
+                      include: {
+                        profile: true
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  })
 }
 
 export const createComment = async (comment: prisma.commentCreateInput): Promise<prisma.comment> => {

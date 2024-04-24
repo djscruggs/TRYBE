@@ -49,8 +49,6 @@ export default function FormComment (props: FormCommentProps): JSX.Element {
       setBody('')
       if (props.afterSave) {
         props.afterSave(updated.data as Comment)
-      } else {
-        navigate('.')
       }
       toast.success('Comment saved')
     } catch (error: any) {
