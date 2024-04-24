@@ -4,12 +4,38 @@ interface FetchCommentsParams {
   challengeId?: number
   postId?: number
 }
+function generateIncludeObject (levels: number): any {
+  if (levels <= 0) {
+    return true
+  }
+  return {
+    user: {
+      include: {
+        profile: true
+      }
+    },
+    replies: { include: generateIncludeObject(levels - 1) }
+  }
+}
+function printIncludes (includes: any, level: number = 0) {
+  for (const key in includes) {
+    if (typeof includes[key] === 'object') {
+      console.log(' '.repeat(level * 2) + key)
+      printIncludes(includes[key], level + 1)
+    } else {
+      console.log(' '.repeat(level * 2) + key + ': ' + includes[key])
+    }
+  }
+}
 
 export const fetchComments = async (params: FetchCommentsParams): Promise<prisma.comment[]> => {
   const { challengeId, postId } = params
   if (!challengeId && !postId) {
     throw new Error('challengeId or postId must be provided')
   }
+  const includes = generateIncludeObject(5)
+  console.log('includes')
+  printIncludes(includes)
   const comments = await prisma.comment.findMany({
     where: {
       AND: {
@@ -23,97 +49,19 @@ export const fetchComments = async (params: FetchCommentsParams): Promise<prisma
     orderBy: {
       createdAt: 'desc'
     },
-    include: {
-      user: {
-        include: {
-          profile: true
-        }
-      },
-      replies: {
-        include: {
-          user: {
-            include: {
-              profile: true
-            }
-          },
-          replies: {
-            include: {
-              user: {
-                include: {
-                  profile: true
-                }
-              },
-              replies: {
-                include: {
-                  user: {
-                    include: {
-                      profile: true
-                    }
-                  },
-                  replies: {
-                    include: {
-                      user: {
-                        include: {
-                          profile: true
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
+    include: includes
   })
   return comments
 }
 export const fetchReplies = async (commentId: string | number): Promise<prisma.comment[]> => {
   const id = Number(commentId)
+  const includes = generateIncludeObject(5)
   return await prisma.comment.findUnique({
     where: { id },
     orderBy: {
       createdAt: 'desc'
     },
-    include: {
-      replies: {
-        include: {
-          user: {
-            include: {
-              profile: true
-            }
-          },
-          replies: {
-            include: {
-              user: {
-                include: {
-                  profile: true
-                }
-              },
-              replies: {
-                include: {
-                  user: {
-                    include: {
-                      profile: true
-                    }
-                  },
-                  replies: {
-                    include: {
-                      user: {
-                        include: {
-                          profile: true
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
+    include: includes
   })
 }
 
