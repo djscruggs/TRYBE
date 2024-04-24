@@ -34,8 +34,6 @@ export const fetchComments = async (params: FetchCommentsParams): Promise<prisma
     throw new Error('challengeId or postId must be provided')
   }
   const includes = generateIncludeObject(5)
-  console.log('includes')
-  printIncludes(includes)
   const comments = await prisma.comment.findMany({
     where: {
       AND: {
@@ -66,7 +64,6 @@ export const fetchReplies = async (commentId: string | number): Promise<prisma.c
 }
 
 export const createComment = async (comment: prisma.commentCreateInput): Promise<prisma.comment> => {
-  console.log('comment data', comment)
   try {
     const newComment = await prisma.comment.create({
       data: comment
@@ -124,7 +121,6 @@ export const deleteComment = async (commentId: string | number): Promise<prisma.
 }
 
 const upateCounts = async (comment: prisma.comment): Promise<void> => {
-  console.log('updaeCounts', comment)
   let count = 0
   if (comment.replyToId) {
     const replyToId = Number(comment.replyToId)
