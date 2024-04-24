@@ -1,4 +1,5 @@
 import { loadPostSummary } from '~/models/post.server'
+import { useState } from 'react'
 import { Outlet, useLoaderData, useLocation } from '@remix-run/react'
 
 import CardPost from '~/components/cardPost'
@@ -51,7 +52,8 @@ export default function ViewPost (): JSX.Element {
     return <Outlet />
   }
 
-  const { post, hasLiked, loadingError, locale } = useLoaderData() as PostData
+  const { hasLiked, loadingError, locale } = useLoaderData() as PostData
+  const [post, setPost] = useState<Post | null>(useLoaderData().post)
   if (loadingError) {
     return <h1>{loadingError}</h1>
   }
@@ -63,7 +65,7 @@ export default function ViewPost (): JSX.Element {
     <div className='max-w-[400px] md:max-w-lg mt-10'>
       <CardPost post={post} hasLiked={Boolean(hasLiked)} locale={locale} fullPost={true} />
     </div>
-    <Outlet />
+    <Outlet context={{ post, hasLiked, locale }} />
 
     </>
   )

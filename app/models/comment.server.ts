@@ -76,32 +76,34 @@ export const fetchReplies = async (commentId: string | number): Promise<prisma.c
     orderBy: {
       createdAt: 'desc'
     },
-    replies: {
-      include: {
-        user: {
-          include: {
-            profile: true
-          }
-        },
-        replies: {
-          include: {
-            user: {
-              include: {
-                profile: true
-              }
-            },
-            replies: {
-              include: {
-                user: {
-                  include: {
-                    profile: true
-                  }
-                },
-                replies: {
-                  include: {
-                    user: {
-                      include: {
-                        profile: true
+    include: {
+      replies: {
+        include: {
+          user: {
+            include: {
+              profile: true
+            }
+          },
+          replies: {
+            include: {
+              user: {
+                include: {
+                  profile: true
+                }
+              },
+              replies: {
+                include: {
+                  user: {
+                    include: {
+                      profile: true
+                    }
+                  },
+                  replies: {
+                    include: {
+                      user: {
+                        include: {
+                          profile: true
+                        }
                       }
                     }
                   }
@@ -175,34 +177,35 @@ export const deleteComment = async (commentId: string | number): Promise<prisma.
 
 const upateCounts = async (comment: prisma.comment): Promise<void> => {
   console.log('updaeCounts', comment)
+  let count = 0
   if (comment.replyToId) {
     const replyToId = Number(comment.replyToId)
-    const count1 = await prisma.comment.count({
+    count = await prisma.comment.count({
       where: { replyToId }
     })
     await prisma.comment.update({
       where: { id: replyToId },
-      data: { replyCount: count1 }
+      data: { replyCount: count }
     })
-    if (comment.postId) {
-      const postId = Number(comment.postId)
-      const count2 = await prisma.comment.count({
-        where: { postId }
-      })
-      await prisma.post.update({
-        where: { id: postId },
-        data: { commentCount: count2 }
-      })
-    }
-    if (comment.challengeId) {
-      const challengeId = Number(comment.challengeId)
-      const count3 = await prisma.comment.count({
-        where: { challengeId }
-      })
-      await prisma.challenge.update({
-        where: { id: challengeId },
-        data: { commentCount: count3 }
-      })
-    }
+  }
+  if (comment.postId) {
+    const postId = Number(comment.postId)
+    count = await prisma.comment.count({
+      where: { postId }
+    })
+    await prisma.post.update({
+      where: { id: postId },
+      data: { commentCount: count }
+    })
+  }
+  if (comment.challengeId) {
+    const challengeId = Number(comment.challengeId)
+    count = await prisma.comment.count({
+      where: { challengeId }
+    })
+    await prisma.challenge.update({
+      where: { id: challengeId },
+      data: { commentCount: count }
+    })
   }
 }

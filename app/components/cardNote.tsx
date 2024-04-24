@@ -9,7 +9,7 @@ import CardPost from './cardPost'
 import type { Note } from '../utils/types'
 // import { AiOutlineRetweet } from 'react-icons/ai'
 // import { GoComment } from 'react-icons/go'
-import { CiChat1 } from 'react-icons/ci'
+import { FaRegComment } from 'react-icons/fa'
 import { CurrentUserContext } from '../utils/CurrentUserContext'
 import { Link, useNavigate, useLocation } from '@remix-run/react'
 import { Lightbox } from 'react-modal-image'
@@ -19,6 +19,7 @@ import axios from 'axios'
 import { useRevalidator } from 'react-router-dom'
 import ShareMenu from './shareMenu'
 import { convertlineTextToHtml } from '~/utils/helpers'
+import Liker from './liker'
 
 interface CardNoteProps {
   note: Note
@@ -186,13 +187,13 @@ export default function CardNote (props: CardNoteProps): JSX.Element {
         <div className="grid grid-cols-3 text-center py-2 cursor-pointer">
           <div className="flex justify-center items-center">
           <Link to={`/notes/${note.id}`}>
-            <CiChat1 className="text-gray mr-1 inline" />
+            <FaRegComment className="text-grey mr-1 inline" />
             <span className="text-xs">{note._count?.replies} replies</span>
             </Link>
           </div>
           <div className="flex justify-center items-center cursor-pointer">
 
-          <span className={`text-xs ${hasLiked ? 'text-red-500' : ''}`} onClick={goToNote}>{note._count?.likes} likes</span>
+          <div className='mr-2'><Liker isLiked={Boolean(hasLiked)} itemId={Number(note.id)} itemType='note' count={Number(note._count?.likes)}/></div>
           </div>
           <div className="flex justify-center items-center cursor-pointer">
             <ShareMenu copyUrl={getFullUrl()} itemType='note' itemId={Number(note.id)}/>

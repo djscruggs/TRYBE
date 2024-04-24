@@ -7,6 +7,10 @@ import { toast } from 'react-hot-toast'
 import axios from 'axios'
 import type { Comment } from '~/utils/types'
 import Comments from './commentsContainer'
+import { formatDistanceToNow } from 'date-fns'
+import { TbHeartFilled } from 'react-icons/tb'
+import { FaRegComment } from 'react-icons/fa'
+import Liker from './liker'
 
 interface CommentsProps {
   comment: Comment | null
@@ -18,6 +22,7 @@ export default function CommentItem (props: CommentsProps): JSX.Element {
   const [firstReply, setFirstReply] = useState<Comment | null>(null)
   const [liking, setLiking] = useState(false)
   const [isLiked, setIsLiked] = useState(false)
+
   const [deleting, setDeleting] = useState(false)
   const [showForm, setShowForm] = useState(false)
   const [replying, setReplying] = useState(false)
@@ -26,6 +31,7 @@ export default function CommentItem (props: CommentsProps): JSX.Element {
     if (!comment || deleting) return
     setShowForm(true)
   }
+
   const handleDelete = async (): Promise<void> => {
     if (!comment) return
     setDeleting(true)
@@ -65,14 +71,14 @@ export default function CommentItem (props: CommentsProps): JSX.Element {
     <>
     {showForm
       ? (
-        <div className='w-full border-l-2 border-gray-200 pl-4 mb-4'>
+        <div className='w-full border-l-2  pl-4 mb-4'>
           <FormComment afterSave={afterSave} onCancel={() => { setShowForm(false) }} comment={comment} />
         </div>
         )
       : (
       <>
-      <div className="w-full border-l-2 border-gray-200 pl-4" >
-        <div className='relative mb-2 p-2 border border-gray-200 break-all rounded-md even:bg-white odd:bg-gray-50'>
+      <div className="w-full  pl-4" >
+        <div className='relative mb-2 p-2 break-all rounded-md'>
           {comment.user?.id === currentUser?.id &&
             <div className="text-xs text-gray-500 w-sm flex text-right justify-end absolute top-2 right-2">
               <span className='underline cursor-pointer mr-1' onClick={handleEdit}>edit</span>
@@ -84,24 +90,29 @@ export default function CommentItem (props: CommentsProps): JSX.Element {
               <Avatar src={comment.user?.profile?.profileImage} className='mr-2' size='sm'/>
             </div>
             <div className='flex-grow'>
-            <div className='text-xs mb-2'>{comment.user?.profile?.firstName} {comment.user?.profile?.lastName}</div>
-              <div> {convertlineTextToHtml(comment.body)}</div>
+            <div className='text-xs mb-2'>{comment.user?.profile?.firstName} {comment.user?.profile?.lastName} - <span>{formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true })}</span></div>
+              <div>
+
+                 {convertlineTextToHtml(comment.body)}
+              </div>
             </div>
           </div>
 
         </div>
       </div>
-      {allowReplies() &&
       <div className='pl-4 mb-4'>
-        {replying
-          ? <FormComment afterSave={afterSaveReply} onCancel={() => { setReplying(false) }} replyToId={comment.id} />
-          : <div className='flex justify-end'>
-            <span className='underline text-xs cursor-pointer mr-1' onClick={() => { setReplying(true) }}>reply</span>
+        {replying && <FormComment afterSave={afterSaveReply} onCancel={() => { setReplying(false) }} replyToId={comment.id} /> }
+        {!replying &&
+           <div className='flex justify-start'>
+            <div className='mr-2'><Liker isLiked={isLiked} itemId={comment.id} itemType='comment' count={0}/></div>
+           {allowReplies() &&
+            <div className='mr-2'>
+            <FaRegComment className='h-4 w-4 text-grey' onClick={() => { setReplying(true) }}/>
+            </div>
+           }
           </div>
-        }
+          }
       </div>
-
-      }
       {replies && <div className='pl-4'><Comments firstComment={firstReply} comments={replies} /></div>}
       </>
         )

@@ -36,7 +36,7 @@ export default function ShareMenu (props: ShareMenuProps): JSX.Element {
   }, [showMenu])
   return (
     <>
-    <SlShareAlt className="text-gray text-sm mr-1" onClick={handleShareMenu}/>
+    <SlShareAlt className="text-grey text-sm mr-1" onClick={handleShareMenu}/>
     <span className="text-xs" onClick={handleShareMenu}>Share</span>
     {showMenu &&
       <div className='absolute right-0 bottom-10 bg-white border border-gray rounded-md flext-1 text-left' >

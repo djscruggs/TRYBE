@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react'
-import { useParams, useLoaderData, json } from '@remix-run/react'
+import { useParams, useLoaderData, json, useOutletContext } from '@remix-run/react'
 import { type LoaderFunction } from '@remix-run/server-runtime'
 import { fetchComments } from '~/models/comment.server'
 import { useNavigate } from 'react-router-dom'
@@ -34,6 +34,7 @@ export default function ViewPostComments (): JSX.Element {
       const newComments = [firstComment].concat(comments)
       setComments(newComments)
     }
+    setPost(comment)
     setFirstComment(comment)
     setShowForm(false)
   }

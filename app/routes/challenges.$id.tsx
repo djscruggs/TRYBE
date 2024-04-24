@@ -2,7 +2,7 @@ import { loadChallengeSummary } from '~/models/challenge.server'
 import { Outlet, useLoaderData, Link, useNavigate, useLocation } from '@remix-run/react'
 import React, { useContext, useState } from 'react'
 import { requireCurrentUser } from '../models/auth.server'
-import type { ObjectData, MemberChallenge, ChallengeSummary, Post } from '~/utils/types'
+import type { MemberChallenge, ChallengeSummary, Post } from '~/utils/types'
 import { json, type LoaderFunction, type LoaderFunctionArgs } from '@remix-run/node'
 import axios from 'axios'
 import { toast } from 'react-hot-toast'
@@ -15,7 +15,7 @@ import { FaRegLightbulb } from 'react-icons/fa6'
 import { RiMentalHealthLine } from 'react-icons/ri'
 import { PiBarbellLight } from 'react-icons/pi'
 import { IoFishOutline } from 'react-icons/io5'
-import { CiChat1 } from 'react-icons/ci'
+import { FaRegComment } from 'react-icons/fa'
 import { LiaUserFriendsSolid } from 'react-icons/lia'
 import { prisma } from '../models/prisma.server'
 import { TbHeartFilled } from 'react-icons/tb'
@@ -23,8 +23,9 @@ import { useRevalidator } from 'react-router-dom'
 import { formatDistanceToNow, format, differenceInDays } from 'date-fns'
 import CardPost from '~/components/cardPost'
 import getUserLocale from 'get-user-locale'
+import Liker from '~/components/liker'
 
-interface ChallengObjectData {
+interface VideChallengeData {
   challenge?: ChallengeSummary
   hasLiked?: boolean
   membership?: MemberChallenge | null | undefined
@@ -94,15 +95,14 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
     },
     orderBy: { createdAt: 'desc' }
   })
-  console.log(posts)
   const locale = getUserLocale()
-  const data: ChallengObjectData = { challenge: result, isMember: Boolean(membership?.userId), membership, hasLiked: Boolean(likes), checkInsCount, posts, locale }
+  const data: VideChallengeData = { challenge: result, isMember: Boolean(membership?.userId), membership, hasLiked: Boolean(likes), checkInsCount, posts, locale }
   return json(data)
 }
 export default function ViewChallenge (): JSX.Element {
-  const data: ChallengObjectData = useLoaderData() as ChallengObjectData
-  const { challenge, membership, checkInsCount, posts } = data
-  const [hasLiked, setHasLiked] = useState(Boolean(data.hasLiked))
+  const data: VideChallengeData = useLoaderData() as VideChallengeData
+  const { challenge, membership, checkInsCount, posts, hasLiked } = data
+  const likesCount = challenge?._count?.likes
   const location = useLocation()
   if (location.pathname.includes('edit') || location.pathname.includes('share')) {
     return <Outlet />
@@ -112,7 +112,6 @@ export default function ViewChallenge (): JSX.Element {
   const navigate = useNavigate()
   const revalidator = useRevalidator()
   const [loading, setLoading] = useState<boolean>(false)
-  const [liking, setLiking] = useState<boolean>(false)
   const [checkingIn, setCheckingIn] = useState<boolean>(false)
 
   if (!data) {
@@ -182,26 +181,7 @@ export default function ViewChallenge (): JSX.Element {
       setCheckingIn(false)
     }
   }
-  const handleLike = async (event: any): Promise<void> => {
-    event.preventDefault()
-    setLiking(true)
-    try {
-      const form = new FormData()
-      form.append('challengeId', String(challenge.id))
-      if (hasLiked) {
-        form.append('unlike', 'true')
-      }
-      const url = '/api/likes'
-      await axios.post(url, form)
-      setHasLiked(!hasLiked)
-      // revalidator.revalidate()
-    } catch (error) {
-      console.error(error)
-      toast.error(error.response.statusText)
-    } finally {
-      setLiking(false)
-    }
-  }
+
   const toggleJoin = async (event: any): Promise<void> => {
     event.preventDefault()
     if (!challenge?.id) {
@@ -308,17 +288,14 @@ export default function ViewChallenge (): JSX.Element {
         <div className='flex flex-row justify-left'>
           <div >
 
-            {liking
-              ? <Spinner className="h-4 w-4 ml-1 inline" />
-              : <TbHeartFilled className={`h-5 w-5 cursor-pointer inline ${hasLiked ? 'text-red' : 'text-grey'}`} onClick={handleLike}/>
-            }
+          <div className='mr-2'><Liker isLiked={Boolean(hasLiked)} itemId={Number(challenge?.id)} itemType='challenge' count={Number(likesCount)}/></div>
           </div>
 
           {challenge._count.comments > 0 && !isComments && (
             <div className="underline ml-4">
 
                 <Link to={`/challenges/${challenge.id}/comments#comments`}>
-                  <CiChat1 className="h-5 w-5 -mt-1 text-gray mr-1 inline" />
+                  <FaRegComment className="h-5 w-5 -mt-1 text-grey mr-1 inline" />
                   {challenge._count.comments} comments
                 </Link>
             </div>
@@ -328,14 +305,14 @@ export default function ViewChallenge (): JSX.Element {
           <div>
 
             <Link className="underline" to={`/challenges/${challenge.id}/members`}>
-            <LiaUserFriendsSolid className="text-gray h-5 w-5 inline ml-4 -mt-1 mr-1" />
+            <LiaUserFriendsSolid className="text-grey h-5 w-5 inline ml-4 -mt-1 mr-1" />
               {challenge._count.members} members
             </Link>
           </div>
               )
             : (
             <div>
-              <LiaUserFriendsSolid className="text-gray h-5 w-5 inline ml-4 -mt-1 mr-1" />
+              <LiaUserFriendsSolid className="text-grey h-5 w-5 inline ml-4 -mt-1 mr-1" />
                 No members yet
             </div>
               )}

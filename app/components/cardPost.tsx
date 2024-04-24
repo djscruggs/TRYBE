@@ -7,7 +7,6 @@ import {
 import type { Post } from '../utils/types'
 // import { AiOutlineRetweet } from 'react-icons/ai'
 // import { GoComment } from 'react-icons/go'
-import { CiChat1 } from 'react-icons/ci'
 import { convertlineTextToHtml } from '~/utils/helpers'
 import { CurrentUserContext } from '../utils/CurrentUserContext'
 import { Link, useNavigate, useLocation } from '@remix-run/react'
@@ -18,6 +17,8 @@ import axios from 'axios'
 import { useRevalidator } from 'react-router-dom'
 import ShareMenu from './shareMenu'
 import { TbHeartFilled } from 'react-icons/tb'
+import { FaRegComment } from 'react-icons/fa'
+import Liker from './liker'
 
 interface CardPostProps {
   post: Post
@@ -33,9 +34,7 @@ export default function CardPost (props: CardPostProps): JSX.Element {
   const { post, hasLiked, fullPost, locale, isShare, hideMeta } = props
   const [showLightbox, setShowLightbox] = useState(false)
   const [editing, setEditing] = useState(false)
-  const [liking, setLiking] = useState(false)
-  const [isLiked, setIsLiked] = useState(hasLiked)
-  const [totalLikes, setTotalLikes] = useState(post._count?.likes)
+  const totalLikes = post._count?.likes ?? 0
   const location = useLocation()
   const isOwnRoute = location.pathname === `/posts/${post.id}`
   const revalidator = useRevalidator()
@@ -54,26 +53,7 @@ export default function CardPost (props: CardPostProps): JSX.Element {
     event.stopPropagation()
     setEditing(true)
   }
-  const handleLike = async (event: any): Promise<void> => {
-    event.preventDefault()
-    setLiking(true)
-    try {
-      const form = new FormData()
-      form.append('postId', String(post.id))
-      if (hasLiked) {
-        form.append('unlike', 'true')
-      }
-      const url = '/api/likes'
-      await axios.post(url, form)
-      setIsLiked(!isLiked)
-      setTotalLikes(isLiked ? totalLikes - 1 : totalLikes + 1)
-    } catch (error) {
-      console.error(error)
-      toast.error(error.response.statusText)
-    } finally {
-      setLiking(false)
-    }
-  }
+
   const handleDelete = (event: any): void => {
     event.preventDefault()
     event.stopPropagation()
@@ -147,16 +127,13 @@ export default function CardPost (props: CardPostProps): JSX.Element {
           <div className="grid grid-cols-3 text-center py-2 cursor-pointer w-full">
             <div className="flex justify-center items-center">
               <Link to={`/posts/${post.id}/comments#comments`}>
-              <CiChat1 className="text-gray mr-1 inline" />
+              <FaRegComment className="text-grey mr-1 inline" />
               <span className="text-xs">{post._count?.comments} comments</span>
               </Link>
             </div>
             <div className="flex justify-center items-center cursor-pointer">
 
-            {liking
-              ? <Spinner className="h-4 w-4 ml-1 inline" />
-              : <><TbHeartFilled className={`h-5 w-5 cursor-pointer inline ${isLiked ? 'text-red' : 'text-grey'}`} onClick={handleLike}/> <span className='text-xs ml-1'>{totalLikes}</span></>
-            }
+            <div className='mr-2'><Liker isLiked={Boolean(hasLiked)} itemId={Number(post.id)} itemType='post' count={Number(totalLikes)}/></div>
             </div>
             {post.public && post.published &&
             <div className="flex justify-center items-center cursor-pointer">

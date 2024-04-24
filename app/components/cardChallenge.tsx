@@ -4,8 +4,7 @@ import {
   Button
 } from '@material-tailwind/react'
 import { GiShinyApple } from 'react-icons/gi'
-import { CiChat1 } from 'react-icons/ci'
-import { FaRegCalendarAlt, FaUserFriends, FaRegHeart } from 'react-icons/fa'
+import { FaRegComment, FaRegCalendarAlt, FaUserFriends, FaRegHeart } from 'react-icons/fa'
 import { type ChallengeSummary, type Challenge } from '../utils/types'
 import { colorToClassName, textColorFromContainer, getIconOptionsForColor, buttonColorFromContainer } from '~/utils/helpers'
 import { CurrentUserContext } from '../utils/CurrentUserContext'
@@ -72,13 +71,13 @@ export default function CardChallenge ({ challenge, isShare, isMember }: CardCha
         <div className="grid grid-cols-3 text-center py-2 cursor-pointer">
           <div className="flex justify-center items-center">
           <Link to={`/challenges/${challenge.id}/comments#comments`}>
-            <CiChat1 className="text-gray mr-1 inline" />
+            <FaRegComment className="text-grey mr-1 inline" />
             <span className="text-xs">{challenge._count.comments} comments</span>
             </Link>
           </div>
           <div className="flex justify-center items-center cursor-pointer">
             {/* Replace with the actual heart icon import */}
-            <FaRegHeart className="text-gray text-sm mr-1" />
+            <FaRegHeart className="text-grey text-sm mr-1" />
             <span className="text-xs" onClick={goToChallenge}>{challenge._count.likes} likes</span>
           </div>
           <div className="flex justify-center items-center cursor-pointer">
