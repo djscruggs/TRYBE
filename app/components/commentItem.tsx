@@ -65,11 +65,13 @@ export default function CommentItem (props: CommentsProps): JSX.Element {
     <>
     {showForm
       ? (
-      <FormComment afterSave={afterSave} onCancel={() => { setShowForm(false) }} comment={comment} />
+        <div className='w-full border-l-2 border-gray-200 pl-4 mb-4'>
+          <FormComment afterSave={afterSave} onCancel={() => { setShowForm(false) }} comment={comment} />
+        </div>
         )
       : (
       <>
-      <div className="w-full" >
+      <div className="w-full border-l-2 border-gray-200 pl-4" >
         <div className='relative mb-2 p-2 border border-gray-200 break-all rounded-md even:bg-white odd:bg-gray-50'>
           {comment.user?.id === currentUser?.id &&
             <div className="text-xs text-gray-500 w-sm flex text-right justify-end absolute top-2 right-2">

@@ -121,6 +121,7 @@ export const createComment = async (comment: prisma.commentCreateInput): Promise
     const newComment = await prisma.comment.create({
       data: comment
     })
+    void upateCounts(newComment)
     return newComment
   } catch (error) {
     console.error('error', error)
@@ -135,6 +136,8 @@ export const updateComment = async (comment: prisma.commentCreateInput): Promise
       where: { id },
       data: comment
     })
+    // update counts of replies
+    void upateCounts(newComment)
     return newComment
   } catch (error) {
     console.error('error', error)
@@ -161,9 +164,45 @@ export const loadComment = async (commentId: string | number, userId?: string | 
 
 export const deleteComment = async (commentId: string | number): Promise<prisma.comment> => {
   const id = Number(commentId)
-  return await prisma.comment.delete({
+  const deleted = await prisma.comment.delete({
     where: {
       id
     }
   })
+  void upateCounts(deleted)
+  return deleted
+}
+
+const upateCounts = async (comment: prisma.comment): Promise<void> => {
+  console.log('updaeCounts', comment)
+  if (comment.replyToId) {
+    const replyToId = Number(comment.replyToId)
+    const count1 = await prisma.comment.count({
+      where: { replyToId }
+    })
+    await prisma.comment.update({
+      where: { id: replyToId },
+      data: { replyCount: count1 }
+    })
+    if (comment.postId) {
+      const postId = Number(comment.postId)
+      const count2 = await prisma.comment.count({
+        where: { postId }
+      })
+      await prisma.post.update({
+        where: { id: postId },
+        data: { commentCount: count2 }
+      })
+    }
+    if (comment.challengeId) {
+      const challengeId = Number(comment.challengeId)
+      const count3 = await prisma.comment.count({
+        where: { challengeId }
+      })
+      await prisma.challenge.update({
+        where: { id: challengeId },
+        data: { commentCount: count3 }
+      })
+    }
+  }
 }

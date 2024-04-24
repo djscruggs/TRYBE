@@ -70,6 +70,7 @@ export default function FormComment (props: FormCommentProps): JSX.Element {
           type='textarea'
           rows={5}
           required={true}
+          autoFocus={true}
           value={body}
           onChange={(ev) => {
             setBody(String(ev.target.value))

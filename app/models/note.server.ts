@@ -4,17 +4,29 @@ import { prisma } from './prisma.server'
 export const createNote = async (
   note: Pick<Note, 'body' | 'userId' | 'replyToId' | 'challengeId' | 'commentId'>
 ): Promise<Note> => {
-  console.log('in create note with data', note)
-  console.log('prismate', typeof prisma.note.create)
-  return await prisma.note.create({
+  const newNote = await prisma.note.create({
     data: note
   })
+  void updateCounts(newNote)
+  return newNote
 }
 export const updateNote = async (note: prisma.noteCreateInput): Promise<Note> => {
   const { id, ...data } = note
-  return await prisma.note.update({
+  const result = await prisma.note.update({
     where: { id },
     data
+  })
+  void updateCounts(result)
+  return result
+}
+export const updateCounts = async (note: prisma.note): Promise<void> => {
+  if (!note.replyToId) return
+  const count = await prisma.note.count({
+    where: { replyToId: Number(note.replyToId) }
+  })
+  return await prisma.note.update({
+    where: { id: Number(note.replyToId) },
+    data: { replyCount: count }
   })
 }
 export const loadNote = async (noteId: string | number): Promise<Note | null> => {
@@ -34,12 +46,14 @@ export const loadNote = async (noteId: string | number): Promise<Note | null> =>
 export const deleteNote = async (noteId: string | number, userId: string | number): Promise<Note> => {
   const id = Number(noteId)
   const uid = Number(userId)
-  return await prisma.note.delete({
+  const deleted = await prisma.note.delete({
     where: {
       id,
       userId: uid
     }
   })
+  void updateCounts(deleted)
+  return deleted
 }
 export const loadRepost = async (replyToId: string | number, userId: string | number, body: string | null): Promise<Note | null> => {
   const id = Number(replyToId)

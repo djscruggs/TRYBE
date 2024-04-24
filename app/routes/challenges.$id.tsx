@@ -101,7 +101,8 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
 }
 export default function ViewChallenge (): JSX.Element {
   const data: ChallengObjectData = useLoaderData() as ChallengObjectData
-  const { challenge, membership, hasLiked, checkInsCount, posts } = data
+  const { challenge, membership, checkInsCount, posts } = data
+  const [hasLiked, setHasLiked] = useState(Boolean(data.hasLiked))
   const location = useLocation()
   if (location.pathname.includes('edit') || location.pathname.includes('share')) {
     return <Outlet />
@@ -125,7 +126,6 @@ export default function ViewChallenge (): JSX.Element {
   }
 
   const [isMember, setIsMember] = useState(Boolean(data.isMember))
-  const [isLiked, setIsLiked] = useState(Boolean(data.hasLiked))
 
   const formatNextCheckin = (): string => {
     if (!membership?.nextCheckIn) {
@@ -193,8 +193,8 @@ export default function ViewChallenge (): JSX.Element {
       }
       const url = '/api/likes'
       await axios.post(url, form)
-      setIsLiked(!isLiked)
-      revalidator.revalidate()
+      setHasLiked(!hasLiked)
+      // revalidator.revalidate()
     } catch (error) {
       console.error(error)
       toast.error(error.response.statusText)
@@ -310,7 +310,7 @@ export default function ViewChallenge (): JSX.Element {
 
             {liking
               ? <Spinner className="h-4 w-4 ml-1 inline" />
-              : <TbHeartFilled className={`h-5 w-5 cursor-pointer inline ${isLiked ? 'text-red' : 'text-grey'}`} onClick={handleLike}/>
+              : <TbHeartFilled className={`h-5 w-5 cursor-pointer inline ${hasLiked ? 'text-red' : 'text-grey'}`} onClick={handleLike}/>
             }
           </div>
 
