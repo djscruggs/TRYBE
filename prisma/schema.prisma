@@ -135,6 +135,7 @@ model Challenge {
 }
 
 model MemberChallenge {
+  id          Int        @id @default(autoincrement())
   user        User       @relation(fields: [userId], references: [id])
   userId      Int
   challenge   Challenge? @relation(fields: [challengeId], references: [id])
@@ -142,9 +143,10 @@ model MemberChallenge {
   createdAt   DateTime   @default(now())
   lastCheckIn DateTime?
   nextCheckIn DateTime?
+  checkIns   CheckIn[]  
   
 
-  @@id([challengeId, userId])
+  @@index([challengeId])
   @@index([userId])
   @@index([userId, createdAt])
 }
@@ -158,6 +160,9 @@ model CheckIn {
   userId      Int
   challenge   Challenge @relation(fields: [challengeId], references: [id])
   challengeId Int
+  memberChallengeId Int
+  memberChallenge MemberChallenge @relation(fields: [memberChallengeId], references: [id])
+  
   @@index([userId, challengeId])
   @@index([userId])
 }

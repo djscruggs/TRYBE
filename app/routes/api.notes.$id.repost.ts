@@ -16,7 +16,7 @@ export const action: ActionFunction = async (args) => {
     console.log('result of loadRepost', repost)
     if (repost) {
       console.log('deleting repost', repost)
-      await deleteNote(repost.id)
+      await deleteNote(repost.id, currentUser?.id)
     }
     return json({ message: 'Repost deleted' }, 200)
   }
@@ -29,7 +29,7 @@ export const action: ActionFunction = async (args) => {
 
   const data = {
     body: rawData.get('body') ?? null,
-    replyTo: { connect: { id: parseInt(rawData.get('replyToId')) } },
+    replyTo: { connect: { id: Num(rawData.get('replyToId')) } },
     isShare: true,
     user: { connect: { id: currentUser?.id } }
   }

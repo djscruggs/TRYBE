@@ -20,7 +20,7 @@ import { LiaUserFriendsSolid } from 'react-icons/lia'
 import { prisma } from '../models/prisma.server'
 import { TbHeartFilled } from 'react-icons/tb'
 import { useRevalidator } from 'react-router-dom'
-import { formatDistanceToNow, format, differenceInDays } from 'date-fns'
+import { formatDistanceToNow, format, differenceInDays, differenceInHours } from 'date-fns'
 import CardPost from '~/components/cardPost'
 import getUserLocale from 'get-user-locale'
 import Liker from '~/components/liker'
@@ -52,11 +52,16 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
   let checkInsCount = 0
   let membership
   if (currentUser) {
-    const challengeId = params.id ? parseInt(params.id) : undefined
+    const challengeId = params.id ? Number(params.id) : undefined
     membership = await prisma.memberChallenge.findFirst({
       where: {
         userId: Number(currentUser.id),
         challengeId: Number(params.id)
+      },
+      include: {
+        _count: {
+          select: { checkIns: true }
+        }
       }
     }) as MemberChallenge | null
     // has the user liked this challenge?
@@ -96,12 +101,14 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
     orderBy: { createdAt: 'desc' }
   })
   const locale = getUserLocale()
-  const data: VideChallengeData = { challenge: result, isMember: Boolean(membership?.userId), membership, hasLiked: Boolean(likes), checkInsCount, posts, locale }
+  const data: VideChallengeData = { challenge: result, membership, hasLiked: Boolean(likes), posts, locale }
   return json(data)
 }
 export default function ViewChallenge (): JSX.Element {
   const data: VideChallengeData = useLoaderData() as VideChallengeData
-  const { challenge, membership, checkInsCount, posts, hasLiked } = data
+  const { challenge, posts, hasLiked } = data
+  const [membership, setMembership] = useState(data.membership)
+
   const likesCount = challenge?._count?.likes
   const location = useLocation()
   if (location.pathname.includes('edit') || location.pathname.includes('share')) {
@@ -124,18 +131,22 @@ export default function ViewChallenge (): JSX.Element {
     return <p>Loading...</p>
   }
 
-  const [isMember, setIsMember] = useState(Boolean(data.isMember))
+  const [isMember, setIsMember] = useState(Boolean(membership?.id))
 
   const formatNextCheckin = (): string => {
     if (!membership?.nextCheckIn) {
       return ''
     }
     const daysToNext = differenceInDays(membership.nextCheckIn, new Date())
+    const hoursToNext = differenceInHours(membership.nextCheckIn, new Date())
     if (daysToNext >= 4) {
       return 'next ' + format(membership.nextCheckIn, 'cccc')
     }
-    if (daysToNext <= 0) {
-      return 'today'
+    if (daysToNext <= 1) {
+      if (hoursToNext <= 1) {
+        return 'now'
+      }
+      return `in ${hoursToNext} hours`
     }
     return format(membership.nextCheckIn, 'cccc')
   }
@@ -144,7 +155,11 @@ export default function ViewChallenge (): JSX.Element {
       return true
     }
     const daysToNext = differenceInDays(membership.nextCheckIn, new Date())
-    return daysToNext <= 0
+    const hoursToNext = differenceInHours(membership.nextCheckIn, new Date())
+    if (daysToNext <= 1 && hoursToNext <= 12) {
+      return true
+    }
+    return false
   }
 
   const handleDelete = async (event: any): Promise<void> => {
@@ -170,14 +185,14 @@ export default function ViewChallenge (): JSX.Element {
     try {
       const url = `/api/challenges/${challenge?.id as string | number}/checkin`
       const response = await axios.post(url)
+      setMembership(response.data.memberChallenge as MemberChallenge)
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-      toast.success(response.data.message)
+      toast.success('You are checked in! 🙌')
     } catch (error) {
       console.error(error)
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       toast.error(error.response.statusText)
     } finally {
-      revalidator.revalidate()
       setCheckingIn(false)
     }
   }
@@ -195,7 +210,7 @@ export default function ViewChallenge (): JSX.Element {
     setLoading(false)
     // probably should use revalidate instead but this is quicker to add
     // https://github.com/remix-run/react-router/discussions/10381
-    revalidator.revalidate()
+    // revalidator.revalidate()
   }
   const dateOptions: DateTimeFormatOptions = {
     weekday: 'short',
@@ -270,8 +285,8 @@ export default function ViewChallenge (): JSX.Element {
         {membership?.lastCheckIn && (
           <div className="text-xs my-2">
             Last check-in: {formatDistanceToNow(membership.lastCheckIn)} ago <br />
-            {membership.nextCheckIn && <p>Next check-in: {formatNextCheckin()}</p>}
-            {Number(checkInsCount) > 0 && <p>{checkInsCount} check-ins total</p>}
+            {membership.nextCheckIn && <p>Next check-in {formatNextCheckin()}</p>}
+            {Number(membership._count.checkIns) > 0 && <p>{membership._count.checkIns} check-ins total</p>}
           </div>
         )}
         <button

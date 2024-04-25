@@ -3,6 +3,7 @@ import { requireCurrentUser } from '~/models/auth.server'
 import { loadUser } from '~/models/user.server'
 import { json, type LoaderFunction } from '@remix-run/node'
 import type { ActionFunctionArgs } from '@remix-run/node' // or cloudflare/deno
+import type { MemberChallenge } from '@prisma/client'
 
 export async function action (args: ActionFunctionArgs): Promise<prisma.challenge> {
   const currentUser = await requireCurrentUser(args)
@@ -13,15 +14,15 @@ export async function action (args: ActionFunctionArgs): Promise<prisma.challeng
   }
   const { params } = args
   const user = await loadUser(currentUser.id)
-  if (user.memberChallenges.filter((c) => c.challengeId === parseInt(params.id)).length > 0) {
-    const result = await unjoinChallenge(user.id, Number(params.id))
+  if (user.memberChallenges.filter((c: MemberChallenge) => c.challengeId === Number(params.id)).length > 0) {
+    const result = await unjoinChallenge(Number(user.id), Number(params.id))
     console.log('unjoined', result)
     return {
       result: 'unjoined',
       data: result
     }
   } else {
-    const result = await joinChallenge(user.id, Number(params.id))
+    const result = await joinChallenge(Number(user.id), Number(params.id))
     console.log('joined', result)
     return {
       result: 'joined',

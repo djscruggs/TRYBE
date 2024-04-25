@@ -1,5 +1,5 @@
 import { prisma } from './prisma.server'
-import type { Challenge, ChallengeSummary } from '~/utils/types'
+import type { Challenge, ChallengeSummary, MemberChallenge } from '~/utils/types'
 import z from 'zod'
 import { addDays, isFriday, isSaturday } from 'date-fns'
 
@@ -137,7 +137,7 @@ export function calculateNextCheckin (challenge: Challenge): Date {
   const nextCheckin = addDays(today, toAdd)
   return nextCheckin
 }
-export const fetchMyChallenges = async (userId: string | number): Promise<ChallengeSummary[]> => {
+export const fetchMyChallengesAndMemberships = async (userId: string | number): Promise<ChallengeSummary[]> => {
   const uid = Number(userId)
   const ownedChallenges = await prisma.challenge.findMany({
     where: {
@@ -153,13 +153,7 @@ export const fetchMyChallenges = async (userId: string | number): Promise<Challe
     {
       where: { userId: uid },
       include: {
-        challenge: {
-          include: {
-            _count: {
-              select: { members: true, comments: true, likes: true }
-            }
-          }
-        }
+        challenge: true
       }
     }
   )
@@ -171,9 +165,33 @@ export const fetchMyChallenges = async (userId: string | number): Promise<Challe
   const uniqueChallenges = [...new Map([...ownedChallenges, ...memberships].map(item => [item.id, item])).values()]
   return uniqueChallenges
 }
+export const fetchMyChallenges = async (userId: string | number): Promise<ChallengeSummary[]> => {
+  const uid = Number(userId)
+  return await prisma.challenge.findMany({
+    where: {
+      userId: uid
+    },
+    include: {
+      _count: {
+        select: { members: true, comments: true, likes: true }
+      }
+    }
+  })
+}
+export const fetchMyMemberships = async (userId: string | number): Promise<MemberChallenge[]> => {
+  const uid = Number(userId)
+  return await prisma.memberChallenge.findMany(
+    {
+      where: { userId: uid },
+      include: {
+        challenge: true
+      }
+    }
+  )
+}
 export const fetchChallengeMembers = async (cId: string | number): Promise<any> => {
   const params: prisma.memberChallengeFindManyArgs = {
-    where: { challengeId: parseInt(cId.toString()) },
+    where: { challengeId: Number(cId.toString()) },
     include: {
       challenge: true,
       user: {

@@ -1,18 +1,11 @@
 // NavLinks.tsx
 
 import { Link, useLocation } from 'react-router-dom'
-import { Form } from '@remix-run/react'
-import { Button } from '@material-tailwind/react'
 import {
-  BellIcon,
   HomeIcon,
   TrophyIcon,
-  UserGroupIcon,
-  UsersIcon,
   IdentificationIcon,
-  EnvelopeIcon,
-  PowerIcon,
-  SunIcon
+  ArchiveBoxIcon
 } from '@heroicons/react/24/outline'
 import { CurrentUserContext } from '../utils/CurrentUserContext'
 import { useContext } from 'react'
@@ -55,6 +48,12 @@ const NavLinks = (): JSX.Element => {
             <span className="cursor-pointer">Messages</span>
           </Link>
         </div> */}
+        <div className={`w-24 h-20 flex items-center justify-center flex-col text-darkgrey text-center mb-4 p-2 rounded-lg ${location.pathname === '/profile' ? 'bg-gray-100' : 'hover:bg-gray-300'}`}>
+          <Link to="/mine" className='flex items-center flex-col'>
+            <ArchiveBoxIcon className='h-8 w-8 cursor-pointer mb-1' />
+            <span className="cursor-pointer">My Stuff</span>
+          </Link>
+        </div>
         <div className={`w-24 h-20 flex items-center justify-center flex-col text-darkgrey text-center mb-4 p-2 rounded-lg ${location.pathname === '/profile' ? 'bg-gray-100' : 'hover:bg-gray-300'}`}>
           <Link to="/profile" className='flex items-center flex-col'>
             <IdentificationIcon className='h-8 w-8 cursor-pointer mb-1' />

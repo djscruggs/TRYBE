@@ -112,3 +112,15 @@ export const fetchNotes = async (): Promise<Note[]> => {
     }
   })
 }
+export const fetchMyNotes = async (userId: number): Promise<Note[]> => {
+  return await prisma.note.findMany({
+    where: {
+      userId
+    },
+    include: {
+      _count: {
+        select: { replies: true, likes: true }
+      }
+    }
+  })
+}

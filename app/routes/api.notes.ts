@@ -18,20 +18,20 @@ export const action: ActionFunction = async (args) => {
     user: { connect: { id: currentUser?.id } }
   }
   if (rawData.get('id')) {
-    data.id = parseInt(rawData.get('id'))
+    data.id = Number(rawData.get('id'))
   }
   if (rawData.get('challengeId')) {
-    data.challenge = { connect: { id: parseInt(rawData.get('challengeId')) } }
+    data.challenge = { connect: { id: Number(rawData.get('challengeId')) } }
   }
   if (rawData.get('postId')) {
-    data.post = { connect: { id: parseInt(rawData.get('postId')) } }
+    data.post = { connect: { id: Number(rawData.get('postId')) } }
   }
   if (rawData.get('commentId')) {
-    data.comment = { connect: { id: parseInt(rawData.get('commentId')) } }
+    data.comment = { connect: { id: Number(rawData.get('commentId')) } }
   }
   if (rawData.get('replyToId')) {
     console.log('setting reply to id')
-    data.replyTo = { connect: { id: parseInt(rawData.get('replyToId')) } }
+    data.replyTo = { connect: { id: Number(rawData.get('replyToId')) } }
   }
   let result
   if (data.id) {

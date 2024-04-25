@@ -42,6 +42,7 @@ export interface Post {
   user?: User
 }
 export interface Challenge {
+  id: number
   name: string | null
   description: string | null
   mission: string | null
@@ -57,6 +58,11 @@ export interface Challenge {
   published?: boolean
   public?: boolean
   userId: number
+  _count?: {
+    members?: number
+    likes?: number
+    comments?: number
+  }
 }
 export interface ChallengeSummary extends Challenge {
   id: number | null | undefined
@@ -65,12 +71,14 @@ export interface ChallengeSummary extends Challenge {
     likes?: number
     comments?: number
   }
+  isMember?: boolean
 }
 
 export interface MemberChallenge {
   id?: number | string
   userId: number | string
   challengeId: number | string
+  challenge?: Challenge
   lastCheckIn?: Date
   nextCheckIn?: Date
 }

@@ -2,8 +2,8 @@ import { prisma } from '../models/prisma.server'
 import { requireCurrentUser } from '~/models/auth.server'
 import { loadUser } from '~/models/user.server'
 import { loadChallenge, calculateNextCheckin } from '~/models/challenge.server'
-import { json, type LoaderFunction } from '@remix-run/node'
-import type { ActionFunctionArgs } from '@remix-run/node' // or cloudflare/deno
+import { json, type LoaderFunction, type ActionFunctionArgs } from '@remix-run/node'
+import type { MemberChallenge } from '@prisma/client'
 
 export async function action (args: ActionFunctionArgs): Promise<prisma.challenge> {
   const currentUser = await requireCurrentUser(args)
@@ -14,7 +14,7 @@ export async function action (args: ActionFunctionArgs): Promise<prisma.challeng
   }
 
   const { params } = args
-  const challenge = await loadChallenge(parseInt(params.id))
+  const challenge = await loadChallenge(Number(params.id))
   if (!challenge) {
     // eslint-disable-next-line @typescript-eslint/no-throw-literal
     throw new Response(null, {
@@ -24,21 +24,30 @@ export async function action (args: ActionFunctionArgs): Promise<prisma.challeng
   }
   // allow user who created the challenge to check in even if not a member
   const user = await loadUser(currentUser.id)
-  const canCheckIn = user.memberChallenges.filter((c) => c.challengeId === parseInt(challenge?.id)).length > 0
+  const membership = await prisma.memberChallenge.findFirst({
+    where: {
+      userId: Number(currentUser.id),
+      challengeId: Number(params.id)
+    },
+    include: {
+      _count: {
+        select: { checkIns: true }
+      }
+    }
+  })
+  const canCheckIn = membership ? membership.id : undefined
   if (canCheckIn) {
     const result = await prisma.checkIn.create({
       data: {
-        userId: parseInt(currentUser.id),
-        challengeId: parseInt(params.id)
+        userId: Number(currentUser.id),
+        challengeId: Number(params.id),
+        memberChallengeId: membership.id
       }
     })
     // update last check in on subscription
     const dateUpdate = await prisma.memberChallenge.update({
       where: {
-        challengeId_userId: {
-          userId: currentUser.id,
-          challengeId: parseInt(params.id)
-        }
+        id: membership.id
       },
       data: {
         lastCheckIn: new Date(),
@@ -46,10 +55,7 @@ export async function action (args: ActionFunctionArgs): Promise<prisma.challeng
       }
     })
     console.log('dateUpdate', dateUpdate)
-    return {
-      message: 'Check-in successful',
-      data: result
-    }
+    return { checkIn: result, membership }
   } else {
     // eslint-disable-next-line @typescript-eslint/no-throw-literal
     throw new Response(null, {
