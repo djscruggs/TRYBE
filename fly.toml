@@ -6,6 +6,8 @@
 app = "trybe-icy-smoke-8833"
 primary_region = "atl"
 
+ENV = { NODE_ENV = "production" }
+
 [build]
 
 [http_service]

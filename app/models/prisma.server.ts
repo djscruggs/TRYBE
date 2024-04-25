@@ -8,7 +8,7 @@ declare global {
 
 if (process.env.NODE_ENV === 'production') {
   void (async () => {
-    const prisma = new PrismaClient()
+    prisma = new PrismaClient()
     await prisma.$connect()
   })()
 } else {
