@@ -4,6 +4,7 @@ import { useLoaderData, useNavigate } from '@remix-run/react'
 import { fetchMyChallenges, fetchMyMemberships } from '~/models/challenge.server'
 import { fetchMyNotes } from '~/models/note.server'
 import { fetchMyPosts } from '~/models/post.server'
+// import { bo } from '~/public/icons/icons8-box'
 import {
   Tabs,
   TabsHeader,
@@ -17,6 +18,10 @@ import CardPost from '~/components/cardPost'
 import CardNote from '~/components/cardNote'
 import { CurrentUserContext } from '~/utils/CurrentUserContext'
 import React, { useContext } from 'react'
+import { LuStickyNote } from 'react-icons/lu'
+import { FaPeopleGroup } from 'react-icons/fa6'
+import { FaChartLine } from 'react-icons/fa'
+import { BsJournalBookmark } from 'react-icons/bs'
 
 export const loader: LoaderFunction = async (args) => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -49,20 +54,19 @@ export default function ChallengesIndex (): JSX.Element {
             <h1 className="text-3xl font-bold mb-4">
               My Stuff
             </h1>
-
             <Tabs value='memberships'>
               <TabsHeader>
                 <Tab key='memberships' value='memberships'>
-                  Memberships
+                  <FaPeopleGroup className='text-2xl inline' /> Memberships
                 </Tab>
                 <Tab key='challenges' value='challenges'>
-                  Challenges
+                  <FaChartLine className='text-2xl inline' /> Challenges
                 </Tab>
                 <Tab key='notes' value='notes'>
-                  Notes
+                  <LuStickyNote className='text-2xl inline' /> Notes
                 </Tab>
                 <Tab key='posts' value='posts'>
-                  Posts
+                  <BsJournalBookmark className='text-2xl inline' /> Posts
                 </Tab>
               </TabsHeader>
               <TabsBody>
@@ -93,23 +97,24 @@ export default function ChallengesIndex (): JSX.Element {
                 </TabPanel>
                 <TabPanel key='notes' value='notes'>
                   <div className="max-w-md">
-                    <h2>Posts</h2>
-                    {(posts.length) > 0 &&
-                      posts.map((post: any) => (
-                        <p key={post.id}>
-                          <CardPost post={post} />
-                        </p>
-                      ))
-                    }
-                  </div>
-                </TabPanel>
-                <TabPanel key='posts' value='posts'>
-                  <div className="max-w-md">
-                    <h2>Notes</h2>
+                  <h2>Tweet-length comments and shares</h2>
                     {(notes.length) > 0 &&
                       notes.map((note: any) => (
                         <p key={note.id}>
                           <CardNote note={note} />
+                        </p>
+                      ))
+                    }
+
+                  </div>
+                </TabPanel>
+                <TabPanel key='posts' value='posts'>
+                  <div className="max-w-md">
+                  <h2>Longer form posts</h2>
+                    {(posts.length) > 0 &&
+                      posts.map((post: any) => (
+                        <p key={post.id}>
+                          <CardPost post={post} />
                         </p>
                       ))
                     }

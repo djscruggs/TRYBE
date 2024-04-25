@@ -48,6 +48,12 @@ export const fetchMemberChallenges = async (userId: number) => {
 }
 
 export const getUserByClerkId = async (clerkId: string): Promise<prisma.User> => {
+  if (!prisma) {
+    throw new Error('Prisma not found')
+  }
+  if (!prisma.user) {
+    throw new Error('Prisma user not found')
+  }
   return await prisma.user.findFirst({ where: { clerkId }, include: { profile: true } })
 }
 export const updateUser = async (object: prisma.UserUpdateInput): Promise<prisma.User> => {

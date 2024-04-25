@@ -18,7 +18,7 @@ if (process.env.NODE_ENV === 'production') {
       await global.__db.$connect()
     })()
   }
-  prisma = global.__db
+  prisma = global.__db!
 }
 
 export { prisma }

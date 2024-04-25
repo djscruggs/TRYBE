@@ -7,7 +7,9 @@ const LayoutWeb = (): JSX.Element => {
   const { currentUser } = useContext(CurrentUserContext)
   const location = useLocation()
   return (
-          <div className='flex min-h-screen'>
+        <div className='w-screen'>
+          <div className='bg-yellow sw-screen sticky top-0 h-4 text-xs'></div>
+          <div className='flex min-h-screen max-w-2xl'>
             {currentUser &&
               <div className="hidden md:flex flex-col justify-start items-start mr-8">
                 <div className="flex items-center mb-4 mt-10">
@@ -41,6 +43,15 @@ const LayoutWeb = (): JSX.Element => {
               </div>
             }
           </div>
+          <div className='bg-red w-screen sticky bottom-0 max-h-6 text-xs'>
+          <div className='flex w-screen lg:w-xl flex-row justify-center items-center pt-1 pb-2'>
+              <a href='https://www.notion.so/jointhetrybe/About-TRYBE-ed415205d1a5411f96807cf9e04ee0f6?pvs=4' className='mx-2 text-white underline' >About Us</a>
+              <a href='https://www.jointhetrybe.com/trybepartnerships' className='mx-2 text-white underline' >Sponsors & Partnerships</a>
+              <a href='https://jointhetrybe.notion.site/Code-of-Conduct-096eb9cbd5ef41f789be899de5004d8e' className='mx-2 text-white underline'>Community Guidelines</a>
+              <a href='https://jointhetrybe.notion.site/Privacy-Policy-4b7f09f5efde49adb95fb1845b5b58e9' className='mx-2 text-white underline'>Privacy Policy</a>
+            </div>
+          </div>
+        </div>
   )
 }
 export default LayoutWeb

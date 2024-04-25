@@ -12,7 +12,7 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
 }
 export default function SignUpPage (): JSX.Element {
   return (
-    <div className="h-full justify-center items-center flex flex-col gap-y-4">
+    <div className="h-full w-screen justify-center items-center flex flex-col gap-y-4">
       <SignUp
       appearance={{
         variables: {

@@ -48,6 +48,7 @@ export const loader: LoaderFunction = async args => {
 
     if (auth?.userId) {
       const user = await getUserByClerkId(auth.userId)
+      console.log('user', user)
       if (!user) {
         return { user: null, auth: null, ENV }
       }
