@@ -9,7 +9,7 @@ const LayoutWeb = (): JSX.Element => {
   return (
         <div className='w-screen'>
           <div className='bg-yellow sw-screen sticky top-0 h-4 text-xs'></div>
-          <div className='flex min-h-screen max-w-2xl'>
+          <div className='flex min-h-screen max-w-screen-2xl'>
             {currentUser &&
               <div className="hidden md:flex flex-col justify-start items-start mr-8">
                 <div className="flex items-center mb-4 mt-10">

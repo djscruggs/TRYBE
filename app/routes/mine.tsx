@@ -1,6 +1,6 @@
 import { requireCurrentUser } from '../models/auth.server'
 import { type LoaderFunction, json } from '@remix-run/node'
-import { useLoaderData, useNavigate } from '@remix-run/react'
+import { useLoaderData, useNavigate, Link } from '@remix-run/react'
 import { fetchMyChallenges, fetchMyMemberships } from '~/models/challenge.server'
 import { fetchMyNotes } from '~/models/note.server'
 import { fetchMyPosts } from '~/models/post.server'
@@ -50,74 +50,99 @@ export default function ChallengesIndex (): JSX.Element {
     return <p>Loading...</p>
   }
   return (
-          <div className="mt-10 max-w-sm md:max-w-2xl">
+          <div className="mt-10 max-w-xl">
             <h1 className="text-3xl font-bold mb-4">
               My Stuff
             </h1>
             <Tabs value='memberships'>
               <TabsHeader>
                 <Tab key='memberships' value='memberships'>
-                  <FaPeopleGroup className='text-2xl inline' /> Memberships
+                  <div className='text-sm w-max'>
+                    <FaPeopleGroup className='text-2xl inline' /> Memberships
+                  </div>
                 </Tab>
-                <Tab key='challenges' value='challenges'>
-                  <FaChartLine className='text-2xl inline' /> Challenges
+                <Tab key='challenges' value='challenges' className='text-sm'>
+                  <div className='text-sm w-max'>
+                    <FaChartLine className='text-2xl inline' /> Challenges
+                  </div>
                 </Tab>
-                <Tab key='notes' value='notes'>
-                  <LuStickyNote className='text-2xl inline' /> Notes
+                <Tab key='notes' value='notes' className='text-sm'>
+                  <div className='text-sm w-max'>
+                    <LuStickyNote className='text-2xl inline' /> Notes
+                  </div>
                 </Tab>
-                <Tab key='posts' value='posts'>
-                  <BsJournalBookmark className='text-2xl inline' /> Posts
+                <Tab key='posts' value='posts' className='text-sm'>
+                  <div className='text-sm w-max'>
+                    <BsJournalBookmark className='text-2xl inline' /> Posts
+                  </div>
                 </Tab>
               </TabsHeader>
               <TabsBody>
                 <TabPanel key='memberships' value='memberships'>
-                  <div className="max-w-md">
-                    <h2>Challenges in which you are a member</h2>
-                    {(memberships.length) > 0 &&
-                      memberships.map((membership: any) => (
-                        <div key={`${membership.id}-${membership.userId}`}>
-                          <CardChallengeMembership membership={membership}/>
-                        </div>
-                      ))
+                  <div className="w-full">
+                    {(memberships.length) > 0
+                      ? <>
+                        <h2>Challenges in which you are a member</h2>
+                        {memberships.map((membership: any) => (
+                          <div key={`${membership.id}-${membership.userId}`}>
+                            <CardChallengeMembership membership={membership}/>
+                          </div>
+
+                        ))}
+                      </>
+                      : <p>You are not a member of any challenges. <Link to="/challenges" className="text-blue underline">Browse challenges</Link> and find one to join today!</p>
                     }
                   </div>
                 </TabPanel>
                 <TabPanel key='challenges' value='challenges'>
-                  <div className="max-w-md">
-                  <h2>Challenges you personally created</h2>
-                  {challenges.length > 0 &&
-                      challenges.map((challenge: any) => (
+                  <div className="w-full">
+                  {challenges.length > 0
+                    ? <>
+                    <h2>Challenges you personally created</h2>
+                    {challenges.map((challenge: any) => (
                         <p key={challenge.id}>
                           <CardChallenge challenge={challenge} isMember={challenge.isMember} />
                         </p>
-                      ))
-                    }
+                    ))}
+                    </>
+                    : <p>You have not created any challenges. <Link to="/challenges/new" className="text-blue underline">Create one now!</Link></p>
+                  }
 
                   </div>
                 </TabPanel>
                 <TabPanel key='notes' value='notes'>
-                  <div className="max-w-md">
-                  <h2>Tweet-length comments and shares</h2>
-                    {(notes.length) > 0 &&
-                      notes.map((note: any) => (
+                  <div className="w-full">
+
+                    {(notes.length) > 0
+                      ? <>
+                      <h2>Tweet-length comments and shares</h2>
+                      {notes.map((note: any) => (
                         <p key={note.id}>
                           <CardNote note={note} />
                         </p>
-                      ))
-                    }
+                      ))}
+                      </>
+                      : <p>You have not created any notes. Go to the <Link to="/home" className="text-blue underline">home page</Link> and create one now!</p>
+                  }
 
                   </div>
                 </TabPanel>
                 <TabPanel key='posts' value='posts'>
-                  <div className="max-w-md">
-                  <h2>Longer form posts</h2>
-                    {(posts.length) > 0 &&
-                      posts.map((post: any) => (
-                        <p key={post.id}>
-                          <CardPost post={post} />
-                        </p>
-                      ))
-                    }
+                  <div className="w-full">
+
+                    {(posts.length) > 0
+                      ? <>
+                        <h2>Longer form posts</h2>
+                        <Link to="/posts" className="text-blue underline">Browse posts</Link>
+
+                        {posts.map((post: any) => (
+                          <p key={post.id}>
+                            <CardPost post={post} />
+                          </p>
+                        ))}
+                      </>
+                      : <p>You have not created any posts. <Link to="/posts" className="text-blue underline">Browse posts</Link> or <Link to="/posts/new" className="text-blue underline">create one now!</Link></p>
+                  }
                   </div>
                 </TabPanel>
               </TabsBody>
