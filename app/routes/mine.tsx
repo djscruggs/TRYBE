@@ -37,8 +37,6 @@ export const loader: LoaderFunction = async (args) => {
 }
 
 export default function ChallengesIndex (): JSX.Element {
-  const { currentUser } = useContext(CurrentUserContext)
-  const navigate = useNavigate()
   const data: any = useLoaderData()
   const { challenges, notes, posts, memberships } = data
   console.log(data)
