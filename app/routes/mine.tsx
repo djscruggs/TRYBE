@@ -78,8 +78,8 @@ export default function ChallengesIndex (): JSX.Element {
                 </Tab>
               </TabsHeader>
               <TabsBody className='min-w-full' >
-                <TabPanel key='memberships' value='memberships'>
-                  <div className="w-full max-w-md">
+                <TabPanel key='memberships' value='memberships' className='flex flex-cols items-center justify-center'>
+                  <div className="w-full max-w-md justify-center items center">
                     {(memberships.length) > 0
                       ? <>
                         <h2>Challenges in which you are a member</h2>
@@ -89,19 +89,22 @@ export default function ChallengesIndex (): JSX.Element {
                           </div>
 
                         ))}
+
                       </>
                       : <p>You are not a member of any challenges. <Link to="/challenges" className="text-blue underline">Browse challenges</Link> and find one to join today!</p>
                     }
                   </div>
                 </TabPanel>
-                <TabPanel key='challenges' value='challenges'>
-                  <div className="w-full max-w-md">
+                <TabPanel key='challenges' value='challenges' className='flex flex-cols items-center justify-center'>
+                  <div className="w-full max-w-md flex flex-col justify-center items-center space-y-4">
                   {challenges.length > 0
                     ? <>
                     <h2>Challenges you personally created</h2>
+
                     {challenges.map((challenge: any) => (
                         <CardChallenge key={`challenge-${challenge.id}`} challenge={challenge} isMember={challenge.isMember} />
                     ))}
+
                     </>
                     : <p>You have not created any challenges. <Link to="/challenges/new" className="text-blue underline">Create one now!</Link></p>
                   }
