@@ -44,7 +44,7 @@ const LayoutWeb = (): JSX.Element => {
             }
           </div>
           <div className='bg-red w-screen sticky bottom-0 max-h-6 text-xs'>
-          <div className='flex w-screen lg:w-xl flex-row justify-center items-center pt-1 pb-2'>
+          <div className='flex max-w-3xl flex-row justify-center items-center pt-1 pb-2'>
               <a href='https://www.notion.so/jointhetrybe/About-TRYBE-ed415205d1a5411f96807cf9e04ee0f6?pvs=4' className='mx-2 text-white underline' >About Us</a>
               <a href='https://www.jointhetrybe.com/trybepartnerships' className='mx-2 text-white underline' >Sponsors & Partnerships</a>
               <a href='https://jointhetrybe.notion.site/Code-of-Conduct-096eb9cbd5ef41f789be899de5004d8e' className='mx-2 text-white underline'>Community Guidelines</a>

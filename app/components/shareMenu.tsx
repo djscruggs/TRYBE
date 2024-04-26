@@ -22,7 +22,9 @@ export default function ShareMenu (props: ShareMenuProps): JSX.Element {
       navigate(`/posts/${itemId}/share`)
     }
   }
-  const handleShareMenu = (): void => {
+  const handleShareMenu = (event: React.MouseEvent<HTMLSpanElement>): void => {
+    event.preventDefault()
+    event.stopPropagation()
     setShowMenu(!showMenu)
   }
   useEffect(() => {

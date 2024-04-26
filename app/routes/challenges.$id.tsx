@@ -18,22 +18,26 @@ import { IoFishOutline } from 'react-icons/io5'
 import { FaRegComment } from 'react-icons/fa'
 import { LiaUserFriendsSolid } from 'react-icons/lia'
 import { prisma } from '../models/prisma.server'
-import { TbHeartFilled } from 'react-icons/tb'
-import { useRevalidator } from 'react-router-dom'
 import { formatDistanceToNow, format, differenceInDays, differenceInHours } from 'date-fns'
-import CardPost from '~/components/cardPost'
 import getUserLocale from 'get-user-locale'
 import Liker from '~/components/liker'
+import ShareMenu from '~/components/shareMenu'
 
-interface VideChallengeData {
+interface ViewChallengeData {
   challenge?: ChallengeSummary
   hasLiked?: boolean
   membership?: MemberChallenge | null | undefined
   checkInsCount?: number
   isMember?: boolean
-  posts?: Post[]
   loadingError?: string | null
   locale?: string
+}
+interface ChallengeSummaryWithCounts extends ChallengeSummary {
+  _count: {
+    comments: number
+    members: number
+    likes: number
+  }
 }
 
 export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
@@ -42,7 +46,7 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
   if (!params.id) {
     return null
   }
-  const result = await loadChallengeSummary(params.id, true)
+  const result: ChallengeSummaryWithCounts | undefined = await loadChallengeSummary(params.id, true)
   if (!result) {
     const error = { loadingError: 'Challenge not found' }
     return json(error)
@@ -81,35 +85,17 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
       })
     }
   }
-  // load posts
-  const posts = await prisma.post.findMany({
-    where: {
-      AND: {
-        challengeId: Number(params.id),
-        published: true,
-        OR: [
-          { publishAt: null },
-          { publishAt: { lte: new Date() } }
-        ]
-      }
-    },
-    include: {
-      _count: {
-        select: { comments: true, likes: true }
-      }
-    },
-    orderBy: { createdAt: 'desc' }
-  })
+
   const locale = getUserLocale()
-  const data: VideChallengeData = { challenge: result, membership, hasLiked: Boolean(likes), posts, locale }
+  const data: ViewChallengeData = { challenge: result, membership, hasLiked: Boolean(likes), checkInsCount, locale }
   return json(data)
 }
 export default function ViewChallenge (): JSX.Element {
-  const data: VideChallengeData = useLoaderData() as VideChallengeData
-  const { challenge, posts, hasLiked } = data
+  const data: ViewChallengeData = useLoaderData() as ViewChallengeData
+  const { challenge, hasLiked } = data
   const [membership, setMembership] = useState(data.membership)
 
-  const likesCount = challenge?._count?.likes
+  const likesCount = challenge?._count.likes
   const location = useLocation()
   if (location.pathname.includes('edit') || location.pathname.includes('share')) {
     return <Outlet />
@@ -117,9 +103,11 @@ export default function ViewChallenge (): JSX.Element {
   const isComments = location.pathname.includes('comments')
   const { currentUser } = useContext(CurrentUserContext)
   const navigate = useNavigate()
-  const revalidator = useRevalidator()
   const [loading, setLoading] = useState<boolean>(false)
   const [checkingIn, setCheckingIn] = useState<boolean>(false)
+  const getFullUrl = (): string => {
+    return `${window.location.origin}/challenges/${challenge?.id}`
+  }
 
   if (!data) {
     return <p>No data.</p>
@@ -208,9 +196,6 @@ export default function ViewChallenge (): JSX.Element {
     const response = await axios.post(url)
     setIsMember(response.data.result === 'joined')
     setLoading(false)
-    // probably should use revalidate instead but this is quicker to add
-    // https://github.com/remix-run/react-router/discussions/10381
-    // revalidator.revalidate()
   }
   const dateOptions: DateTimeFormatOptions = {
     weekday: 'short',
@@ -218,12 +203,12 @@ export default function ViewChallenge (): JSX.Element {
     day: 'numeric'
   }
   const iconOptions: Record<string, JSX.Element> = {
-    GiShinyApple: <GiShinyApple className={iconStyle(challenge?.color)} />,
-    GiMeditation: <GiMeditation className={iconStyle(challenge?.color)} />,
-    FaRegLightbulb: <FaRegLightbulb className={iconStyle(challenge?.color)} />,
-    RiMentalHealthLine: <RiMentalHealthLine className={iconStyle(challenge?.color)} />,
-    PiBarbellLight: <PiBarbellLight className={iconStyle(challenge?.color)} />,
-    IoFishOutline: <IoFishOutline className={iconStyle(challenge?.color)} />
+    GiShinyApple: <GiShinyApple className={iconStyle(challenge?.color ?? 'red')} />,
+    GiMeditation: <GiMeditation className={iconStyle(challenge?.color ?? 'red')} />,
+    FaRegLightbulb: <FaRegLightbulb className={iconStyle(challenge?.color ?? 'red')} />,
+    RiMentalHealthLine: <RiMentalHealthLine className={iconStyle(challenge?.color ?? 'red')} />,
+    PiBarbellLight: <PiBarbellLight className={iconStyle(challenge?.color ?? 'red')} />,
+    IoFishOutline: <IoFishOutline className={iconStyle(challenge?.color ?? 'red')} />
   }
   const color = colorToClassName(challenge?.color, 'red')
   return (
@@ -267,8 +252,13 @@ export default function ViewChallenge (): JSX.Element {
       </div>
 
     </div>
-
-      {challenge.userId !== currentUser?.id && (
+    <div className="max-w-sm md:max-w-md lg:max-w-lg pt-4">
+    {!isComments && challenge?.userId === currentUser?.id && (
+        <Button className={`bg-${color} p-2 justify-center`} onClick={() => { navigate(`/posts/new/challenge/${challenge.id}`) }}>
+          Post an Update
+        </Button>
+    )}
+      {challenge?.userId !== currentUser?.id && (
         <>
           <button
               onClick={toggleJoin}
@@ -279,80 +269,79 @@ export default function ViewChallenge (): JSX.Element {
         </>
       )}
 
-      <div className="my-2 text-sm max-w-sm pl-0">
+      <div className="my-2 flex text-sm items-center justify-start w-full p-2">
       {isMember && (
         <>
-        {membership?.lastCheckIn && (
-          <div className="text-xs my-2">
+
+          <div className="text-xs my-2 justify-start w-1/2">
+          {membership?.lastCheckIn
+            ? (
+            <>
             Last check-in: {formatDistanceToNow(membership.lastCheckIn)} ago <br />
             {membership.nextCheckIn && <p>Next check-in {formatNextCheckin()}</p>}
-            {Number(membership._count.checkIns) > 0 && <p>{membership._count.checkIns} check-ins total</p>}
-          </div>
-        )}
-        <button
-          onClick={handleCheckIn}
-          disabled={checkingIn || !canCheckInNow()}
-          className='bg-red text-white rounded-md p-2 text-xs mb-2 disabled:bg-gray-400'
-        >
-          {checkingIn ? 'Checking In...' : canCheckInNow() ? 'Check In Now' : 'Checked In'}
-        </button>
-
-        </>
-      )}
-
-        <div className='flex flex-row justify-left'>
-          <div >
-
-          <div className='mr-2'><Liker isLiked={Boolean(hasLiked)} itemId={Number(challenge?.id)} itemType='challenge' count={Number(likesCount)}/></div>
-          </div>
-
-          {challenge._count.comments > 0 && !isComments && (
-            <div className="underline ml-4">
-
-                <Link to={`/challenges/${challenge.id}/comments#comments`}>
-                  <FaRegComment className="h-5 w-5 -mt-1 text-grey mr-1 inline" />
-                  {challenge._count.comments} comments
-                </Link>
-            </div>
-          )}
-          {challenge._count?.members > 0
-            ? (
-          <div>
-
-            <Link className="underline" to={`/challenges/${challenge.id}/members`}>
-            <LiaUserFriendsSolid className="text-grey h-5 w-5 inline ml-4 -mt-1 mr-1" />
-              {challenge._count.members} members
-            </Link>
-          </div>
+            {Number(membership?._count?.checkIns) > 0 && <p>{membership?._count?.checkIns} check-ins total</p>}
+            </>
               )
             : (
+            <p>You haven&apos;t checked in yet</p>
+              )}
+          </div>
+          <div className="text-xs my-2 justify-end w-1/2">
+            <button
+              onClick={handleCheckIn}
+              disabled={checkingIn || !canCheckInNow()}
+              className='bg-red text-white rounded-md p-2 justify-center text-xs disabled:bg-gray-400'
+            >
+              {checkingIn ? 'Checking In...' : canCheckInNow() ? 'Check In Now' : 'Checked In'}
+            </button>
+        </div>
+        </>
+      )}
+      </div>
+      <div className='max-w-sm  '>
+        <div className='flex flex-row justify-right'>
+
+          <div className='mr-2 relative flex justify-center items-center'>
+            <Liker isLiked={Boolean(hasLiked)} itemId={Number(challenge?.id)} itemType='challenge' count={Number(likesCount)}/>
+            <ShareMenu copyUrl={getFullUrl()} itemType='challenge' itemId={challenge?.id!}/>
+          </div>
+
+          {/* {challenge?._count?.comments > 0 && !isComments && (
+            <div className="underline ml-4">
+
+                <Link to={`/challenges/${challenge?.id}/comments#comments`}>
+                  <FaRegComment className="h-5 w-5 -mt-1 text-grey mr-1 inline" />
+                  {challenge?._count?.comments} comments
+                </Link>
+            </div>
+          )} */}
+            {challenge?._count?.members && challenge?._count?.members > 0
+              ? (
+            <div>
+              <Link className="underline" to={`/challenges/${challenge.id}/members`}>
+                <LiaUserFriendsSolid className="text-grey h-5 w-5 inline ml-4 -mt-1 mr-1" />
+                {challenge?._count.members} members
+              </Link>
+            </div>
+                )
+              : (
             <div>
               <LiaUserFriendsSolid className="text-grey h-5 w-5 inline ml-4 -mt-1 mr-1" />
                 No members yet
             </div>
-              )}
+                )}
         </div>
       </div>
-      {!isComments && challenge.userId === currentUser?.id && (
-        <Button className={`bg-${color} p-2`} onClick={() => { navigate(`/posts/new/challenge/${challenge.id}`) }}>
-          Post an Update
-        </Button>
-      )}
-      {challenge._count.comments == 0 && !isComments && (
+
+      {/* {challenge?._count.comments === 0 && !isComments && (
         <div className="w-full">
           No comments yet. <Link to={`/challenges/${challenge.id}/comments`} className="underline">Add comment</Link>
         </div>
-      )}
-      {posts.map((post) => {
-        return (
-            <div key={`post-${post.id}`} className='max-w-sm md:max-w-md lg:max-w-lg'>
-              <CardPost post={post} hideMeta={true}/>
-            </div>
-        )
-      })}
+      )} */}
       <div className='mb-16'>
         <Outlet />
       </div>
+    </div>
 </>
   )
 }
