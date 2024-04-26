@@ -3,10 +3,11 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import { Outlet, useLocation } from '@remix-run/react'
 import {
-  BellIcon,
+  // BellIcon,
+  // MagnifyingGlassIcon,
+  // ChatBubbleLeftRightIcon,
   HomeIcon,
-  MagnifyingGlassIcon,
-  ChatBubbleLeftRightIcon,
+  ArchiveBoxIcon,
   TrophyIcon,
   UserGroupIcon,
   UsersIcon,
@@ -47,11 +48,11 @@ const LayoutMobile = (): JSX.Element => {
             <div className="max-w-screen flex flex-col min-h-screen p-0" onClick={hideMenu}>
                 {showNav &&
                 <div className="flex justify-between items-start mb-4 pt-2 pr-0">
-                    <MagnifyingGlassIcon className='w-6 mr-4 ml-2' />
+                    {/* <MagnifyingGlassIcon className='w-6 mr-4 ml-2' />
                     <BellIcon className='w-6 mr-4' />
                     <Link to="/messages">
                     <ChatBubbleLeftRightIcon className='w-6 mr-4' />
-                    </Link>
+                    </Link> */}
                 </div>
                 }
                 <div className="flex flex-col items-center justify-start pb-16 px-2">
@@ -89,7 +90,16 @@ const LayoutMobile = (): JSX.Element => {
                             transition={{ duration: 0.4 }}
                             >
                             <div className="flex absolute top-[-100px] left-1/2 transform -translate-x-1/2">
-                               <div onClick={(event) => { handleNewOpt('/groups/new', event) }} className="flex flex-col items-center justify-center w-16 h-16 rounded-full bg-[#FDC94C] mx-2 cursor-pointer text-sm p-1">
+                                <div onClick={(event) => { handleNewOpt('/posts/new', event) }} className="flex flex-col items-center justify-center w-16 h-16 rounded-full bg-[#FDC94C] mx-2 cursor-pointer text-sm p-2">
+                                <ChatBubbleLeftEllipsisIcon className='-scale-x-100' />
+                                    <span className="cursor-pointer text-xs">Post</span>
+                                </div>
+
+                                <div onClick={(event) => { handleNewOpt('/challenges/new', event) }} className="flex flex-col items-center justify-center w-16 h-16 rounded-full bg-[#FDC94C] mx-2 cursor-pointer text-xxs p-3">
+                                    <TrophyIcon />
+                                    <span className="cursor-pointer text-xs mt-0">Challenge</span>
+                                </div>
+                               {/* <div onClick={(event) => { handleNewOpt('/groups/new', event) }} className="flex flex-col items-center justify-center w-16 h-16 rounded-full bg-[#FDC94C] mx-2 cursor-pointer text-sm p-1">
                                     <UsersIcon />
                                     <span className="cursor-pointer text-xs">Group</span>
                                 </div>
@@ -100,15 +110,15 @@ const LayoutMobile = (): JSX.Element => {
                                 <div onClick={(event) => { handleNewOpt('/challenges/new', event) }} className="flex flex-col items-center justify-center w-16 h-16 rounded-full bg-[#FDC94C] mx-2 cursor-pointer text-xxs p-2">
                                     <TrophyIcon />
                                     <span className="cursor-pointer text-xs mt-0">Challenge</span>
-                                </div>
+                                </div> */}
                             </div>
                             </motion.main>
                         )}
                         </AnimatePresence>
                     </div>
 
-                    <Link to="/groups" className='min-w-8'>
-                    <UserGroupIcon className='cursor-pointer' />
+                    <Link to="/mine" className='min-w-8'>
+                    <ArchiveBoxIcon className='cursor-pointer' />
                     </Link>
                     <Link to="/profile" className='min-w-8'>
                     <IdentificationIcon className='cursor-pointer' />
