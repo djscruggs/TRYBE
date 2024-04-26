@@ -50,7 +50,7 @@ export default function ChallengesIndex (): JSX.Element {
     return <p>Loading...</p>
   }
   return (
-          <div className="mt-10 w-dvw p-4 md:max-w-xl border border-blue">
+          <div className="mt-10 w-dvw p-4 md:max-w-xl">
             <h1 className="text-3xl font-bold mb-4">
               My Stuff
             </h1>
@@ -79,7 +79,7 @@ export default function ChallengesIndex (): JSX.Element {
               </TabsHeader>
               <TabsBody className='min-w-full' >
                 <TabPanel key='memberships' value='memberships'>
-                  <div className="w-full max-w-md border border-red">
+                  <div className="w-full max-w-md">
                     {(memberships.length) > 0
                       ? <>
                         <h2>Challenges in which you are a member</h2>
@@ -95,7 +95,7 @@ export default function ChallengesIndex (): JSX.Element {
                   </div>
                 </TabPanel>
                 <TabPanel key='challenges' value='challenges'>
-                  <div className="w-full max-w-md border border-red">
+                  <div className="w-full max-w-md">
                   {challenges.length > 0
                     ? <>
                     <h2>Challenges you personally created</h2>
