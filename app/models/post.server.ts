@@ -76,6 +76,7 @@ export const fetchPosts = async (): Promise<Post[]> => {
     }
   })
 }
+
 export const fetchMyPosts = async (userId: number): Promise<Post[]> => {
   return await prisma.post.findMany({
     where: {

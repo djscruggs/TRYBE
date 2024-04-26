@@ -68,7 +68,10 @@ export default function CardPost (props: CardPostProps): JSX.Element {
         console.error('Error deleting post:', error)
       })
   }
-  const shortBody = !fullPost && post.body?.length > 200 ? post.body.replace(/^(.{200}[^\s]*).*/, '$1') : post.body
+  const maxLength = 300
+  const shortBody = fullPost ? post.body : post.body?.slice(0, maxLength) + '...'
+  const isTruncated = shortBody.length < post.body?.length
+  console.log('shortBody', shortBody)
   const afterSave = (): void => {
     revalidator.revalidate()
     console.log('state', revalidator.state)
@@ -103,12 +106,13 @@ export default function CardPost (props: CardPostProps): JSX.Element {
               <div className="flex flex-col w-full h-full">
               <div className='font-bold my-2'>{post.title}</div>
               {convertlineTextToHtml(String(shortBody))}
+              {isTruncated && <span className='text-xs underline text-blue cursor-pointer mr-1 text-right italic' onClick={goToPost}> more</span>}
               <div className='mt-4'>
               {post.video && <video className="recorded" src={post.video} onClick={(event) => { event?.stopPropagation() }} controls />}
 
               {post.image && <img src={`${post.image}?${Date.now()}`} alt="post picture" className="mt-4 cursor-pointer max-w-[200px]" onClick={handlePhotoClick} />}
               </div>
-              {currentUser?.id === post.userId && !isShare &&
+              {currentUser?.id === post.userId && !isShare && isOwnRoute &&
                 <div className="mt-2 text-xs text-gray-500 w-full text-right">
                     <span className='underline cursor-pointer mr-1' onClick={handleEdit}>edit</span>
                     <span className='underline cursor-pointer mr-1' onClick={handleDelete}>delete</span>

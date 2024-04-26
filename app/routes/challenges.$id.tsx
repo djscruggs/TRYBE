@@ -16,6 +16,7 @@ import { RiMentalHealthLine } from 'react-icons/ri'
 import { PiBarbellLight } from 'react-icons/pi'
 import { IoFishOutline } from 'react-icons/io5'
 import { FaRegComment } from 'react-icons/fa'
+import CardPost from '~/components/cardPost'
 import { LiaUserFriendsSolid } from 'react-icons/lia'
 import { prisma } from '../models/prisma.server'
 import { formatDistanceToNow, format, differenceInDays, differenceInHours } from 'date-fns'
@@ -25,6 +26,7 @@ import ShareMenu from '~/components/shareMenu'
 
 interface ViewChallengeData {
   challenge?: ChallengeSummary
+  latestPost?: Post
   hasLiked?: boolean
   membership?: MemberChallenge | null | undefined
   checkInsCount?: number
@@ -85,14 +87,28 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
       })
     }
   }
+  // load most recent post
+  const latestPost = await prisma.post.findFirst({
+    where: {
+      challengeId: Number(params.id),
+      published: true,
+      OR: [
+        { publishAt: { gt: new Date() } },
+        { publishAt: null }
+      ]
+    },
+    orderBy: {
+      createdAt: 'desc'
+    }
+  })
 
   const locale = getUserLocale()
-  const data: ViewChallengeData = { challenge: result, membership, hasLiked: Boolean(likes), checkInsCount, locale }
+  const data: ViewChallengeData = { challenge: result, membership, hasLiked: Boolean(likes), checkInsCount, locale, latestPost }
   return json(data)
 }
 export default function ViewChallenge (): JSX.Element {
   const data: ViewChallengeData = useLoaderData() as ViewChallengeData
-  const { challenge, hasLiked } = data
+  const { challenge, hasLiked, latestPost } = data
   const [membership, setMembership] = useState(data.membership)
 
   const likesCount = challenge?._count.likes
@@ -332,6 +348,16 @@ export default function ViewChallenge (): JSX.Element {
                 )}
         </div>
       </div>
+      {latestPost &&
+      <div className='mt-4'>
+        <h2>
+          Latest Update
+          <span className='float-right'><Link className='underline text-blue' to={`/posts/challenge/${challenge?.id}`}>View All</Link></span>
+        </h2>
+        <CardPost post={latestPost} fullPost={false} />
+
+      </div>
+      }
 
       {/* {challenge?._count.comments === 0 && !isComments && (
         <div className="w-full">
