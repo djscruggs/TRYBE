@@ -50,12 +50,12 @@ export default function ChallengesIndex (): JSX.Element {
     return <p>Loading...</p>
   }
   return (
-          <div className="mt-10 max-w-xl">
+          <div className="mt-10 w-dvw p-4 md:max-w-xl border border-blue">
             <h1 className="text-3xl font-bold mb-4">
               My Stuff
             </h1>
-            <Tabs value='memberships'>
-              <TabsHeader>
+            <Tabs value='memberships' className='min-w-full'>
+              <TabsHeader className='min-w-full'>
                 <Tab key='memberships' value='memberships'>
                   <div className='text-sm w-max'>
                     <FaPeopleGroup className='text-2xl inline' /> Memberships
@@ -77,9 +77,9 @@ export default function ChallengesIndex (): JSX.Element {
                   </div>
                 </Tab>
               </TabsHeader>
-              <TabsBody>
+              <TabsBody className='min-w-full' >
                 <TabPanel key='memberships' value='memberships'>
-                  <div className="w-full">
+                  <div className="w-full max-w-md border border-red">
                     {(memberships.length) > 0
                       ? <>
                         <h2>Challenges in which you are a member</h2>
@@ -95,14 +95,12 @@ export default function ChallengesIndex (): JSX.Element {
                   </div>
                 </TabPanel>
                 <TabPanel key='challenges' value='challenges'>
-                  <div className="w-full">
+                  <div className="w-full max-w-md border border-red">
                   {challenges.length > 0
                     ? <>
                     <h2>Challenges you personally created</h2>
                     {challenges.map((challenge: any) => (
-                        <p key={challenge.id}>
-                          <CardChallenge challenge={challenge} isMember={challenge.isMember} />
-                        </p>
+                        <CardChallenge key={`challenge-${challenge.id}`} challenge={challenge} isMember={challenge.isMember} />
                     ))}
                     </>
                     : <p>You have not created any challenges. <Link to="/challenges/new" className="text-blue underline">Create one now!</Link></p>

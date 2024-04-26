@@ -86,7 +86,7 @@ export default function ViewNote (): JSX.Element {
   }
   return (
     <>
-    <div className='max-w-[400px] md:max-w-md lg:max-w-lg mt-10'>
+    <div className='w-dvw md:max-w-md lg:max-w-lg mt-10 p-4'>
       <CardNote note={data.note} repostCount={data.repostCount} hasLiked={Boolean(data.hasLiked)} hasReposted={Boolean(data.hasReposted)} />
     </div>
     <div className='max-w-[400px] md:max-w-md lg:max-w-lg'>

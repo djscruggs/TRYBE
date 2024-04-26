@@ -38,13 +38,13 @@ export default function CardChallenge ({ challenge, isShare, isMember }: CardCha
   }
   const iconOptions: Record<string, JSX.Element> = getIconOptionsForColor(bgColor)
   return (
-    <div className="mt-2 border-0 drop-shadow-none mr-2 w-full cursor-pointer" onClick={goToChallenge} >
+    <div className="mt-2 drop-shadow-none mr-2 w-full cursor-pointer" onClick={goToChallenge} >
       <div className="drop-shadow-none">
-        <div className={'grid grid-cols-1 md:grid-cols-2 gap-4 rounded-md p-1 bg-white'}>
+        <div className={'rounded-md p-1 bg-white'}>
           <Card className={`md:col-span-2 bg-${bgColor} p-2 border-1 drop-shadow-lg border-gray rounded-md`}>
             <div className="grid grid-cols-3 gap-4">
-            <div className="flex flex-col justify-center items-center col-span-1">
-                <div className={`bg-transparent border-2 border-${textColor} text-${textColor} rounded-full w-16 h-16 flex items-center justify-center`}>
+              <div className="flex flex-col justify-center items-center col-span-1">
+                <div className={`bg-transparent border-2 border-${textColor} text-${textColor} rounded-full w-16 h-16 flex items-center justify-center `}>
                  {iconOptions[challenge.icon] || <GiShinyApple className={`text-${textColor} h-8 w-8`} />}
                 </div>
                 {!isShare && challenge?._count?.members &&
@@ -65,7 +65,7 @@ export default function CardChallenge ({ challenge, isShare, isMember }: CardCha
         </div>
         {/* <span className="text-xs text-gray-500">2 hours ago</span> */}
       </div>
-      {!isShare &&
+      {!isShare && challenge.public &&
       <>
         <hr />
         <div className="grid grid-cols-3 text-center py-2 cursor-pointer">

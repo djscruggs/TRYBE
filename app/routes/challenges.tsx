@@ -10,7 +10,7 @@ export const loader: LoaderFunction = async (args) => {
 export default function ChallengesLayout ({ children }: { children: React.ReactNode }): JSX.Element {
   return (
           <>
-            <div className="mt-10">
+            <div className="mt-10 w-xl p-2 md:max-w-xl">
               <Outlet />
             </div>
           </>

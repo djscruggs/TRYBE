@@ -819,6 +819,10 @@ video {
   grid-column: span 2 / span 2;
 }
 
+.col-span-3 {
+  grid-column: span 3 / span 3;
+}
+
 .float-right {
   float: right;
 }
@@ -1365,6 +1369,10 @@ video {
   width: 100vw;
 }
 
+.w-dvw {
+  width: 100dvw;
+}
+
 .min-w-12 {
   min-width: 3rem;
 }
@@ -1415,6 +1423,25 @@ video {
 
 .min-w-\[95\%\] {
   min-width: 95%;
+}
+
+.min-w-max {
+  min-width: -moz-max-content;
+  min-width: max-content;
+}
+
+.min-w-full {
+  min-width: 100%;
+}
+
+.min-w-min {
+  min-width: -moz-min-content;
+  min-width: min-content;
+}
+
+.min-w-fit {
+  min-width: -moz-fit-content;
+  min-width: fit-content;
 }
 
 .max-w-2xl {
@@ -1655,6 +1682,10 @@ video {
 
 .grid-cols-3 {
   grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.grid-cols-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .flex-row {
@@ -6447,8 +6478,16 @@ video {
     grid-column: span 2 / span 2;
   }
 
+  .sm\:flex {
+    display: flex;
+  }
+
   .sm\:grid-cols-2 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .sm\:items-center {
+    align-items: center;
   }
 }
 
@@ -6484,6 +6523,11 @@ video {
   .md\:w-max {
     width: -moz-max-content;
     width: max-content;
+  }
+
+  .md\:w-fit {
+    width: -moz-fit-content;
+    width: fit-content;
   }
 
   .md\:min-w-\[60\%\] {
@@ -6524,6 +6568,14 @@ video {
 
   .md\:max-w-md {
     max-width: 28rem;
+  }
+
+  .md\:max-w-none {
+    max-width: none;
+  }
+
+  .md\:max-w-xl {
+    max-width: 36rem;
   }
 
   .md\:grid-cols-2 {

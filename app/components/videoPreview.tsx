@@ -1,16 +1,15 @@
 import { TiDeleteOutline } from 'react-icons/ti'
 
 interface VideoPreviewProps {
-  video: Blob | File | null | string
+  video: Blob | File | string | null
   onClear: () => void
 }
 
-const VideoPreview = (props: VideoPreviewProps) => {
+const VideoPreview = (props: VideoPreviewProps): JSX.Element => {
   const { video, onClear } = props
-  if (video === 'delete') {
+  if (!video || video === 'delete') {
     return <></>
   }
-  console.log('video in preview is ', video)
   const url = typeof (video) === 'string' ? video : URL.createObjectURL(video)
   return (
           <div className="relative w-fit">

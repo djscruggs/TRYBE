@@ -15,8 +15,8 @@ import { CurrentUserContext } from '../utils/CurrentUserContext'
 import { toast } from 'react-hot-toast'
 
 interface FormPostProps {
-  afterSave?: () => void | null
-  onCancel?: () => void | null
+  afterSave?: () => void
+  onCancel?: () => void
   post?: Post
   locale?: string
   challenge?: ChallengeSummary | null
@@ -100,9 +100,11 @@ export default function FormPost (props: FormPostProps): JSX.Element {
     return true
   }
   const correctImageUrl = (): string => {
+    // if image (file object) is set that means user attached a new image instead of existing url in db
     if (image) {
       return URL.createObjectURL(image)
-    } else if (formData.image && formData.image !== 'delete') {
+    }
+    if (formData.image && formData.image !== 'delete') {
       return formData.image
     }
     return ''
@@ -117,14 +119,6 @@ export default function FormPost (props: FormPostProps): JSX.Element {
         image: 'delete'
       }))
     }
-  }
-  const correctVideoUrl = (): string => {
-    if (video) {
-      return URL.createObjectURL(video)
-    } else if (formData.video) {
-      return formData.video
-    }
-    return ''
   }
   const deleteCorrectVideo = (): void => {
     if (video) {
@@ -149,7 +143,7 @@ export default function FormPost (props: FormPostProps): JSX.Element {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         toSubmit.set(String(key), value)
       })
-
+      // these are blob objects  to upload
       if (image) {
         toSubmit.set('image', image)
       }
