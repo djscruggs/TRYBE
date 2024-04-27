@@ -77,7 +77,7 @@ export const fetchPosts = async (): Promise<Post[]> => {
   })
 }
 
-export const fetchMyPosts = async (userId: number): Promise<Post[]> => {
+export const fetchUserPosts = async (userId: number, includeDrafts = false): Promise<Post[]> => {
   return await prisma.post.findMany({
     where: {
       userId

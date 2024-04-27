@@ -137,7 +137,7 @@ export function calculateNextCheckin (challenge: Challenge): Date {
   const nextCheckin = addDays(today, toAdd)
   return nextCheckin
 }
-export const fetchMyChallengesAndMemberships = async (userId: string | number): Promise<ChallengeSummary[]> => {
+export const fetchUserChallengesAndMemberships = async (userId: string | number): Promise<ChallengeSummary[]> => {
   const uid = Number(userId)
   const ownedChallenges = await prisma.challenge.findMany({
     where: {
@@ -165,7 +165,7 @@ export const fetchMyChallengesAndMemberships = async (userId: string | number): 
   const uniqueChallenges = [...new Map([...ownedChallenges, ...memberships].map(item => [item.id, item])).values()]
   return uniqueChallenges
 }
-export const fetchMyChallenges = async (userId: string | number): Promise<ChallengeSummary[]> => {
+export const fetchUserChallenges = async (userId: string | number, showPrivate = false): Promise<ChallengeSummary[]> => {
   const uid = Number(userId)
   return await prisma.challenge.findMany({
     where: {
@@ -178,7 +178,7 @@ export const fetchMyChallenges = async (userId: string | number): Promise<Challe
     }
   })
 }
-export const fetchMyMemberships = async (userId: string | number): Promise<MemberChallenge[]> => {
+export const fetchUserMemberships = async (userId: string | number, showPrivate = false): Promise<MemberChallenge[]> => {
   const uid = Number(userId)
   return await prisma.memberChallenge.findMany(
     {

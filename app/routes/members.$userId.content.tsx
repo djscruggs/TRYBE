@@ -1,9 +1,9 @@
 import { requireCurrentUser } from '../models/auth.server'
 import { type LoaderFunction, json } from '@remix-run/node'
-import { useLoaderData, Outlet, Link, useParams } from '@remix-run/react'
-import { fetchMyChallenges, fetchMyMemberships } from '~/models/challenge.server'
-import { fetchMyNotes } from '~/models/note.server'
-import { fetchMyPosts } from '~/models/post.server'
+import { useLoaderData, Link, useParams, useNavigate, Outlet } from '@remix-run/react'
+import { fetchUserChallenges, fetchUserMemberships } from '~/models/challenge.server'
+import { fetchUserNotes } from '~/models/note.server'
+import { fetchUserPosts } from '~/models/post.server'
 import React, { useState, useContext } from 'react'
 // import { bo } from '~/public/icons/icons8-box'
 import {
@@ -24,27 +24,29 @@ import { FaChartLine } from 'react-icons/fa'
 import { BsJournalBookmark } from 'react-icons/bs'
 
 export const loader: LoaderFunction = async (args) => {
+  console.log('in child load')
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const currentUser = await requireCurrentUser(args)
-  const uid = Number(currentUser?.id)
-  const challenges = await fetchMyChallenges(uid) as { error?: string }
-  const memberships = await fetchMyMemberships(uid) as { error?: string }
-  const notes = await fetchMyNotes(uid) as { error?: string }
-  const posts = await fetchMyPosts(uid) as { error?: string }
-  console.log('end of my loader')
-  console.log(challenges)
-  return json({ challenges, notes, posts, memberships })
+  const userId = Number(args.params.userId ?? currentUser?.id)
+  const showPrivate = userId === currentUser?.id
+  const challenges = await fetchUserChallenges(userId, showPrivate) as { error?: string }
+  const memberships = await fetchUserMemberships(userId, showPrivate) as { error?: string }
+  const notes = await fetchUserNotes(userId) as { error?: string }
+  const posts = await fetchUserPosts(userId, showPrivate) as { error?: string }
+  return json({ challenges, notes, posts, memberships, userId })
 }
-
-export default function ChallengesIndex (): JSX.Element {
+export default function UserSpecificContent (): JSX.Element {
   const data: any = useLoaderData()
-  const { challenges, notes, posts, memberships } = data
+  const { challenges, notes, posts, memberships, userId } = data
   const params = useParams()
-  console.log(params.tab)
   const [selected, setSelected] = useState(params.tab ?? 'memberships')
+  const navigate = useNavigate()
 
-  console.log(data)
-  console.log(challenges)
+  const handleTabChange = (value: string): void => {
+    setSelected(value)
+    navigate(`/members/${userId}/content/${selected}`)
+  }
+
   if (data?.error) {
     return <h1>{data.error}</h1>
   }
@@ -57,23 +59,23 @@ export default function ChallengesIndex (): JSX.Element {
               My Stuff
             </h1>
             <Tabs value={selected} className='min-w-full'>
-              <TabsHeader className='min-w-full'>
-                <Tab key='memberships' value='memberships'>
+              <TabsHeader className='min-w-full' >
+                <Tab key='memberships' value='memberships' onClick={() => { handleTabChange('memberships') }}>
                   <div className='text-sm w-max'>
                     <FaPeopleGroup className='text-2xl inline' /> Memberships
                   </div>
                 </Tab>
-                <Tab key='challenges' value='challenges' className='text-sm'>
+                <Tab key='challenges' value='challenges' className='text-sm' onClick={() => { handleTabChange('challenges') }}>
                   <div className='text-sm w-max'>
                     <FaChartLine className='text-2xl inline' /> Challenges
                   </div>
                 </Tab>
-                <Tab key='notes' value='notes' className='text-sm'>
+                <Tab key='notes' value='notes' className='text-sm' onClick={() => { handleTabChange('notes') }}>
                   <div className='text-sm w-max'>
                     <LuStickyNote className='text-2xl inline' /> Notes
                   </div>
                 </Tab>
-                <Tab key='posts' value='posts' className='text-sm'>
+                <Tab key='posts' value='posts' className='text-sm' onClick={() => { handleTabChange('posts') }}>
                   <div className='text-sm w-max'>
                     <BsJournalBookmark className='text-2xl inline' /> Posts
                   </div>

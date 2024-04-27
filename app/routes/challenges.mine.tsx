@@ -1,7 +1,7 @@
 import { requireCurrentUser } from '../models/auth.server'
 import { type LoaderFunction, json } from '@remix-run/node'
 import { useLoaderData, useNavigate } from '@remix-run/react'
-import { fetchMyChallengesAndMemberships } from '~/models/challenge.server'
+import { fetchUserChallengesAndMemberships } from '~/models/challenge.server'
 import { Button } from '@material-tailwind/react'
 import CardChallenge from '~/components/cardChallenge'
 import { CurrentUserContext } from '~/utils/CurrentUserContext'
@@ -11,7 +11,7 @@ export const loader: LoaderFunction = async (args) => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const currentUser = await requireCurrentUser(args)
   const uid = Number(currentUser?.id)
-  const challenges = await fetchMyChallengesAndMemberships(uid) as { error?: string }
+  const challenges = await fetchUserChallengesAndMemberships(uid) as { error?: string }
   if (!challenges || (challenges.error != null)) {
     const error = { error: 'Unable to load challenges' }
     return json(error)
