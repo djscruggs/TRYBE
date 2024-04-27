@@ -38,12 +38,12 @@ export default function ShareMenu (props: ShareMenuProps): JSX.Element {
   }, [showMenu])
   return (
     <>
-    <SlShareAlt className="text-grey text-sm mr-1" onClick={handleShareMenu}/>
-    <span className="text-xs" onClick={handleShareMenu}>Share</span>
+    <SlShareAlt className="cursor-pointer text-grey text-sm mr-1" onClick={handleShareMenu}/>
+    <span className="cursor-pointer text-xs" onClick={handleShareMenu}>Share</span>
     {showMenu &&
-      <div className='absolute right-0 bottom-10 bg-white border border-gray rounded-md flext-1 text-left' >
-        <p className='cursor-pointer hover:bg-gray-100 p-2' onClick={shareOnTimeline}>Share on Timeline</p>
-        <p className='cursor-pointer hover:bg-gray-100 p-2' onClick={async () => { await copyToClipboard(copyUrl) }}>Copy Link</p>
+      <div className='cursor-pointer min-w-36 absolute right-0 bottom-10 bg-white border border-gray rounded-md flex flex-col text-left' >
+        <p className='hover:bg-gray-100 p-1' onClick={shareOnTimeline}>Share on Timeline</p>
+        <p className='hover:bg-gray-100 p-1' onClick={async () => { await copyToClipboard(copyUrl) }}>Copy Link</p>
       </div>
     }
     </>

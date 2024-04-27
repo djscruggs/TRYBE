@@ -97,6 +97,13 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
         { publishAt: null }
       ]
     },
+    include: {
+      user: {
+        include: {
+          profile: true
+        }
+      }
+    },
     orderBy: {
       createdAt: 'desc'
     }
@@ -116,6 +123,7 @@ export default function ViewChallenge (): JSX.Element {
   if (location.pathname.includes('edit') || location.pathname.includes('share')) {
     return <Outlet />
   }
+  const [showLatestPost, setShowLatestPost] = useState(!location.pathname.includes('members'))
   const isComments = location.pathname.includes('comments')
   const { currentUser } = useContext(CurrentUserContext)
   const navigate = useNavigate()
@@ -314,13 +322,8 @@ export default function ViewChallenge (): JSX.Element {
         </>
       )}
       </div>
-      <div className='max-w-sm  '>
-        <div className='flex flex-row justify-right'>
-
-          <div className='mr-2 relative flex justify-center items-center'>
-            <Liker isLiked={Boolean(hasLiked)} itemId={Number(challenge?.id)} itemType='challenge' count={Number(likesCount)}/>
-            <ShareMenu copyUrl={getFullUrl()} itemType='challenge' itemId={challenge?.id!}/>
-          </div>
+      <div className='w-full'>
+        <div className='flex flex-row justify-between w-full'>
 
           {/* {challenge?._count?.comments > 0 && !isComments && (
             <div className="underline ml-4">
@@ -346,9 +349,13 @@ export default function ViewChallenge (): JSX.Element {
                 No members yet
             </div>
                 )}
+            <div className='relative flex justify-end'>
+              <div className='mr-2 inline'><Liker isLiked={Boolean(hasLiked)} itemId={Number(challenge?.id)} itemType='challenge' count={Number(likesCount)}/></div>
+              <ShareMenu copyUrl={getFullUrl()} itemType='challenge' itemId={challenge?.id!}/>
+            </div>
         </div>
       </div>
-      {latestPost &&
+      {latestPost && showLatestPost &&
       <div className='mt-4'>
         <h2>
           Latest Update

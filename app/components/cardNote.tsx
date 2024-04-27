@@ -1,10 +1,10 @@
 import React, { useContext, useState, useEffect } from 'react'
 import {
   Card,
-  Avatar,
   Spinner
 } from '@material-tailwind/react'
 import CardChallenge from './cardChallenge'
+import AvatarLoader from './avatarLoader'
 import CardPost from './cardPost'
 import type { Note } from '../utils/types'
 // import { AiOutlineRetweet } from 'react-icons/ai'
@@ -142,7 +142,7 @@ export default function CardNote (props: CardNoteProps): JSX.Element {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Card className={'md:col-span-2 p-2 border-1 drop-shadow-lg  border border-gray rounded-md'}>
             <div className="flex items-start">
-              <AvatarChooser note={note}/>
+              <AvatarLoader object={note} marginClass='mr-4'/>
               <div className="flex flex-col w-full h-full">
                 {convertlineTextToHtml(note.body)}
                 {note.video && <video className="recorded" src={note.video} onClick={(event) => { event?.stopPropagation() }} controls />}
@@ -205,44 +205,5 @@ export default function CardNote (props: CardNoteProps): JSX.Element {
     }
     {(note.image && showLightbox) && <Lightbox medium={note.image} large={note.image} alt="note photo" onClose={() => { setShowLightbox(false) }}/>}
     </>
-  )
-}
-
-function AvatarChooser ({ note }: { note: Note }): JSX.Element {
-  const [loading, setLoading] = useState(!note.user?.profile)
-  const [profile, setProfile] = useState(note.user?.profile)
-  useEffect(() => {
-    if (!profile) {
-      setLoading(true)
-      axios.get(`/api/users/${note.userId}`)
-        .then(res => {
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-          setProfile(res.data.profile)
-        })
-        .catch(err => {
-          console.error('error', err)
-        }).finally(() => {
-          setLoading(false)
-        })
-    }
-  }, [note.userId])
-  if (loading) {
-    return <div className="w-12 h-12 rounded-full bg-gray-500 flex items-center justify-center mr-8 flex-shrink-0 flex-grow-0">
-
-    </div>
-  }
-
-  const avatarImg = profile?.profileImage ? `${profile.profileImage}?${Date.now()}` : ''
-  if (avatarImg) {
-    return <Avatar src={avatarImg} className='mr-8'/>
-  }
-
-  return (
-      <div className="w-12 h-12 rounded-full bg-gray-500 flex items-center justify-center mr-8 flex-shrink-0 flex-grow-0">
-        {loading || !profile?.firstName || !profile.lastName
-          ? ''
-          : <span className="text-white">{`${profile.firstName[0]}${profile.lastName[0]}`}</span>
-        }
-      </div>
   )
 }

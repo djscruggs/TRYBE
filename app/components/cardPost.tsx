@@ -1,7 +1,6 @@
 import React, { useContext, useState, useEffect } from 'react'
 import {
   Card,
-  Avatar,
   Spinner
 } from '@material-tailwind/react'
 import type { Post } from '../utils/types'
@@ -9,6 +8,7 @@ import type { Post } from '../utils/types'
 // import { GoComment } from 'react-icons/go'
 import { convertlineTextToHtml } from '~/utils/helpers'
 import { CurrentUserContext } from '../utils/CurrentUserContext'
+import AvatarLoader from './avatarLoader'
 import { Link, useNavigate, useLocation } from '@remix-run/react'
 import { Lightbox } from 'react-modal-image'
 import { toast } from 'react-hot-toast'
@@ -16,7 +16,6 @@ import FormPost from './formPost'
 import axios from 'axios'
 import { useRevalidator } from 'react-router-dom'
 import ShareMenu from './shareMenu'
-import { TbHeartFilled } from 'react-icons/tb'
 import { FaRegComment } from 'react-icons/fa'
 import Liker from './liker'
 
@@ -101,7 +100,7 @@ export default function CardPost (props: CardPostProps): JSX.Element {
               </>
             }
             <div className="flex items-start">
-              <AvatarChooser post={post}/>
+              <AvatarLoader object={post} marginClass='mr-4'/>
               <div className="flex flex-col w-full h-full">
               <div className='font-bold my-2'>{post.title}</div>
               {convertlineTextToHtml(String(shortBody))}
@@ -150,42 +149,5 @@ export default function CardPost (props: CardPostProps): JSX.Element {
     }
     {(post.image && showLightbox) && <Lightbox medium={post.image} large={post.image} alt="post photo" onClose={() => { setShowLightbox(false) }}/>}
     </>
-  )
-}
-
-function AvatarChooser ({ post }: { post: Post }): JSX.Element {
-  const [loading, setLoading] = useState(!post.user?.profile)
-  const [profile, setProfile] = useState(post.user?.profile)
-  useEffect(() => {
-    if (!profile) {
-      console.log('loading for', post.userId)
-      setLoading(true)
-      axios.get(`/api/users/${post.userId}`)
-        .then(res => {
-          setProfile(res.data.profile)
-        })
-        .catch(err => {
-          console.error('error', err)
-        }).finally(() => {
-          setLoading(false)
-        })
-    }
-  }, [post.userId])
-  if (loading) {
-    return <div className="w-12 h-12 rounded-full bg-gray-500 flex items-center justify-center mr-8 flex-shrink-0 flex-grow-0"></div>
-  }
-
-  const avatarImg = profile?.profileImage ? `${profile.profileImage}?${Date.now()}` : ''
-  if (avatarImg) {
-    return <Avatar src={avatarImg} className='mr-8'/>
-  }
-
-  return (
-      <div className="w-12 h-12 rounded-full bg-gray-500 flex items-center justify-center mr-8 flex-shrink-0 flex-grow-0">
-        {loading || !profile
-          ? ''
-          : <span className="text-white">{`${profile.firstName[0]}${profile.lastName[0]}`}</span>
-        }
-      </div>
   )
 }
