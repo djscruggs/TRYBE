@@ -71,7 +71,6 @@ export default function CardPost (props: CardPostProps): JSX.Element {
   const maxLength = 300
   const shortBody = fullPost ? post.body : post.body?.slice(0, maxLength) + '...'
   const isTruncated = shortBody.length < post.body?.length
-  console.log('shortBody', shortBody)
   const afterSave = (): void => {
     revalidator.revalidate()
     console.log('state', revalidator.state)
@@ -159,6 +158,7 @@ function AvatarChooser ({ post }: { post: Post }): JSX.Element {
   const [profile, setProfile] = useState(post.user?.profile)
   useEffect(() => {
     if (!profile) {
+      console.log('loading for', post.userId)
       setLoading(true)
       axios.get(`/api/users/${post.userId}`)
         .then(res => {
@@ -172,9 +172,7 @@ function AvatarChooser ({ post }: { post: Post }): JSX.Element {
     }
   }, [post.userId])
   if (loading) {
-    return <div className="w-12 h-12 rounded-full bg-gray-500 flex items-center justify-center mr-8 flex-shrink-0 flex-grow-0">
-
-    </div>
+    return <div className="w-12 h-12 rounded-full bg-gray-500 flex items-center justify-center mr-8 flex-shrink-0 flex-grow-0"></div>
   }
 
   const avatarImg = profile?.profileImage ? `${profile.profileImage}?${Date.now()}` : ''

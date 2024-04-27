@@ -1,4 +1,3 @@
-
 import { type LoaderFunction, type LoaderFunctionArgs, redirect } from '@remix-run/node'
 import { UserProfile } from '@clerk/clerk-react'
 import { getAuth } from '@clerk/remix/ssr.server'
@@ -7,7 +6,6 @@ import { useLoaderData } from '@remix-run/react'
 
 export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
   const auth = await getAuth(args)
-  console.log('userId', auth.userId)
   if (!auth.userId) {
     return redirect('/signin')
   }

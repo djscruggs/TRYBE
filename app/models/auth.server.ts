@@ -57,7 +57,6 @@ export async function login ({ email, password, request }: LoginForm): Promise<R
   const currentUser = await prisma.user.findUnique({
     where: { email }
   })
-  console.log('currentUser', currentUser)
   if (!currentUser || !(await bcrypt.compare(String(password), String(currentUser.password)))) { return json({ error: 'Incorrect login' }, { status: 400 }) }
   const parsedUrl = new URL(request.url)
 

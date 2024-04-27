@@ -22,7 +22,7 @@ export const loader: LoaderFunction = async (args): Promise<FeedLoaderData> => {
     orderBy: [{ createdAt: 'desc' }],
     where: {
       OR: [
-        { userId: currentUser.id },
+        { userId: currentUser?.id as number },
         { public: true }
       ]
     },
@@ -46,9 +46,33 @@ export const loader: LoaderFunction = async (args): Promise<FeedLoaderData> => {
           profile: true
         }
       },
-      replyTo: true,
-      challenge: true,
-      post: true,
+      replyTo: {
+        include: {
+          user: {
+            include: {
+              profile: true
+            }
+          }
+        }
+      },
+      challenge: {
+        include: {
+          user: {
+            include: {
+              profile: true
+            }
+          }
+        }
+      },
+      post: {
+        include: {
+          user: {
+            include: {
+              profile: true
+            }
+          }
+        }
+      },
       _count: {
         select: { replies: true, likes: true }
       }

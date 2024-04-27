@@ -4,7 +4,6 @@ import { getAuth } from '@clerk/remix/ssr.server'
 
 export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
   const { userId } = await getAuth(args)
-  console.log('userId', userId)
   if (userId) {
     return redirect('/home')
   }

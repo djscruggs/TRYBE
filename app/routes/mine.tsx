@@ -1,9 +1,10 @@
 import { requireCurrentUser } from '../models/auth.server'
 import { type LoaderFunction, json } from '@remix-run/node'
-import { useLoaderData, useNavigate, Link } from '@remix-run/react'
+import { useLoaderData, Outlet, Link, useParams } from '@remix-run/react'
 import { fetchMyChallenges, fetchMyMemberships } from '~/models/challenge.server'
 import { fetchMyNotes } from '~/models/note.server'
 import { fetchMyPosts } from '~/models/post.server'
+import React, { useState, useContext } from 'react'
 // import { bo } from '~/public/icons/icons8-box'
 import {
   Tabs,
@@ -17,7 +18,6 @@ import CardChallengeMembership from '~/components/cardChallengeMembership'
 import CardPost from '~/components/cardPost'
 import CardNote from '~/components/cardNote'
 import { CurrentUserContext } from '~/utils/CurrentUserContext'
-import React, { useContext } from 'react'
 import { LuStickyNote } from 'react-icons/lu'
 import { FaPeopleGroup } from 'react-icons/fa6'
 import { FaChartLine } from 'react-icons/fa'
@@ -39,6 +39,10 @@ export const loader: LoaderFunction = async (args) => {
 export default function ChallengesIndex (): JSX.Element {
   const data: any = useLoaderData()
   const { challenges, notes, posts, memberships } = data
+  const params = useParams()
+  console.log(params.tab)
+  const [selected, setSelected] = useState(params.tab ?? 'memberships')
+
   console.log(data)
   console.log(challenges)
   if (data?.error) {
@@ -52,7 +56,7 @@ export default function ChallengesIndex (): JSX.Element {
             <h1 className="text-3xl font-bold mb-4">
               My Stuff
             </h1>
-            <Tabs value='memberships' className='min-w-full'>
+            <Tabs value={selected} className='min-w-full'>
               <TabsHeader className='min-w-full'>
                 <Tab key='memberships' value='memberships'>
                   <div className='text-sm w-max'>
@@ -128,7 +132,6 @@ export default function ChallengesIndex (): JSX.Element {
                 </TabPanel>
                 <TabPanel key='posts' value='posts'>
                   <div className="w-full">
-
                     {(posts.length) > 0
                       ? <>
                         <h2>Longer form posts</h2>
