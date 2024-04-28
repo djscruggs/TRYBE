@@ -819,10 +819,6 @@ video {
   grid-column: span 2 / span 2;
 }
 
-.col-span-3 {
-  grid-column: span 3 / span 3;
-}
-
 .float-right {
   float: right;
 }
@@ -1044,14 +1040,6 @@ video {
 
 .mt-px {
   margin-top: 1px;
-}
-
-.mr-0 {
-  margin-right: 0px;
-}
-
-.mr-6 {
-  margin-right: 1.5rem;
 }
 
 .box-border {
@@ -1359,6 +1347,10 @@ video {
   width: 74px;
 }
 
+.w-dvw {
+  width: 100dvw;
+}
+
 .w-fit {
   width: -moz-fit-content;
   width: fit-content;
@@ -1377,12 +1369,12 @@ video {
   width: 100vw;
 }
 
-.w-dvw {
-  width: 100dvw;
-}
-
 .min-w-12 {
   min-width: 3rem;
+}
+
+.min-w-36 {
+  min-width: 9rem;
 }
 
 .min-w-8 {
@@ -1433,39 +1425,8 @@ video {
   min-width: 95%;
 }
 
-.min-w-max {
-  min-width: -moz-max-content;
-  min-width: max-content;
-}
-
 .min-w-full {
   min-width: 100%;
-}
-
-.min-w-min {
-  min-width: -moz-min-content;
-  min-width: min-content;
-}
-
-.min-w-fit {
-  min-width: -moz-fit-content;
-  min-width: fit-content;
-}
-
-.min-w-\[100px\] {
-  min-width: 100px;
-}
-
-.min-w-20 {
-  min-width: 5rem;
-}
-
-.min-w-40 {
-  min-width: 10rem;
-}
-
-.min-w-36 {
-  min-width: 9rem;
 }
 
 .max-w-2xl {
@@ -1542,10 +1503,6 @@ video {
 
 .max-w-sm {
   max-width: 24rem;
-}
-
-.max-w-xl {
-  max-width: 36rem;
 }
 
 .flex-none {
@@ -1706,10 +1663,6 @@ video {
 
 .grid-cols-3 {
   grid-template-columns: repeat(3, minmax(0, 1fr));
-}
-
-.grid-cols-2 {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .flex-row {
@@ -6508,16 +6461,8 @@ video {
     grid-column: span 2 / span 2;
   }
 
-  .sm\:flex {
-    display: flex;
-  }
-
   .sm\:grid-cols-2 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .sm\:items-center {
-    align-items: center;
   }
 }
 
@@ -6553,11 +6498,6 @@ video {
   .md\:w-max {
     width: -moz-max-content;
     width: max-content;
-  }
-
-  .md\:w-fit {
-    width: -moz-fit-content;
-    width: fit-content;
   }
 
   .md\:min-w-\[60\%\] {
@@ -6598,10 +6538,6 @@ video {
 
   .md\:max-w-md {
     max-width: 28rem;
-  }
-
-  .md\:max-w-none {
-    max-width: none;
   }
 
   .md\:max-w-xl {

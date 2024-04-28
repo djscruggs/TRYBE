@@ -3,8 +3,9 @@ import { type LoaderFunction } from '@remix-run/node'
 import sgMail from '@sendgrid/mail'
 import { loadPostSummary } from '../models/post.server'
 
+import { mailPost } from '~/utils/mailer'
 function textToHtml (text) {
-  return text.split('\n').map(line => `<p>${line}</p>`).join('')
+  return text.split('\n').map(line => `<p style="margin-bottom:.5em">${line}</p>`).join('')
 }
 
 export const loader: LoaderFunction = async (args) => {
@@ -14,9 +15,7 @@ export const loader: LoaderFunction = async (args) => {
 
   sgMail.setApiKey(process.env.SENDGRID_API_KEY!)
   const msg = {
-    to: 'me@derekscruggs.com', // Change to your recipient
-    from: 'me@derekscruggs.com', // Change to your verified sender
-    templateId: 'd-139902a1da0942a5bd08308598092164',
+    to: 'me@derekscruggs.com',
     dynamic_template_data: {
       name: 'Tameem Rahal', // ${profile.firstName} ${profile.lastName}
       post_url: 'https://trybe-icy-smoke-8833.fly.dev/posts/46',
@@ -27,7 +26,7 @@ export const loader: LoaderFunction = async (args) => {
       body: textToHtml(post.body)
     }
   }
-  const result = await sgMail.send(msg)
+  const result = await mailPost(msg)
   console.log('Email sent', result)
   return result
 }
