@@ -8,6 +8,7 @@ const templates = {
 }
 interface PostMailerProps {
   to: string
+  replyTo?: string
   dynamic_template_data: {
     name: string
     post_url: string
@@ -35,9 +36,10 @@ export async function mailPost (props: PostMailerProps): Promise<any> {
   }
   sgMail.setApiKey(process.env.SENDGRID_API_KEY)
   // eslint-disable-next-line @typescript-eslint/naming-convention
-  const { to, dynamic_template_data } = props
+  const { to, dynamic_template_data, replyTo } = props
   const msg = {
     from: FROM_ADDRESS,
+    replyTo,
     to,
     templateId: templates.post,
     dynamic_template_data

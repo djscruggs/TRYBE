@@ -14,6 +14,7 @@ export const loader: LoaderFunction = async (args) => {
   const post = await loadPostSummary(46)
   const msg = {
     to: 'me@derekscruggs.com',
+    replyTo: 'dj@fourleafequity.com',
     dynamic_template_data: {
       name: 'Tameem Rahal', // ${profile.firstName} ${profile.lastName}
       post_url: `${baseUrl}/posts/46`,

@@ -40,6 +40,8 @@ export interface Post {
   updatedAt?: Date
   challenge?: Challenge
   user?: User
+  notifyMembers?: boolean
+  notificationSentOn: Date | null
 }
 export interface Challenge {
   id: number

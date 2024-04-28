@@ -75,7 +75,7 @@ export async function requireCurrentUser (args): Promise< User | null> {
   const redirectTo = args.redirectTo || new URL(request.url).pathname
   const clerkUser = await getAuth(args)
   let dbUser
-  if (!clerkUser) {
+  if (!clerkUser.userId) {
     dbUser = await getUser(request)
   } else {
     dbUser = await getUserByClerkId(clerkUser.userId)
@@ -87,7 +87,10 @@ export async function requireCurrentUser (args): Promise< User | null> {
   if (!currentUser) {
     if (!['/login', '/register', 'signup', 'signin'].includes(path)) {
       const searchParams = new URLSearchParams([['redirectTo', redirectTo]])
+      console.log('redirecting')
       throw redirect(`/signin?${searchParams}`)
+    } else {
+      console.log('NOT redirecting')
     }
   }
   return currentUser

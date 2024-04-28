@@ -93,6 +93,8 @@ model Post {
   likes      Like[]
   challengeId Int?
   challenge Challenge? @relation(fields: [challengeId], references: [id])
+  notifyMembers  Boolean? @default(false)
+  notificationSentOn DateTime?
 
   // indexes for faster sorting by user
   @@index([userId])

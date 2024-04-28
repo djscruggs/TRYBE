@@ -36,7 +36,7 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
   delete challenge._count
   const [formData, setFormData] = useState(challenge)
   console.log(props)
-  const localDateFormat = props.locale === 'en-US' ? 'MM-dd-YYYY' : 'dd-MM-YYYY'
+  const localDateFormat = props.locale === 'en-US' ? 'M-dd-YYYY' : 'dd-M-YYYY'
   function selectDate (name: string, value: Date): void {
     setFormData((prevFormData: ObjectData) => ({
       ...prevFormData,

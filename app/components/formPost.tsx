@@ -4,7 +4,7 @@ import axios from 'axios'
 import { FormField } from './formField'
 import { handleFileUpload } from '~/utils/helpers'
 import { type Post, type ChallengeSummary } from '~/utils/types'
-import { Button, Radio } from '@material-tailwind/react'
+import { Button, Radio, Checkbox } from '@material-tailwind/react'
 import { MdOutlineAddPhotoAlternate } from 'react-icons/md'
 import { BiVideoPlus, BiVideoOff } from 'react-icons/bi'
 import { TiDeleteOutline } from 'react-icons/ti'
@@ -13,6 +13,7 @@ import VideoPreview from './videoPreview'
 import DatePicker from 'react-datepicker'
 import { CurrentUserContext } from '../utils/CurrentUserContext'
 import { toast } from 'react-hot-toast'
+import { format, formatDate } from 'date-fns'
 
 interface FormPostProps {
   afterSave?: () => void
@@ -53,9 +54,11 @@ export default function FormPost (props: FormPostProps): JSX.Element {
     challengeId: challenge ? challenge.id : null,
     embed: '',
     video: '',
-    image: ''
+    image: '',
+    notifyMembers: false,
+    notificationSentOn: null
   })
-  const localDateFormat = locale === 'en-US' ? 'MM-dd-YYYY h:mm a' : 'dd-MM-YYYY HH:MM'
+  const localDateFormat = locale === 'en-US' ? 'M-dd-yyyy @ h:mm a' : 'dd-M-yyyy @ HH:MM'
   // this triggers the browser's upload file dialog, not a modal
   const imageDialog = (): void => {
     if (imageRef.current) {
@@ -67,6 +70,13 @@ export default function FormPost (props: FormPostProps): JSX.Element {
     setFormData(prevFormData => ({
       ...prevFormData,
       [name]: value
+    }))
+  }
+  const handleNotifyCheck = (event: any): void => {
+    const { checked } = event.target
+    setFormData(prevFormData => ({
+      ...prevFormData,
+      notifyMembers: checked
     }))
   }
   const handleImage = (e: React.ChangeEvent<HTMLInputElement>): void => {
@@ -197,9 +207,11 @@ export default function FormPost (props: FormPostProps): JSX.Element {
   const renderVideo = useMemo(() => (
     <VideoPreview video={formData.video ? formData.video : video} onClear={deleteCorrectVideo} />
   ), [video, formData.video])
-
+  console.log(currentUser)
   return (
+
     <div className='w-full'>
+
       <Form method="post" onSubmit={handleSubmit}>
       <FormField
         name='title'
@@ -265,6 +277,23 @@ export default function FormPost (props: FormPostProps): JSX.Element {
               className={`p-1 border rounded-md pl-2 w-full ${errors.publishAt ? 'border-red' : 'border-slate-gray-500'}`}
             />
           </div>
+          }
+          {formData.challengeId &&
+            <div className='my-4'>
+              {!formData.notificationSentOn
+                ? (
+                <>
+                <Checkbox defaultChecked={formData.notifyMembers} color="green" onClick={handleNotifyCheck} crossOrigin={undefined} label={'Email this post to challenge members.'}/>
+                {formData.notifyMembers && currentUser &&
+                <p className='ml-12 text-xs'>Member replies will go to {currentUser.email}</p>
+                }
+                </>
+                  )
+                : (
+                  <Checkbox defaultChecked={true} disabled={true} color="green" onClick={handleNotifyCheck} crossOrigin={undefined} label={`Emailed to members on ${formatDate(formData.notificationSentOn, localDateFormat)}`}/>
+                  )}
+            </div>
+
           }
         </div>
         <Button type="submit" onClick={handlePublish} className="bg-blue disabled:gray-400" disabled={saving}>
