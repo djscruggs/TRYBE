@@ -16,9 +16,14 @@ export const loader: LoaderFunction = async (args) => {
   const msg = {
     to: 'me@derekscruggs.com', // Change to your recipient
     from: 'me@derekscruggs.com', // Change to your verified sender
-    templateId: 'd-3cd8da2003704245af264a66719f3d36',
+    templateId: 'd-139902a1da0942a5bd08308598092164',
     dynamic_template_data: {
+      name: 'Tameem Rahal', // ${profile.firstName} ${profile.lastName}
+      post_url: 'https://trybe-icy-smoke-8833.fly.dev/posts/46',
+      // avatar: '<a href="https://trybe-icy-smoke-8833.fly.dev/members/11/content"><img src="https://trybe-icy-smoke-8833.fly.dev/avatars/trybe-bot.png" width="36" height="36"></a>',
+      date: '27 April', // format based on user's country
       subject: 'New post from Trybe',
+      title: 'A post with a Medium Sized Title', // post.title
       body: textToHtml(post.body)
     }
   }

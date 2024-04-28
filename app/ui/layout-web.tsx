@@ -1,11 +1,16 @@
-import { useLocation, Outlet } from '@remix-run/react'
+import { useLocation, Outlet, useNavigate } from '@remix-run/react'
 import React, { useContext } from 'react'
 import NavLinks from './navlinks'
+import { Button } from '@material-tailwind/react'
 import { CurrentUserContext } from '../utils/CurrentUserContext'
 import { UserButton } from '@clerk/clerk-react'
 const LayoutWeb = (): JSX.Element => {
   const { currentUser } = useContext(CurrentUserContext)
   const location = useLocation()
+  const navigate = useNavigate()
+  const signin = (): void => {
+    navigate('/signin')
+  }
   return (
         <div className='w-screen'>
           <div className='bg-yellow sw-screen sticky top-0 h-4 text-xs'></div>
@@ -38,8 +43,12 @@ const LayoutWeb = (): JSX.Element => {
             </div>
             }
             {!currentUser &&
-              <div className='flex-grow pt-4 ml-0'>
-                <Outlet />
+              <div className='flex-grow pt-4  items-center justify-center'>
+                {!location.pathname.includes('signin') && <Button onClick={signin} className='bg-red text-white rounded-md p-3 mr-8 float-right'>Sign In</Button>}
+                <div className='flex flex-col items-center justify-center h-full'>
+
+                  <Outlet />
+                </div>
               </div>
             }
           </div>
