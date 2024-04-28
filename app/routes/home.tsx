@@ -79,6 +79,17 @@ export const loader: LoaderFunction = async (args): Promise<FeedLoaderData> => {
 
     }
   })
+  const posts = await prisma.post.findMany({
+    where: {
+      published: true
+    },
+    include: {
+      user: {
+        include: { profile: true }
+      }
+    }
+  })
+  console.log(posts[0].user.profile.fullName)
   const _memberships = await prisma.memberChallenge.findMany({
     where: {
       userId: currentUser.id

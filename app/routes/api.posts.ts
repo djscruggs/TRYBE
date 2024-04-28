@@ -69,12 +69,14 @@ export const action: ActionFunction = async (args) => {
       const vidPath = await writeFile(video, vidNoExt)
       result.video = vidPath
     }
+
     updated = await updatePost(result)
   }
-  const shouldEmailPost = Boolean(updated.challengeId && updated.published && !updated.notificationSentOn && (updated.publishAt === null || isPast(updated.publishAt) || isEqual(updated.publishAt, new Date())))
-  if (shouldEmailPost) {
+  // @ts-expect-error live is a computed field and not recognized in prisma Post type -- see prisma.server
+  if (updated.live) {
     const baseUrl = new URL(args.request.url).origin
-    const senderName = `${currentUser.profile.firstName} ${currentUser.profile.lastName}`
+    // @ts-expect-error fullName is a computed field and not recognized in prisma Profile type -- see prisma.server
+    const senderName = currentUser.profile.fullName
     const dateFormat = getUserLocale() === 'en-US' ? 'MMMM d' : 'd MMMM'
     const msg = {
       to: process.env.NODE_ENV !== 'production' ? 'me@derekscruggs.com' : 'me@derekscruggs.com',
@@ -88,6 +90,7 @@ export const action: ActionFunction = async (args) => {
         body: textToHtml(updated.body)
       }
     }
+    console.log('msg', msg)
     const mailed = await mailPost(msg)
     updated.notificationSentOn = new Date()
     const result = await updatePost(updated)

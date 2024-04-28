@@ -9,9 +9,11 @@ export const createPost = async (
   })
 }
 export const updatePost = async (post: prisma.postCreateInput): Promise<Post> => {
+  // extract id, computed and other fields that prisma sqawks about on updated
+  const { id, challengeId, userId, live, ...data } = post
   return await prisma.post.update({
-    where: { id: post.id },
-    data: post
+    where: { id },
+    data
   })
 }
 export const loadPost = async (postId: string | number): Promise<Post | null> => {
