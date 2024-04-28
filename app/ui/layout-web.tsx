@@ -44,7 +44,7 @@ const LayoutWeb = (): JSX.Element => {
             }
             {!currentUser &&
               <div className='flex-grow pt-4  items-center justify-center'>
-                {!location.pathname.includes('signin') && <Button onClick={signin} className='bg-red text-white rounded-md p-3 mr-8 float-right'>Sign In</Button>}
+                {!location.pathname.includes('signin') && location.pathname !== '/' && <Button onClick={signin} className='bg-red text-white rounded-md p-3 mr-8 float-right'>Sign In</Button>}
                 <div className='flex flex-col items-center justify-center h-full'>
 
                   <Outlet />

@@ -25,7 +25,7 @@ export default function AvatarLoader ({ object, marginClass = '', clickable = fa
           setLoading(false)
         })
     }
-  }, [object.userId])
+  }, [])
   if (loading) {
     return <div className="w-12 h-12 rounded-full bg-gray-500 flex items-center justify-center mr-8 flex-shrink-0 flex-grow-0">
 
@@ -43,9 +43,9 @@ export default function AvatarLoader ({ object, marginClass = '', clickable = fa
 
   return (
       <div className="w-12 h-12 rounded-full bg-gray-500 flex items-center justify-center flex-shrink-0 flex-grow-0">
-        {loading || !profile?.firstName || !profile.lastName
+        {loading || !profile.fullName
           ? ''
-          : <span className="text-white">{`${profile.firstName[0]}${profile.lastName[0]}`}</span>
+          : <span className="text-white">{`${profile.fullName}`}</span>
         }
       </div>
   )

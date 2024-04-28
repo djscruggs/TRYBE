@@ -131,7 +131,7 @@ export function convertlineTextToJSX (text: string | undefined): React.ReactNode
   )
 }
 export function textToHtml (text): string {
-  return text.split('\n').map(line => `<p style="margin-bottom:.5em">${line}</p>`).join('')
+  return text.split('\n').map(line => `<p style="margin-bottom:.5em">${line}</p>`).join('').replace(/\n|\r/g, '')
 }
 
 export function handleFileUpload (

@@ -10,15 +10,14 @@ import { mailPost } from '~/utils/mailer'
 import getUserLocale from 'get-user-locale'
 import { format, isPast, isEqual } from 'date-fns'
 import { textToHtml } from '~/utils/helpers'
+import escape from 'escape-html'
 
 export const action: ActionFunction = async (args) => {
   const currentUser = await requireCurrentUser(args) as CurrentUser
   const request = args.request
   const rawData = await unstable_parseMultipartFormData(request, uploadHandler)
   // if this is for a challenge, load it and check whether it's public
-  console.log('rawData', rawData.get('challengeId'))
   const challengeId = rawData.get('challengeId') ? Number(rawData.get('challengeId')) : null
-  console.log('challengeId is', challengeId)
   let challenge
   if (challengeId) {
     challenge = await loadChallenge(challengeId) as Challenge
@@ -78,8 +77,9 @@ export const action: ActionFunction = async (args) => {
     // @ts-expect-error fullName is a computed field and not recognized in prisma Profile type -- see prisma.server
     const senderName = currentUser.profile.fullName
     const dateFormat = getUserLocale() === 'en-US' ? 'MMMM d' : 'd MMMM'
+    // const escaped = updated.body?.replace(/['"&’]/g, match => `&#${match.charCodeAt(0)};`)
     const msg = {
-      to: process.env.NODE_ENV !== 'production' ? 'me@derekscruggs.com' : 'me@derekscruggs.com',
+      to: process.env.NODE_ENV !== 'production' ? ['me.derekscruggs@gmail.com', currentUser.email] : ['me.derekscruggs@gmail.com', currentUser.email],
       replyTo: currentUser.email,
       dynamic_template_data: {
         name: senderName,
@@ -87,18 +87,21 @@ export const action: ActionFunction = async (args) => {
         date: format(updated.updatedAt, dateFormat), // format based on user's country
         subject: `New challenge post from ${senderName} on Trybe`,
         title: updated.title,
-        body: textToHtml(updated.body)
+        body: textToHtml(escape(updated.body))
       }
     }
-    console.log('msg', msg)
-    const mailed = await mailPost(msg)
+    try {
+      const mailed = await mailPost(msg)
+      console.log('mailer result', mailed)
+    } catch (error) {
+      console.log('Error from SendGrid')
+      console.log(error.response.body.errors)
+    }
     updated.notificationSentOn = new Date()
-    const result = await updatePost(updated)
-    // send back the full post with counts, user etc
-    console.log('mailer result', mailed)
+    await updatePost(updated)
   }
+  // send back the full post with counts, user etc
   const finalPost = await loadPostSummary(updated.id)
-  console.log('finalPost', finalPost)
   return json(finalPost)
 }
 

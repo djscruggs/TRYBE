@@ -39,7 +39,10 @@ export const loadPostSummary = async (postId: string | number): Promise<Post | n
       _count: {
         select: { comments: true, likes: true }
       },
-      challenge: true
+      challenge: true,
+      user: {
+        include: { profile: true }
+      }
     }
   })
 }
