@@ -1,12 +1,11 @@
-import React, { useContext, useState, useEffect } from 'react'
+import React, { useContext, useState } from 'react'
 import {
-  Card,
-  Spinner
+  Card
 } from '@material-tailwind/react'
 import type { Post } from '../utils/types'
 // import { AiOutlineRetweet } from 'react-icons/ai'
 // import { GoComment } from 'react-icons/go'
-import { convertlineTextToHtml } from '~/utils/helpers'
+import { convertlineTextToJSX } from '~/utils/helpers'
 import { CurrentUserContext } from '../utils/CurrentUserContext'
 import AvatarLoader from './avatarLoader'
 import { Link, useNavigate, useLocation } from '@remix-run/react'
@@ -14,7 +13,6 @@ import { Lightbox } from 'react-modal-image'
 import { toast } from 'react-hot-toast'
 import FormPost from './formPost'
 import axios from 'axios'
-import { useRevalidator } from 'react-router-dom'
 import ShareMenu from './shareMenu'
 import { FaRegComment } from 'react-icons/fa'
 import Liker from './liker'
@@ -30,13 +28,13 @@ interface CardPostProps {
 
 export default function CardPost (props: CardPostProps): JSX.Element {
   const { currentUser } = useContext(CurrentUserContext)
-  const { post, hasLiked, fullPost, locale, isShare, hideMeta } = props
+  const { hasLiked, fullPost, locale, isShare, hideMeta, revalidator } = props
+  const [post, setPost] = useState(props.post)
   const [showLightbox, setShowLightbox] = useState(false)
   const [editing, setEditing] = useState(false)
   const totalLikes = post._count?.likes ?? 0
   const location = useLocation()
   const isOwnRoute = location.pathname === `/posts/${post.id}`
-  const revalidator = useRevalidator()
   const navigate = useNavigate()
   const goToPost = (): void => {
     if (isOwnRoute) return
@@ -69,17 +67,13 @@ export default function CardPost (props: CardPostProps): JSX.Element {
   }
   const maxLength = 300
   const shortBody = fullPost ? post.body : post.body?.slice(0, maxLength) + '...'
-  const isTruncated = shortBody.length < post.body?.length
-  const afterSave = (): void => {
-    revalidator.revalidate()
-    console.log('state', revalidator.state)
+  const isTruncated = shortBody?.length < post?.body?.length
+  const afterSave = (post: Post): void => {
+    setPost(post)
     setEditing(false)
   }
   const getFullUrl = (): string => {
     return `${window.location.origin}/posts/${post.id}`
-  }
-  if (revalidator.state === 'loading') {
-    return <Spinner className="h-4 w-4" />
   }
   return (
     <>
@@ -103,7 +97,7 @@ export default function CardPost (props: CardPostProps): JSX.Element {
               <AvatarLoader object={post} marginClass='mr-4'/>
               <div className="flex flex-col w-full h-full">
               <div className='font-bold my-2'>{post.title}</div>
-              {convertlineTextToHtml(String(shortBody))}
+              {convertlineTextToJSX(String(shortBody))}
               {isTruncated && <span className='text-xs underline text-blue cursor-pointer mr-1 text-right italic' onClick={goToPost}> more</span>}
               <div className='mt-4'>
               {post.video && <video className="recorded" src={post.video} onClick={(event) => { event?.stopPropagation() }} controls />}

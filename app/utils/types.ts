@@ -5,6 +5,11 @@ export interface User {
   profile?: Profile
   memberChallenges?: MemberChallenge[]
 }
+export interface CurrentUser extends User {
+  profile: Profile
+  id: number
+}
+
 export interface Note {
   id?: number
   userId?: number
@@ -40,7 +45,7 @@ export interface Post {
   updatedAt?: Date
   challenge?: Challenge
   user?: User
-  notifyMembers?: boolean
+  notifyMembers?: boolean | null
   notificationSentOn: Date | null
 }
 export interface Challenge {
@@ -60,7 +65,12 @@ export interface Challenge {
   published?: boolean
   public?: boolean
   userId: number
-  _count?: 
+  _count?: CountType
+}
+interface CountType {
+  members?: number
+  likes?: number
+  comments?: number
 }
 export interface ChallengeSummary extends Challenge {
   _count: {

@@ -1,7 +1,6 @@
 import { loadPostSummary } from '~/models/post.server'
 import { useState } from 'react'
 import { Outlet, useLoaderData, useLocation } from '@remix-run/react'
-
 import CardPost from '~/components/cardPost'
 import { requireCurrentUser } from '../models/auth.server'
 import type { Post } from '~/utils/types'
@@ -51,21 +50,20 @@ export default function ViewPost (): JSX.Element {
   if (location.pathname.includes('share')) {
     return <Outlet />
   }
-
-  const { hasLiked, loadingError, locale } = useLoaderData() as PostData
-  const [post, setPost] = useState<Post | null>(useLoaderData().post)
+  const { hasLiked, loadingError, locale, post } = useLoaderData() as PostData
   if (loadingError) {
     return <h1>{loadingError}</h1>
   }
+  const [_post] = useState<Post | null>(post ?? null)
   if (!post) {
     return <p>Loading...</p>
   }
   return (
     <>
     <div className='max-w-[400px] md:max-w-lg mt-10'>
-      <CardPost post={post} hasLiked={Boolean(hasLiked)} locale={locale} fullPost={true} />
+      <CardPost post={_post} hasLiked={Boolean(hasLiked)} locale={locale} fullPost={true} />
     </div>
-    <Outlet context={{ post, hasLiked, locale }} />
+    <Outlet context={{ _post, hasLiked, locale }} />
 
     </>
   )

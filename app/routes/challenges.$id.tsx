@@ -6,7 +6,7 @@ import type { MemberChallenge, ChallengeSummary, Post } from '~/utils/types'
 import { json, type LoaderFunction, type LoaderFunctionArgs } from '@remix-run/node'
 import axios from 'axios'
 import { toast } from 'react-hot-toast'
-import { colorToClassName, convertlineTextToHtml, iconStyle } from '~/utils/helpers'
+import { colorToClassName, convertlineTextToJSX, iconStyle } from '~/utils/helpers'
 import { type DateTimeFormatOptions } from 'intl'
 import { CurrentUserContext } from '../utils/CurrentUserContext'
 import { Spinner, Button } from '@material-tailwind/react'
@@ -258,14 +258,14 @@ export default function ViewChallenge (): JSX.Element {
         <div className="mb-2">
           <div className='text-center text-sm font-bold'>About</div>
           <div className='text-left mb-4'>
-          {convertlineTextToHtml(challenge.description)}
+          {convertlineTextToJSX(challenge.description)}
           </div>
         </div>
         {challenge.mission && (
         <div className="mb-2">
           <div className='text-center text-sm font-bold'>Mission</div>
           <div className='text-left mb-4'>
-          {convertlineTextToHtml(challenge.mission)}
+          {convertlineTextToJSX(challenge.mission)}
           </div>
         </div>
         )}

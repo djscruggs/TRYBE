@@ -117,7 +117,7 @@ export function iconToJsx (icon: string, color: string): React.ReactNode {
   return <div className={iconStyle(color)}>{toUse}</div>
 }
 
-export function convertlineTextToHtml (text: string | undefined): React.ReactNode {
+export function convertlineTextToJSX (text: string | undefined): React.ReactNode {
   if (!text) return null
   return (
     <div>
@@ -129,6 +129,9 @@ export function convertlineTextToHtml (text: string | undefined): React.ReactNod
       ))}
     </div>
   )
+}
+export function textToHtml (text): string {
+  return text.split('\n').map(line => `<p style="margin-bottom:.5em">${line}</p>`).join('')
 }
 
 export function handleFileUpload (

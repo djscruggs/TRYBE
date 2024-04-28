@@ -2,7 +2,7 @@ import React, { useState, useContext } from 'react'
 import FormComment from './formComment'
 import { Avatar, Spinner } from '@material-tailwind/react'
 import { CurrentUserContext } from '~/utils/CurrentUserContext'
-import { convertlineTextToHtml } from '~/utils/helpers'
+import { convertlineTextToJSX } from '~/utils/helpers'
 import { toast } from 'react-hot-toast'
 import axios from 'axios'
 import type { Comment } from '~/utils/types'
@@ -93,7 +93,7 @@ export default function CommentItem (props: CommentsProps): JSX.Element {
             <div className='text-xs mb-2'>{comment.user?.profile?.firstName} {comment.user?.profile?.lastName} - <span>{formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true })}</span></div>
               <div>
 
-                 {convertlineTextToHtml(comment.body)}
+                 {convertlineTextToJSX(comment.body)}
               </div>
             </div>
           </div>

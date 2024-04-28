@@ -13,10 +13,10 @@ import VideoPreview from './videoPreview'
 import DatePicker from 'react-datepicker'
 import { CurrentUserContext } from '../utils/CurrentUserContext'
 import { toast } from 'react-hot-toast'
-import { format, formatDate } from 'date-fns'
+import { format } from 'date-fns'
 
 interface FormPostProps {
-  afterSave?: () => void
+  afterSave?: (post: Post) => void
   onCancel?: () => void
   post?: Post
   locale?: string
@@ -83,6 +83,7 @@ export default function FormPost (props: FormPostProps): JSX.Element {
     handleFileUpload(e, setImage)
   }
   const handlePublish = (event: any): void => {
+    console.log('handling publish')
     setFormData(prevFormData => ({
       ...prevFormData,
       published: true
@@ -98,12 +99,11 @@ export default function FormPost (props: FormPostProps): JSX.Element {
     if (!formData) {
       throw new Error('no form data submitted')
     }
-    console.log(formData)
     if (Number(formData?.body?.length) < 10) {
       const errors = {
         body: 'Post must be at least 10 characters long'
       }
-      console.log(errors)
+      console.error(errors)
       setErrors(errors)
       return false
     }
@@ -143,7 +143,6 @@ export default function FormPost (props: FormPostProps): JSX.Element {
   async function handleSubmit (event: React.FormEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault()
     if (!validate()) {
-      console.log('not valid')
       return
     }
     try {
@@ -162,8 +161,9 @@ export default function FormPost (props: FormPostProps): JSX.Element {
       }
       const result = await axios.post('/api/posts', toSubmit)
       toast.success('Post saved')
+      console.log('result after submit', post)
       if (afterSave) {
-        afterSave()
+        afterSave(result.data)
       } else {
         navigate('/posts/' + result.data.id)
       }
@@ -190,7 +190,6 @@ export default function FormPost (props: FormPostProps): JSX.Element {
     }
   }
   const setPublishDate = (value: any): void => {
-    console.log('datetime is', value)
     setFormData(prevFormData => ({
       ...prevFormData,
       publishAt: value
@@ -207,7 +206,6 @@ export default function FormPost (props: FormPostProps): JSX.Element {
   const renderVideo = useMemo(() => (
     <VideoPreview video={formData.video ? formData.video : video} onClear={deleteCorrectVideo} />
   ), [video, formData.video])
-  console.log(currentUser)
   return (
 
     <div className='w-full'>
@@ -272,7 +270,7 @@ export default function FormPost (props: FormPostProps): JSX.Element {
               dateFormat={localDateFormat}
               showTimeSelect
               minDate={new Date()}
-              selected={formData.publishAt ?? new Date()}
+              selected={formData.publishAt}
               onChange={(date: Date) => { setPublishDate(date) }}
               className={`p-1 border rounded-md pl-2 w-full ${errors.publishAt ? 'border-red' : 'border-slate-gray-500'}`}
             />
@@ -290,7 +288,7 @@ export default function FormPost (props: FormPostProps): JSX.Element {
                 </>
                   )
                 : (
-                  <Checkbox defaultChecked={true} disabled={true} color="green" onClick={handleNotifyCheck} crossOrigin={undefined} label={`Emailed to members on ${formatDate(formData.notificationSentOn, localDateFormat)}`}/>
+                  <Checkbox defaultChecked={true} disabled={true} color="green" onClick={handleNotifyCheck} crossOrigin={undefined} label={`Emailed to members on ${format(formData.notificationSentOn, localDateFormat)}`}/>
                   )}
             </div>
 
@@ -299,7 +297,7 @@ export default function FormPost (props: FormPostProps): JSX.Element {
         <Button type="submit" onClick={handlePublish} className="bg-blue disabled:gray-400" disabled={saving}>
           {saving
             ? 'Publishing...'
-            : 'Publish Now'
+            : formData.publishAt ? 'Schedule' : 'Publish Now'
           }
         </Button>
         <Button type="submit" onClick={handleDraft} className="bg-yellow text-black ml-2 disabled:gray-400" disabled={saving}>
