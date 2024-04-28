@@ -9,12 +9,14 @@ function textToHtml (text): string {
 
 export const loader: LoaderFunction = async (args) => {
   await requireCurrentUser(args)
+
+  const baseUrl = new URL(args.request.url).origin
   const post = await loadPostSummary(46)
   const msg = {
     to: 'me@derekscruggs.com',
     dynamic_template_data: {
       name: 'Tameem Rahal', // ${profile.firstName} ${profile.lastName}
-      post_url: 'https://trybe-icy-smoke-8833.fly.dev/posts/46',
+      post_url: `${baseUrl}/posts/46`,
       // avatar: '<a href="https://trybe-icy-smoke-8833.fly.dev/members/11/content"><img src="https://trybe-icy-smoke-8833.fly.dev/avatars/trybe-bot.png" width="36" height="36"></a>',
       date: '27 April', // format based on user's country
       subject: 'New post from Trybe',
