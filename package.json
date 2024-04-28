@@ -20,6 +20,9 @@
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
   },
+  "prisma": {
+    "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
+  },
   "workspaces": [
     "packages/*"
   ],
@@ -69,6 +72,7 @@
     "react-modal-image": "^2.6.0",
     "remix-utils": "^7.5.0",
     "svix": "^1.21.0",
+    "ts-node": "^10.9.2",
     "zod": "^3.22.4"
   },
   "devDependencies": {
