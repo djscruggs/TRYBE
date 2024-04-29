@@ -53,7 +53,7 @@ const LayoutWeb = (): JSX.Element => {
             }
           </div>
           <div className='bg-red w-screen sticky bottom-0 max-h-8 text-xs'>
-            <div className={`flex ${currentUser ? 'max-w-3xl' : 'w-screen'} flex-row justify-center items-center pt-1 pb-2`}>
+            <div className='flex w-screen flex-row justify-center items-center pt-1 pb-2'>
               <a href='https://www.notion.so/jointhetrybe/About-TRYBE-ed415205d1a5411f96807cf9e04ee0f6?pvs=4' className='mx-2 text-white underline' >About Us</a>
               <a href='https://www.jointhetrybe.com/trybepartnerships' className='mx-2 text-white underline' >Sponsors & Partnerships</a>
               <img src="/logo.png" className='h-[24px] bg-yellow rounded-full' />
