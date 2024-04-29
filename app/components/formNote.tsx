@@ -2,19 +2,19 @@ import React, { useState, useRef, useMemo } from 'react'
 import { Form, useNavigate } from '@remix-run/react'
 import axios from 'axios'
 import { FormField } from './formField'
-import { handleFileUpload, isMobileDevice } from '~/utils/helpers'
+import { handleFileUpload } from '~/utils/helpers'
 import CardChallenge from './cardChallenge'
 import CardPost from './cardPost'
-import { type Note, type Challenge, type Post, type ChallengeSummary } from '~/utils/types'
+import { type Note, type NoteSummary, type Challenge, type Post, type ChallengeSummary } from '~/utils/types'
 import { Button } from '@material-tailwind/react'
 import { MdOutlineAddPhotoAlternate } from 'react-icons/md'
-import { BiVideoPlus, BiVideoOff } from 'react-icons/bi'
 import { TiDeleteOutline } from 'react-icons/ti'
 import VideoRecorder from './videoRecorder'
 import VideoPreview from './videoPreview'
+import VideoChooser from './videoChooser'
 
 interface FormNoteProps {
-  afterSave?: () => void
+  afterSave?: (note: NoteSummary) => void
   onCancel?: () => void
   note?: Note
   challenge?: Challenge | ChallengeSummary
@@ -40,7 +40,6 @@ export default function FormNote (props: FormNoteProps): JSX.Element {
   const imageRef = useRef<HTMLInputElement>(null)
   const [image, setImage] = useState<File | string | null>(null)
   const [imageUrl, setImageUrl] = useState<string | null>(note?.image ? note.image : null)
-  const [showVideoChooser, setShowVideoChooser] = useState(false)
   const [videoUploadOnly, setVideoUploadOnly] = useState(false)
 
   const [video, setVideo] = useState<File | string | null>(null)
@@ -53,24 +52,16 @@ export default function FormNote (props: FormNoteProps): JSX.Element {
   const handleImage = (e: React.ChangeEvent<HTMLInputElement>): void => {
     handleFileUpload(e, setImage, setImageUrl)
   }
-  const handleVideoToggle = (): void => {
-    // file upload is automatically shown on mobile
-    if (isMobileDevice()) {
-      setShowVideoRecorder(!showVideoRecorder)
-    } else {
-      // give them a choice between upload and record
-      setShowVideoChooser(!showVideoChooser)
-    }
-  }
-  const chooseVideoUploadOrRecord = (option: string): void => {
-    if (option === 'upload') {
+  const videoChooserCallbackShow = (uploadOnly: boolean): void => {
+    if (uploadOnly) {
       setVideoUploadOnly(true)
     } else {
-      setVideoUploadOnly(false)
-      setShowVideoRecorder(true)
+      setVideoUploadOnly(uploadOnly)
     }
     setShowVideoRecorder(true)
-    setShowVideoChooser(false)
+  }
+  const videoChooserCallbackHide = (): void => {
+    setShowVideoRecorder(false)
   }
   const deleteImage = (): void => {
     setImage('delete')
@@ -134,8 +125,10 @@ export default function FormNote (props: FormNoteProps): JSX.Element {
       setBody('')
       setImage(null)
       setImageUrl(null)
+      setVideo(null)
+      setShowVideoRecorder(false)
       if (afterSave) {
-        afterSave()
+        afterSave(result.data)
       } else {
         navigate('/notes/' + result.data.id)
       }
@@ -179,18 +172,7 @@ export default function FormNote (props: FormNoteProps): JSX.Element {
           />
         <input type="file" name="image" hidden ref={imageRef} onChange={handleImage} accept="image/*"/>
 
-        {!showVideoRecorder &&
-          <div className='relative'>
-          {showVideoChooser &&
-            <div className='cursor-pointer min-w-36 absolute right-0 bottom-2 bg-white border border-gray rounded-md flex flex-col text-left' >
-              <p className='hover:bg-gray-100 p-1' onClick={() => { chooseVideoUploadOrRecord('upload') }}>Upload video file</p>
-              <p className='hover:bg-gray-100 p-1' onClick={() => { chooseVideoUploadOrRecord('record') }}>Record video</p>
-            </div>
-          }
-          <BiVideoPlus onClick={handleVideoToggle} className='ml-2 text-2xl cursor-pointer float-right' />
-          </div>
-        }
-        {showVideoRecorder && <BiVideoOff onClick={() => { setShowVideoRecorder(false) }} className='ml-2 text-2xl cursor-pointer float-right' />}
+        <VideoChooser recorderShowing={showVideoRecorder} showRecorder={videoChooserCallbackShow} hideRecorder={videoChooserCallbackHide} />
         <MdOutlineAddPhotoAlternate onClick={imageDialog} className='text-2xl cursor-pointer float-right' />
 
         {imageUrl &&
@@ -213,7 +195,7 @@ export default function FormNote (props: FormNoteProps): JSX.Element {
             <VideoRecorder uploadOnly={videoUploadOnly} onStart={() => { setBtnDisabled(true) }} onStop={() => { setBtnDisabled(false) }} onSave={setVideo} onFinish={() => { setShowVideoRecorder(false) }} />
           </div>
         }
-        <Button type="submit" placeholder='Save' className="bg-red disabled:gray-400" disabled={btnDisabled || showVideoRecorder}>
+        <Button type="submit" placeholder='Save' className="bg-red disabled:gray-400" disabled={btnDisabled || (showVideoRecorder && !video)}>
           {btnDisabled
             ? 'Saving...'
             : 'Save'

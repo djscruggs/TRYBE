@@ -22,7 +22,7 @@ export const loader: LoaderFunction = async (args): Promise<FeedLoaderData> => {
     orderBy: [{ createdAt: 'desc' }],
     where: {
       OR: [
-        { userId: currentUser?.id as number },
+        { userId: currentUser?.id ?? 0 },
         { public: true }
       ]
     },
@@ -111,7 +111,9 @@ interface FeedItem {
   updatedAt?: Date
 }
 export default function Home (): JSX.Element {
-  const { challenges, notes, memberships } = useLoaderData<FeedLoaderData>()
+  const data = useLoaderData<FeedLoaderData>()
+  const { challenges, memberships } = data
+  const [notes, setNotes] = useState<NoteSummary[]>(data.notes)
   const [feedItems, setFeedItems] = useState<FeedItem[]>([])
   useEffect(() => {
     const combinedArray = [...challenges, ...notes].map(item => ({
@@ -121,9 +123,8 @@ export default function Home (): JSX.Element {
   }, [challenges, notes])
   const { currentUser } = useContext(CurrentUserContext)
   const isMobile = useMobileSize()
-  const revalidator = useRevalidator()
-  const onSavePost = (): void => {
-    revalidator.revalidate()
+  const onSaveNote = (newNote: NoteSummary): void => {
+    setNotes([newNote, ...notes])
   }
   if (!currentUser || !feedItems) {
     return <p>Loading...</p>
@@ -145,7 +146,7 @@ export default function Home (): JSX.Element {
             </div>
             {currentUser &&
               <div className="w-full pl-2 max-w-lg">
-                <FormNote afterSave={onSavePost} />
+                <FormNote afterSave={onSaveNote} />
               </div>
             }
             {feedItems.map(item => {

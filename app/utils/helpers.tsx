@@ -141,13 +141,17 @@ export function textToHtml (text): string {
   return text.split('\n').map(line => `<p style="margin-bottom:.5em">${line}</p>`).join('').replace(/\n|\r/g, '')
 }
 
-export function handleFileUpload (
-  e: ChangeEvent<HTMLInputElement>,
-  setFile: (file: File | null) => void,
-  setFileDataURL?: (dataURL: string | null) => void): void {
-  const { files } = e.target
+interface HandleFileUploadProps {
+  event: ChangeEvent<HTMLInputElement> // event that triggers the file upload
+  setFile: (file: File | null) => void // callback that sets the file in the component's variable
+  setFileDataURL?: (dataURL: string | null) => void // callback that sets the file's data URL in the component's variable
+}
+export function handleFileUpload ({ event, setFile, setFileDataURL }: HandleFileUploadProps): void {
+  console.log(event.target)
+  const { files } = event.target
+  console.log('files', files)
   if (!files) return
-  const file = files[0]
+  const file: File = files[0]
   if (file.size > 20_000_000) {
     toast.error('File size must be less than 20MB')
     return
@@ -155,8 +159,9 @@ export function handleFileUpload (
   setFile(file)
   const fileReader = new FileReader()
   fileReader.onload = (e) => {
-    const result = e.target?.result
+    const result = fileReader.result
     if (setFileDataURL) {
+      console.log('result', result)
       if (result) {
         if (typeof result === 'string') {
           setFileDataURL(result)

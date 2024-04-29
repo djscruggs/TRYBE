@@ -10,6 +10,7 @@ import { BiVideoPlus, BiVideoOff } from 'react-icons/bi'
 import { TiDeleteOutline } from 'react-icons/ti'
 import VideoRecorder from './videoRecorder'
 import VideoPreview from './videoPreview'
+import VideoChooser from './videoChooser'
 import DatePicker from 'react-datepicker'
 import { CurrentUserContext } from '../utils/CurrentUserContext'
 import { toast } from 'react-hot-toast'
@@ -36,13 +37,14 @@ interface Errors {
 export default function FormPost (props: FormPostProps): JSX.Element {
   const { currentUser } = useContext(CurrentUserContext)
   const { afterSave, onCancel, post, challenge, locale } = props
-  const [showVideo, setShowVideo] = useState(false)
+  const [showVideoRecorder, setShowVideoRecorder] = useState(false)
   const [errors, setErrors] = useState<Errors>({})
   const [saving, setSaving] = useState(false)
   const [image, setImage] = useState<File | null>(null)
   const [video, setVideo] = useState<File | null>(null)
   const navigate = useNavigate()
   const imageRef = useRef<HTMLInputElement>(null)
+  const [videoUploadOnly, setVideoUploadOnly] = useState(false)
   const [showDatePicker, setShowDatePicker] = useState(false)
   const [formData, setFormData] = useState(post ?? {
     published: true,
@@ -81,6 +83,17 @@ export default function FormPost (props: FormPostProps): JSX.Element {
   }
   const handleImage = (e: React.ChangeEvent<HTMLInputElement>): void => {
     handleFileUpload(e, setImage)
+  }
+  const videoChooserCallbackShow = (uploadOnly: boolean): void => {
+    if (uploadOnly) {
+      setVideoUploadOnly(true)
+    } else {
+      setVideoUploadOnly(uploadOnly)
+    }
+    setShowVideoRecorder(true)
+  }
+  const videoChooserCallbackHide = (): void => {
+    setShowVideoRecorder(false)
   }
   const handlePublish = (event: any): void => {
     console.log('handling publish')
@@ -232,8 +245,7 @@ export default function FormPost (props: FormPostProps): JSX.Element {
           />
         <input type="file" name="image" hidden ref={imageRef} onChange={handleImage} accept="image/*"/>
 
-        {!showVideo && <BiVideoPlus onClick={() => { setShowVideo(true) }} className='ml-2 text-2xl cursor-pointer float-right' />}
-        {showVideo && <BiVideoOff onClick={() => { setShowVideo(false) }} className='ml-2 text-2xl cursor-pointer float-right' />}
+        <VideoChooser recorderShowing={showVideoRecorder} showRecorder={videoChooserCallbackShow} hideRecorder={videoChooserCallbackHide} />
         <MdOutlineAddPhotoAlternate onClick={imageDialog} className='text-2xl cursor-pointer float-right' />
 
         {correctImageUrl() &&
@@ -242,12 +254,12 @@ export default function FormPost (props: FormPostProps): JSX.Element {
             <TiDeleteOutline onClick={deleteCorrectImage} className='text-lg bg-white rounded-full text-red cursor-pointer absolute top-1 right-1' />
           </div>
         }
-        {(video ?? formData.video) && !showVideo &&
+        {(video ?? formData.video) && !showVideoRecorder &&
           renderVideo
         }
-        {showVideo &&
+        {showVideoRecorder &&
           <div>
-            <VideoRecorder onStart={() => { setSaving(true) }} onStop={() => { setSaving(false) }} onSave={setVideo} onFinish={() => { setShowVideo(false) }} />
+            <VideoRecorder uploadOnly={videoUploadOnly} onStart={() => { setSaving(true) }} onStop={() => { setSaving(false) }} onSave={setVideo} onFinish={() => { setShowVideoRecorder(false) }} />
           </div>
         }
         <div className='my-4'>

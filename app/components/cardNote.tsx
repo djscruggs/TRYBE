@@ -144,9 +144,11 @@ export default function CardNote (props: CardNoteProps): JSX.Element {
             <div className="flex items-start">
               <AvatarLoader object={note} marginClass='mr-4'/>
               <div className="flex flex-col w-full h-full">
-                {convertlineTextToJSX(note.body)}
-                {note.video && <video className="recorded" src={note.video} onClick={(event) => { event?.stopPropagation() }} controls />}
-                {note.image && <img src={`${note.image}?${Date.now()}`} alt="note picture" className="mt-4 cursor-pointer max-w-[200px]" onClick={handlePhotoClick} />}
+                {convertlineTextToJSX(note.body ?? '')}
+                <div className='mt-4'>
+                  {note.video && <video className="recorded" src={note.video} onClick={(event) => { event?.stopPropagation() }} controls />}
+                  {note.image && <img src={`${note.image}?${Date.now()}`} alt="note picture" className="mt-4 cursor-pointer max-w-[200px]" onClick={handlePhotoClick} />}
+                </div>
                 {note.challenge &&
                   <div className='mt-2'>
                     <CardChallenge challenge={note.challenge} isShare={true}/>

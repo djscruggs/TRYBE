@@ -1,4 +1,4 @@
-import { createNote, updateNote } from '~/models/note.server'
+import { createNote, updateNote, loadNoteSummary } from '~/models/note.server'
 import { requireCurrentUser } from '~/models/auth.server'
 import { json, type LoaderFunction, type ActionFunction } from '@remix-run/node'
 import { unstable_parseMultipartFormData } from '@remix-run/node'
@@ -76,8 +76,9 @@ export const action: ActionFunction = async (args) => {
     const vidPath = await writeFile(video, vidNoExt)
     result.video = vidPath
   }
-  const updated = await updateNote(result)
-  return json(updated)
+  // send back a full note that includes profile, user etc
+  const newNote = await loadNoteSummary(result.id)
+  return json(newNote)
 }
 
 export const loader: LoaderFunction = async (args) => {

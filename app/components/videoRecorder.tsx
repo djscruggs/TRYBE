@@ -1,5 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { handleFileUpload, isMobileDevice } from '~/utils/helpers'
+import { TiDeleteOutline } from 'react-icons/ti'
+
 const mimeType = 'video/webm; codecs="opus,vp8"'
 interface VideoRecorderProps {
   onStart: () => void
@@ -16,7 +18,7 @@ const VideoRecorder = ({ onStart, onStop, onSave, onFinish, uploadOnly }: VideoR
   const videoUpload = useRef(null)
   const [recordingStatus, setRecordingStatus] = useState('inactive')
   const [stream, setStream] = useState<MediaStream | null>()
-  const [recordedVideo, setRecordedVideo] = useState<string | null>(null)
+  const [localVideoUrl, setLocalVideoUrl] = useState<string | null>(null)
   const [videoFile, setVideoFile] = useState<File | null>(null)
   const [videoChunks, setVideoChunks] = useState([])
 
@@ -40,7 +42,7 @@ const VideoRecorder = ({ onStart, onStop, onSave, onFinish, uploadOnly }: VideoR
   }, [videoFile])
 
   const getCameraPermission = async (): Promise<void> => {
-    setRecordedVideo(null)
+    setLocalVideoUrl(null)
     // get video and audio permissions and then stream the result media stream to the videoSrc variable
     if ('MediaRecorder' in window) {
       try {
@@ -78,17 +80,19 @@ const VideoRecorder = ({ onStart, onStop, onSave, onFinish, uploadOnly }: VideoR
     }
   }
   const reset = async (): Promise<void> => {
-    setRecordedVideo(null)
+    setLocalVideoUrl(null)
     setVideoFile(null)
     setRecordingStatus('inactive')
-    await getCameraPermission()
+    if (!isMobileDevice() && !uploadOnly) {
+      await getCameraPermission()
+    }
   }
 
   const startRecording = async (): Promise<void> => {
     if (onStart) {
       onStart()
     }
-    setRecordedVideo(null)
+    setLocalVideoUrl(null)
     setRecordingStatus('recording')
     await getCameraPermission()
 
@@ -121,13 +125,14 @@ const VideoRecorder = ({ onStart, onStop, onSave, onFinish, uploadOnly }: VideoR
       setVideoFile(videoBlob)
       const videoUrl = URL.createObjectURL(videoBlob)
 
-      setRecordedVideo(videoUrl)
+      setLocalVideoUrl(videoUrl)
 
       setVideoChunks([])
     }
   }
-  const handleVideoUpload = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    handleFileUpload(e, setVideoFile, setRecordedVideo)
+  const handleVideoUpload = (event: React.ChangeEvent<HTMLInputElement>): void => {
+    console.log(event.target)
+    handleFileUpload({ event, setFile: setVideoFile, setFileDataURL: setLocalVideoUrl })
   }
   const saveVideo = (): void => {
     onSave(videoFile)
@@ -141,7 +146,6 @@ const VideoRecorder = ({ onStart, onStop, onSave, onFinish, uploadOnly }: VideoR
     }
     onFinish()
   }
-  console.log(liveVideoFeed)
   const fileInput = (): JSX.Element => {
     const textColor = 'white'
     return (
@@ -167,10 +171,11 @@ const VideoRecorder = ({ onStart, onStop, onSave, onFinish, uploadOnly }: VideoR
     {isMobileDevice() || uploadOnly
       ? (
         <>
-          {recordedVideo
+          {localVideoUrl
             ? (
-                  <div className="mb-4">
-                    <video className="recorded" src={recordedVideo} controls></video>
+                  <div className="relative mt-8 mb-2">
+                    <video className="recorded" src={localVideoUrl} controls></video>
+                    <TiDeleteOutline onClick={reset} className='text-lg bg-white rounded-full text-red cursor-pointer absolute top-3 right-2' />
                   </div>
               )
             : null
@@ -178,9 +183,9 @@ const VideoRecorder = ({ onStart, onStop, onSave, onFinish, uploadOnly }: VideoR
           <div className="flex flex-col items-center justify-end">
             <p className="text-2xl text-blue-gray-500 text-center">
               {/* On a mobile device it always gives the option to record or upload, so prompt text reflects that */}
-              {recordedVideo ? 'Choose a different video' : isMobileDevice() ? 'Record or upload a video' : 'Upload a video'}
+              {localVideoUrl ? 'Choose a different video' : isMobileDevice() ? 'Record or upload a video' : 'Upload a video'}
             </p>
-            <div className='mt-10 ml-36'>
+            <div className={`${localVideoUrl ? 'mt-2' : 'mt-10'} ml-36`}>
               {fileInput()}
             </div>
           </div>
@@ -196,15 +201,15 @@ const VideoRecorder = ({ onStart, onStop, onSave, onFinish, uploadOnly }: VideoR
           : null}
       <div className="block min-h-[310px] relative justifys-center">
 
-            {!recordedVideo &&
+            {!localVideoUrl &&
               <div className='border-2 border-gray-300 rounded-lg h-[3'>
                 <video ref={liveVideoFeed} autoPlay></video>
               </div>
             }
-            {recordedVideo
+            {localVideoUrl
               ? (
 
-                  <video className="h-full" src={recordedVideo} controls></video>
+                  <video className="h-full" src={localVideoUrl} controls></video>
 
                 )
               : null}
