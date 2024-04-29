@@ -1191,6 +1191,18 @@ video {
   height: 100vh;
 }
 
+.h-\[20px\] {
+  height: 20px;
+}
+
+.h-\[30px\] {
+  height: 30px;
+}
+
+.h-\[24px\] {
+  height: 24px;
+}
+
 .max-h-6 {
   max-height: 1.5rem;
 }
@@ -1221,6 +1233,10 @@ video {
 
 .max-h-\[48px\] {
   max-height: 48px;
+}
+
+.max-h-8 {
+  max-height: 2rem;
 }
 
 .min-h-\[100px\] {
@@ -2966,6 +2982,10 @@ video {
 
 .pt-px {
   padding-top: 1px;
+}
+
+.pb-4 {
+  padding-bottom: 1rem;
 }
 
 .text-left {
