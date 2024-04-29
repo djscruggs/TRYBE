@@ -2,7 +2,7 @@ import React, { useState, useRef, useMemo } from 'react'
 import { Form, useNavigate } from '@remix-run/react'
 import axios from 'axios'
 import { FormField } from './formField'
-import { handleFileUpload } from '~/utils/helpers'
+import { handleFileUpload, isMobileDevice } from '~/utils/helpers'
 import CardChallenge from './cardChallenge'
 import CardPost from './cardPost'
 import { type Note, type Challenge, type Post, type ChallengeSummary } from '~/utils/types'
@@ -31,7 +31,7 @@ export default function FormNote (props: FormNoteProps): JSX.Element {
   if (note?.challenge) {
     challenge = note.challenge
   }
-  const [showVideo, setShowVideo] = useState(false)
+  const [showVideoRecorder, setShowVideoRecorder] = useState(false)
   const placeholder = prompt ?? 'What\'s on your mind?'
   const [body, setBody] = useState(note?.body || '')
   const [btnDisabled, setBtnDisabled] = useState(false)
@@ -40,6 +40,8 @@ export default function FormNote (props: FormNoteProps): JSX.Element {
   const imageRef = useRef<HTMLInputElement>(null)
   const [image, setImage] = useState<File | string | null>(null)
   const [imageUrl, setImageUrl] = useState<string | null>(note?.image ? note.image : null)
+  const [showVideoChooser, setShowVideoChooser] = useState(false)
+  const [videoUploadOnly, setVideoUploadOnly] = useState(false)
 
   const [video, setVideo] = useState<File | string | null>(null)
   const [videoUrl, setVideoUrl] = useState<string | null>(note?.video ? note.video : null)
@@ -50,6 +52,25 @@ export default function FormNote (props: FormNoteProps): JSX.Element {
   }
   const handleImage = (e: React.ChangeEvent<HTMLInputElement>): void => {
     handleFileUpload(e, setImage, setImageUrl)
+  }
+  const handleVideoToggle = (): void => {
+    // file upload is automatically shown on mobile
+    if (isMobileDevice()) {
+      setShowVideoRecorder(!showVideoRecorder)
+    } else {
+      // give them a choice between upload and record
+      setShowVideoChooser(!showVideoChooser)
+    }
+  }
+  const chooseVideoUploadOrRecord = (option: string): void => {
+    if (option === 'upload') {
+      setVideoUploadOnly(true)
+    } else {
+      setVideoUploadOnly(false)
+      setShowVideoRecorder(true)
+    }
+    setShowVideoRecorder(true)
+    setShowVideoChooser(false)
   }
   const deleteImage = (): void => {
     setImage('delete')
@@ -158,8 +179,18 @@ export default function FormNote (props: FormNoteProps): JSX.Element {
           />
         <input type="file" name="image" hidden ref={imageRef} onChange={handleImage} accept="image/*"/>
 
-        {!showVideo && <BiVideoPlus onClick={() => { setShowVideo(true) }} className='ml-2 text-2xl cursor-pointer float-right' />}
-        {showVideo && <BiVideoOff onClick={() => { setShowVideo(false) }} className='ml-2 text-2xl cursor-pointer float-right' />}
+        {!showVideoRecorder &&
+          <div className='relative'>
+          {showVideoChooser &&
+            <div className='cursor-pointer min-w-36 absolute right-0 bottom-2 bg-white border border-gray rounded-md flex flex-col text-left' >
+              <p className='hover:bg-gray-100 p-1' onClick={() => { chooseVideoUploadOrRecord('upload') }}>Upload video file</p>
+              <p className='hover:bg-gray-100 p-1' onClick={() => { chooseVideoUploadOrRecord('record') }}>Record video</p>
+            </div>
+          }
+          <BiVideoPlus onClick={handleVideoToggle} className='ml-2 text-2xl cursor-pointer float-right' />
+          </div>
+        }
+        {showVideoRecorder && <BiVideoOff onClick={() => { setShowVideoRecorder(false) }} className='ml-2 text-2xl cursor-pointer float-right' />}
         <MdOutlineAddPhotoAlternate onClick={imageDialog} className='text-2xl cursor-pointer float-right' />
 
         {imageUrl &&
@@ -168,21 +199,21 @@ export default function FormNote (props: FormNoteProps): JSX.Element {
             <TiDeleteOutline onClick={deleteImage} className='text-lg bg-white rounded-full text-red cursor-pointer absolute top-1 right-1' />
           </div>
         }
-        {videoUrl && !showVideo &&
+        {videoUrl && !showVideoRecorder &&
           <div className="relative w-fit">
             <video src={videoUrl} className='h-24 mb-2' />
             <TiDeleteOutline onClick={deleteVideo} className='text-lg bg-white rounded-full text-red cursor-pointer absolute top-1 right-1' />
           </div>
         }
-        {video && !showVideo &&
+        {video && !showVideoRecorder &&
           renderVideo
         }
-        {showVideo &&
+        {showVideoRecorder &&
           <div className='mt-6'>
-            <VideoRecorder onStart={() => { setBtnDisabled(true) }} onStop={() => { setBtnDisabled(false) }} onSave={setVideo} onFinish={() => { setShowVideo(false) }} />
+            <VideoRecorder uploadOnly={videoUploadOnly} onStart={() => { setBtnDisabled(true) }} onStop={() => { setBtnDisabled(false) }} onSave={setVideo} onFinish={() => { setShowVideoRecorder(false) }} />
           </div>
         }
-        <Button type="submit" placeholder='Save' className="bg-red disabled:gray-400" disabled={btnDisabled}>
+        <Button type="submit" placeholder='Save' className="bg-red disabled:gray-400" disabled={btnDisabled || showVideoRecorder}>
           {btnDisabled
             ? 'Saving...'
             : 'Save'
