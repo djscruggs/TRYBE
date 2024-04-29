@@ -79,7 +79,8 @@ export const action: ActionFunction = async (args) => {
     const dateFormat = getUserLocale() === 'en-US' ? 'MMMM d' : 'd MMMM'
     // const escaped = updated.body?.replace(/['"&’]/g, match => `&#${match.charCodeAt(0)};`)
     const msg = {
-      to: process.env.NODE_ENV !== 'production' ? ['me.derekscruggs@gmail.com', currentUser.email] : ['me.derekscruggs@gmail.com', currentUser.email],
+      // to: process.env.NODE_ENV !== 'production' ? ['me.derekscruggs@gmail.com', currentUser.email] : ['me.derekscruggs@gmail.com', currentUser.email],
+      to: currentUser.email,
       replyTo: currentUser.email,
       dynamic_template_data: {
         name: senderName,

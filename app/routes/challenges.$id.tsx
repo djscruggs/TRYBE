@@ -15,7 +15,6 @@ import { FaRegLightbulb } from 'react-icons/fa6'
 import { RiMentalHealthLine } from 'react-icons/ri'
 import { PiBarbellLight } from 'react-icons/pi'
 import { IoFishOutline } from 'react-icons/io5'
-import { FaRegComment } from 'react-icons/fa'
 import CardPost from '~/components/cardPost'
 import { LiaUserFriendsSolid } from 'react-icons/lia'
 import { prisma } from '../models/prisma.server'
@@ -25,8 +24,8 @@ import Liker from '~/components/liker'
 import ShareMenu from '~/components/shareMenu'
 
 interface ViewChallengeData {
-  challenge?: ChallengeSummary
-  latestPost?: Post
+  challenge: ChallengeSummary
+  latestPost: Post | null
   hasLiked?: boolean
   membership?: MemberChallenge | null | undefined
   checkInsCount?: number
@@ -111,7 +110,7 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
 
   const locale = getUserLocale()
   const data: ViewChallengeData = { challenge: result, membership, hasLiked: Boolean(likes), checkInsCount, locale, latestPost }
-  return json(data)
+  return data
 }
 export default function ViewChallenge (): JSX.Element {
   const data: ViewChallengeData = useLoaderData() as ViewChallengeData
@@ -123,7 +122,7 @@ export default function ViewChallenge (): JSX.Element {
   if (location.pathname.includes('edit') || location.pathname.includes('share')) {
     return <Outlet />
   }
-  const [showLatestPost, setShowLatestPost] = useState(!location.pathname.includes('members'))
+  const showLatestPost = !location.pathname.includes('members')
   const isComments = location.pathname.includes('comments')
   const { currentUser } = useContext(CurrentUserContext)
   const navigate = useNavigate()
@@ -234,7 +233,7 @@ export default function ViewChallenge (): JSX.Element {
     PiBarbellLight: <PiBarbellLight className={iconStyle(challenge?.color ?? 'red')} />,
     IoFishOutline: <IoFishOutline className={iconStyle(challenge?.color ?? 'red')} />
   }
-  const color = colorToClassName(challenge?.color, 'red')
+  const color = colorToClassName(challenge?.color ?? '', 'red')
   return (
     <>
     <div className={`max-w-sm md:max-w-md lg:max-w-lg border border-transparent border-b-inherit rounded-md bg-gradient-to-b from-${color} to-90%`}>
@@ -278,9 +277,14 @@ export default function ViewChallenge (): JSX.Element {
     </div>
     <div className="max-w-sm md:max-w-md lg:max-w-lg pt-4">
     {!isComments && challenge?.userId === currentUser?.id && (
+        <>
         <Button className={`bg-${color} p-2 justify-center`} onClick={() => { navigate(`/posts/new/challenge/${challenge.id}`) }}>
           Post an Update
         </Button>
+        <Button className={`bg-${color} p-2 justify-center ml-2`} onClick={() => { navigate(`/threads/new/challenge/${challenge.id}`) }}>
+          Start a Thread
+        </Button>
+      </>
     )}
       {challenge?.userId !== currentUser?.id && (
         <>
@@ -351,7 +355,7 @@ export default function ViewChallenge (): JSX.Element {
                 )}
             <div className='relative flex justify-end'>
               <div className='mr-2 inline'><Liker isLiked={Boolean(hasLiked)} itemId={Number(challenge?.id)} itemType='challenge' count={Number(likesCount)}/></div>
-              <ShareMenu copyUrl={getFullUrl()} itemType='challenge' itemId={challenge?.id!}/>
+              <ShareMenu copyUrl={getFullUrl()} itemType='challenge' itemId={challenge?.id}/>
             </div>
         </div>
       </div>

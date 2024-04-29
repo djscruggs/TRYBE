@@ -17,6 +17,11 @@ export const loader: LoaderFunction = async (args) => {
   const posts = await prisma.post.findMany({
     where: {
       challengeId: Number(params.challengeId)
+    },
+    include: {
+      user: {
+        include: { profile: true }
+      }
     }
   })
   const data: PostsChallengeLoaderData = { posts }

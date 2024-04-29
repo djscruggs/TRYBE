@@ -41,7 +41,7 @@ export function convertStringValues (obj: any): any {
   return result
 }
 
-export function colorToClassName (color: string | undefined, defaultColor: string): string {
+export function colorToClassName (color: string, defaultColor: string): string {
   if (!color) return defaultColor
   const lower = color.toLowerCase()
   const colorMap: Record<string, string> = {

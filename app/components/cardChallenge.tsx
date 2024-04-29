@@ -20,8 +20,8 @@ interface CardChallengeProps {
 export default function CardChallenge ({ challenge, isShare, isMember }: CardChallengeProps): JSX.Element {
   const { currentUser } = useContext(CurrentUserContext)
   const navigate = useNavigate()
-  const textColor = textColorFromContainer(challenge.color, 'white')
-  const bgColor = colorToClassName(challenge.color, 'red')
+  const textColor = textColorFromContainer(challenge.color ?? '', 'white')
+  const bgColor = colorToClassName(challenge.color ?? '', 'red')
   const buttonColor = buttonColorFromContainer(bgColor, 'white')
   const buttonTextColor = textColorFromContainer(buttonColor, 'red')
   const goToChallenge = (): void => {

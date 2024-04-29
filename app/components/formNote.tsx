@@ -5,7 +5,7 @@ import { FormField } from './formField'
 import { handleFileUpload } from '~/utils/helpers'
 import CardChallenge from './cardChallenge'
 import CardPost from './cardPost'
-import { type Note, type Challenge, type Post } from '~/utils/types'
+import { type Note, type Challenge, type Post, type ChallengeSummary } from '~/utils/types'
 import { Button } from '@material-tailwind/react'
 import { MdOutlineAddPhotoAlternate } from 'react-icons/md'
 import { BiVideoPlus, BiVideoOff } from 'react-icons/bi'
@@ -17,16 +17,17 @@ interface FormNoteProps {
   afterSave?: () => void
   onCancel?: () => void
   note?: Note
-  challenge?: Challenge
+  challenge?: Challenge | ChallengeSummary
   post?: Post
   replyToId?: number
   prompt?: string
   isShare?: boolean
+  isThread?: boolean
   forwardRef?: React.RefObject<HTMLTextAreaElement>
 }
 
 export default function FormNote (props: FormNoteProps): JSX.Element {
-  let { afterSave, onCancel, note, challenge, prompt, replyToId, post } = props
+  let { afterSave, onCancel, note, challenge, prompt, replyToId, post, isThread } = props
   if (note?.challenge) {
     challenge = note.challenge
   }
@@ -103,6 +104,9 @@ export default function FormNote (props: FormNoteProps): JSX.Element {
       }
       if (video) {
         formData.append('video', video)
+      }
+      if (isThread) {
+        formData.append('isThread', 'true')
       }
 
       const result = await axios.post('/api/notes', formData)
@@ -187,7 +191,7 @@ export default function FormNote (props: FormNoteProps): JSX.Element {
         {(video ?? body ?? image) &&
           <button onClick={handleCancel} className="mt-2 text-sm underline ml-2">cancel</button>
         }
-        {challenge && <CardChallenge challenge={challenge} isShare={true}/>}
+        {challenge && !isThread && <CardChallenge challenge={challenge} isShare={true}/>}
         {post && <CardPost post={post} isShare={true}/>}
 
       </Form>

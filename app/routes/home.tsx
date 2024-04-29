@@ -13,8 +13,8 @@ import CardNote from '~/components/cardNote'
 import { useRevalidator } from 'react-router-dom'
 
 interface FeedLoaderData {
-  challenges: ChallengeSummary[]
-  notes: NoteSummary[]
+  challenges: Array<Partial<ChallengeSummary>>
+  notes: Array<Partial<NoteSummary>>
 };
 export const loader: LoaderFunction = async (args): Promise<FeedLoaderData> => {
   const currentUser = await requireCurrentUser(args)
@@ -40,6 +40,9 @@ export const loader: LoaderFunction = async (args): Promise<FeedLoaderData> => {
   })
   const notes = await prisma.note.findMany({
     orderBy: [{ createdAt: 'desc' }],
+    where: {
+      isThread: false
+    },
     include: {
       user: {
         include: {
@@ -79,26 +82,25 @@ export const loader: LoaderFunction = async (args): Promise<FeedLoaderData> => {
 
     }
   })
-  const posts = await prisma.post.findMany({
-    where: {
-      published: true
-    },
-    include: {
-      user: {
-        include: { profile: true }
-      }
-    }
-  })
-  console.log(posts[0].user.profile.fullName)
+  // const posts = await prisma.post.findMany({
+  //   where: {
+  //     published: true
+  //   },
+  //   include: {
+  //     user: {
+  //       include: { profile: true }
+  //     }
+  //   }
+  // })
   const _memberships = await prisma.memberChallenge.findMany({
     where: {
-      userId: currentUser.id
+      userId: currentUser ? Number(currentUser.id) : undefined
     }
   })
   // creats an array that just has the challengeIds
   const memberships = [
     ..._memberships.map(membership => membership.challengeId),
-    ...challenges.filter(challenge => challenge.userId === currentUser.id).map(challenge => challenge.id)
+    ...challenges.filter(challenge => challenge.userId === currentUser?.id).map(challenge => challenge.id)
   ]
 
   return { challenges, notes, memberships }

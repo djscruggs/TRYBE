@@ -3,19 +3,29 @@ import { requireCurrentUser } from '~/models/auth.server'
 import { json, type LoaderFunction, type ActionFunction } from '@remix-run/node'
 import { unstable_parseMultipartFormData } from '@remix-run/node'
 import { uploadHandler, writeFile } from '~/utils/uploadFile'
-import { type Note } from '@prisma/client'
+import { type CurrentUser } from '~/utils/types'
+import { type Note, type Challenge, type Post, type Comment, type User } from '@prisma/client'
 
+interface NoteData extends Note {
+  challenge?: { connect: { id: number } }
+  post?: { connect: { id: number } }
+  comment?: { connect: { id: number } }
+  user: { connect: { id: number } }
+  replyTo?: { connect: { id: number } }
+}
 export const action: ActionFunction = async (args) => {
-  const currentUser = await requireCurrentUser(args)
-
+  const currentUser: CurrentUser | null = await requireCurrentUser(args)
+  if (!currentUser) {
+    return json({ message: 'You must be logged in to create a note or thread' }, 401)
+  }
   const request = args.request
   const rawData = await unstable_parseMultipartFormData(request, uploadHandler)
-  for (const [key, value] of rawData.entries()) {
-    console.log(key, value)
-  }
-  const data: Note = {
+  // for (const [key, value] of rawData.entries()) {
+  //   console.log(key, value, typeof value)
+  // }
+  const data: NoteData = {
     body: rawData.get('body') as string ?? null,
-    user: { connect: { id: currentUser?.id } }
+    user: { connect: { id: currentUser.id } }
   }
   if (rawData.get('id')) {
     data.id = Number(rawData.get('id'))
@@ -26,11 +36,14 @@ export const action: ActionFunction = async (args) => {
   if (rawData.get('postId')) {
     data.post = { connect: { id: Number(rawData.get('postId')) } }
   }
+  console.log('isThread is', rawData.get('isThread'))
+  if (rawData.get('isThread')) {
+    data.isThread = rawData.get('isThread') === 'true'
+  }
   if (rawData.get('commentId')) {
     data.comment = { connect: { id: Number(rawData.get('commentId')) } }
   }
   if (rawData.get('replyToId')) {
-    console.log('setting reply to id')
     data.replyTo = { connect: { id: Number(rawData.get('replyToId')) } }
   }
   let result
@@ -39,7 +52,7 @@ export const action: ActionFunction = async (args) => {
   } else {
     result = await createNote(data)
   }
-  console.log('raw video is', rawData.get('video'))
+
   // check if there is a video/image OR if it should be deleted
   let image, video
   if (rawData.get('image') === 'delete') {
@@ -52,8 +65,6 @@ export const action: ActionFunction = async (args) => {
   } else if (rawData.get('video')) {
     video = rawData.get('video') as File
   }
-  console.log('data.video is ', result.video)
-  console.log('video is', video)
 
   if (image) {
     const imgNoExt = `note-${result.id}-image`

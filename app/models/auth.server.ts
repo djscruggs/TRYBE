@@ -2,7 +2,7 @@ import { prisma } from './prisma.server'
 import { createUser, getUserByClerkId } from './user.server'
 import { type RegisterForm, type LoginForm } from '../utils/types'
 import bcrypt from 'bcryptjs'
-import type { User } from '~/utils/types'
+import type { CurrentUser } from '~/utils/types'
 import { redirect, json, createCookieSessionStorage } from '@remix-run/node'
 import { getAuth } from '@clerk/remix/ssr.server'
 import { URL } from 'url'
@@ -70,7 +70,7 @@ export async function login ({ email, password, request }: LoginForm): Promise<R
   return await createUserSession(currentUser.id, redirect)
 }
 
-export async function requireCurrentUser (args): Promise< User | null> {
+export async function requireCurrentUser (args: any): Promise< CurrentUser | null> {
   const request = args.request
   const redirectTo = args.redirectTo || new URL(request.url).pathname
   const clerkUser = await getAuth(args)
@@ -96,18 +96,18 @@ export async function requireCurrentUser (args): Promise< User | null> {
   return currentUser
 }
 
-export async function getUserSession (request: Request) {
+export async function getUserSession (request: Request): Promise<Session> {
   return await storage.getSession(request?.headers.get('Cookie'))
 }
 
-async function getUserId (request: Request) {
+async function getUserId (request: Request): Promise<string | null> {
   const session = await getUserSession(request)
   const currentUserId = session.get('userId')
   if (!currentUserId) return null
   return currentUserId
 }
 
-export async function getUser (request: Request, memberChallenges = false) {
+export async function getUser (request: Request, memberChallenges = false): Promise<CurrentUser | null> {
   const userId = await getUserId(request)
   if (!userId) {
     return null
@@ -115,8 +115,11 @@ export async function getUser (request: Request, memberChallenges = false) {
 
   try {
     const user = await prisma.user.findUnique({
-      where: { id: userId },
-      select: { id: true, email: true, profile: true, memberChallenges }
+      where: { id: Number(userId) },
+      include: {
+        profile: true,
+        memberChallenges: true
+      }
     })
     return user
   } catch {
@@ -124,7 +127,7 @@ export async function getUser (request: Request, memberChallenges = false) {
   }
 }
 
-export async function logout (args: any) {
+export async function logout (args: any): Promise<Response> {
   const session = await getUserSession(args.request)
   await storage.destroySession(session)
   return redirect('/signin', {

@@ -4,6 +4,9 @@ export interface User {
   email: string
   profile?: Profile
   memberChallenges?: MemberChallenge[]
+  challenges?: Challenge[] | ChallengeSummary[]
+  notes?: Note[]
+  posts?: Post[]
 }
 export interface CurrentUser extends User {
   profile: Profile

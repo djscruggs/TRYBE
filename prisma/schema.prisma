@@ -60,7 +60,7 @@ model Note {
   isShare    Boolean    @default(false)
   likes       Like[]
   likeCount Int @default(0)
-  
+  isThread    Boolean    @default(false)
   image       String?
   video       String?    
   comment     Comment?   @relation(fields: [commentId], references: [id])
