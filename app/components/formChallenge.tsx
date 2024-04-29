@@ -220,31 +220,13 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
   }
   console.log('formData', formData)
   return (
+      <>
+        <div className='w-full flex justify-center md:justify-start'>
           <Form method="post" ref={challengeForm} encType="multipart/form-data" onSubmit={handleSubmit}>
             {/* this is here so tailwind generates the correct classes, should be moveed to tailwind.config.js file */}
-            <div className='hidden'>
-              <div className='text-purple-400 bg-purple-400 border-purple-400 ring-purple-400'>purple</div>
-              <div className='text-blue-gray-50 bg-blue-gray-50 border-blue-gray-50 ring-blue-gray-50'>blue-gray</div>
-              <div className='text-white bg-white border-white ring-white'>white</div>
-              <div className='bg-gradient-to-b from-purple-400 to-white ring-purple-400'>gradient</div>
-              <div className='text-pink-300 bg-pink-300 border-pink-300 ring-pink-300'>pink</div>
-              <div className='bg-gradient-to-b from-pink-300 to-white ring-pink-300'>gradient</div>
-              <div className='text-blue-500 bg-blue border-blue ring-blue'>blue</div>
-              <div className='bg-gradient-to-b from-blue to-white ring-blue'>gradient</div>
-              <div className='text-yellow bg-yellow border-yellow ring-yellow'>yellow</div>
-              <div className='bg-gradient-to-b from-yellow to-white'>gradient</div>
-              <div className='text-orange-500 bg-orange-500 border-orange-500'>orange</div>
-              <div className='bg-gradient-to-b from-orange-500 to-white'>gradient</div>
-              <div className='text-red bg-red border-red'>red</div>
-              <div className='bg-gradient-to-b from-red to-white'>gradient</div>
-              <div className='text-green-500 bg-green-500 border-green-500 ring-green-500'>green</div>
-              <div className='bg-gradient-to-b from-green-500 to-white ring-green-500'>gradient</div>
-              <div className='text-grey bg-grey border-grey ring-grey'>grey</div>
-              <div className='bg-gradient-to-b from-grey to-white'>gradient</div>
-            </div>
 
-            <div className="relative max-w-[800px] px-2 md:px-0 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2">
-              <div className="sm:col-span-2 lg:col-span-1">
+            <div className="w-full max-w-[600px] md:max-w-[800px] px-2 grid grid-cols-1 md:grid-cols-2  ">
+              <div className="col-span-2 w-full lg:col-span-1">
                 <div className="relative mb-2 max-w-[400px]">
                   <FormField
                     name='name'
@@ -263,22 +245,25 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
                     <Radio
                       name='public'
                       value='true'
+                      label='Anyone'
                       checked={formData.public === true}
                       onChange={handleChange}
+                      crossOrigin={undefined}
                     />
-                    <span>Anyone</span>
+
                   </div>
                   <div className="flex items-center space-x-2">
                     <Radio
                       name='public'
                       value='false'
+                      label='Invite only'
                       checked={formData.public === false}
                       onChange={handleChange}
+                      crossOrigin={undefined}
                     />
-                    <span>Invite only</span>
                   </div>
                 </div>
-                <div className="max-w-[300px] relative flex mb-2">
+                <div className="max-w-[400px] relative flex mb-2">
                   <Select
                     label="Select frequency"
                     placeholder='frequency'
@@ -337,7 +322,7 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
                     placeholder='Develop a new habit, eat healthy and lower your carbon footprint'
                     required={true}
                     type="textarea"
-                    rows={2}
+                    rows={3}
                     value={formData.description}
                     onChange={handleChange}
                     error={errors?.description}
@@ -403,7 +388,29 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
               <Button type="submit" onClick={handleSubmit} placeholder='Save' className="bg-blue">Save Challenge</Button>
               <Button type="submit" onClick={handleCancel} placeholder='Cancel' className="ml-2 bg-red">Cancel</Button>
             </div>
-          </Form>
 
+          </Form>
+        </div>
+        <div className='hidden'>
+        <div className='text-purple-400 bg-purple-400 border-purple-400 ring-purple-400'>purple</div>
+        <div className='text-blue-gray-50 bg-blue-gray-50 border-blue-gray-50 ring-blue-gray-50'>blue-gray</div>
+        <div className='text-white bg-white border-white ring-white'>white</div>
+        <div className='bg-gradient-to-b from-purple-400 to-white ring-purple-400'>gradient</div>
+        <div className='text-pink-300 bg-pink-300 border-pink-300 ring-pink-300'>pink</div>
+        <div className='bg-gradient-to-b from-pink-300 to-white ring-pink-300'>gradient</div>
+        <div className='text-blue-500 bg-blue border-blue ring-blue'>blue</div>
+        <div className='bg-gradient-to-b from-blue to-white ring-blue'>gradient</div>
+        <div className='text-yellow bg-yellow border-yellow ring-yellow'>yellow</div>
+        <div className='bg-gradient-to-b from-yellow to-white'>gradient</div>
+        <div className='text-orange-500 bg-orange-500 border-orange-500'>orange</div>
+        <div className='bg-gradient-to-b from-orange-500 to-white'>gradient</div>
+        <div className='text-red bg-red border-red'>red</div>
+        <div className='bg-gradient-to-b from-red to-white'>gradient</div>
+        <div className='text-green-500 bg-green-500 border-green-500 ring-green-500'>green</div>
+        <div className='bg-gradient-to-b from-green-500 to-white ring-green-500'>gradient</div>
+        <div className='text-grey bg-grey border-grey ring-grey'>grey</div>
+        <div className='bg-gradient-to-b from-grey to-white'>gradient</div>
+        </div>
+      </>
   )
 }
