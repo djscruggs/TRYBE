@@ -89,14 +89,14 @@ model Post {
   public     Boolean    @default(false)
   commentCount Int       @default(0)
   likeCount Int       @default(0)
-  user       User       @relation(fields: [userId], references: [id])
+  user       User       @relation(fields: [userId], references: [id], onDelete: SetNull)
   userId     Int
   categories Category[]
   notes      Note[]
   comments   Comment[]
   likes      Like[]
   challengeId Int?
-  challenge Challenge? @relation(fields: [challengeId], references: [id])
+  challenge Challenge? @relation(fields: [challengeId], references: [id], onDelete: Cascade)
   notifyMembers  Boolean? @default(false)
   notificationSentOn DateTime?
 
@@ -128,7 +128,7 @@ model Challenge {
   published    Boolean           @default(false)
   user         User              @relation(fields: [userId], references: [id])
   userId       Int
-  members      MemberChallenge[]
+  members      MemberChallenge[] 
   comments     Comment[]
   likes        Like[]
   commentCount Int       @default(0)
@@ -146,7 +146,7 @@ model MemberChallenge {
   id          Int        @id @default(autoincrement())
   user        User       @relation(fields: [userId], references: [id])
   userId      Int
-  challenge   Challenge? @relation(fields: [challengeId], references: [id])
+  challenge   Challenge? @relation(fields: [challengeId], references: [id], onDelete: Cascade)
   challengeId Int
   createdAt   DateTime   @default(now())
   lastCheckIn DateTime?
@@ -164,9 +164,9 @@ model CheckIn {
   data        String?
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
-  user        User       @relation(fields: [userId], references: [id])
+  user        User       @relation(fields: [userId], references: [id], onDelete: SetNull)
   userId      Int
-  challenge   Challenge @relation(fields: [challengeId], references: [id])
+  challenge   Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
   challengeId Int
   memberChallengeId Int
   memberChallenge MemberChallenge @relation(fields: [memberChallengeId], references: [id])
@@ -184,13 +184,13 @@ model Comment {
   userId      Int
   post        Post?      @relation(fields: [postId], references: [id])
   postId      Int?
-  challenge   Challenge? @relation(fields: [challengeId], references: [id])
+  challenge   Challenge? @relation(fields: [challengeId], references: [id], onDelete: SetNull)
   challengeId Int?
   likes       Like[]
   likeCount   Int       @default(0)
   notes       Note[]
   replyToId   Int?
-  replyTo     Comment?   @relation("ReplyTo", fields: [replyToId], references: [id])
+  replyTo     Comment?   @relation("ReplyTo", fields: [replyToId], references: [id],onDelete: SetNull)
   threadDepth Int        @default(0)
   replies     Comment[]  @relation("ReplyTo")
   replyCount  Int       @default(0)
@@ -206,13 +206,13 @@ model Like {
   createdAt   DateTime   @default(now())
   user        User       @relation(fields: [userId], references: [id])
   userId      Int
-  post        Post?      @relation(fields: [postId], references: [id])
+  post        Post?      @relation(fields: [postId], references: [id], onDelete: Cascade)
   postId      Int?
-  note        Note?      @relation(fields: [noteId], references: [id])
+  note        Note?      @relation(fields: [noteId], references: [id], onDelete: Cascade  )
   noteId      Int?
-  challenge   Challenge? @relation(fields: [challengeId], references: [id])
+  challenge   Challenge? @relation(fields: [challengeId], references: [id], onDelete: Cascade)
   challengeId Int?
-  comment     Comment?   @relation(fields: [commentId], references: [id])
+  comment     Comment?   @relation(fields: [commentId], references: [id], onDelete: Cascade)
   commentId   Int?
 
   // indexes for faster sorting by user

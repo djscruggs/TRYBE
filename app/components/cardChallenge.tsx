@@ -12,7 +12,7 @@ import { Link, useNavigate } from '@remix-run/react'
 import ShareMenu from './shareMenu'
 
 interface CardChallengeProps {
-  challenge: ChallengeSummary | Challenge
+  challenge: ChallengeSummary
   isShare?: boolean
   isMember?: boolean
 }
@@ -47,7 +47,7 @@ export default function CardChallenge ({ challenge, isShare, isMember }: CardCha
                 <div className={`bg-transparent border-2 border-${textColor} text-${textColor} rounded-full w-16 h-16 flex items-center justify-center `}>
                  {challenge.icon ? iconOptions[challenge.icon] : <GiShinyApple className={`text-${textColor} h-8 w-8`} />}
                 </div>
-                {!isShare && challenge?._count?.members &&
+                {!isShare && challenge._count &&
                 <div className="flex justify-center items-center mt-2">
                   <FaRegCalendarAlt className={`text-${textColor} h-4 w-4 mr-1`} />
                   <span className={`text-${textColor} text-xs pr-4`}>7 days</span>

@@ -2,6 +2,7 @@ import { prisma } from './prisma.server'
 import type { Challenge, ChallengeSummary, MemberChallenge } from '~/utils/types'
 import z from 'zod'
 import { addDays, isFriday, isSaturday } from 'date-fns'
+import { deleteFromCloudinary } from '~/utils/uploadFile'
 
 export const createChallenge = async (challenge: prisma.challengeCreateInput): Promise<Challenge> => {
   const newChallenge = await prisma.challenge.create({
@@ -60,30 +61,31 @@ export const loadUserCreatedChallenges = async (userId: string | number) => {
     }
   })
 }
-export const deleteChallenge = async (challengeId: string | number, userId: string | number): Promise<Challenge> => {
+export const deleteChallenge = async (challengeId: string | number, userId: string | number): Promise<prisma.challenge> => {
   const id = Number(challengeId)
   const uid = Number(userId)
   // load the challenge first so you can get a handle to the coverPhoto
   const challenge = await prisma.challenge.findUnique({
     where: { id }
   })
-  if (challenge?.coverPhoto) {
-    try {
-      const file = `${process.cwd()}/public${challenge.coverPhoto}`
-      const fs = require('fs')
-      await fs.unlink(file, (error: Error) => {
-        if (error) {
-          if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
-            console.error('file does  not  exist', file)
-          } else {
-            throw error
-          }
-        }
-      })
-    } catch (error: any) {
-      return error
-    }
+  if (!challenge) {
+    throw new Error('Challenge not found')
   }
+  try {
+    if (challenge?.coverPhotoMeta?.public_id) {
+      await deleteFromCloudinary(String(challenge.coverPhotoMeta.public_id, 'image'))
+    }
+  } catch (error: any) {
+    console.error('error deleting coverPhoto', error)
+  }
+  try {
+    if (challenge?.videoMeta?.public_id) {
+      await deleteFromCloudinary(String(challenge.videoMeta.public_id), 'video')
+    }
+  } catch (error: any) {
+    console.error('error deleting video', error)
+  }
+
   return await prisma.challenge.delete({
     where: {
       id,

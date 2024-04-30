@@ -52,9 +52,9 @@ export const saveToCloudinary = async (file: any, nameWithoutExtension: string):
   return result
 }
 
-export const deleteFromCloudinary = async (publicId: string): Promise<void> => {
-  console.log('deleting public id', publicId)
-  const result = await cloudinary.uploader.destroy(publicId)
+export const deleteFromCloudinary = async (publicId: string, { resourceType }: { resourceType: 'image' | 'video' }): Promise<void> => {
+  console.log('deleting public id', publicId, 'resource type', resourceType)
+  const result = await cloudinary.uploader.destroy(publicId, { resource_type: resourceType })
   console.log(result)
 }
 

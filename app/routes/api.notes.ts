@@ -73,7 +73,7 @@ export const action: ActionFunction = async (args) => {
       shouldUpdate = true
       // delete existing file if it exists
       if (result.imageMeta?.public_id) {
-        deleteFromCloudinary(result.imageMeta.public_id)
+        deleteFromCloudinary(result.imageMeta.public_id, 'image')
       }
       if (image) {
         const imgNoExt = `note-${result.id}-image`
@@ -92,7 +92,7 @@ export const action: ActionFunction = async (args) => {
       shouldUpdate = true
       // delete existing file if it exists
       if (result.videoMeta?.public_id) {
-        deleteFromCloudinary(result.videoMeta.public_id)
+        deleteFromCloudinary(result.videoMeta.public_id, 'video')
       }
       if (video) {
         const vidNoExt = `note-${result.id}-video`

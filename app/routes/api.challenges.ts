@@ -49,7 +49,7 @@ export async function action (args: ActionFunctionArgs): Promise<any> {
     }
     if (coverPhoto ?? rawData.get('photo') === 'delete') {
       if (data.coverPhotoMeta?.public_id) {
-        await deleteFromCloudinary(data.coverPhotoMeta?.public_id)
+        await deleteFromCloudinary(data.coverPhotoMeta?.public_id, 'image')
         data.coverPhotoMeta = null
       }
       // const nameNoExt = `challenge-${data.id}`

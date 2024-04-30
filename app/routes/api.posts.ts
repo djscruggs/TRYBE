@@ -61,7 +61,7 @@ export const action: ActionFunction = async (args) => {
     if (image ?? rawData.get('image') === 'delete') {
       // delete existing file if it exists
       if (result.imageMeta?.public_id) {
-        await deleteFromCloudinary(result.imageMeta.public_id)
+        await deleteFromCloudinary(result.imageMeta.public_id, 'image')
         result.imageMeta = null
       }
       if (image) {
@@ -78,7 +78,7 @@ export const action: ActionFunction = async (args) => {
     if (video ?? rawData.get('video') === 'delete') {
       // delete existing file if it exists
       if (result.videoMeta?.public_id) {
-        await deleteFromCloudinary(result.videoMeta.public_id)
+        await deleteFromCloudinary(result.videoMeta.public_id, 'video')
       }
       if (video) {
         const vidNoExt = `post-${result.id}-video`
