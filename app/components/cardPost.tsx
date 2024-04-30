@@ -2,7 +2,7 @@ import React, { useContext, useState } from 'react'
 import {
   Card
 } from '@material-tailwind/react'
-import type { Post } from '../utils/types'
+import type { Post, PostSummary } from '../utils/types'
 // import { AiOutlineRetweet } from 'react-icons/ai'
 // import { GoComment } from 'react-icons/go'
 import { convertlineTextToJSX } from '~/utils/helpers'
@@ -16,14 +16,19 @@ import axios from 'axios'
 import ShareMenu from './shareMenu'
 import { FaRegComment } from 'react-icons/fa'
 import Liker from './liker'
+import DialogDelete from './dialogDelete'
 
 interface CardPostProps {
-  post: Post
+  post: Post | PostSummary
   isShare?: boolean
   hasLiked?: boolean
   fullPost?: boolean
   locale?: string // used in editing
   hideMeta?: boolean
+  revalidator?: Revalidator
+}
+interface Revalidator {
+  revalidate: () => void
 }
 
 export default function CardPost (props: CardPostProps): JSX.Element {
@@ -36,6 +41,7 @@ export default function CardPost (props: CardPostProps): JSX.Element {
   const location = useLocation()
   const isOwnRoute = location.pathname === `/posts/${post.id}`
   const navigate = useNavigate()
+  const [deleteDialog, setDeleteDialog] = useState(false)
   const goToPost = (): void => {
     if (isOwnRoute) return
     navigate(`/posts/${post.id}`)
@@ -50,14 +56,25 @@ export default function CardPost (props: CardPostProps): JSX.Element {
     event.stopPropagation()
     setEditing(true)
   }
-
+  const handleDeleteDialog = (event: any): void => {
+    event.preventDefault()
+    event.stopPropagation()
+    setDeleteDialog(true)
+  }
+  const cancelDialog = (event: any): void => {
+    event.preventDefault()
+    event.stopPropagation()
+    setDeleteDialog(false)
+  }
   const handleDelete = (event: any): void => {
     event.preventDefault()
     event.stopPropagation()
     axios.delete(`/api/posts/delete/${post.id}`)
       .then(() => {
         toast.success('Post deleted')
-        revalidator.revalidate()
+        if (revalidator) {
+          revalidator.revalidate()
+        }
         navigate('/home')
       })
       .catch(error => {
@@ -68,7 +85,7 @@ export default function CardPost (props: CardPostProps): JSX.Element {
   const maxLength = 300
   const shortBody = fullPost ? post.body : post.body?.slice(0, maxLength) + '...'
   const isTruncated = shortBody?.length < post?.body?.length
-  const afterSave = (post: Post): void => {
+  const afterSave = (post: Post | PostSummary): void => {
     setPost(post)
     setEditing(false)
   }
@@ -107,12 +124,12 @@ export default function CardPost (props: CardPostProps): JSX.Element {
               {currentUser?.id === post.userId && !isShare && isOwnRoute &&
                 <div className="mt-2 text-xs text-gray-500 w-full text-right">
                     <span className='underline cursor-pointer mr-1' onClick={handleEdit}>edit</span>
-                    <span className='underline cursor-pointer mr-1' onClick={handleDelete}>delete</span>
+                    <span className='underline cursor-pointer mr-1' onClick={handleDeleteDialog}>delete</span>
                 </div>
               }
               </div>
             </div>
-
+            {deleteDialog && <DialogDelete prompt='Are you sure you want to delete this note?' isOpen={deleteDialog} deleteCallback={(event: any) => { handleDelete(event) }} onCancel={cancelDialog}/>}
           </Card>
         </div>
         {/* <span className="text-xs text-gray-500">2 hours ago</span> */}

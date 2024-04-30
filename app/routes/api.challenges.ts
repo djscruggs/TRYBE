@@ -55,7 +55,8 @@ export async function action (args: ActionFunctionArgs): Promise<any> {
       // const nameNoExt = `challenge-${data.id}`
       // data.coverPhotoMeta = await writeFile(file)
       if (coverPhoto) {
-        const coverPhotoMeta = await saveToCloudinary(coverPhoto)
+        const nameNoExt = `challenge-${data.id}-cover`
+        const coverPhotoMeta = await saveToCloudinary(coverPhoto, nameNoExt)
         data.coverPhoto = coverPhotoMeta.secure_url
         data.coverPhotoMeta = coverPhotoMeta
       }

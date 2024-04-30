@@ -147,9 +147,7 @@ interface HandleFileUploadProps {
   setFileURL?: (dataURL: string | null) => void // callback that sets the file's URL in the component's state
 }
 export function handleFileUpload ({ event, setFile, setFileURL }: HandleFileUploadProps): void {
-  console.log(event.target)
   const { files } = event.target
-  console.log('files', files)
   if (!files) return
   const file: File = files[0]
   if (file.size > 20_000_000) {
@@ -161,7 +159,6 @@ export function handleFileUpload ({ event, setFile, setFileURL }: HandleFileUplo
   fileReader.onload = (e) => {
     const result = fileReader.result
     if (setFileURL) {
-      console.log('result', result)
       if (result) {
         if (typeof result === 'string') {
           setFileURL(result)

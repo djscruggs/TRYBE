@@ -20,6 +20,7 @@ import { useRevalidator } from 'react-router-dom'
 import ShareMenu from './shareMenu'
 import { convertlineTextToJSX } from '~/utils/helpers'
 import Liker from './liker'
+import DialogDelete from './dialogDelete'
 
 interface CardNoteProps {
   note: Note
@@ -40,7 +41,11 @@ export default function CardNote (props: CardNoteProps): JSX.Element {
   const [addReply, setAddReply] = useState(false)
   const revalidator = useRevalidator()
   const navigate = useNavigate()
-  const goToNote = (): void => {
+  const [deleteDialog, setDeleteDialog] = useState(false)
+  const goToNote = (event: any): void => {
+    console.log(event)
+    event.preventDefault()
+    event.stopPropagation()
     if (isOwnRoute) return
     navigate(`/notes/${note.id}`)
   }
@@ -54,6 +59,16 @@ export default function CardNote (props: CardNoteProps): JSX.Element {
     event.preventDefault()
     event.stopPropagation()
     setEditing(true)
+  }
+  const handleDeleteDialog = (event: any): void => {
+    event.preventDefault()
+    event.stopPropagation()
+    setDeleteDialog(true)
+  }
+  const cancelDialog = (event: any): void => {
+    event.preventDefault()
+    event.stopPropagation()
+    setDeleteDialog(false)
   }
   const handleDelete = (event: any): void => {
     event.preventDefault()
@@ -163,11 +178,12 @@ export default function CardNote (props: CardNoteProps): JSX.Element {
                 {currentUser?.id === note.userId &&
                   <div className="mt-2 text-xs text-gray-500 w-full text-right">
                       <span className='underline cursor-pointer mr-1' onClick={handleEdit}>edit</span>
-                      <span className='underline cursor-pointer mr-1' onClick={handleDelete}>delete</span>
+                      <span className='underline cursor-pointer mr-1' onClick={handleDeleteDialog}>delete</span>
                   </div>
                 }
               </div>
             </div>
+            {deleteDialog && <DialogDelete prompt='Are you sure you want to delete this note?' isOpen={deleteDialog} deleteCallback={(event: any) => { handleDelete(event) }} onCancel={cancelDialog}/>}
             {note.replyTo && note.isShare &&
               <div className='mt-6 ml-10'>
                 <CardNote note={note.replyTo} isReplyTo={true} />

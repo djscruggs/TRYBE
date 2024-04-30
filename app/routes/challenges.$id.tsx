@@ -22,6 +22,7 @@ import { formatDistanceToNow, format, differenceInDays, differenceInHours } from
 import getUserLocale from 'get-user-locale'
 import Liker from '~/components/liker'
 import ShareMenu from '~/components/shareMenu'
+import DialogDelete from '~/components/dialogDelete'
 
 interface ViewChallengeData {
   challenge: ChallengeSummary
@@ -50,7 +51,7 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
   const result: ChallengeSummaryWithCounts | undefined = await loadChallengeSummary(params.id)
   if (!result) {
     const error = { loadingError: 'Challenge not found' }
-    return json(error)
+    return error
   }
   // load memberships, likes & checkins for current user if it exists
   let likes = 0
@@ -127,6 +128,7 @@ export default function ViewChallenge (): JSX.Element {
   const [loading, setLoading] = useState<boolean>(false)
   const [checkingIn, setCheckingIn] = useState<boolean>(false)
   const [isMember, setIsMember] = useState(Boolean(membership?.id))
+  const [deleteDialog, setDeleteDialog] = useState(false)
   const getFullUrl = (): string => {
     return `${window.location.origin}/challenges/${challenge?.id}`
   }
@@ -173,12 +175,17 @@ export default function ViewChallenge (): JSX.Element {
     }
     return false
   }
-
-  const handleDelete = async (event: any): Promise<void> => {
+  const handleDeleteDialog = (event: any): void => {
     event.preventDefault()
-    if (!confirm('Are you sure you want to delete this challenge?')) {
-      return
-    }
+    event.stopPropagation()
+    setDeleteDialog(true)
+  }
+  const cancelDialog = (event: any): void => {
+    event.preventDefault()
+    event.stopPropagation()
+    setDeleteDialog(false)
+  }
+  const handleDelete = async (event: any): Promise<void> => {
     if (!challenge?.id) {
       throw new Error('cannot delete without an id')
     }
@@ -239,18 +246,19 @@ export default function ViewChallenge (): JSX.Element {
     <>
     <div className={`max-w-sm md:max-w-md lg:max-w-lg border border-transparent border-b-inherit rounded-md bg-gradient-to-b from-${color} to-90%`}>
       <div className={'mb-2 mt-0.5 flex justify-center max-h-80 '}>
-          {challenge.coverPhoto && <img src={`${challenge.coverPhoto}?${Date.now()}`} alt={`${challenge.name!} cover photo`} className="w-full rounded-sm" />}
+          {challenge.coverPhoto && <img src={`${challenge.coverPhoto}?${Date.now()}`} alt={`${challenge?.name} cover photo`} className="w-full rounded-sm" />}
       </div>
       <div className="mb-6 px-4 flex flex-col justify-center">
       {challenge.icon && <div className="mb-2 flex justify-center">{iconOptions[challenge.icon]}</div>}
-        <h1 className='flex justify-center text-2xl'>{challenge.name!}</h1>
+        <h1 className='flex justify-center text-2xl'>{challenge.name}</h1>
         {challenge.userId === currentUser?.id && (
           <div className="flex justify-center mt-2">
             <Link className='underline text-red' to = {`/challenges/${challenge.id as string | number}/edit`}>edit</Link>&nbsp;&nbsp;
-            <Link className='underline text-red' onClick={handleDelete} to = {`/challenges/edit/${challenge.id as string | number}`}>delete</Link>&nbsp;&nbsp;
+            <Link className='underline text-red' onClick={handleDeleteDialog} to = {`/challenges/edit/${challenge.id as string | number}`}>delete</Link>&nbsp;&nbsp;
           </div>
         )}
       </div>
+      {deleteDialog && <DialogDelete prompt='Are you sure you want to delete this challenge?' isOpen={deleteDialog} deleteCallback={handleDelete} onCancel={cancelDialog}/>}
       <div className='p-4'>
         <div className="mb-2 text-sm">
           {new Date(challenge.startAt).toLocaleDateString(undefined, dateOptions)} to {new Date(challenge.endAt).toLocaleDateString(undefined, dateOptions)}
@@ -258,7 +266,7 @@ export default function ViewChallenge (): JSX.Element {
         <div className="mb-2">
           <div className='text-center text-sm font-bold'>About</div>
           <div className='text-left mb-4'>
-          {convertlineTextToJSX(challenge.description)}
+          {convertlineTextToJSX(challenge?.description ?? '')}
           </div>
         </div>
         {challenge.mission && (
@@ -270,7 +278,7 @@ export default function ViewChallenge (): JSX.Element {
         </div>
         )}
         <div className="mb-2 text-sm">
-          Checks in <span className="capitalize">{challenge.frequency.toLowerCase()}</span>
+          Checks in <span className="capitalize">{challenge?.frequency?.toLowerCase()}</span>
         </div>
 
       </div>

@@ -54,7 +54,16 @@ export interface Post {
   user?: User
   notifyMembers?: boolean | null
   notificationSentOn: Date | null
+  live?: boolean // computed field @see prisma.server
 }
+export interface PostSummary extends Post {
+  _count: {
+    likes: number
+    comments: number
+  }
+
+}
+
 export interface Challenge {
   id: number
   name: string | null

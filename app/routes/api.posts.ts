@@ -65,8 +65,8 @@ export const action: ActionFunction = async (args) => {
         result.imageMeta = null
       }
       if (image) {
-        // const imgNoExt = `note-${result.id}-image`
-        const imgMeta = await saveToCloudinary(image)
+        const imgNoExt = `post-${result.id}-image`
+        const imgMeta = await saveToCloudinary(image, imgNoExt)
         result.image = imgMeta.secure_url
         result.imageMeta = imgMeta
       }
@@ -81,8 +81,8 @@ export const action: ActionFunction = async (args) => {
         await deleteFromCloudinary(result.videoMeta.public_id)
       }
       if (video) {
-        // const vidNoExt = `note-${result.id}-video`
-        const videoMeta = await saveToCloudinary(video)
+        const vidNoExt = `post-${result.id}-video`
+        const videoMeta = await saveToCloudinary(video, vidNoExt)
         result.video = videoMeta.secure_url
         result.videoMeta = videoMeta
       } else {

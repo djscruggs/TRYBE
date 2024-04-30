@@ -45,7 +45,7 @@ export default function CardChallenge ({ challenge, isShare, isMember }: CardCha
             <div className="grid grid-cols-3 gap-4">
               <div className="flex flex-col justify-center items-center col-span-1">
                 <div className={`bg-transparent border-2 border-${textColor} text-${textColor} rounded-full w-16 h-16 flex items-center justify-center `}>
-                 {iconOptions[challenge.icon] || <GiShinyApple className={`text-${textColor} h-8 w-8`} />}
+                 {challenge.icon ? iconOptions[challenge.icon] : <GiShinyApple className={`text-${textColor} h-8 w-8`} />}
                 </div>
                 {!isShare && challenge?._count?.members &&
                 <div className="flex justify-center items-center mt-2">

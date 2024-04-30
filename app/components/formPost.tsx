@@ -6,7 +6,6 @@ import { handleFileUpload } from '~/utils/helpers'
 import { type Post, type ChallengeSummary } from '~/utils/types'
 import { Button, Radio, Checkbox } from '@material-tailwind/react'
 import { MdOutlineAddPhotoAlternate } from 'react-icons/md'
-import { BiVideoPlus, BiVideoOff } from 'react-icons/bi'
 import { TiDeleteOutline } from 'react-icons/ti'
 import VideoRecorder from './videoRecorder'
 import VideoPreview from './videoPreview'
@@ -100,7 +99,6 @@ export default function FormPost (props: FormPostProps): JSX.Element {
     setShowVideoRecorder(false)
   }
   const handlePublish = (event: any): void => {
-    console.log('handling publish')
     setFormData(prevFormData => ({
       ...prevFormData,
       published: true
@@ -178,9 +176,8 @@ export default function FormPost (props: FormPostProps): JSX.Element {
       }
       const result = await axios.post('/api/posts', toSubmit)
       toast.success('Post saved')
-      console.log('result after submit', post)
       if (afterSave) {
-        afterSave(result.data)
+        afterSave(result.data as PostSummary)
       } else {
         navigate('/posts/' + result.data.id)
       }

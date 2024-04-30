@@ -34,14 +34,16 @@ const _newFileName = (file: any, nameWithoutExtension: string): string => {
   return `${nameWithoutExtension}.${ext}`
 }
 
-export const saveToCloudinary = async (file: any): Promise<UploadApiResponse> => {
+export const saveToCloudinary = async (file: any, nameWithoutExtension: string): Promise<UploadApiResponse> => {
   // first write file to the uploads directory
   // const uploadedName = await writeFile(file, nameWithoutExtension)
   // const filePath = `${directory}${uploadedName}`
+  // const fileName = _newFileName(file, nameWithoutExtension)
   const filePath = String(file.filepath)
   const options = {
     use_filename: false,
     unique_filename: false,
+    public_id: nameWithoutExtension,
     overwrite: true,
     resource_type: 'auto'
   }
