@@ -78,6 +78,7 @@ export async function requireCurrentUser (args: any): Promise< CurrentUser | nul
   if (!clerkUser.userId) {
     dbUser = await getUser(request)
   } else {
+    console.log('getting by clerk id', clerkUser.userId)
     dbUser = await getUserByClerkId(clerkUser.userId)
   }
   const currentUser = dbUser
@@ -85,9 +86,8 @@ export async function requireCurrentUser (args: any): Promise< CurrentUser | nul
   const url = require('url')
   const path = url.parse(request.url).pathname
   if (!currentUser) {
-    if (!['/login', '/register', 'signup', 'signin'].includes(path)) {
+    if (!['/login', '/register', '/signup', '/signin'].includes(path)) {
       const searchParams = new URLSearchParams([['redirectTo', redirectTo]])
-      console.log('redirecting')
       throw redirect(`/signin?${searchParams}`)
     } else {
       console.log('NOT redirecting')

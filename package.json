@@ -1,12 +1,14 @@
 {
   "scripts": {
+    "production": "flyctl deploy --config ./fly.production.toml",
+    "staging": "flyctl deploy --config ./fly.staging.toml",
     "generate": "npx prisma generate",
     "deploy": "npx prisma migrate deploy",
     "setup": "prisma generate && prisma migrate deploy",
     "styles": " npx tailwindcss -i ./app/tailwind.css -o ./app/output.css --watch",
     "build": "find ./ -name \".DS_Store\" -print -delete; remix build",
     "dev": "find ./ -name \".DS_Store\" -print -delete; remix dev",
-    "start": "find ./ -name \".DS_Store\" -print -delete; remix-serve ./build/index.js",
+    "start": "remix-serve ./build/index.js",
     "test": "vitest",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
