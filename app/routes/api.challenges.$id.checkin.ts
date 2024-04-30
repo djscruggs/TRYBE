@@ -55,7 +55,19 @@ export async function action (args: ActionFunctionArgs): Promise<prisma.challeng
       }
     })
     console.log('dateUpdate', dateUpdate)
-    return { checkIn: result, membership }
+    // reload membership
+    const reloaded = await prisma.memberChallenge.findFirst({
+      where: {
+        userId: Number(currentUser.id),
+        challengeId: Number(params.id)
+      },
+      include: {
+        _count: {
+          select: { checkIns: true }
+        }
+      }
+    })
+    return { checkIn: result, memberChallenge: reloaded }
   } else {
     // eslint-disable-next-line @typescript-eslint/no-throw-literal
     throw new Response(null, {
