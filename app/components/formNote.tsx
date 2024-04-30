@@ -53,7 +53,7 @@ export default function FormNote (props: FormNoteProps): JSX.Element {
     const params = {
       event,
       setFile: setImage,
-      setFileDataURL: setImageUrl
+      setFileURL: setImageUrl
     }
     handleFileUpload(params)
   }

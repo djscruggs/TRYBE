@@ -5,7 +5,7 @@ import React, {
   type ChangeEvent
 } from 'react'
 import { Form, useNavigate } from '@remix-run/react'
-import type { ObjectData } from '~/utils/types.server'
+import type { ObjectData } from '~/utils/types'
 import { Button, Select, Option, Radio } from '@material-tailwind/react'
 import { FormField } from '~/components/formField'
 import DatePicker from 'react-datepicker'
@@ -35,7 +35,6 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
   const challenge = { ...props.challenge }
   delete challenge._count
   const [formData, setFormData] = useState(challenge)
-  console.log(props)
   const localDateFormat = props.locale === 'en-US' ? 'M-dd-YYYY' : 'dd-M-YYYY'
   function selectDate (name: string, value: Date): void {
     setFormData((prevFormData: ObjectData) => ({
@@ -44,10 +43,7 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
     }))
   }
   const handleChange = (event: ChangeEvent<HTMLInputElement | HTMLSelectElement>): void => {
-    console.log('event', event.target)
     const { name, value } = event.target
-    console.log('name', name)
-    console.log('value', value)
     if (name === 'public') {
       setFormData((prevFormData: ObjectData) => ({
         ...prevFormData,
@@ -137,8 +133,8 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
     if (formData.coverPhoto) {
       toSubmit.set('coverPhoto', formData.coverPhoto)
     }
-    if (file !== null) {
-      toSubmit.append('photo', file)
+    if (photo !== null) {
+      toSubmit.append('photo', photo)
     }
     if (formData.id !== undefined) {
       toSubmit.append('id', String(formData.id))
@@ -165,52 +161,58 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
       navigate(`/challenges/${response.data.id}`)
     }
   }
-  const [file, setFile] = useState<File | null>(null)
-  const [fileDataURL, setFileDataURL] = useState<string | null>(formData.coverPhoto ? String(formData.coverPhoto) : null)
+  const [photo, setPhoto] = useState<File | null>(null)
+  const [photoURL, setPhotoURL] = useState<string | null>(formData.coverPhoto ? String(formData.coverPhoto) : null)
 
-  const handlePhoto = (event: ChangeEvent<HTMLInputElement>): void => {
+  const handleCoverPhoto = (event: ChangeEvent<HTMLInputElement>): void => {
     const params = {
       event,
-      setFile,
-      setFileDataURL
+      setFile: setPhoto,
+      setFileURL: setPhotoURL
     }
     handleFileUpload(params)
   }
   const removePhoto = (): void => {
-    setFile(null)
-    setFileDataURL(null)
+    setPhoto(null)
+    setPhotoURL(null)
+    if (formData.coverPhoto) {
+      setFormData((prevFormData: ObjectData) => ({
+        ...prevFormData,
+        coverPhoto: 'delete'
+      }))
+    }
   }
 
-  useEffect(() => {
-    let fileReader: FileReader | null = null
-    let isCancel = false
-    if (file) {
-      fileReader = new FileReader()
-      fileReader.onload = (e) => {
-        const result = e.target?.result
-        if (result && !isCancel) {
-          if (typeof result === 'string') {
-            setFileDataURL(result)
-          } else {
-            setFileDataURL(null)
-          }
-        }
-      }
-      fileReader.readAsDataURL(file)
-    }
-    return () => {
-      isCancel = true
-      if (fileReader && fileReader.readyState === 1) {
-        fileReader.abort()
-      }
-    }
-  }, [file])
-  const fileInput = (): JSX.Element => {
-    const textColor = fileDataURL ? 'white' : 'blue-gray-50'
+  // useEffect(() => {
+  //   let fileReader: FileReader | null = null
+  //   let isCancel = false
+  //   if (photo) {
+  //     fileReader = new FileReader()
+  //     fileReader.onload = (e) => {
+  //       const result = e.target?.result
+  //       if (result && !isCancel) {
+  //         if (typeof result === 'string') {
+  //           setPhotoURL(result)
+  //         } else {
+  //           setPhotoURL(null)
+  //         }
+  //       }
+  //     }
+  //     fileReader.readAsDataURL(photo)
+  //   }
+  //   return () => {
+  //     isCancel = true
+  //     if (fileReader && fileReader.readyState === 1) {
+  //       fileReader.abort()
+  //     }
+  //   }
+  // }, [photo])
+  const photoInput = (): JSX.Element => {
+    const textColor = photoURL ? 'white' : 'blue-gray-50'
     return (
       <input type="file"
         name="coverPhoto"
-        onChange={handlePhoto}
+        onChange={handleCoverPhoto}
         accept="image/*"
         className={`text-sm text-${textColor}
                   file:text-white
@@ -223,7 +225,6 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
       />
     )
   }
-  console.log('formData', formData)
   return (
       <>
         <div className='w-full flex justify-center md:justify-start'>
@@ -361,25 +362,25 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
                   ))}
                 </div>
                 <div className='w-full mt-2'>
-                  <div className={`max-w-md mb-2 h-60 rounded-md flex items-center justify-center ${fileDataURL ? '' : 'bg-blue-gray-50'}`}>
-                    {fileDataURL &&
+                  <div className={`max-w-md mb-2 h-60 rounded-md flex items-center justify-center ${photoURL ? '' : 'bg-blue-gray-50'}`}>
+                    {photoURL &&
                       <>
-                      <img src={fileDataURL} alt="cover photo" className="max-w-full max-h-60" />
+                      <img src={photoURL} alt="cover photo" className="max-w-full max-h-60" />
                       </>
                     }
-                    {!fileDataURL &&
+                    {!photoURL &&
                       <div className="flex flex-col items-center justify-end">
                         <p className="text-2xl text-blue-gray-500 text-center">Upload a cover photo</p>
                         <div className='mt-10 ml-36'>
-                          {fileInput()}
+                          {photoInput()}
                         </div>
                       </div>
                     }
                   </div>
                   <div className='px-[28%] justify-center items-center'>
-                    {fileDataURL &&
+                    {photoURL &&
                       <>
-                        {fileInput()}
+                        {photoInput()}
                         <p onClick={removePhoto} className='text-red underline ml-[130px] -mt-8 cursor-pointer'>remove</p>
                       </>
                     }

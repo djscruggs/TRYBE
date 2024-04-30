@@ -143,10 +143,10 @@ export function textToHtml (text): string {
 
 interface HandleFileUploadProps {
   event: ChangeEvent<HTMLInputElement> // event that triggers the file upload
-  setFile: (file: File | null) => void // callback that sets the file in the component's variable
-  setFileDataURL?: (dataURL: string | null) => void // callback that sets the file's data URL in the component's variable
+  setFile: (file: File | null) => void // callback that sets the file in the component's state
+  setFileURL?: (dataURL: string | null) => void // callback that sets the file's URL in the component's state
 }
-export function handleFileUpload ({ event, setFile, setFileDataURL }: HandleFileUploadProps): void {
+export function handleFileUpload ({ event, setFile, setFileURL }: HandleFileUploadProps): void {
   console.log(event.target)
   const { files } = event.target
   console.log('files', files)
@@ -160,13 +160,13 @@ export function handleFileUpload ({ event, setFile, setFileDataURL }: HandleFile
   const fileReader = new FileReader()
   fileReader.onload = (e) => {
     const result = fileReader.result
-    if (setFileDataURL) {
+    if (setFileURL) {
       console.log('result', result)
       if (result) {
         if (typeof result === 'string') {
-          setFileDataURL(result)
+          setFileURL(result)
         } else {
-          setFileDataURL(null)
+          setFileURL(null)
         }
       }
     }

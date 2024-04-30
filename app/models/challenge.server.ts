@@ -34,6 +34,7 @@ export const loadChallenge = async (challengeId: number, userId?: number): Promi
   })
 }
 export const loadChallengeSummary = async (challengeId: string | number): Promise<ChallengeSummary> => {
+  console.log('loadChallengeSummary id is', challengeId)
   const id = Number(challengeId)
   return await prisma.challenge.findUnique({
     where: {

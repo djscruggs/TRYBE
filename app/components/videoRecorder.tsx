@@ -132,7 +132,7 @@ const VideoRecorder = ({ onStart, onStop, onSave, onFinish, uploadOnly }: VideoR
   }
   const handleVideoUpload = (event: React.ChangeEvent<HTMLInputElement>): void => {
     console.log(event.target)
-    handleFileUpload({ event, setFile: setVideoFile, setFileDataURL: setLocalVideoUrl })
+    handleFileUpload({ event, setFile: setVideoFile, setFileURL: setLocalVideoUrl })
   }
   const saveVideo = (): void => {
     onSave(videoFile)

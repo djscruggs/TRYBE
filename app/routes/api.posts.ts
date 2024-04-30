@@ -62,14 +62,13 @@ export const action: ActionFunction = async (args) => {
       // delete existing file if it exists
       if (result.imageMeta?.public_id) {
         await deleteFromCloudinary(result.imageMeta.public_id)
+        result.imageMeta = null
       }
       if (image) {
         // const imgNoExt = `note-${result.id}-image`
         const imgMeta = await saveToCloudinary(image)
         result.image = imgMeta.secure_url
         result.imageMeta = imgMeta
-      } else {
-        result.imageMeta = null
       }
     }
   } catch (error) {
