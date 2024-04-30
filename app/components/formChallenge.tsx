@@ -168,8 +168,13 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
   const [file, setFile] = useState<File | null>(null)
   const [fileDataURL, setFileDataURL] = useState<string | null>(formData.coverPhoto ? String(formData.coverPhoto) : null)
 
-  const handlePhoto = (e: ChangeEvent<HTMLInputElement>): void => {
-    handleFileUpload(e, setFile, setFileDataURL)
+  const handlePhoto = (event: ChangeEvent<HTMLInputElement>): void => {
+    const params = {
+      event,
+      setFile,
+      setFileDataURL
+    }
+    handleFileUpload(params)
   }
   const removePhoto = (): void => {
     setFile(null)

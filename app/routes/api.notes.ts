@@ -2,9 +2,9 @@ import { createNote, updateNote, loadNoteSummary } from '~/models/note.server'
 import { requireCurrentUser } from '~/models/auth.server'
 import { json, type LoaderFunction, type ActionFunction } from '@remix-run/node'
 import { unstable_parseMultipartFormData } from '@remix-run/node'
-import { uploadHandler, writeFile } from '~/utils/uploadFile'
+import { uploadHandler, saveToCloudinary, deleteFromCloudinary } from '~/utils/uploadFile'
 import { type CurrentUser } from '~/utils/types'
-import { type Note, type Challenge, type Post, type Comment, type User } from '@prisma/client'
+import { type Note } from '@prisma/client'
 
 interface NoteData extends Note {
   challenge?: { connect: { id: number } }
@@ -23,8 +23,8 @@ export const action: ActionFunction = async (args) => {
   // for (const [key, value] of rawData.entries()) {
   //   console.log(key, value, typeof value)
   // }
-  const data: NoteData = {
-    body: rawData.get('body') as string ?? null,
+  const data: Partial<NoteData> = {
+    body: rawData.get('body') as string ?? '',
     user: { connect: { id: currentUser.id } }
   }
   if (rawData.get('id')) {
@@ -52,7 +52,9 @@ export const action: ActionFunction = async (args) => {
   } else {
     result = await createNote(data)
   }
-
+  console.log('checking raw data')
+  console.log(rawData.get('image'))
+  console.log(rawData.get('video'))
   // check if there is a video/image OR if it should be deleted
   let image, video
   if (rawData.get('image') === 'delete') {
@@ -65,20 +67,51 @@ export const action: ActionFunction = async (args) => {
   } else if (rawData.get('video')) {
     video = rawData.get('video') as File
   }
-
-  if (image) {
-    const imgNoExt = `note-${result.id}-image`
-    const imgPath = await writeFile(image, imgNoExt)
-    result.image = imgPath
+  let shouldUpdate = false
+  try {
+    if (image ?? rawData.get('image') === 'delete') {
+      shouldUpdate = true
+      // delete existing file if it exists
+      if (result.imageMeta?.public_id) {
+        await deleteFromCloudinary(result.imageMeta.public_id)
+      }
+      if (image) {
+        // const imgNoExt = `note-${result.id}-image`
+        const imgMeta = await saveToCloudinary(image)
+        result.image = imgMeta.secure_url
+        result.imageMeta = imgMeta
+      } else {
+        result.imageMeta = null
+      }
+    }
+  } catch (error) {
+    console.error('error uploading image', error)
   }
-  if (video) {
-    const vidNoExt = `note-${result.id}-video`
-    const vidPath = await writeFile(video, vidNoExt)
-    result.video = vidPath
+  try {
+    if (video ?? rawData.get('video') === 'delete') {
+      shouldUpdate = true
+      // delete existing file if it exists
+      if (result.videoMeta?.public_id) {
+        await deleteFromCloudinary(result.videoMeta.public_id)
+      }
+      if (video) {
+        const vidNoExt = `note-${result.id}-video`
+        const videoMeta = await saveToCloudinary(video, vidNoExt)
+        result.video = videoMeta.secure_url
+        result.videoMeta = videoMeta
+      } else {
+        result.videoMeta = null
+      }
+    }
+  } catch (error) {
+    console.error('error uploading video', error)
+  }
+  if (shouldUpdate) {
+    await updateNote(result)
   }
   // send back a full note that includes profile, user etc
   const newNote = await loadNoteSummary(result.id)
-  return json(newNote)
+  return newNote
 }
 
 export const loader: LoaderFunction = async (args) => {

@@ -49,8 +49,13 @@ export default function FormNote (props: FormNoteProps): JSX.Element {
       imageRef.current.click()
     }
   }
-  const handleImage = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    handleFileUpload(e, setImage, setImageUrl)
+  const handleImage = (event: React.ChangeEvent<HTMLInputElement>): void => {
+    const params = {
+      event,
+      setFile: setImage,
+      setFileDataURL: setImageUrl
+    }
+    handleFileUpload(params)
   }
   const videoChooserCallbackShow = (uploadOnly: boolean): void => {
     if (uploadOnly) {

@@ -47,7 +47,7 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
   if (!params.id) {
     return null
   }
-  const result: ChallengeSummaryWithCounts | undefined = await loadChallengeSummary(params.id, true)
+  const result: ChallengeSummaryWithCounts | undefined = await loadChallengeSummary(params.id)
   if (!result) {
     const error = { loadingError: 'Challenge not found' }
     return json(error)
@@ -113,21 +113,20 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
   return data
 }
 export default function ViewChallenge (): JSX.Element {
-  const data: ViewChallengeData = useLoaderData() as ViewChallengeData
+  const data: ViewChallengeData = useLoaderData()
   const { challenge, hasLiked, latestPost } = data
   const [membership, setMembership] = useState(data.membership)
 
   const likesCount = challenge?._count.likes
   const location = useLocation()
-  if (location.pathname.includes('edit') || location.pathname.includes('share')) {
-    return <Outlet />
-  }
+
   const showLatestPost = !location.pathname.includes('members')
   const isComments = location.pathname.includes('comments')
   const { currentUser } = useContext(CurrentUserContext)
   const navigate = useNavigate()
   const [loading, setLoading] = useState<boolean>(false)
   const [checkingIn, setCheckingIn] = useState<boolean>(false)
+  const [isMember, setIsMember] = useState(Boolean(membership?.id))
   const getFullUrl = (): string => {
     return `${window.location.origin}/challenges/${challenge?.id}`
   }
@@ -142,7 +141,9 @@ export default function ViewChallenge (): JSX.Element {
     return <p>Loading...</p>
   }
 
-  const [isMember, setIsMember] = useState(Boolean(membership?.id))
+  if (location.pathname.includes('edit') || location.pathname.includes('share')) {
+    return <Outlet />
+  }
 
   const formatNextCheckin = (): string => {
     if (!membership?.nextCheckIn) {

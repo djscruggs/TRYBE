@@ -17,9 +17,10 @@ export const createChallenge = async (challenge: prisma.challengeCreateInput): P
   return newChallenge
 }
 export const updateChallenge = async (challenge: prisma.challengeCreateInput): Promise<Challenge> => {
+  const { id, userId, ...data } = challenge
   return await prisma.challenge.update({
-    where: { id: challenge.id },
-    data: challenge
+    where: { id },
+    data
   })
 }
 export const loadChallenge = async (challengeId: number, userId?: number): Promise<Challenge | null> => {
@@ -32,7 +33,7 @@ export const loadChallenge = async (challengeId: number, userId?: number): Promi
     where
   })
 }
-export const loadChallengeSummary = async (challengeId: string | number, counts = false): Promise<ChallengeSummary> => {
+export const loadChallengeSummary = async (challengeId: string | number): Promise<ChallengeSummary> => {
   const id = Number(challengeId)
   return await prisma.challenge.findUnique({
     where: {

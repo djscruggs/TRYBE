@@ -18,7 +18,9 @@ export interface Note {
   userId?: number
   body: string | null
   image?: string | null
+  imageMeta?: Record<string, unknown> | null
   video?: string | null
+  videoMeta?: Record<string, unknown> | null
   challengeId?: number
   challenge?: Challenge
   postId?: number
@@ -38,7 +40,9 @@ export interface Post {
   title?: string | null
   body?: string | null
   image?: string | null
+  imageMeta?: Record<string, unknown> | null
   video?: string | null
+  videoMeta?: Record<string, unknown> | null
   embed?: string | null
   public?: boolean
   challengeId?: number | null
@@ -60,6 +64,7 @@ export interface Challenge {
   endAt?: Date | null
   frequency?: 'DAILY' | 'WEEKDAYS' | 'ALTERNATING' | 'WEEKLY' | 'CUSTOM'
   coverPhoto?: string | null
+  coverPhotoMeta?: Record<string, unknown> | null
   icon?: string | null
   color?: string | null
   reminders?: boolean

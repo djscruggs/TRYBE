@@ -2,7 +2,7 @@ import { requireCurrentUser } from '../models/auth.server'
 import { type LoaderFunction } from '@remix-run/node'
 
 // Require the cloudinary library
-const cloudinary = require('cloudinary').v2
+import { v2 as cloudinary } from 'cloudinary'
 
 // Return "https" URLs by setting secure: true
 cloudinary.config({
@@ -10,7 +10,6 @@ cloudinary.config({
 })
 
 // Log the configuration
-console.log(cloudinary.config())
 
 export const loader: LoaderFunction = async (args) => {
   await requireCurrentUser(args)
@@ -20,7 +19,7 @@ export const loader: LoaderFunction = async (args) => {
     overwrite: true,
     resource_type: 'auto'
   }
-  const imagePath = process.cwd() + '/public/uploads/post-video-38.webm'
+  const imagePath = process.cwd() + '/public/uploads/note-42-image.png'
   try {
     // Upload the image
     const result = await cloudinary.uploader.upload(imagePath, options)

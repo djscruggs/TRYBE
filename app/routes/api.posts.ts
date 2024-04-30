@@ -5,7 +5,7 @@ import { loadChallenge } from '~/models/challenge.server'
 import { requireCurrentUser } from '~/models/auth.server'
 import { json, type LoaderFunction, type ActionFunction } from '@remix-run/node'
 import { unstable_parseMultipartFormData } from '@remix-run/node'
-import { uploadHandler, writeFile } from '~/utils/uploadFile'
+import { uploadHandler, saveToCloudinary, deleteFromCloudinary } from '~/utils/uploadFile'
 import { mailPost } from '~/utils/mailer'
 import getUserLocale from 'get-user-locale'
 import { format, isPast, isEqual } from 'date-fns'
@@ -13,7 +13,7 @@ import { textToHtml } from '~/utils/helpers'
 import escape from 'escape-html'
 
 export const action: ActionFunction = async (args) => {
-  const currentUser = await requireCurrentUser(args) as CurrentUser
+  const currentUser = (await requireCurrentUser(args))!
   const request = args.request
   const rawData = await unstable_parseMultipartFormData(request, uploadHandler)
   // if this is for a challenge, load it and check whether it's public
@@ -37,18 +37,7 @@ export const action: ActionFunction = async (args) => {
     data.challengeId = challenge.id
     data.public = Boolean(challenge.public)
   }
-  // check if there is a video/image OR if it should be deleted
-  let image, video
-  if (rawData.get('image') === 'delete') {
-    data.image = null
-  } else if (rawData.get('image')) {
-    image = rawData.get('image') as File
-  }
-  if (rawData.get('video') === 'delete') {
-    data.video = null
-  } else if (rawData.get('video')) {
-    video = rawData.get('video') as File
-  }
+  // save what we have so far
   let result
   if (rawData.get('id')) {
     data.id = Number(rawData.get('id'))
@@ -56,21 +45,56 @@ export const action: ActionFunction = async (args) => {
   } else {
     result = await createPost(data as Post)
   }
-  let updated = result
-  if (image?.name || video?.name) {
-    if (image?.name) {
-      const imgNoExt = `post-${result.id}-image`
-      const imgPath = await writeFile(image, imgNoExt)
-      result.image = imgPath
-    }
-    if (video?.name) {
-      const vidNoExt = `post-${result.id}-video`
-      const vidPath = await writeFile(video, vidNoExt)
-      result.video = vidPath
-    }
-
-    updated = await updatePost(result)
+  // check if there is a video/image OR if it should be deleted
+  let image, video
+  if (rawData.get('image') === 'delete') {
+    result.image = null
+  } else if (rawData.get('image')) {
+    image = rawData.get('image') as File
   }
+  if (rawData.get('video') === 'delete') {
+    result.video = null
+  } else if (rawData.get('video')) {
+    video = rawData.get('video') as File
+  }
+  try {
+    if (image ?? rawData.get('image') === 'delete') {
+      // delete existing file if it exists
+      if (result.imageMeta?.public_id) {
+        await deleteFromCloudinary(result.imageMeta.public_id)
+      }
+      if (image) {
+        // const imgNoExt = `note-${result.id}-image`
+        const imgMeta = await saveToCloudinary(image)
+        result.image = imgMeta.secure_url
+        result.imageMeta = imgMeta
+      } else {
+        result.imageMeta = null
+      }
+    }
+  } catch (error) {
+    console.error('error uploading image', error)
+  }
+  try {
+    if (video ?? rawData.get('video') === 'delete') {
+      // delete existing file if it exists
+      if (result.videoMeta?.public_id) {
+        await deleteFromCloudinary(result.videoMeta.public_id)
+      }
+      if (video) {
+        // const vidNoExt = `note-${result.id}-video`
+        const videoMeta = await saveToCloudinary(video)
+        result.video = videoMeta.secure_url
+        result.videoMeta = videoMeta
+      } else {
+        result.videoMeta = null
+      }
+    }
+  } catch (error) {
+    console.error('error uploading video', error)
+  }
+  const updated = await updatePost(result)
+
   // @ts-expect-error live is a computed field and not recognized in prisma Post type -- see prisma.server
   if (updated.live) {
     const baseUrl = new URL(args.request.url).origin

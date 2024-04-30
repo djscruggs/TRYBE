@@ -62,7 +62,9 @@ model Note {
   likeCount Int @default(0)
   isThread    Boolean    @default(false)
   image       String?
-  video       String?    
+  imageMeta   Json?
+  video       String?
+  videoMeta   Json?
   comment     Comment?   @relation(fields: [commentId], references: [id])
   commentId   Int?
 
@@ -78,8 +80,10 @@ model Post {
   publishAt  DateTime?  
   title      String
   body       String?
-  image      String?    
+  image      String?
+  imageMeta  Json?
   video      String?    
+  videoMeta Json?
   embed      String?    @db.Text
   published  Boolean    @default(false)
   public     Boolean    @default(false)
@@ -110,7 +114,9 @@ model Challenge {
   endAt        DateTime?
   frequency    Frequency         @default(DAILY)
   coverPhoto   String?
+  coverPhotoMeta Json?
   video        String?           
+  videoMeta   Json?
   icon         String?
   color        String?
   reminders    Boolean           @default(false)

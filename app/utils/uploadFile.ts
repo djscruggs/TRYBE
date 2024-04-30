@@ -1,18 +1,15 @@
 import { promises as fs } from 'fs'
 import { unstable_composeUploadHandlers, unstable_createFileUploadHandler, unstable_createMemoryUploadHandler } from '@remix-run/node'
+import { v2 as cloudinary } from 'cloudinary'
+import type { UploadApiResponse } from 'cloudinary'
 
 export async function writeFile (file: any, nameWithoutExtension: string): Promise<string> {
-  let ext = file.type.split('/').at(-1)
-  // check if it's a webm file - video file types have extra encoding stuff at the end so you can't use just the last element
-  if (ext.includes('webm')) {
-    ext = 'webm'
-  }
-  const fullName = `${nameWithoutExtension}.${ext}`
   const directory = `${process.cwd()}/public/uploads`
-  const src = file.filepath
+  const fullName = _newFileName(file, nameWithoutExtension)
   const dest = `${directory}/${fullName}`
+  const src = String(file.filepath)
 
-  const deleteExistingFiles = async (directory: string, fullName: string) => {
+  const deleteExistingFiles = async (directory: string, fullName: string): Promise<void> => {
     const files = await fs.readdir(directory)
     for (const file of files) {
       const match = file.match(new RegExp(escapeRegExp(fullName) + '.*'))
@@ -27,6 +24,38 @@ export async function writeFile (file: any, nameWithoutExtension: string): Promi
 
   return `/uploads/${fullName}`
 }
+
+const _newFileName = (file: any, nameWithoutExtension: string): string => {
+  let ext = file.type.split('/').at(-1)
+  // check if it's a webm file - video file types have extra encoding stuff at the end so you can't use just the last element
+  if (ext.includes('webm')) {
+    ext = 'webm'
+  }
+  return `${nameWithoutExtension}.${ext}`
+}
+
+export const saveToCloudinary = async (file: any): Promise<UploadApiResponse> => {
+  // first write file to the uploads directory
+  // const uploadedName = await writeFile(file, nameWithoutExtension)
+  // const filePath = `${directory}${uploadedName}`
+  const filePath = String(file.filepath)
+  const options = {
+    use_filename: false,
+    unique_filename: false,
+    overwrite: true,
+    resource_type: 'auto'
+  }
+  const result = await cloudinary.uploader.upload(filePath, options)
+  console.log(result)
+  return result
+}
+
+export const deleteFromCloudinary = async (publicId: string): Promise<void> => {
+  console.log('deleting public id', publicId)
+  const result = await cloudinary.uploader.destroy(publicId)
+  console.log(result)
+}
+
 function escapeRegExp (string: string): string {
   return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') // $& means the whole matched string
 }

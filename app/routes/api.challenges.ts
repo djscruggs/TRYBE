@@ -1,4 +1,4 @@
-import { createChallenge, updateChallenge, challengeSchema } from '~/models/challenge.server'
+import { createChallenge, updateChallenge, challengeSchema, loadChallengeSummary } from '~/models/challenge.server'
 import { requireCurrentUser } from '~/models/auth.server'
 import {
   json, type LoaderFunction,
@@ -6,15 +6,17 @@ import {
   , type ActionFunctionArgs
 } from '@remix-run/node'
 import { convertStringValues } from '../utils/helpers'
-import { writeFile, uploadHandler } from '../utils/uploadFile'
+import { saveToCloudinary, uploadHandler } from '../utils/uploadFile'
 
 export async function action (args: ActionFunctionArgs): Promise<any> {
   console.log('top of action')
   const currentUser = await requireCurrentUser(args)
   const request = args.request
   const rawData = await unstable_parseMultipartFormData(request, uploadHandler)
-  /* @ts-expect-error */
-  const file: NodeOnDiskFile = rawData.get('photo')
+  let file
+  if (rawData.get('photo')) {
+    file = rawData.get('photo')
+  }
 
   const formData = Object.fromEntries(rawData)
   const cleanData = convertStringValues(formData)
@@ -43,15 +45,18 @@ export async function action (args: ActionFunctionArgs): Promise<any> {
       converted.userId = currentUser.id
       data = await createChallenge(converted)
     }
-    if (!file) {
-      return data
-    }
     // now handle the photo
-    // use the name without the extension, which is figured out in the writeFile function
-    const nameNoExt = `challenge-${data.id}`
-    data.coverPhoto = await writeFile(file, nameNoExt)
-    const result = await updateChallenge(data)
-    return (result)
+    if (file) {
+      // const nameNoExt = `challenge-${data.id}`
+      // data.coverPhotoMeta = await writeFile(file)
+      data.coverPhotoMeta = await saveToCloudinary(file)
+      data.coverPhoto = data.coverPhotoMeta.secure_url
+      await updateChallenge(data)
+    }
+    // reload challenge with all the extra info
+    const updatedChallenge = loadChallengeSummary(data.id)
+
+    return (await updatedChallenge)
   } catch (error) {
     console.log('error', error)
     return {

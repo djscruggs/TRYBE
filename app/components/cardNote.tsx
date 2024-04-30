@@ -31,7 +31,8 @@ interface CardNoteProps {
 
 export default function CardNote (props: CardNoteProps): JSX.Element {
   const { currentUser } = useContext(CurrentUserContext)
-  const { note, isReplyTo, hasLiked, hasReposted, repostCount } = props
+  const { isReplyTo, hasLiked, hasReposted, repostCount } = props
+  const [note, setNote] = useState(props.note)
   const [showLightbox, setShowLightbox] = useState(false)
   const [editing, setEditing] = useState(false)
   const location = useLocation()
@@ -104,10 +105,10 @@ export default function CardNote (props: CardNoteProps): JSX.Element {
   //   setRepostMenu(false)
   //   navigate(`/notes/${note.id}/quote`)
   // }
-  const afterSave = (): void => {
+  const afterSave = (note: Note): void => {
+    setNote(note)
     setEditing(false)
     setAddReply(false)
-    revalidator.revalidate()
   }
   const getFullUrl = (): string => {
     return `${window.location.origin}/notes/${note.id}`

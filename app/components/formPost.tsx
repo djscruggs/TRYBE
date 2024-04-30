@@ -81,8 +81,12 @@ export default function FormPost (props: FormPostProps): JSX.Element {
       notifyMembers: checked
     }))
   }
-  const handleImage = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    handleFileUpload(e, setImage)
+  const handleImage = (event: React.ChangeEvent<HTMLInputElement>): void => {
+    const params = {
+      event,
+      setFile: setImage
+    }
+    handleFileUpload(params)
   }
   const videoChooserCallbackShow = (uploadOnly: boolean): void => {
     if (uploadOnly) {
