@@ -72,7 +72,7 @@ export const action: ActionFunction = async ({ request }) => {
         firstName: bodyJson.data.first_name,
         lastName: bodyJson.data.last_name,
         clerkId: bodyJson.data.id,
-        profileImage: bodyJson.data.image_url,
+        profileImage: bodyJson.data.profile_image_url,
         lastLogin: new Date()
       }
       console.log('data to create', data)
@@ -104,7 +104,7 @@ export const action: ActionFunction = async ({ request }) => {
       const data = {
         firstName: bodyJson.data.first_name,
         lastName: bodyJson.data.last_name,
-        profileImage: bodyJson.data.image_url
+        profileImage: bodyJson.data.profile_image_url
       }
       await prisma.profile.update({
         where: {

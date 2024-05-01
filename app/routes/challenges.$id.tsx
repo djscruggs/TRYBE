@@ -93,7 +93,7 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
       challengeId: Number(params.id),
       published: true,
       OR: [
-        { publishAt: { gt: new Date() } },
+        { publishAt: { lte: new Date() } },
         { publishAt: null }
       ]
     },
