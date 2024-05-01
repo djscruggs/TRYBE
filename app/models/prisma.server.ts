@@ -31,7 +31,7 @@ function extendPrisma (prisma: PrismaClient): PrismaClient {
                 return false
               }
             }
-            return post.published && (isAfter(post.publishAt, new Date()) || isEqual(post.publishAt, new Date()))
+            return post.published && (isAfter(new Date(), post.publishAt) || isEqual(new Date(), post.publishAt))
           }
         }
       }

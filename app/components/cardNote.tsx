@@ -43,7 +43,6 @@ export default function CardNote (props: CardNoteProps): JSX.Element {
   const navigate = useNavigate()
   const [deleteDialog, setDeleteDialog] = useState(false)
   const goToNote = (event: any): void => {
-    console.log(event)
     event.preventDefault()
     event.stopPropagation()
     if (isOwnRoute) return

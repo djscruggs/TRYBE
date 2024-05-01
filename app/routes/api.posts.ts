@@ -27,7 +27,9 @@ export const action: ActionFunction = async (args) => {
     title: rawData.get('title')?.toString() ?? '',
     userId: currentUser.id,
     public: rawData.get('public') === 'true',
-    published: rawData.get('published') === 'true'
+    publishAt: rawData.get('publishAt') ? new Date(rawData.get('publishAt')) : null,
+    published: rawData.get('published') === 'true',
+    notifyMembers: rawData.get('notifyMembers') === 'true'
   }
   // if draft or unpublishing, published will be false, so reset notificationSentOn to null
   if (!data.published) {
@@ -93,20 +95,18 @@ export const action: ActionFunction = async (args) => {
     console.error('error uploading video', error)
   }
   const updated = await updatePost(result)
-
   // @ts-expect-error live is a computed field and not recognized in prisma Post type -- see prisma.server
-  if (updated.live) {
+  if (updated.live && updated.notifyMembers) {
     const baseUrl = new URL(args.request.url).origin
     // @ts-expect-error fullName is a computed field and not recognized in prisma Profile type -- see prisma.server
-    const senderName = currentUser.profile.fullName
+    const replyToName = currentUser.profile.fullName
     const dateFormat = getUserLocale() === 'en-US' ? 'MMMM d' : 'd MMMM'
     // const escaped = updated.body?.replace(/['"&’]/g, match => `&#${match.charCodeAt(0)};`)
     const msg = {
-      // to: process.env.NODE_ENV !== 'production' ? ['me.derekscruggs@gmail.com', currentUser.email] : ['me.derekscruggs@gmail.com', currentUser.email],
-      to: currentUser.email,
+      to: 'info@jointhetrybe.com',
       replyTo: currentUser.email,
       dynamic_template_data: {
-        name: senderName,
+        name: replyToName,
         post_url: `${baseUrl}/posts/${updated.id}`,
         date: format(updated.updatedAt, dateFormat), // format based on user's country
         subject: `New challenge post from ${senderName} on Trybe`,

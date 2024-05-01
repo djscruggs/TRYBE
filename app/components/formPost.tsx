@@ -13,7 +13,7 @@ import VideoChooser from './videoChooser'
 import DatePicker from 'react-datepicker'
 import { CurrentUserContext } from '../utils/CurrentUserContext'
 import { toast } from 'react-hot-toast'
-import { format } from 'date-fns'
+import { format, isAfter } from 'date-fns'
 
 interface FormPostProps {
   afterSave?: (post: Post) => void
@@ -44,7 +44,7 @@ export default function FormPost (props: FormPostProps): JSX.Element {
   const navigate = useNavigate()
   const imageRef = useRef<HTMLInputElement>(null)
   const [videoUploadOnly, setVideoUploadOnly] = useState(false)
-  const [showDatePicker, setShowDatePicker] = useState(false)
+  const [showDatePicker, setShowDatePicker] = useState(post?.publishAt ?? false)
   const [formData, setFormData] = useState(post ?? {
     published: true,
     publishAt: null,
@@ -203,7 +203,7 @@ export default function FormPost (props: FormPostProps): JSX.Element {
       }))
     }
   }
-  const setPublishDate = (value: any): void => {
+  const setPublishAt = (value: any): void => {
     setFormData(prevFormData => ({
       ...prevFormData,
       publishAt: value
@@ -278,13 +278,13 @@ export default function FormPost (props: FormPostProps): JSX.Element {
           {showDatePicker &&
           <div className='w-full border border-gray-50 inline'>
             <DatePicker
-              name='startAt'
+              name='publishAt'
               required={true}
               dateFormat={localDateFormat}
               showTimeSelect
               minDate={new Date()}
-              selected={formData.publishAt}
-              onChange={(date: Date) => { setPublishDate(date) }}
+              selected={new Date(formData.publishAt)}
+              onChange={(date: Date) => { setPublishAt(date) }}
               className={`p-1 border rounded-md pl-2 w-full ${errors.publishAt ? 'border-red' : 'border-slate-gray-500'}`}
             />
           </div>
