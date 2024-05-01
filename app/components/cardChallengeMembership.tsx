@@ -49,7 +49,6 @@ export default function CardChallengeMembership ({ membership }: CardChallengePr
       </div>
       {challenge.public &&
       <>
-        <hr />
         <div className="grid grid-cols-3 text-center py-2 cursor-pointer">
           <div className="flex justify-center items-center cursor-pointer">
             <ShareMenu copyUrl={getFullUrl()} itemType='challenge' itemId={challenge.id}/>

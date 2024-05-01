@@ -67,7 +67,6 @@ export default function CardChallenge ({ challenge, isShare, isMember }: CardCha
       </div>
       {!isShare && challenge.public &&
       <>
-        <hr />
         <div className="grid grid-cols-3 text-center py-2 cursor-pointer">
           <div className="flex justify-center items-center">
           <Link to={`/challenges/${challenge.id}/comments#comments`}>
