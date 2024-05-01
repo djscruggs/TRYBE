@@ -1,7 +1,8 @@
 import * as React from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useContext } from 'react'
 import { Outlet, useLocation } from '@remix-run/react'
+import { CurrentUserContext } from '../utils/CurrentUserContext'
 import {
   // BellIcon,
   // MagnifyingGlassIcon,
@@ -19,6 +20,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 
 const LayoutMobile = (): JSX.Element => {
   const [newOpen, setNewOpen] = useState(false)
+  const { currentUser } = useContext(CurrentUserContext)
 
   // hide nav if on index, login or register
   const [showNav, setShowNav] = useState(true)
@@ -117,7 +119,7 @@ const LayoutMobile = (): JSX.Element => {
                         </AnimatePresence>
                     </div>
 
-                    <Link to="/mine" className='min-w-8'>
+                    <Link to={`/members/${currentUser.id}/content`} className='min-w-8'>
                     <ArchiveBoxIcon className='cursor-pointer' />
                     </Link>
                     <Link to="/profile" className='min-w-8'>
