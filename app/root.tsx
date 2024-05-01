@@ -20,6 +20,7 @@ import type { LinksFunction, LoaderFunction, LoaderFunctionArgs, MetaFunction } 
 import { type User } from './utils/types'
 import { Toaster } from 'react-hot-toast'
 import { getUser } from './models/auth.server'
+import getUserLocale from 'get-user-locale'
 import { getUserByClerkId } from './models/user.server'
 import { rootAuthLoader } from '@clerk/remix/ssr.server'
 import { ClerkApp } from '@clerk/remix'
@@ -40,6 +41,7 @@ export const meta: MetaFunction = () => {
   ]
 }
 export const loader: LoaderFunction = async args => {
+  const userLocale = getUserLocale()
   const ENV = {
     CLERK_PUBLISHABLE_KEY: process.env.CLERK_PUBLISHABLE_KEY
   }
@@ -51,6 +53,10 @@ export const loader: LoaderFunction = async args => {
       if (!user) {
         return { user: null, auth: null, ENV }
       }
+      user.locale = userLocale
+      user.dateFormat = user.locale === 'en-US' ? 'M-dd-yyyy' : 'dd-M-yyyy'
+      user.timeFormat = user.locale === 'en-US' ? 'h:mm a' : 'HH:MM'
+      user.dateTimeFormat = `${user.dateFormat} @ ${user.timeFormat}`
       return { user, auth, ENV }
     }
     return { ENV }

@@ -3,15 +3,14 @@ import { useState } from 'react'
 import { Outlet, useLoaderData, useLocation } from '@remix-run/react'
 import CardPost from '~/components/cardPost'
 import { requireCurrentUser } from '../models/auth.server'
-import type { Post } from '~/utils/types'
+import type { PostSummary } from '~/utils/types'
 import { json, type LoaderFunction, type LoaderFunctionArgs } from '@remix-run/node'
 import { prisma } from '../models/prisma.server'
 import getUserLocale from 'get-user-locale'
 
 export interface PostData {
-  post: Post | null
+  post: PostSummary | null
   hasLiked: boolean
-  locale?: string
   loadingError?: string
 }
 
@@ -21,8 +20,7 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
   if (!params.id) {
     return null
   }
-  const locale = getUserLocale()
-  const post: Post | null = await loadPostSummary(params.id)
+  const post = await loadPostSummary(params.id) as PostSummary | null
   // error if no post OR it's not a preview by the user who created it
   if (!post || (!post.published && post.userId !== currentUser?.id)) {
     const error = { loadingError: 'Post not found' }
@@ -41,7 +39,7 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
     hasLiked = likes > 0
   }
 
-  const data: PostData = { post, hasLiked, locale }
+  const data: PostData = { post, hasLiked }
   return json(data)
 }
 
@@ -50,20 +48,20 @@ export default function ViewPost (): JSX.Element {
   if (location.pathname.includes('share')) {
     return <Outlet />
   }
-  const { hasLiked, loadingError, locale, post } = useLoaderData() as PostData
+  const { hasLiked, loadingError, post } = useLoaderData() as PostData
   if (loadingError) {
     return <h1>{loadingError}</h1>
   }
-  const [_post] = useState<Post | null>(post ?? null)
+  const [_post] = useState<PostSummary | null>(post ?? null)
   if (!post) {
     return <p>Loading...</p>
   }
   return (
     <>
     <div className='max-w-[400px] md:max-w-lg mt-10'>
-      <CardPost post={_post} hasLiked={Boolean(hasLiked)} locale={locale} fullPost={true} />
+      <CardPost post={_post} hasLiked={Boolean(hasLiked)} />
     </div>
-    <Outlet context={{ _post, hasLiked, locale }} />
+    <Outlet context={{ _post, hasLiked }} />
 
     </>
   )

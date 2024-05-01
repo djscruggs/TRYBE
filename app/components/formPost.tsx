@@ -3,7 +3,7 @@ import { Form, useNavigate } from '@remix-run/react'
 import axios from 'axios'
 import { FormField } from './formField'
 import { handleFileUpload } from '~/utils/helpers'
-import { type Post, type ChallengeSummary } from '~/utils/types'
+import { type PostSummary, type ChallengeSummary } from '~/utils/types'
 import { Button, Radio, Checkbox } from '@material-tailwind/react'
 import { MdOutlineAddPhotoAlternate } from 'react-icons/md'
 import { TiDeleteOutline } from 'react-icons/ti'
@@ -13,13 +13,12 @@ import VideoChooser from './videoChooser'
 import DatePicker from 'react-datepicker'
 import { CurrentUserContext } from '../utils/CurrentUserContext'
 import { toast } from 'react-hot-toast'
-import { format, isAfter } from 'date-fns'
+import { format } from 'date-fns'
 
 interface FormPostProps {
-  afterSave?: (post: Post) => void
+  afterSave?: (post: PostSummary) => void
   onCancel?: () => void
-  post?: Post
-  locale?: string
+  post?: PostSummary
   challenge?: ChallengeSummary | null
   forwardRef?: React.RefObject<HTMLTextAreaElement>
 }
@@ -35,7 +34,8 @@ interface Errors {
 
 export default function FormPost (props: FormPostProps): JSX.Element {
   const { currentUser } = useContext(CurrentUserContext)
-  const { afterSave, onCancel, post, challenge, locale } = props
+  const { afterSave, onCancel, post, challenge } = props
+  const locale = currentUser?.locale ?? 'en-US'
   const [showVideoRecorder, setShowVideoRecorder] = useState(false)
   const [errors, setErrors] = useState<Errors>({})
   const [saving, setSaving] = useState(false)
@@ -44,7 +44,7 @@ export default function FormPost (props: FormPostProps): JSX.Element {
   const navigate = useNavigate()
   const imageRef = useRef<HTMLInputElement>(null)
   const [videoUploadOnly, setVideoUploadOnly] = useState(false)
-  const [showDatePicker, setShowDatePicker] = useState(post?.publishAt ?? false)
+  const [showDatePicker, setShowDatePicker] = useState(Boolean(post?.publishAt))
   const [formData, setFormData] = useState(post ?? {
     published: true,
     publishAt: null,
@@ -59,7 +59,7 @@ export default function FormPost (props: FormPostProps): JSX.Element {
     notifyMembers: false,
     notificationSentOn: null
   })
-  const localDateFormat = locale === 'en-US' ? 'M-dd-yyyy @ h:mm a' : 'dd-M-yyyy @ HH:MM'
+  const localDateTimeFormat = locale === 'en-US' ? 'M-dd-yyyy @ h:mm a' : 'dd-M-yyyy @ HH:MM'
   // this triggers the browser's upload file dialog, not a modal
   const imageDialog = (): void => {
     if (imageRef.current) {
@@ -280,10 +280,10 @@ export default function FormPost (props: FormPostProps): JSX.Element {
             <DatePicker
               name='publishAt'
               required={true}
-              dateFormat={localDateFormat}
+              dateFormat={localDateTimeFormat}
               showTimeSelect
               minDate={new Date()}
-              selected={new Date(formData.publishAt)}
+              selected={new Date(formData.publishAt ?? '')}
               onChange={(date: Date) => { setPublishAt(date) }}
               className={`p-1 border rounded-md pl-2 w-full ${errors.publishAt ? 'border-red' : 'border-slate-gray-500'}`}
             />
@@ -294,14 +294,14 @@ export default function FormPost (props: FormPostProps): JSX.Element {
               {!formData.notificationSentOn
                 ? (
                 <>
-                <Checkbox defaultChecked={formData.notifyMembers} color="green" onClick={handleNotifyCheck} crossOrigin={undefined} label={'Email this post to challenge members.'}/>
+                <Checkbox defaultChecked={formData.notifyMembers ?? false} color="green" onClick={handleNotifyCheck} crossOrigin={undefined} label={'Email this post to challenge members.'}/>
                 {formData.notifyMembers && currentUser &&
                 <p className='ml-12 text-xs'>Member replies will go to {currentUser.email}</p>
                 }
                 </>
                   )
                 : (
-                  <Checkbox defaultChecked={true} disabled={true} color="green" onClick={handleNotifyCheck} crossOrigin={undefined} label={`Emailed to members on ${format(formData.notificationSentOn, localDateFormat)}`}/>
+                  <Checkbox defaultChecked={true} disabled={true} color="green" onClick={handleNotifyCheck} crossOrigin={undefined} label={`Emailed to members on ${format(formData.notificationSentOn, localDateTimeFormat)}`}/>
                   )}
             </div>
 

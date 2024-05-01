@@ -1,6 +1,6 @@
 import React, {
   useState,
-  useEffect,
+  useContext,
   useRef,
   type ChangeEvent
 } from 'react'
@@ -14,6 +14,7 @@ import { toast } from 'react-hot-toast'
 import axios from 'axios'
 import { colorToClassName, getIconOptionsForColor, handleFileUpload } from '~/utils/helpers'
 import { useRevalidator } from 'react-router-dom'
+import { CurrentUserContext } from '../utils/CurrentUserContext'
 
 interface Errors {
   name?: string
@@ -32,10 +33,11 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
   const challengeForm = useRef(null)
   const [errors, setErrors] = useState<Errors>()
   // make a copy so it doesn't affect parent renders
-  const challenge = { ...props.challenge }
+  const challenge = { ...props.challenge } as ObectData
   delete challenge._count
   const [formData, setFormData] = useState(challenge)
-  const localDateFormat = props.locale === 'en-US' ? 'M-dd-YYYY' : 'dd-M-YYYY'
+  const { currentUser } = useContext(CurrentUserContext)
+  const localDateFormat = currentUser?.locale === 'en-US' ? 'M-dd-YYYY' : 'dd-M-YYYY'
   function selectDate (name: string, value: Date): void {
     setFormData((prevFormData: ObjectData) => ({
       ...prevFormData,

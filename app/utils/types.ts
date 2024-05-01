@@ -11,6 +11,11 @@ export interface User {
 export interface CurrentUser extends User {
   profile: Profile
   id: number
+  // the four below are added in root loader, not currently in the db
+  locale?: string
+  dateFormat?: string
+  timeFormat?: string
+  dateTimeFormat?: string
 }
 
 export interface Note {

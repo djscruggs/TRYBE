@@ -17,13 +17,13 @@ import ShareMenu from './shareMenu'
 import { FaRegComment } from 'react-icons/fa'
 import Liker from './liker'
 import DialogDelete from './dialogDelete'
+import { format } from 'date-fns'
 
 interface CardPostProps {
-  post: Post | PostSummary
+  post: PostSummary
   isShare?: boolean
   hasLiked?: boolean
   fullPost?: boolean
-  locale?: string // used in editing
   hideMeta?: boolean
   revalidator?: Revalidator
 }
@@ -33,7 +33,8 @@ interface Revalidator {
 
 export default function CardPost (props: CardPostProps): JSX.Element {
   const { currentUser } = useContext(CurrentUserContext)
-  const { hasLiked, fullPost, locale, isShare, hideMeta, revalidator } = props
+  const { hasLiked, fullPost, isShare, hideMeta, revalidator } = props
+  const dateTimeFormat = currentUser?.dateTimeFormat ? currentUser.dateTimeFormat : 'M-dd-yyyy @ h:mm a'
   const [post, setPost] = useState(props.post)
   const [showLightbox, setShowLightbox] = useState(false)
   const [editing, setEditing] = useState(false)
@@ -84,8 +85,8 @@ export default function CardPost (props: CardPostProps): JSX.Element {
   }
   const maxLength = 300
   const shortBody = fullPost ? post.body : post.body?.slice(0, maxLength) + '...'
-  const isTruncated = shortBody?.length < post?.body?.length
-  const afterSave = (post: Post | PostSummary): void => {
+  const isTruncated = (shortBody?.length && post?.body?.length) ? shortBody.length < post.body.length : false
+  const afterSave = (post: PostSummary): void => {
     setPost(post)
     setEditing(false)
   }
@@ -96,7 +97,7 @@ export default function CardPost (props: CardPostProps): JSX.Element {
     <>
     {editing
       ? <>
-      <FormPost post={post} onCancel={() => { setEditing(false) }} afterSave={afterSave} locale={locale} />
+      <FormPost post={post} onCancel={() => { setEditing(false) }} afterSave={afterSave} />
 
       </>
       : <div className={'mt-2 w-full border-0  drop-shadow-none mr-2'}>
@@ -105,9 +106,15 @@ export default function CardPost (props: CardPostProps): JSX.Element {
           <Card className={'md:col-span-2 p-2 border-1 drop-shadow-lg  border border-gray rounded-md relative'}>
             {!post.published &&
               <>
-              <div className='bg-yellow w-full p-0 text-center absolute left-0 top-0 b-4'>Draft</div>
+              <div className='bg-yellow w-full p-0 text-center absolute left-0 top-0 b-4 rounded-t-md'>Draft</div>
               {/* spacer to push down the conent below */}
               <div className='h-6'> </div>
+              </>
+            }
+            {!post.live && post.published && post.publishAt &&
+              <>
+                <div className='bg-green-500 w-full p-0 text-white text-center absolute left-0 top-0 b-4 rounded-t-md'>Scheduled for {format(post.publishAt, dateTimeFormat)}</div>
+                <div className='h-6'> </div>
               </>
             }
             <div className="flex items-start">
