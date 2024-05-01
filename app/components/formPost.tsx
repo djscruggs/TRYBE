@@ -217,6 +217,7 @@ export default function FormPost (props: FormPostProps): JSX.Element {
       navigate(-1)
     }
   }
+  console.log('publishAt', formData.publishAt)
   const renderVideo = useMemo(() => (
     <VideoPreview video={formData.video ? formData.video : video} onClear={deleteCorrectVideo} />
   ), [video, formData.video])
@@ -283,7 +284,7 @@ export default function FormPost (props: FormPostProps): JSX.Element {
               dateFormat={localDateTimeFormat}
               showTimeSelect
               minDate={new Date()}
-              selected={new Date(formData.publishAt ?? '')}
+              selected={formData.publishAt ? new Date(formData.publishAt) : null}
               onChange={(date: Date) => { setPublishAt(date) }}
               className={`p-1 border rounded-md pl-2 w-full ${errors.publishAt ? 'border-red' : 'border-slate-gray-500'}`}
             />

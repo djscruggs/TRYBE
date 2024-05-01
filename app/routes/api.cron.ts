@@ -1,5 +1,5 @@
 import { prisma } from '../models/prisma.server'
-import type { Challenge } from '@prisma/client'
+import { mailPost } from '../utils/mailer'
 import type { LoaderFunction } from '@remix-run/node'
 import { json } from '@remix-run/node'
 
@@ -10,13 +10,14 @@ export const loader: LoaderFunction = async (args) => {
       challengeId: {
         not: null
       },
-      notifyMembers: true,
-      notificationSentOn: null,
-      publishAt: {
-        lt: new Date()
-      }
+      notifyMembers: true
+      // notificationSentOn: null
+      // publishAt: {
+      //   lt: new Date()
+      // }
     },
     include: {
+      user: true,
       challenge: {
         include: {
           members: {
@@ -32,25 +33,54 @@ export const loader: LoaderFunction = async (args) => {
       }
     }
   })
-  posts.map(post => {
-    post.challenge?.members.map(member => {
-      console.log(member.user.email, member.user.profile?.fullName)
-      // send email
-    })
-    // update notificationSentOn
-    prisma.post.update({
+
+  await Promise.all(posts.map(async post => {
+    if (post.challenge?.members) {
+      await Promise.all(post.challenge?.members.map(async member => {
+        console.log(member.user.email, member.user.profile?.fullName)
+        const props = {
+          to: member.user.email,
+          replyTo: post.user.email,
+          dynamic_template_data: {
+            name: member.user.profile?.fullName,
+            post_url: `https://www.jointhetrybe.com/posts/${post.id}`,
+            date: post.createdAt.toLocaleDateString(),
+            subject: `New post from ${post.challenge?.name}`,
+            title: post.title,
+            body: post.body
+          }
+        }
+        try {
+          await mailPost(props)
+        } catch (err) {
+          console.log('Error sending notification', err)
+        }
+      }))
+
+      const update = await prisma.post.update({
+        where: {
+          id: post.id
+        },
+        data: {
+          notificationSentOn: new Date()
+        }
+      })
+      console.log(update)
+    }
+    // update the send date even if there were no members to mail
+    const update = await prisma.post.update({
       where: {
         id: post.id
       },
       data: {
         notificationSentOn: new Date()
       }
-    }).then(() => {
-      console.log('Notification sent for post', post.id)
-    }).catch(err => {
-      console.log('Error sending notification', err)
     })
-  })
+    console.log(update)
+  }))
+
+  // send email
+
   return json({ posts }, 200)
 }
 
