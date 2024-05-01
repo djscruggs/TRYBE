@@ -10,11 +10,11 @@ export const loader: LoaderFunction = async (args) => {
       challengeId: {
         not: null
       },
-      notifyMembers: true
-      // notificationSentOn: null
-      // publishAt: {
-      //   lt: new Date()
-      // }
+      notifyMembers: true,
+      notificationSentOn: null,
+      publishAt: {
+        lt: new Date()
+      }
     },
     include: {
       user: true,
