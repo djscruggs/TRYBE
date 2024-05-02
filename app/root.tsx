@@ -26,7 +26,8 @@ import { rootAuthLoader } from '@clerk/remix/ssr.server'
 import { ClerkApp } from '@clerk/remix'
 import * as Sentry from '@sentry/react'
 Sentry.init({
-  dsn: 'https://4f3a1762974e77da7b1e347738080185@o4506538845929472.ingest.us.sentry.io/4506538846126080',
+  environment: process.env.NODE_ENV,
+  dsn: 'https://4f3a1762974e77da7b1e34738080185@o4506538845929472.ingest.us.sentry.io/4506538846126080',
   tunnel: '/tunnel',
   beforeSend (event, hint) {
     // Check if it is an exception, and if so, show the report dialog
