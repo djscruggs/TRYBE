@@ -28,6 +28,13 @@ import * as Sentry from '@sentry/react'
 Sentry.init({
   dsn: 'https://4f3a1762974e77da7b1e347738080185@o4506538845929472.ingest.us.sentry.io/4506538846126080',
   tunnel: '/tunnel',
+  beforeSend (event, hint) {
+    // Check if it is an exception, and if so, show the report dialog
+    if (event.exception && event.event_id) {
+      Sentry.showReportDialog({ eventId: event.event_id })
+    }
+    return event
+  },
   integrations: [
     // See docs for support of different versions of variation of react router
     // https://docs.sentry.io/platforms/javascript/guides/react/configuration/integrations/react-router/
@@ -37,6 +44,10 @@ Sentry.init({
       useNavigationType,
       createRoutesFromChildren,
       matchRoutes
+    }),
+    Sentry.feedbackIntegration({
+      // Additional SDK configuration goes in here, for example:
+      colorScheme: 'system'
     }),
     Sentry.replayIntegration()
   ],
