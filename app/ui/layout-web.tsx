@@ -29,18 +29,18 @@ const LayoutWeb = (): JSX.Element => {
               </div>
             }
             { currentUser &&
-            <div className={`flex-grow pt-4 ${currentUser ?? location.pathname !== '/' ? 'ml-20' : 'ml-0'}`}>
+              <div className={`flex-grow pt-4 ${currentUser ?? location.pathname !== '/' ? 'ml-20' : 'ml-0'}`}>
 
-                <div className='absolute right-0 mr-4'>
-                  <UserButton
-                    showName={true}
-                    afterSignOutUrl="/logout"
-                    userProfileUrl="/profile"
-                    userProfileMode="navigation"
-                  />
-                </div>
-                <Outlet />
-            </div>
+                  <div className='absolute right-0 mr-4'>
+                    <UserButton
+                      showName={true}
+                      afterSignOutUrl="/logout"
+                      userProfileUrl="/profile"
+                      userProfileMode="navigation"
+                    />
+                  </div>
+                  <Outlet />
+              </div>
             }
             {!currentUser &&
               <div className='flex-grow pt-4  items-center justify-center'>

@@ -19,11 +19,41 @@ import datepickerStyle from 'react-datepicker/dist/react-datepicker.css'
 import type { LinksFunction, LoaderFunction, LoaderFunctionArgs, MetaFunction } from '@remix-run/node'
 import { type User } from './utils/types'
 import { Toaster } from 'react-hot-toast'
-import { getUser } from './models/auth.server'
+import { useLocation, useNavigationType, createRoutesFromChildren, matchRoutes } from 'react-router-dom'
 import getUserLocale from 'get-user-locale'
 import { getUserByClerkId } from './models/user.server'
 import { rootAuthLoader } from '@clerk/remix/ssr.server'
 import { ClerkApp } from '@clerk/remix'
+import * as Sentry from '@sentry/react'
+Sentry.init({
+  dsn: 'https://4f3a1762974e77da7b1e347738080185@o4506538845929472.ingest.us.sentry.io/4506538846126080',
+  tunnel: '/tunnel',
+  integrations: [
+    // See docs for support of different versions of variation of react router
+    // https://docs.sentry.io/platforms/javascript/guides/react/configuration/integrations/react-router/
+    Sentry.reactRouterV6BrowserTracingIntegration({
+      useEffect: React.useEffect,
+      useLocation,
+      useNavigationType,
+      createRoutesFromChildren,
+      matchRoutes
+    }),
+    Sentry.replayIntegration()
+  ],
+
+  // Set tracesSampleRate to 1.0 to capture 100%
+  // of transactions for performance monitoring.
+  tracesSampleRate: 1.0,
+
+  // Set `tracePropagationTargets` to control for which URLs distributed tracing should be enabled
+  tracePropagationTargets: ['localhost', /^https:\/\/app.jointhetrype.com/],
+
+  // Capture Replay for 10% of all sessions,
+  // plus for 100% of sessions with an error
+  replaysSessionSampleRate: 0.1,
+  replaysOnErrorSampleRate: 1.0
+})
+
 interface DocumentProps {
   children: React.ReactNode
   title?: string
