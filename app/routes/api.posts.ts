@@ -9,27 +9,30 @@ import { uploadHandler, saveToCloudinary, deleteFromCloudinary } from '~/utils/u
 import { mailPost } from '~/utils/mailer'
 import getUserLocale from 'get-user-locale'
 import { format, isPast, isEqual } from 'date-fns'
-import { textToHtml } from '~/utils/helpers'
+import { textToHtml, convertStringValues } from '~/utils/helpers'
 import escape from 'escape-html'
 
 export const action: ActionFunction = async (args) => {
   const currentUser = (await requireCurrentUser(args))!
   const request = args.request
   const rawData = await unstable_parseMultipartFormData(request, uploadHandler)
+  const formData = Object.fromEntries(rawData)
+  const cleanData = convertStringValues(formData)
   // if this is for a challenge, load it and check whether it's public
   const challengeId = rawData.get('challengeId') ? Number(rawData.get('challengeId')) : null
   let challenge
   if (challengeId) {
     challenge = await loadChallenge(challengeId) as Challenge
   }
+  console.log('publishAt is', rawData.get('publishAt'))
   const data: Partial<Post> = {
-    body: rawData.get('body')?.toString() ?? null,
-    title: rawData.get('title')?.toString() ?? '',
+    body: cleanData.body ?? null,
+    title: cleanData.title ?? '',
     userId: currentUser.id,
-    public: rawData.get('public') === 'true',
-    publishAt: rawData.get('publishAt') ? new Date(rawData.get('publishAt')) : null,
-    published: rawData.get('published') === 'true',
-    notifyMembers: rawData.get('notifyMembers') === 'true'
+    public: cleanData.public,
+    publishAt: cleanData.publishAt ? cleanData.publishAt : null,
+    published: cleanData.published,
+    notifyMembers: cleanData.notifyMembers
   }
   // if draft or unpublishing, published will be false, so reset notificationSentOn to null
   if (!data.published) {

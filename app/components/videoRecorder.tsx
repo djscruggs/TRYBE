@@ -8,20 +8,18 @@ interface VideoRecorderProps {
   onStop: () => void
   onSave: (video: File | null) => void
   onFinish: () => void
-  uploadOnly?: boolean
 }
 
 const VideoRecorder = ({ onStart, onStop, onSave, onFinish, uploadOnly }: VideoRecorderProps): JSX.Element => {
   const [permission, setPermission] = useState(true)
-  const mediaRecorder = useRef(null)
+  const videoUpload = useRef<HTMLInputElement>(null)
   const liveVideoFeed = useRef(null)
-  const videoUpload = useRef(null)
   const [recordingStatus, setRecordingStatus] = useState('inactive')
   const [stream, setStream] = useState<MediaStream | null>()
   const [localVideoUrl, setLocalVideoUrl] = useState<string | null>(null)
   const [videoFile, setVideoFile] = useState<File | null>(null)
   const [videoChunks, setVideoChunks] = useState([])
-
+  uploadOnly
   useEffect(() => {
     if (isMobileDevice() || uploadOnly) {
       return
@@ -146,26 +144,7 @@ const VideoRecorder = ({ onStart, onStop, onSave, onFinish, uploadOnly }: VideoR
     }
     onFinish()
   }
-  const fileInput = (): JSX.Element => {
-    const textColor = 'white'
-    return (
-      <input type="file"
-        name="video"
-        ref={videoUpload}
-        onChange={handleVideoUpload}
-        accept="video/*"
-        capture
-        className={`text-sm text-${textColor}
-                  file:text-white
-                    file:mr-5 file:py-2 file:px-6
-                    file:rounded-full file:border-0
-                    file:text-sm file:font-medium
-                    file:bg-blue-50 file:text-blue-700
-                    file:cursor-pointer file:bg-blue
-                    hover:file:bg-red`}
-      />
-    )
-  }
+
   return (
     <>
     {isMobileDevice() || uploadOnly
@@ -186,7 +165,7 @@ const VideoRecorder = ({ onStart, onStop, onSave, onFinish, uploadOnly }: VideoR
               {localVideoUrl ? 'Choose a different video' : isMobileDevice() ? 'Record or upload a video' : 'Upload a video'}
             </p>
             <div className={`${localVideoUrl ? 'mt-2' : 'mt-10'} ml-36`}>
-              {fileInput()}
+              <FileInput passedRef={videoUpload} onChange={handleVideoUpload} immediateTrigger={uploadOnly} />
             </div>
           </div>
 
@@ -246,6 +225,38 @@ const VideoRecorder = ({ onStart, onStop, onSave, onFinish, uploadOnly }: VideoR
       </>
         )}
     </>
+  )
+}
+
+interface FileInputProps {
+  passedRef: HTMLInputElement
+  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void
+  immediateTrigger?: boolean
+}
+const FileInput = ({ passedRef, onChange, immediateTrigger }: FileInputProps): JSX.Element => {
+  const textColor = 'white'
+  useEffect(() => {
+    console.log(passedRef)
+    if (immediateTrigger) {
+      passedRef.current.click()
+    }
+  }, [])
+  return (
+    <input type="file"
+      name="video"
+      ref={passedRef}
+      onChange={onChange}
+      accept="video/*"
+      capture
+      className={`text-sm text-${textColor}
+                file:text-white
+                  file:mr-5 file:py-2 file:px-6
+                  file:rounded-full file:border-0
+                  file:text-sm file:font-medium
+                  file:bg-blue-50 file:text-blue-700
+                  file:cursor-pointer file:bg-blue
+                  hover:file:bg-red`}
+    />
   )
 }
 

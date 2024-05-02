@@ -160,6 +160,8 @@ export default function FormPost (props: FormPostProps): JSX.Element {
     if (!validate()) {
       return
     }
+    console.log('starting submit')
+    console.log(formData)
     try {
       setSaving(true)
       const toSubmit = new FormData()
@@ -175,8 +177,10 @@ export default function FormPost (props: FormPostProps): JSX.Element {
         toSubmit.set('video', video)
       }
       const result = await axios.post('/api/posts', toSubmit)
+      console.log(result.data)
       toast.success('Post saved')
       if (afterSave) {
+        console.log('afterSave')
         afterSave(result.data as PostSummary)
       } else {
         navigate('/posts/' + result.data.id)
@@ -217,7 +221,6 @@ export default function FormPost (props: FormPostProps): JSX.Element {
       navigate(-1)
     }
   }
-  console.log('publishAt', formData.publishAt)
   const renderVideo = useMemo(() => (
     <VideoPreview video={formData.video ? formData.video : video} onClear={deleteCorrectVideo} />
   ), [video, formData.video])
