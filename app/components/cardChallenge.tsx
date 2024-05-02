@@ -9,7 +9,7 @@ import { type ChallengeSummary } from '../utils/types'
 import { colorToClassName, textColorFromContainer, getIconOptionsForColor, buttonColorFromContainer } from '~/utils/helpers'
 import { CurrentUserContext } from '../utils/CurrentUserContext'
 import { Link, useNavigate } from '@remix-run/react'
-import { formatDistanceToNow } from 'date-fns'
+import { differenceInCalendarDays } from 'date-fns'
 import ShareMenu from './shareMenu'
 
 interface CardChallengeProps {
@@ -34,6 +34,20 @@ export default function CardChallenge ({ challenge, isShare, isMember }: CardCha
       navigate('/signup')
     }
   }
+  const howLongToStart = (): string => {
+    if (!challenge.startAt) {
+      return ''
+    }
+    const daysUntilStart = differenceInCalendarDays(challenge.startAt, new Date())
+    if (daysUntilStart > 0) {
+      if (daysUntilStart === 1) {
+        return '1 day'
+      }
+      return `${daysUntilStart} days`
+    } else {
+      return 'Started'
+    }
+  }
   const getFullUrl = (): string => {
     return `${window.location.origin}/challenges/${challenge.id}`
   }
@@ -43,6 +57,7 @@ export default function CardChallenge ({ challenge, isShare, isMember }: CardCha
       <div className="drop-shadow-none">
         <div className={'rounded-md p-1 bg-white'}>
           <Card className={`md:col-span-2 bg-${bgColor} p-2 border-1 drop-shadow-lg border-gray rounded-md`}>
+          <div className={`mt-2 font-bold mb-4 text-center text-${textColor}`}>{challenge.name}</div>
             <div className="grid grid-cols-3 gap-4">
               <div className="flex flex-col justify-center items-center col-span-1">
                 <div className={`bg-transparent border-2 border-${textColor} text-${textColor} rounded-full w-16 h-16 flex items-center justify-center `}>
@@ -51,14 +66,15 @@ export default function CardChallenge ({ challenge, isShare, isMember }: CardCha
                 {!isShare && challenge._count &&
                 <div className="flex justify-center items-center mt-2">
                   <FaRegCalendarAlt className={`text-${textColor} h-4 w-4 mr-1`} />
-                  <span className={`text-${textColor} text-xs pr-4`}>{formatDistanceToNow(new Date(challenge.startAt), { addSuffix: true })}</span>
+                  <span className={`text-${textColor} text-xs pr-4`}>{howLongToStart()}</span>
                   <FaUserFriends className={`text-${textColor} h-4 w-4`} />
                   <span className={`text-${textColor} text-xs pl-2`}>{challenge._count.members}</span>
                 </div>
                 }
               </div>
               <div className="flex flex-col items-center col-span-2">
-                <div className={`mt-2 font-bold text-${textColor}`}>{challenge.name}</div>
+
+                {challenge.coverPhoto && <img src={`${challenge.coverPhoto}?${Date.now()}`} alt={`${challenge?.name} cover photo`} className="w-full rounded-md" />}
                 <Button onClick={goToChallenge} className={`bg-${buttonColor} text-${buttonTextColor} p-3 py-2 rounded-full mt-3`}>{isMember ? 'Check In' : 'Sign up!'}</Button>
               </div>
             </div>

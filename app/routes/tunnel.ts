@@ -5,7 +5,6 @@ const SENTRY_HOST = 'o4506538845929472.ingest.us.sentry.io'
 const SENTRY_PROJECT_IDS = ['4506538846126080']
 
 export const action: ActionFunction = async (args) => {
-  console.log(args)
   const { request } = args
   try {
     const envelope = await request.text()
