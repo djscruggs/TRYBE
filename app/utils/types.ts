@@ -116,11 +116,11 @@ export interface MemberChallenge {
 }
 
 export interface Profile {
-  id?: number | string
-  firstName?: string
-  lastName?: string
-  userId?: number | string
-  profileImage?: string
+  id: number | string
+  firstName: string
+  lastName: string
+  userId: number | string
+  profileImage: string
 }
 // app/utils/types.ts
 export interface RegisterForm {

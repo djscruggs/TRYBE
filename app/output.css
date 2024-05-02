@@ -1050,6 +1050,10 @@ video {
   margin-top: 1px;
 }
 
+.ml-8 {
+  margin-left: 2rem;
+}
+
 .box-border {
   box-sizing: border-box;
 }
@@ -1381,6 +1385,14 @@ video {
   width: 100vw;
 }
 
+.w-1\/6 {
+  width: 16.666667%;
+}
+
+.w-5\/6 {
+  width: 83.333333%;
+}
+
 .min-w-12 {
   min-width: 3rem;
 }
@@ -1631,6 +1643,10 @@ video {
 
 .cursor-pointer {
   cursor: pointer;
+}
+
+.cursor-auto {
+  cursor: auto;
 }
 
 .select-none {
@@ -2971,6 +2987,14 @@ video {
 
 .pt-px {
   padding-top: 1px;
+}
+
+.pl-10 {
+  padding-left: 2.5rem;
+}
+
+.pl-8 {
+  padding-left: 2rem;
 }
 
 .text-left {

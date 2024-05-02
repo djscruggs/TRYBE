@@ -1,9 +1,9 @@
 import { createContext } from 'react'
-import { type CurrentUser } from './types'
+import { type User } from './types'
 
 export interface CurrentUserContextType {
-  currentUser: CurrentUser | null
-  setCurrentUser: React.Dispatch<React.SetStateAction<CurrentUser | null>>
+  currentUser: User | null
+  setCurrentUser: React.Dispatch<React.SetStateAction<User | null>>
 }
 export const CurrentUserContext = createContext<CurrentUserContextType>({
   currentUser: null,

@@ -14,11 +14,13 @@ import Liker from './liker'
 
 interface CommentsProps {
   comment: Comment | null
+  isReply: boolean
 }
 
 export default function CommentItem (props: CommentsProps): JSX.Element {
   const [comment, setComment] = useState<Comment | null>(props.comment ?? null)
   const [replies, setReplies] = useState<Comment[]>(comment?.replies ?? [])
+  const { isReply } = { props }
   const [firstReply, setFirstReply] = useState<Comment | null>(null)
   const [liking, setLiking] = useState(false)
   const [isLiked, setIsLiked] = useState(false)
@@ -41,7 +43,6 @@ export default function CommentItem (props: CommentsProps): JSX.Element {
       formData.append('intent', 'delete')
       const response = await axios.post('/api/comments', formData)
       toast.success('Comment deleted')
-      console.log(response)
       setComment(null)
     } catch (error) {
       toast.error('Error deleting comment')
@@ -56,15 +57,17 @@ export default function CommentItem (props: CommentsProps): JSX.Element {
   }
   const afterSaveReply = async (reply: Comment): void => {
     // refresh comment after save
-    if (firstReply) {
-      const newReplies = [firstReply].concat(replies)
+    if (replies) {
+      const newReplies = [reply].concat(replies)
       setReplies(newReplies)
+    } else {
+      setFirstReply(reply)
     }
-    setFirstReply(reply)
+
     setReplying(false)
   }
   const allowReplies = (): boolean => {
-    return Boolean(currentUser?.id && comment.threadDepth < 5)
+    return Boolean(currentUser?.id && comment && comment.threadDepth < 5)
   }
   if (!comment) return <></>
   return (
@@ -77,43 +80,41 @@ export default function CommentItem (props: CommentsProps): JSX.Element {
         )
       : (
       <>
-      <div className="w-full  pl-4" >
-        <div className='relative mb-2 p-2 break-all rounded-md'>
-          {comment.user?.id === currentUser?.id &&
-            <div className="text-xs text-gray-500 w-sm flex text-right justify-end absolute top-2 right-2">
-              <span className='underline cursor-pointer mr-1' onClick={handleEdit}>edit</span>
-              {deleting ? <Spinner className='h-4 w-4' /> : <span className='underline cursor-pointer mr-1' onClick={handleDelete}>delete</span>}
-            </div>
-          }
-          <div className='flex'>
-            <div className='flex-shrink-0'>
-              <Avatar src={comment.user?.profile?.profileImage} className='mr-2' size='sm'/>
-            </div>
-            <div className='flex-grow'>
-            <div className='text-xs mb-2'>{comment.user?.profile?.firstName} {comment.user?.profile?.lastName} - <span>{formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true })}</span></div>
-              <div>
-
-                 {convertlineTextToJSX(comment.body)}
+        <div className="w-full pl-4" >
+          <div className={'relative mb-2 p-2 break-all'}>
+            {comment.user?.id === currentUser?.id &&
+              <div className="text-xs text-gray-500 w-sm flex text-right justify-end absolute top-2 right-2">
+                <span className='underline cursor-pointer mr-1' onClick={handleEdit}>edit</span>
+                {deleting ? <Spinner className='h-4 w-4' /> : <span className='underline cursor-pointer mr-1' onClick={handleDelete}>delete</span>}
+              </div>
+            }
+            <div className='flex'>
+              <div className='flex-shrink-0'>
+                <Avatar src={comment.user?.profile?.profileImage} className='mr-2' size='sm'/>
+              </div>
+              <div className='flex-grow'>
+              <div className='text-xs mb-2'>{comment.user?.profile?.firstName} {comment.user?.profile?.lastName} - <span>{formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true })}</span></div>
+                  {convertlineTextToJSX(comment.body)}
               </div>
             </div>
+            <div className='ml-10 mt-4 mb-4'>
+              {replying && <FormComment afterSave={afterSaveReply} onCancel={() => { setReplying(false) }} replyToId={comment.id} /> }
+              {!replying &&
+                <div className='flex justify-start'>
+                  <Liker isLiked={isLiked} itemId={comment.id} itemType='comment' count={0}/>
+                {allowReplies() &&
+                  <div className='ml-2'>
+                  <FaRegComment className='h-4 w-4 text-grey cursor-pointer' onClick={() => { setReplying(true) }}/>
+                  </div>
+                }
+            </div>
+            }
+        </div>
           </div>
 
         </div>
-      </div>
-      <div className='pl-4 mb-4'>
-        {replying && <FormComment afterSave={afterSaveReply} onCancel={() => { setReplying(false) }} replyToId={comment.id} /> }
-        {!replying &&
-           <div className='flex justify-start'>
-            <div className='mr-2'><Liker isLiked={isLiked} itemId={comment.id} itemType='comment' count={0}/></div>
-           {allowReplies() &&
-            <div className='mr-2'>
-            <FaRegComment className='h-4 w-4 text-grey' onClick={() => { setReplying(true) }}/>
-            </div>
-           }
-          </div>
-          }
-      </div>
-      {replies && <div className='pl-4'><Comments firstComment={firstReply} comments={replies} /></div>}
+
+        {replies && replies.length > 0 && <div className='pl-4'><Comments firstComment={firstReply} comments={replies} isReply={true} /></div>}
       </>
         )
   }

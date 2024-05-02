@@ -34,7 +34,6 @@ export default function ViewPostComments (): JSX.Element {
       const newComments = [firstComment].concat(comments)
       setComments(newComments)
     }
-    setPost(comment)
     setFirstComment(comment)
     setShowForm(false)
   }

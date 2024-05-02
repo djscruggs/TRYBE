@@ -5,10 +5,11 @@ import {
 } from '@material-tailwind/react'
 import { GiShinyApple } from 'react-icons/gi'
 import { FaRegComment, FaRegCalendarAlt, FaUserFriends, FaRegHeart } from 'react-icons/fa'
-import { type ChallengeSummary, type Challenge } from '../utils/types'
+import { type ChallengeSummary } from '../utils/types'
 import { colorToClassName, textColorFromContainer, getIconOptionsForColor, buttonColorFromContainer } from '~/utils/helpers'
 import { CurrentUserContext } from '../utils/CurrentUserContext'
 import { Link, useNavigate } from '@remix-run/react'
+import { formatDistanceToNow } from 'date-fns'
 import ShareMenu from './shareMenu'
 
 interface CardChallengeProps {
@@ -50,7 +51,7 @@ export default function CardChallenge ({ challenge, isShare, isMember }: CardCha
                 {!isShare && challenge._count &&
                 <div className="flex justify-center items-center mt-2">
                   <FaRegCalendarAlt className={`text-${textColor} h-4 w-4 mr-1`} />
-                  <span className={`text-${textColor} text-xs pr-4`}>7 days</span>
+                  <span className={`text-${textColor} text-xs pr-4`}>{formatDistanceToNow(new Date(challenge.startAt), { addSuffix: true })}</span>
                   <FaUserFriends className={`text-${textColor} h-4 w-4`} />
                   <span className={`text-${textColor} text-xs pl-2`}>{challenge._count.members}</span>
                 </div>

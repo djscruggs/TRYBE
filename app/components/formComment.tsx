@@ -1,10 +1,11 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import { Form, useNavigate } from '@remix-run/react'
 import axios from 'axios'
 import { FormField } from './formField'
 import type { Comment } from '~/utils/types'
 import { toast } from 'react-hot-toast'
-import { Button } from '@material-tailwind/react'
+import { Button, Avatar } from '@material-tailwind/react'
+import { CurrentUserContext } from '~/utils/CurrentUserContext'
 
 interface FormCommentProps {
   challengeId?: number
@@ -21,6 +22,7 @@ export default function FormComment (props: FormCommentProps): JSX.Element {
     challengeId = comment.challengeId
     postId = comment.postId
   }
+  const { currentUser } = useContext(CurrentUserContext)
   const [body, setBody] = useState(comment ? comment.body : '')
   const [error, setError] = useState('')
   const navigate = useNavigate()
@@ -62,7 +64,13 @@ export default function FormComment (props: FormCommentProps): JSX.Element {
     }
   }
   return (
-    <div className='w-full'>
+    <div className='w-full flex'>
+      <div className='w-md pt-1'>
+      {currentUser?.profile &&
+        <Avatar src={currentUser.profile.profileImage} className='mr-2' size='sm'/>
+      }
+      </div>
+      <div>
       <Form method="post" onSubmit={handleSubmit}>
       <FormField
           name='comment'
@@ -85,6 +93,7 @@ export default function FormComment (props: FormCommentProps): JSX.Element {
         )}
 
       </Form>
+      </div>
     </div>
   )
 }
