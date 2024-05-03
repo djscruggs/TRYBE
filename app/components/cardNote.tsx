@@ -24,15 +24,14 @@ import DialogDelete from './dialogDelete'
 
 interface CardNoteProps {
   note: Note
+  isThread?: boolean
   isReplyTo?: boolean
   hasLiked?: boolean
-  hasReposted?: boolean
-  repostCount?: number
 }
 
 export default function CardNote (props: CardNoteProps): JSX.Element {
   const { currentUser } = useContext(CurrentUserContext)
-  const { isReplyTo, hasLiked, hasReposted, repostCount } = props
+  const { isReplyTo, hasLiked, isThread } = props
   const [note, setNote] = useState(props.note)
   const [showLightbox, setShowLightbox] = useState(false)
   const [editing, setEditing] = useState(false)
@@ -42,6 +41,7 @@ export default function CardNote (props: CardNoteProps): JSX.Element {
   const revalidator = useRevalidator()
   const navigate = useNavigate()
   const [deleteDialog, setDeleteDialog] = useState(false)
+  console.log('isThread', isThread)
   const goToNote = (event: any): void => {
     event.preventDefault()
     event.stopPropagation()
@@ -146,7 +146,7 @@ export default function CardNote (props: CardNoteProps): JSX.Element {
             <CardNote note={note.replyTo} isReplyTo={true} />
           </div>
       }
-      {note.challenge &&
+      {note.challenge && !isThread &&
           <div className='mt-2'>
             <CardChallenge challenge={note.challenge} isShare={true}/>
           </div>
@@ -164,7 +164,7 @@ export default function CardNote (props: CardNoteProps): JSX.Element {
                   {note.video && <video className="recorded" src={note.video} onClick={(event) => { event?.stopPropagation() }} controls />}
                   {note.image && <img src={`${note.image}?${Date.now()}`} alt="note picture" className="mt-4 cursor-pointer max-w-[200px]" onClick={handlePhotoClick} />}
                 </div>
-                {note.challenge &&
+                {note.challenge && !isThread &&
                   <div className='mt-2'>
                     <CardChallenge challenge={note.challenge} isShare={true}/>
                   </div>
@@ -204,11 +204,13 @@ export default function CardNote (props: CardNoteProps): JSX.Element {
         <hr />
         <div className="grid grid-cols-3 text-center py-2 cursor-pointer">
           <div className="flex justify-center items-center">
+          {!isThread &&
           <Link to={`/notes/${note.id}`}>
             <FaRegComment className="text-grey mr-1 inline" />
             <span className="text-xs">{note._count?.replies} replies</span>
             </Link>
           </div>
+          }
           <div className="flex justify-center items-center cursor-pointer">
 
           <div className='mr-2'><Liker isLiked={Boolean(hasLiked)} itemId={Number(note.id)} itemType='note' count={Number(note._count?.likes)}/></div>

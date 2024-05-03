@@ -39,6 +39,35 @@ export interface Note {
   user?: User
   _count?: any
 }
+export interface NoteSummary extends Note {
+  _count: {
+    likes: number
+    replies?: number
+  }
+}
+
+export interface Thread {
+  id?: number
+  userId?: number
+  title: string | null
+  body: string | null
+  image?: string | null
+  imageMeta?: Record<string, unknown> | null
+  video?: string | null
+  videoMeta?: Record<string, unknown> | null
+  challengeId: number
+  challenge: Challenge
+  createdAt?: Date
+  updatedAt?: Date
+  user?: User
+}
+export interface ThreadSummary extends Thread {
+  _count: {
+    likes: number
+    comments?: number
+  }
+}
+
 export interface Post {
   id?: number
   userId?: number
@@ -150,12 +179,6 @@ export interface Comment {
   threadDepth?: number
 }
 
-export interface NoteSummary extends Note {
-  _count: {
-    likes: number
-    replies?: number
-  }
-}
 export interface ErrorObject extends Record<string, { _errors: string[] }> {}
 
 // generic interface that handles responses from server loading a single object

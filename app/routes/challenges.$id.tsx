@@ -412,7 +412,7 @@ export default function ViewChallenge (): JSX.Element {
           Latest Discussion
           <span className='float-right'><Link className='underline text-blue' to={`/notes/${latestThread?.id}`}>View All</Link></span>
         </h2>
-        <CardNote note={latestThread} />
+        <CardNote note={latestThread} isThread={true}/>
 
       </div>
       }

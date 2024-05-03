@@ -19,6 +19,7 @@ model User {
   challenges       Challenge[]
   checkIns         CheckIn[]
   comments         Comment[]
+  threads          Thread[]
   likes            Like[]
   memberChallenges MemberChallenge[]
   Note             Note[]
@@ -66,6 +67,30 @@ model Note {
   user        User       @relation(fields: [userId], references: [id])
 
   @@index([userId])
+  @@index([userId, createdAt])
+}
+model Thread {
+  id          Int        @id @default(autoincrement())
+  title       String
+  body        String?
+  userId      Int
+  challengeId Int?
+  challenge   Challenge? @relation(fields: [challengeId], references: [id])
+  user        User       @relation(fields: [userId], references: [id])
+  image       String?
+  imageMeta   Json?
+  videoMeta   Json?
+  video       String?
+  likeCount   Int        @default(0)
+  likes       Like[]
+  commentCount  Int        @default(0)
+  comments     Comment[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  
+
+  @@index([userId])
+  @@index([challengeId])
   @@index([userId, createdAt])
 }
 
@@ -131,6 +156,7 @@ model Challenge {
   members        MemberChallenge[]
   notes          Note[]
   posts          Post[]
+  threads       Thread[]
 
   @@index([userId])
   @@index([userId, updatedAt])
@@ -176,11 +202,13 @@ model Comment {
   userId      Int
   postId      Int?
   challengeId Int?
+  threadId    Int?
   replyToId   Int?
   threadDepth Int        @default(0)
   likeCount   Int        @default(0)
   replyCount  Int        @default(0)
   challenge   Challenge? @relation(fields: [challengeId], references: [id])
+  thread     Thread?   @relation(fields: [threadId], references: [id])
   post        Post?      @relation(fields: [postId], references: [id])
   replyTo     Comment?   @relation("ReplyTo", fields: [replyToId], references: [id])
   replies     Comment[]  @relation("ReplyTo")
@@ -199,10 +227,12 @@ model Like {
   userId      Int
   postId      Int?
   challengeId Int?
+  threadId Int?
   commentId   Int?
   noteId      Int?
   challenge   Challenge? @relation(fields: [challengeId], references: [id], onDelete: Cascade)
   comment     Comment?   @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  thread     Thread?   @relation(fields: [threadId], references: [id], onDelete: Cascade)
   note        Note?      @relation(fields: [noteId], references: [id], onDelete: Cascade)
   post        Post?      @relation(fields: [postId], references: [id], onDelete: Cascade)
   user        User       @relation(fields: [userId], references: [id])

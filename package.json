@@ -3,7 +3,6 @@
     "production": "flyctl deploy --config ./fly.production.toml",
     "staging": "flyctl deploy --config ./fly.staging.toml",
     "generate": "npx prisma generate",
-    "deploy": "npx prisma migrate deploy",
     "setup": "prisma generate && prisma migrate deploy",
     "styles": " npx tailwindcss -i ./app/tailwind.css -o ./app/output.css --watch",
     "build": "find ./ -name \".DS_Store\" -print -delete; remix build",
@@ -20,11 +19,12 @@
     "test:i": "vitest run --config ./vitest.integration.ts",
     "posttest:i": "npm run db:down",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "migrate:staging": "dotenv -e .env.staging -- npx prisma migrate deploy",
+    "migrate:production": "dotenv -e .env -- npx prisma migrate deploy"
   },
   "prisma": {
-    "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts",
-    "migrate:staging": "dotenv -e .env.staging -- npx prisma migrate deploy"
+    "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
   },
   "workspaces": [
     "packages/*"
