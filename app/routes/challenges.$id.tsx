@@ -1,9 +1,10 @@
 import { loadChallengeSummary } from '~/models/challenge.server'
+import { loadPostSummary } from '~/models/post.server'
 import { Outlet, useLoaderData, Link, useNavigate, useLocation } from '@remix-run/react'
 import React, { useContext, useState } from 'react'
 import { requireCurrentUser } from '../models/auth.server'
-import type { MemberChallenge, ChallengeSummary, Post } from '~/utils/types'
-import { json, type LoaderFunction, type LoaderFunctionArgs } from '@remix-run/node'
+import type { MemberChallenge, ChallengeSummary, PostSummary, NoteSummary } from '~/utils/types'
+import { type LoaderFunction, type LoaderFunctionArgs } from '@remix-run/node'
 import axios from 'axios'
 import { toast } from 'react-hot-toast'
 import { colorToClassName, convertlineTextToJSX, iconStyle } from '~/utils/helpers'
@@ -16,6 +17,7 @@ import { RiMentalHealthLine } from 'react-icons/ri'
 import { PiBarbellLight } from 'react-icons/pi'
 import { IoFishOutline } from 'react-icons/io5'
 import CardPost from '~/components/cardPost'
+import CardNote from '~/components/cardNote'
 import { LiaUserFriendsSolid } from 'react-icons/lia'
 import { prisma } from '../models/prisma.server'
 import { formatDistanceToNow, format, differenceInDays, differenceInHours } from 'date-fns'
@@ -23,10 +25,12 @@ import getUserLocale from 'get-user-locale'
 import Liker from '~/components/liker'
 import ShareMenu from '~/components/shareMenu'
 import DialogDelete from '~/components/dialogDelete'
+import { loadNoteSummary } from '~/models/note.server'
 
 interface ViewChallengeData {
   challenge: ChallengeSummary
-  latestPost: Post | null
+  latestPost: PostSummary | null
+  latestThread: NoteSummary | null
   hasLiked?: boolean
   membership?: MemberChallenge | null | undefined
   checkInsCount?: number
@@ -89,7 +93,8 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
     }
   }
   // load most recent post
-  const latestPost = await prisma.post.findFirst({
+  let latestPost = null
+  const _post = await prisma.post.findFirst({
     where: {
       challengeId: Number(params.id),
       published: true,
@@ -109,20 +114,42 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
       createdAt: 'desc'
     }
   })
+  if (_post) {
+    latestPost = await loadPostSummary(_post.id) as PostSummary
+  }
+  let latestThread = null
+  const _thread = await prisma.note.findFirst({
+    where: {
+      challengeId: Number(params.id)
+    },
+    include: {
+      user: {
+        include: {
+          profile: true
+        }
+      }
+    },
+    orderBy: {
+      createdAt: 'desc'
+    }
+  })
+  if (_thread) {
+    latestThread = await loadNoteSummary(_thread.id) as NoteSummary
+  }
 
   const locale = getUserLocale()
-  const data: ViewChallengeData = { challenge: result, membership, hasLiked: Boolean(likes), checkInsCount, locale, latestPost }
+  const data: ViewChallengeData = { challenge: result, membership, hasLiked: Boolean(likes), checkInsCount, locale, latestPost, latestThread }
   return data
 }
 export default function ViewChallenge (): JSX.Element {
   const data: ViewChallengeData = useLoaderData()
-  const { challenge, hasLiked, latestPost } = data
+  const { challenge, hasLiked, latestPost, latestThread } = data
   const [membership, setMembership] = useState(data.membership)
 
   const likesCount = challenge?._count.likes
   const location = useLocation()
 
-  const showLatestPost = !location.pathname.includes('members')
+  const showLatest = !location.pathname.includes('members')
   const isComments = location.pathname.includes('comments')
   const { currentUser } = useContext(CurrentUserContext)
   const navigate = useNavigate()
@@ -369,13 +396,23 @@ export default function ViewChallenge (): JSX.Element {
             </div>
         </div>
       </div>
-      {latestPost && showLatestPost &&
+      {latestPost && showLatest &&
       <div className='mt-4'>
         <h2>
           Latest Update
           <span className='float-right'><Link className='underline text-blue' to={`/posts/challenge/${challenge?.id}`}>View All</Link></span>
         </h2>
         <CardPost post={latestPost} fullPost={false} />
+
+      </div>
+      }
+      {latestThread && showLatest &&
+      <div className='mt-4'>
+        <h2>
+          Latest Discussion
+          <span className='float-right'><Link className='underline text-blue' to={`/notes/${latestThread?.id}`}>View All</Link></span>
+        </h2>
+        <CardNote note={latestThread} />
 
       </div>
       }

@@ -37,7 +37,7 @@ export interface Note {
   createdAt?: Date
   updatedAt?: Date
   user?: User
-  _count: any
+  _count?: any
 }
 export interface Post {
   id?: number
