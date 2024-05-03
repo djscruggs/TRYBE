@@ -34,7 +34,8 @@ export default function FormThread (props: FormThreadProps): JSX.Element {
   }
 
   const [showVideoRecorder, setShowVideoRecorder] = useState(false)
-  const placeholder = prompt ?? 'What\'s on your mind?'
+  const placeholder = prompt ?? 'What do you want to talk about?'
+  const [title, setTitle] = useState(thread?.title || '')
   const [body, setBody] = useState(thread?.body || '')
   const [btnDisabled, setBtnDisabled] = useState(false)
   const [error, setError] = useState('')
@@ -96,9 +97,7 @@ export default function FormThread (props: FormThreadProps): JSX.Element {
     try {
       const formData = new FormData()
       formData.append('body', body)
-      if (thread) {
-        formData.append('id', thread.id.toString())
-      }
+      formData.append('title', title)
       if (thread) {
         formData.append('id', thread.id.toString())
       }
@@ -114,6 +113,7 @@ export default function FormThread (props: FormThreadProps): JSX.Element {
 
       const result = await axios.post('/api/threads', formData)
       setBody('')
+      setTitle('')
       setImage(null)
       setImageUrl(null)
       setVideo(null)
@@ -151,11 +151,21 @@ export default function FormThread (props: FormThreadProps): JSX.Element {
     <div className='w-full'>
       <Form method="post" onSubmit={handleSubmit} onKeyDown={handleKeyDown}>
       <FormField
-          name='thread'
+        name='title'
+        type='text'
+        placeholder='Enter a Title'
+        required={true}
+        value={title}
+        onChange={(ev) => {
+          setTitle(String(ev.target.value))
+        }}
+      />
+      <FormField
+          name='body'
           autoResize={true}
           placeholder={placeholder}
           type='textarea'
-          rows={4}
+          rows={5}
           required={true}
           value={body}
           onKeyDown={handleKeyDown}

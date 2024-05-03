@@ -4,7 +4,7 @@ import type { ChallengeSummary } from '~/utils/types'
 import { useNavigate } from 'react-router-dom'
 import { type LoaderFunction, type LoaderFunctionArgs } from '@remix-run/node'
 import { loadChallengeSummary } from '../models/challenge.server'
-import FormNote from '../components/formNote'
+import FormThread from '../components/formThread'
 
 interface LoaderData {
   challenge: ChallengeSummary
@@ -23,7 +23,7 @@ export default function ThreadNew (): JSX.Element {
   return (
           <div className='w-full max-w-lg mt-10'>
             <p className='mb-4'>Start a discussion thread for <span className='font-bold'>{challenge.name}</span></p>
-            <FormNote challenge={challenge} isThread={true} onCancel={() => { navigate(-1) }} afterSave={() => { navigate(-1) }}/>
+            <FormThread challenge={challenge} onCancel={() => { navigate(-1) }} afterSave={() => { navigate(-1) }}/>
           </div>
   )
 }

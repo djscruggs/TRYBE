@@ -41,7 +41,8 @@ export const loader: LoaderFunction = async (args): Promise<FeedLoaderData> => {
   const notes = await prisma.note.findMany({
     orderBy: [{ createdAt: 'desc' }],
     where: {
-      isThread: false
+      isThread: false,
+      replyTo: null
     },
     include: {
       user: {
@@ -155,7 +156,7 @@ export default function Home (): JSX.Element {
                           <CardChallenge challenge={item as ChallengeSummary} isMember={memberships.includes(item.id)} />
                         </div>)
               } else {
-                return (<div className="flex items-center pl-0 mt-10 w-full max-w-lg" key={`note-${item.id}`}>
+                return (<div className=" pl-0 mt-10 w-full max-w-lg" key={`note-${item.id}`}>
                           <CardNote note={item} />
                         </div>)
               }

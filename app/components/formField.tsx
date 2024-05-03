@@ -47,7 +47,7 @@ export function FormField ({
   const textRef = useRef<HTMLTextAreaElement>(null)
   useEffect(() => {
     if (textRef.current) {
-      textRef.current.style.height = `${rows}rem`
+      textRef.current.style.height = `${rows * 2}rem`
       const scrollHeight = textRef.current.scrollHeight
       textRef.current.style.height = scrollHeight + 'px'
     }

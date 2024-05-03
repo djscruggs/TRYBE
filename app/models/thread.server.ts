@@ -27,7 +27,7 @@ export const updateCounts = async (thread: prisma.thread): Promise<void> => {
     where: { threadId: Number(thread.id) }
   })
   await prisma.thread.update({
-    where: { id: Number(thread.replyToId) },
+    where: { id: Number(thread.id) },
     data: { commentCount, likeCount }
   })
 }
@@ -57,7 +57,7 @@ export const deleteThread = async (threadId: string | number, userId: string | n
   void updateCounts(deleted)
   return deleted
 }
-export const loadThreadSummary = async (threadId: string | number): Promise<Record<string, any> | null> => {
+export const loadThreadSummary = async (threadId: string | number): Promise<Thread | null> => {
   const id = Number(threadId)
   const thread = await prisma.thread.findUnique({
     where: {
@@ -69,12 +69,7 @@ export const loadThreadSummary = async (threadId: string | number): Promise<Reco
           profile: true
         }
       },
-      challenge: true,
-      post: true,
-      _count: {
-        select: { comments: true, likes: true }
-      },
-      replyTo: true
+      challenge: true
     }
   })
   return thread

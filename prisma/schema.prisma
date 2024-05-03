@@ -226,8 +226,9 @@ model Like {
   createdAt   DateTime   @default(now())
   userId      Int
   postId      Int?
+  threadId      Int?
   challengeId Int?
-  threadId Int?
+  threadId    Int?
   commentId   Int?
   noteId      Int?
   challenge   Challenge? @relation(fields: [challengeId], references: [id], onDelete: Cascade)
@@ -241,6 +242,7 @@ model Like {
   @@index([challengeId])
   @@index([noteId])
   @@index([commentId])
+  @@index([threadId])
 }
 
 model Category {

@@ -41,7 +41,7 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
       hasReposted = true
     }
   }
-  // get cound of resposts
+  // get count of resposts
   const repostCount = await prisma.note.count({
     where: {
       replyToId: note.id,

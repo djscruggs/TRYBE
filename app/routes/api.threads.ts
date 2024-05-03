@@ -31,6 +31,7 @@ export const action: ActionFunction = async (args) => {
   if (rawData.get('challengeId')) {
     data.challenge = { connect: { id: Number(rawData.get('challengeId')) } }
   }
+  console.log(data)
   let result
   if (data.id) {
     result = await updateThread(data)

@@ -10,6 +10,7 @@ export const action: ActionFunction = async (args: ActionFunctionArgs) => {
   const commentId: number | null = formData.get('commentId') ? Number(formData.get('commentId')) : null
   const postId: number | null = formData.get('postId') ? Number(formData.get('postId')) : null
   const noteId: number | null = formData.get('noteId') ? Number(formData.get('noteId')) : null
+  const threadId: number | null = formData.get('threadId') ? Number(formData.get('threadId')) : null
   let where: prisma.likeWhere = {}
   let totalLikes = 0
   if (formData.get('unlike')) {
@@ -18,6 +19,7 @@ export const action: ActionFunction = async (args: ActionFunctionArgs) => {
     if (commentId) where.commentId = commentId
     if (postId) where.postId = postId
     if (noteId) where.noteId = noteId
+    if (threadId) where.threadId = threadId
     const like = await prisma.like.deleteMany({ where })
     const toUpdate = { challengeId, commentId, postId, noteId }
     void updateLikeCounts(toUpdate)
@@ -49,6 +51,11 @@ export const action: ActionFunction = async (args: ActionFunctionArgs) => {
     itemId = where.noteId = noteId
     fieldName = 'noteId'
   }
+  if (threadId) {
+    data.thread = { connect: { id: threadId } }
+    itemId = where.threadId = threadId
+    fieldName = 'threadId'
+  }
   // first see if it already exists
   const existingLike = await prisma.like.findFirst({ where })
   if (existingLike) {
@@ -59,7 +66,6 @@ export const action: ActionFunction = async (args: ActionFunctionArgs) => {
     return json({ like: existingLike, totalLikes })
   }
   const like = await prisma.like.create({ data })
-  console.log('like created', like)
   await updateLikeCounts(like)
   totalLikes = await getLikeCount(itemId, fieldName)
   return { like, totalLikes }
@@ -76,7 +82,7 @@ const getLikeCount = async (itemId: number, fieldName: string): Promise<number> 
 }
 
 const updateLikeCounts = async (like: Partial<Like>): Promise<any> => {
-  const { challengeId, commentId, postId, noteId } = like
+  const { challengeId, commentId, postId, noteId, threadId } = like
   try {
     if (challengeId) {
       const chLikes = await prisma.like.count({ where: { challengeId } })
@@ -104,6 +110,13 @@ const updateLikeCounts = async (like: Partial<Like>): Promise<any> => {
       return await prisma.note.update({
         where: { id: noteId },
         data: { likeCount: nLikes }
+      })
+    }
+    if (threadId) {
+      const tLikes = await prisma.like.count({ where: { threadId } })
+      return await prisma.thread.update({
+        where: { id: threadId },
+        data: { likeCount: tLikes }
       })
     }
   } catch (error) {

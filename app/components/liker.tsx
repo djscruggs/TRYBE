@@ -7,13 +7,14 @@ import { toast } from 'react-hot-toast'
 interface LikerProps {
   isLiked: boolean
   itemId: number
-  itemType: 'comment' | 'post' | 'note' | 'challenge'
+  itemType: 'comment' | 'post' | 'note' | 'challenge' | 'thread'
   count: number
   className?: string
 }
 
 export default function Liker (props: LikerProps): JSX.Element {
-  const { itemId, itemType, className } = props
+  console.log('Liker', props)
+  const { itemId, itemType } = props
   const [isLiked, setIsLiked] = useState(props.isLiked)
   const [count, setCount] = useState(props.count)
   const [loading, setLoading] = useState(false)
@@ -30,6 +31,9 @@ export default function Liker (props: LikerProps): JSX.Element {
     }
     if (itemType === 'challenge') {
       formData.append('challengeId', String(itemId))
+    }
+    if (itemType === 'thread') {
+      formData.append('threadId', String(itemId))
     }
     if (isLiked) {
       formData.append('unlike', 'true')

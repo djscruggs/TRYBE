@@ -1,15 +1,17 @@
-import { loadNoteSummary, loadRepost } from '~/models/note.server'
+import { loadThreadSummary } from '~/models/thread.server'
 import { Outlet, useLoaderData, useLocation } from '@remix-run/react'
 
-import CardNote from '~/components/cardNote'
 import { requireCurrentUser } from '../models/auth.server'
-import type { ObjectData, Note } from '~/utils/types'
+import type { ObjectData, ThreadSummary } from '~/utils/types'
 import { json, type LoaderFunction, type LoaderFunctionArgs } from '@remix-run/node'
 import { prisma } from '../models/prisma.server'
+import CardThread from '~/components/cardThread'
+import CommentsContainer from '~/components/commentsContainer'
 
-interface NoteObjectData {
-  note: Note
+interface ThreadData {
+  thread: ThreadSummary
   hasLiked: boolean
+  comments: Comment[]
 }
 
 export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
@@ -18,43 +20,27 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
   if (!params.id) {
     return null
   }
-  const note = await loadNoteSummary(params.id)
-  if (!note) {
-    const error = { loadingError: 'Note not found' }
+  const thread = await loadThreadSummary(params.id)
+  if (!thread) {
+    const error = { loadingError: 'Thread not found' }
     return json(error)
   }
   // load memberships & likes for current user if it exists
-  let hasReposted = false
   let hasLiked = false
   if (currentUser) {
-    // has the user liked this note?
+    // has the user liked this thread?
     const likes = await prisma.like.count({
       where: {
-        noteId: note.id,
+        threadId: thread.id,
         userId: Number(currentUser.id)
       }
     })
     hasLiked = likes > 0
-    // has the user reposted this note?
-    const reposted = await loadRepost(note.id, currentUser.id, null)
-    if (reposted) {
-      hasReposted = true
-    }
   }
-  // get cound of resposts
-  const repostCount = await prisma.note.count({
-    where: {
-      replyToId: note.id,
-      body: null
-    }
-  })
   // get replies
-  const replies = await prisma.note.findMany({
+  const comments = await prisma.comment.findMany({
     where: {
-      replyToId: note.id,
-      body: {
-        not: null
-      }
+      threadId: thread.id
     },
     include: {
       user: {
@@ -64,11 +50,11 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
       }
     }
   })
-  const data: NoteObjectData = { note, hasLiked, hasReposted, repostCount, replies }
+  const data: ThreadData = { thread, hasLiked, comments }
   return json(data)
 }
 
-export default function ViewNote (): JSX.Element {
+export default function ViewThread (): JSX.Element {
   const location = useLocation()
   if (location.pathname.includes('edit') || location.pathname.includes('quote')) {
     return <Outlet />
@@ -81,18 +67,16 @@ export default function ViewNote (): JSX.Element {
   if (data?.loadingError) {
     return <h1>{data.loadingError}</h1>
   }
-  if (!data?.note) {
+  if (!data?.thread) {
     return <p>Loading...</p>
   }
   return (
     <>
     <div className='w-dvw md:max-w-md lg:max-w-lg mt-10 p-4'>
-      <CardNote note={data.note} repostCount={data.repostCount} hasLiked={Boolean(data.hasLiked)} hasReposted={Boolean(data.hasReposted)} />
+      <CardThread thread={data.thread} hasLiked={Boolean(data.hasLiked)} />
     </div>
     <div className='max-w-[400px] md:max-w-md lg:max-w-lg'>
-      {data.replies?.map((reply) => {
-        return <CardNote key={reply.id} note={reply} isReplyTo={true} />
-      })}
+      <CommentsContainer comments={data.comments as Comment[]} />
     </div>
     </>
   )

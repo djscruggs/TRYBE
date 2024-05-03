@@ -160,7 +160,6 @@ export default function FormPost (props: FormPostProps): JSX.Element {
     if (!validate()) {
       return
     }
-    console.log('starting submit')
     console.log(formData)
     try {
       setSaving(true)

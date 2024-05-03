@@ -1,4 +1,3 @@
-// app/utils/types.ts
 export interface User {
   id?: number | string
   email: string
@@ -49,22 +48,24 @@ export interface NoteSummary extends Note {
 export interface Thread {
   id?: number
   userId?: number
+  user?: User | CurrentUser
   title: string | null
   body: string | null
-  image?: string | null
-  imageMeta?: Record<string, unknown> | null
-  video?: string | null
-  videoMeta?: Record<string, unknown> | null
+  image: string | null
+  imageMeta: any
+  video: string | null
+  videoMeta: any
   challengeId: number
-  challenge: Challenge
+  challenge?: Challenge
+  likeCount?: number
+  commentCount?: number
   createdAt?: Date
   updatedAt?: Date
-  user?: User
 }
 export interface ThreadSummary extends Thread {
-  _count: {
+  _count?: {
     likes: number
-    comments?: number
+    comments: number
   }
 }
 

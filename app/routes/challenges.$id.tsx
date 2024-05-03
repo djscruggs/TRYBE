@@ -1,5 +1,6 @@
 import { loadChallengeSummary } from '~/models/challenge.server'
 import { loadPostSummary } from '~/models/post.server'
+import { loadThreadSummary } from '~/models/thread.server'
 import { Outlet, useLoaderData, Link, useNavigate, useLocation } from '@remix-run/react'
 import React, { useContext, useState } from 'react'
 import { requireCurrentUser } from '../models/auth.server'
@@ -17,7 +18,7 @@ import { RiMentalHealthLine } from 'react-icons/ri'
 import { PiBarbellLight } from 'react-icons/pi'
 import { IoFishOutline } from 'react-icons/io5'
 import CardPost from '~/components/cardPost'
-import CardNote from '~/components/cardNote'
+import CardThread from '~/components/cardThread'
 import { LiaUserFriendsSolid } from 'react-icons/lia'
 import { prisma } from '../models/prisma.server'
 import { formatDistanceToNow, format, differenceInDays, differenceInHours } from 'date-fns'
@@ -25,7 +26,6 @@ import getUserLocale from 'get-user-locale'
 import Liker from '~/components/liker'
 import ShareMenu from '~/components/shareMenu'
 import DialogDelete from '~/components/dialogDelete'
-import { loadNoteSummary } from '~/models/note.server'
 
 interface ViewChallengeData {
   challenge: ChallengeSummary
@@ -118,7 +118,7 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
     latestPost = await loadPostSummary(_post.id) as PostSummary
   }
   let latestThread = null
-  const _thread = await prisma.note.findFirst({
+  const _thread = await prisma.thread.findFirst({
     where: {
       challengeId: Number(params.id)
     },
@@ -134,7 +134,7 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
     }
   })
   if (_thread) {
-    latestThread = await loadNoteSummary(_thread.id) as NoteSummary
+    latestThread = await loadThreadSummary(_thread.id) as NoteSummary
   }
 
   const locale = getUserLocale()
@@ -144,6 +144,7 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
 export default function ViewChallenge (): JSX.Element {
   const data: ViewChallengeData = useLoaderData()
   const { challenge, hasLiked, latestPost, latestThread } = data
+  console.log(latestThread)
   const [membership, setMembership] = useState(data.membership)
 
   const likesCount = challenge?._count.likes
@@ -412,7 +413,7 @@ export default function ViewChallenge (): JSX.Element {
           Latest Discussion
           <span className='float-right'><Link className='underline text-blue' to={`/notes/${latestThread?.id}`}>View All</Link></span>
         </h2>
-        <CardNote note={latestThread} isThread={true}/>
+        <CardThread thread={latestThread}/>
 
       </div>
       }

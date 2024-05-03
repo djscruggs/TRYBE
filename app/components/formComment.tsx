@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react'
-import { Form, useNavigate } from '@remix-run/react'
+import { Form } from '@remix-run/react'
 import axios from 'axios'
 import { FormField } from './formField'
 import type { Comment } from '~/utils/types'
@@ -11,13 +11,14 @@ interface FormCommentProps {
   challengeId?: number
   postId?: number
   replyToId?: number
+  threadId?: number
   afterSave: (comment: Comment) => void
   onCancel?: () => void
   comment?: Comment
 }
 
 export default function FormComment (props: FormCommentProps): JSX.Element {
-  let { comment, challengeId, postId, replyToId } = props
+  let { comment, challengeId, postId, replyToId, threadId } = props
   if (comment) {
     challengeId = comment.challengeId
     postId = comment.postId
@@ -25,7 +26,6 @@ export default function FormComment (props: FormCommentProps): JSX.Element {
   const { currentUser } = useContext(CurrentUserContext)
   const [body, setBody] = useState(comment ? comment.body : '')
   const [error, setError] = useState('')
-  const navigate = useNavigate()
   async function handleSubmit (ev: React.FormEvent<HTMLFormElement>): Promise<void> {
     ev.preventDefault()
     if (body.length < 10) {
@@ -37,6 +37,9 @@ export default function FormComment (props: FormCommentProps): JSX.Element {
 
       if (replyToId) {
         formData.append('replyToId', String(replyToId))
+      }
+      if (threadId) {
+        formData.append('threadId', String(threadId))
       }
       if (challengeId) {
         formData.append('challengeId', String(challengeId))
@@ -76,7 +79,7 @@ export default function FormComment (props: FormCommentProps): JSX.Element {
           name='comment'
           placeholder='Enter comment'
           type='textarea'
-          rows={5}
+          rows={3}
           required={true}
           autoFocus={true}
           value={body}
