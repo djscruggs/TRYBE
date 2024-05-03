@@ -6,7 +6,7 @@ export default function ViewChallengeMembers (): JSX.Element {
   const navigate = useNavigate()
   return (
     <div className='max-w-sm'>
-      <FormNote prompt='Share on your timeline' challenge={data.challenge} onCancel={() => { navigate(-1) }} afterSave={() => { navigate(-1) }}/>
+      <FormNote prompt='Share on your timeline' challenge={data.challenge} onCancel={() => { navigate(-1) }} />
     </div>
 
   )

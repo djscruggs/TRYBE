@@ -48,6 +48,7 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
   if (!params.id) {
     return null
   }
+  console.log('loading challenge with params', params)
   const result: ChallengeSummaryWithCounts | undefined = await loadChallengeSummary(params.id)
   if (!result) {
     const error = { loadingError: 'Challenge not found' }

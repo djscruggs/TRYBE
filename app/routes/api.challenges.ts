@@ -41,30 +41,27 @@ export async function action (args: ActionFunctionArgs): Promise<any> {
       data = await createChallenge(converted)
     }
     // now handle the photo
-    let coverPhoto
-    if (rawData.get('photo') === 'delete') {
-      data.coverPhoto = null
-    } else if (rawData.get('photo')) {
-      coverPhoto = rawData.get('photo') as File
+    let newCoverPhoto
+    // new photo is uploaded as photo, not coverPhoto
+    if (rawData.get('photo')) {
+      newCoverPhoto = rawData.get('photo') as File
     }
-    if (coverPhoto ?? rawData.get('photo') === 'delete') {
+    if (rawData.get('coverPhoto') === 'delete') {
       if (data.coverPhotoMeta?.public_id) {
         await deleteFromCloudinary(data.coverPhotoMeta?.public_id, 'image')
-        data.coverPhotoMeta = null
       }
-      // const nameNoExt = `challenge-${data.id}`
-      // data.coverPhotoMeta = await writeFile(file)
-      if (coverPhoto) {
-        const nameNoExt = `challenge-${data.id}-cover`
-        const coverPhotoMeta = await saveToCloudinary(coverPhoto, nameNoExt)
-        data.coverPhoto = coverPhotoMeta.secure_url
-        data.coverPhotoMeta = coverPhotoMeta
-      }
-      await updateChallenge(data)
+      data.coverPhotoMeta = {}
+      data.coverPhoto = ''
     }
+    if (newCoverPhoto) {
+      const nameNoExt = `challenge-${data.id}-cover`
+      const coverPhotoMeta = await saveToCloudinary(newCoverPhoto, nameNoExt)
+      data.coverPhoto = coverPhotoMeta.secure_url
+      data.coverPhotoMeta = coverPhotoMeta
+    }
+    await updateChallenge(data)
     // reload challenge with all the extra info
     const updatedChallenge = await loadChallengeSummary(Number(data.id))
-
     return updatedChallenge
   } catch (error) {
     console.log('error', error)

@@ -1,4 +1,4 @@
-import { useContext } from 'react'
+import React, { useContext } from 'react'
 import { useNavigate } from '@remix-run/react'
 import {
   Card,
@@ -28,14 +28,14 @@ export default function CardChallengeMembership ({ membership }: CardChallengePr
   }
 
   return (
-    <div className="mt-2 border-0 drop-shadow-none mr-2 w-full cursor-pointer" onClick={goToChallenge} >
+    <div className="mt-2 border-0 drop-shadow-none mr-2 w-full cursor-pointer">
       <div className="drop-shadow-none">
         <div className={'grid grid-cols-1 md:grid-cols-2 gap-4 rounded-md p-1 bg-white'}>
-          <Card className='md:col-span-2 bg-gray-200 p-2 border-1 drop-shadow-lg border-gray rounded-md'>
+          <Card onClick={goToChallenge} className='md:col-span-2 bg-gray-200 p-2 border-1 drop-shadow-lg border-gray rounded-md'>
             <div className="grid grid-cols-3 gap-4">
               <div className="flex flex-col justify-center items-center col-span-1">
                   <div className="flex flex-col items-center col-span-2">
-                    Member since: {new Date(membership.createdAt).toLocaleDateString()}
+                    Member since: {new Date(membership.createdAt).toLocaleDateString(String(currentUser?.locale) ?? 'en-US')}
                   </div>
               </div>
               <div className="flex flex-col items-center col-span-2">
@@ -49,10 +49,9 @@ export default function CardChallengeMembership ({ membership }: CardChallengePr
       </div>
       {challenge.public &&
       <>
-        <div className="grid grid-cols-3 text-center py-2 cursor-pointer">
-          <div className="flex justify-center items-center cursor-pointer">
-            <ShareMenu copyUrl={getFullUrl()} itemType='challenge' itemId={challenge.id}/>
-          </div>
+        <div className="flex justify-end pr-2 mt-2">
+              <ShareMenu copyUrl={getFullUrl()} itemType='challenge' itemId={challenge.id}/>
+
         </div>
       </>
       }

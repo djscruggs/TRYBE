@@ -28,9 +28,9 @@ interface Errors {
 
 export default function FormChallenge (props: ObjectData): JSX.Element {
   const frequencies = ['DAILY', 'WEEKDAYS', 'ALTERNATING', 'WEEKLY']
-  const revalidator = useRevalidator()
   const navigate = useNavigate()
   const challengeForm = useRef(null)
+  const revalidator = useRevalidator()
   const [errors, setErrors] = useState<Errors>()
   // make a copy so it doesn't affect parent renders
   const challenge = { ...props.challenge } as ObectData
@@ -151,6 +151,7 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
     const msg = (formData.id !== null) ? 'Challenge saved' : 'Challenge created'
     if (!response.data.id || response.data.errors) {
       toast.error('An error occured')
+      console.error('errors', response.data)
       if (response.data.errors) {
         console.error('errors', response.data.errors)
         const parsedErrors = parseErrors(response.data.errors)
@@ -160,7 +161,7 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
     } else {
       revalidator.revalidate()
       toast.success(msg)
-      navigate(`/challenges/${response.data.id}`)
+      navigate(`/challenges/${response.data.id}`, { replace: true })
     }
   }
   const [photo, setPhoto] = useState<File | null>(null)
@@ -172,7 +173,14 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
       setFile: setPhoto,
       setFileURL: setPhotoURL
     }
+    // set coverPhoto to null when photo added after a delete
     handleFileUpload(params)
+    if (formData.coverPhoto === 'delete') {
+      setFormData((prevFormData: ObjectData) => ({
+        ...prevFormData,
+        coverPhoto: null
+      }))
+    }
   }
   const removePhoto = (): void => {
     setPhoto(null)

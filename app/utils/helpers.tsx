@@ -21,7 +21,9 @@ export const copyToClipboard = async (text: string): Promise<void> => {
 export function convertStringValues (obj: any): any {
   const result: any = {}
   for (const key in obj) {
-    if (obj[key] === 'true' || obj[key] === 'false') {
+    if (typeof obj[key] === 'object') {
+      result[key] = obj[key]
+    } else if (obj[key] === 'true' || obj[key] === 'false') {
       result[key] = obj[key] === 'true'
     } else if (String(obj[key]) === 'null') {
       result[key] = null

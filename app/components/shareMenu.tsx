@@ -22,7 +22,7 @@ export default function ShareMenu (props: ShareMenuProps): JSX.Element {
       navigate(`/posts/${itemId}/share`)
     }
   }
-  const handleShareMenu = (event: React.MouseEvent<HTMLSpanElement>): void => {
+  const handleShareMenu = (event: any): void => {
     event.preventDefault()
     event.stopPropagation()
     setShowMenu(!showMenu)
@@ -41,7 +41,7 @@ export default function ShareMenu (props: ShareMenuProps): JSX.Element {
     <SlShareAlt className="cursor-pointer text-grey text-sm mr-1" onClick={handleShareMenu}/>
     <span className="cursor-pointer text-xs" onClick={handleShareMenu}>Share</span>
     {showMenu &&
-      <div className='cursor-pointer min-w-36 absolute right-0 bottom-10 bg-white border border-gray rounded-md flex flex-col text-left' >
+      <div className='cursor-pointer min-w-36 absolute right-0 bottom-8 bg-white border border-gray rounded-md flex flex-col text-left' >
         <p className='hover:bg-gray-100 p-1' onClick={shareOnTimeline}>Share on Timeline</p>
         <p className='hover:bg-gray-100 p-1' onClick={async () => { await copyToClipboard(copyUrl) }}>Copy Link</p>
       </div>

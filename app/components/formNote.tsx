@@ -31,6 +31,13 @@ export default function FormNote (props: FormNoteProps): JSX.Element {
   if (note?.challenge) {
     challenge = note.challenge
   }
+  const handleKeyDown = async (event: React.KeyboardEvent<HTMLFormElement>): Promise<void> => {
+    if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) {
+      event.preventDefault()
+      await handleSubmit(event)
+    }
+  }
+
   const [showVideoRecorder, setShowVideoRecorder] = useState(false)
   const placeholder = prompt ?? 'What\'s on your mind?'
   const [body, setBody] = useState(note?.body || '')
@@ -76,12 +83,6 @@ export default function FormNote (props: FormNoteProps): JSX.Element {
     console.log('setting to delete')
     setVideo('delete')
     setVideoUrl(null)
-  }
-  const handleKeyDown = async (event: React.KeyboardEvent<HTMLFormElement>): Promise<void> => {
-    if (event.key === 'Enter' && event.metaKey) {
-      event.preventDefault()
-      await handleSubmit(event)
-    }
   }
   const validate = (): boolean => {
     if (body.length < 10) {
@@ -153,13 +154,17 @@ export default function FormNote (props: FormNoteProps): JSX.Element {
       onCancel()
     }
   }
+  const showCancel = (): boolean => {
+    // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+    return Boolean(video || body || image || challenge || post || replyToId)
+  }
   const renderVideo = useMemo(() => (
     <VideoPreview video={video} onClear={deleteVideo} />
   ), [video, videoUrl])
 
   return (
     <div className='w-full'>
-      <Form method="post" onSubmit={handleSubmit}>
+      <Form method="post" onSubmit={handleSubmit} onKeyDown={handleKeyDown}>
       <FormField
           name='note'
           autoResize={true}
@@ -206,7 +211,7 @@ export default function FormNote (props: FormNoteProps): JSX.Element {
             : 'Save'
           }
         </Button>
-        {(video ?? body ?? image) &&
+        {showCancel() &&
           <button onClick={handleCancel} className="mt-2 text-sm underline ml-2">cancel</button>
         }
         {challenge && !isThread && <CardChallenge challenge={challenge} isShare={true}/>}
