@@ -6,7 +6,7 @@
 
 [Trello Board](https://trello.com/invite/b/PZlzGexh/ATTIa3d3a0baae4f77e6a424fc6e0918eb74513FFA52/trybve) for tracking tasks
 
-[Staging site](https://trybe-icy-smoke-8833.fly.dev/) - updated frequently
+[Super-early alpha site](https://trybe-icy-smoke-8833.fly.dev/) - updated frequently, expect bugs
 
 
 **Development Info**
