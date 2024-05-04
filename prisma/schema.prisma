@@ -228,7 +228,6 @@ model Like {
   postId      Int?
   threadId      Int?
   challengeId Int?
-  threadId    Int?
   commentId   Int?
   noteId      Int?
   challenge   Challenge? @relation(fields: [challengeId], references: [id], onDelete: Cascade)
