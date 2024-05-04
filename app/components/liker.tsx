@@ -13,7 +13,6 @@ interface LikerProps {
 }
 
 export default function Liker (props: LikerProps): JSX.Element {
-  console.log('Liker', props)
   const { itemId, itemType } = props
   const [isLiked, setIsLiked] = useState(props.isLiked)
   const [count, setCount] = useState(props.count)

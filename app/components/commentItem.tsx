@@ -68,7 +68,6 @@ export default function CommentItem (props: CommentsProps): JSX.Element {
   const allowReplies = (): boolean => {
     return Boolean(currentUser?.id && comment && comment.threadDepth < 5)
   }
-  console.log(comment)
   if (!comment) return <></>
   return (
     <>
