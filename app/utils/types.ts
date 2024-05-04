@@ -171,6 +171,9 @@ export interface Comment {
   userId: number
   challengeId: number
   postId: number
+  threadId: number
+  likeCount: number
+  replyCount: number
   createdAt: Date
   updatedAt: Date
   user?: User

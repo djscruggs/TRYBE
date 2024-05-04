@@ -31,7 +31,10 @@ export const action: ActionFunction = async (args) => {
     if (formData.get('challengeId')) {
       data.challenge = { connect: { id: Number(formData.get('challengeId')) } }
     }
-    if (!data.challenge && !data.post) {
+    if (formData.get('threadId')) {
+      data.thread = { connect: { id: Number(formData.get('threadId')) } }
+    }
+    if (!data.challenge && !data.post && !data.thread) {
       return json({ message: 'Post id or callenge id is required' }, 400)
     }
   }
@@ -52,6 +55,7 @@ export const action: ActionFunction = async (args) => {
   const result = data.id ? await updateComment(data) : await createComment(data)
   // refresh the comment to include user info attached
   const comment = await loadComment(result.id as number, result.userId as number)
+  console.log('comment', comment)
   return json(comment)
 }
 

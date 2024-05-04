@@ -1,10 +1,12 @@
 import { loadThreadSummary } from '~/models/thread.server'
+import { fetchComments, recursivelyCollectCommentIds } from '~/models/comment.server'
 import { Outlet, useLoaderData, useLocation } from '@remix-run/react'
 
 import { requireCurrentUser } from '../models/auth.server'
 import type { ObjectData, ThreadSummary } from '~/utils/types'
 import { json, type LoaderFunction, type LoaderFunctionArgs } from '@remix-run/node'
-import { prisma } from '../models/prisma.server'
+import { userHasLiked, commentIdsLikedByUser } from '~/models/like.server'
+
 import CardThread from '~/components/cardThread'
 import CommentsContainer from '~/components/commentsContainer'
 
@@ -29,28 +31,14 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
   let hasLiked = false
   if (currentUser) {
     // has the user liked this thread?
-    const likes = await prisma.like.count({
-      where: {
-        threadId: thread.id,
-        userId: Number(currentUser.id)
-      }
-    })
-    hasLiked = likes > 0
+    const threadlikeCount = await userHasLiked({ threadId: thread.id })
+    hasLiked = threadlikeCount > 0
   }
-  // get replies
-  const comments = await prisma.comment.findMany({
-    where: {
-      threadId: thread.id
-    },
-    include: {
-      user: {
-        include: {
-          profile: true
-        }
-      }
-    }
-  })
-  const data: ThreadData = { thread, hasLiked, comments }
+  // get comments
+  const comments = await fetchComments({ threadId: thread.id })
+  const commentIds = recursivelyCollectCommentIds(comments)
+  const likedCommentIds: number[] = await commentIdsLikedByUser({ commentIds })
+  const data: ThreadData = { thread, hasLiked, comments, likedCommentIds }
   return json(data)
 }
 
@@ -75,9 +63,11 @@ export default function ViewThread (): JSX.Element {
     <div className='w-dvw md:max-w-md lg:max-w-lg mt-10 p-4'>
       <CardThread thread={data.thread} hasLiked={Boolean(data.hasLiked)} />
     </div>
+    {data.comments && data.comments.length > 0 &&
     <div className='max-w-[400px] md:max-w-md lg:max-w-lg'>
-      <CommentsContainer comments={data.comments as Comment[]} />
+      <CommentsContainer comments={data.comments as unknown as Comment[]} likedCommentIds={data.likedCommentIds as unknown as number[]} />
     </div>
+    }
     </>
   )
 }

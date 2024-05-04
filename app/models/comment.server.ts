@@ -3,6 +3,7 @@ import { prisma } from './prisma.server'
 interface FetchCommentsParams {
   challengeId?: number
   postId?: number
+  threadId?: number
 }
 function generateIncludeObject (levels: number): any {
   if (levels <= 0) {
@@ -17,20 +18,10 @@ function generateIncludeObject (levels: number): any {
     replies: { include: generateIncludeObject(levels - 1) }
   }
 }
-function printIncludes (includes: any, level: number = 0) {
-  for (const key in includes) {
-    if (typeof includes[key] === 'object') {
-      console.log(' '.repeat(level * 2) + key)
-      printIncludes(includes[key], level + 1)
-    } else {
-      console.log(' '.repeat(level * 2) + key + ': ' + includes[key])
-    }
-  }
-}
 
 export const fetchComments = async (params: FetchCommentsParams): Promise<prisma.comment[]> => {
-  const { challengeId, postId } = params
-  if (!challengeId && !postId) {
+  const { challengeId, postId, threadId } = params
+  if (!challengeId && !postId && !threadId) {
     throw new Error('challengeId or postId must be provided')
   }
   const includes = generateIncludeObject(5)
@@ -40,7 +31,8 @@ export const fetchComments = async (params: FetchCommentsParams): Promise<prisma
         replyToId: null,
         OR: [
           { challengeId: challengeId ? Number(challengeId) : undefined },
-          { postId: postId ? Number(postId) : undefined }
+          { postId: postId ? Number(postId) : undefined },
+          { threadId: threadId ? Number(threadId) : undefined }
         ]
       }
     },
@@ -61,6 +53,17 @@ export const fetchReplies = async (commentId: string | number): Promise<prisma.c
     },
     include: includes
   })
+}
+
+export function recursivelyCollectCommentIds (comments: prisma.comment[]): number[] {
+  const ids: number[] = []
+  comments.forEach(comment => {
+    ids.push(comment.id as number)
+    if (comment.replies && comment.replies.length > 0) {
+      ids.push(...recursivelyCollectCommentIds(comment.replies as prisma.comment[]))
+    }
+  })
+  return ids
 }
 
 export const createComment = async (comment: prisma.commentCreateInput): Promise<prisma.comment> => {

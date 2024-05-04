@@ -1,19 +1,14 @@
 import React, { useContext, useState } from 'react'
-import {
-  Card,
-  Spinner
-} from '@material-tailwind/react'
-import CardChallenge from './cardChallenge'
+import { Spinner } from '@material-tailwind/react'
 import AvatarLoader from './avatarLoader'
 import type { ThreadSummary } from '../utils/types'
-// import { AiOutlineRetweet } from 'react-icons/ai'
-// import { GoComment } from 'react-icons/go'
 import { FaRegComment } from 'react-icons/fa'
 import { CurrentUserContext } from '../utils/CurrentUserContext'
 import { Link, useNavigate, useLocation } from '@remix-run/react'
 import { Lightbox } from 'react-modal-image'
 import { toast } from 'react-hot-toast'
 import FormComment from './formComment'
+import FormThread from './formThread'
 import axios from 'axios'
 import { useRevalidator } from 'react-router-dom'
 import ShareMenu from './shareMenu'
@@ -23,12 +18,12 @@ import DialogDelete from './dialogDelete'
 
 interface CardThreadProps {
   thread: ThreadSummary
-  isCommentTo?: boolean
   hasLiked?: boolean
 }
 
 export default function CardThread (props: CardThreadProps): JSX.Element {
   const { currentUser } = useContext(CurrentUserContext)
+  const { hasLiked } = props
   const [thread, setThread] = useState(props.thread)
   const [showLightbox, setShowLightbox] = useState(false)
   const [editing, setEditing] = useState(false)
@@ -80,10 +75,16 @@ export default function CardThread (props: CardThreadProps): JSX.Element {
       })
   }
 
-  const afterSave = (thread: Thread): void => {
+  const afterSave = (thread: ThreadSummary): void => {
     setThread(thread)
     setEditing(false)
     setAddComment(false)
+  }
+  const afterCommentSave = (comment: Comment): void => {
+    console.log('afterCommentSave', comment)
+    // setThread(thread)
+    // setEditing(false)
+    // setAddComment(false)
   }
   const getFullUrl = (): string => {
     return `${window.location.origin}/threads/${thread.id}`
@@ -122,15 +123,7 @@ export default function CardThread (props: CardThreadProps): JSX.Element {
         {/* <span className="text-xs text-gray-500">2 hours ago</span> */}
       </div>
 
-      {(currentUser && addComment) &&
-      <div className='mt-2 w-full border-0  drop-shadow-none mr-2'>
-        <FormComment threadId={thread.id} afterSave={afterSave} onCancel={() => { setAddComment(false) }} prompt='Add your response' />
-      </div>
-      }
-      {/* don't show likes etc if this is a comment or a comment is being added */}
-      {(!addComment && !isQuote) &&
-      <>
-        <hr />
+      <hr />
         <div className="grid grid-cols-3 text-center py-2 cursor-pointer">
           <div className="flex justify-center items-center">
           <Link to={`/threads/${thread.id}`}>
@@ -139,18 +132,22 @@ export default function CardThread (props: CardThreadProps): JSX.Element {
             </Link>
           </div>
           <div className="flex justify-center items-center cursor-pointer">
-
-          <div className='mr-2'><Liker isLiked={Boolean(hasLiked)} itemId={Number(thread.id)} itemType='thread' count={Number(thread.likeCount ?? 0)}/></div>
+            <div className='mr-2'>
+              <Liker isLiked={Boolean(hasLiked)} itemId={Number(thread.id)} itemType='thread' count={Number(thread.likeCount ?? 0)}/>
+            </div>
           </div>
           <div className="flex justify-center items-center cursor-pointer">
             <ShareMenu copyUrl={getFullUrl()} itemType='thread' itemId={Number(thread.id)}/>
           </div>
         </div>
-      </>
-      }
-    </div>
+      </div>
     }
     {(thread.image && showLightbox) && <Lightbox medium={thread.image} large={thread.image} alt="thread photo" onClose={() => { setShowLightbox(false) }}/>}
+    {currentUser && addComment &&
+        <div className='mt-2 w-full border-0  drop-shadow-none mr-2'>
+          <FormComment threadId={thread.id} afterSave={afterCommentSave} onCancel={() => { setAddComment(false) }} prompt='Add your response' />
+        </div>
+      }
     </>
   )
 }

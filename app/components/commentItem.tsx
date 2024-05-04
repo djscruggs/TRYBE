@@ -6,24 +6,23 @@ import { convertlineTextToJSX } from '~/utils/helpers'
 import { toast } from 'react-hot-toast'
 import axios from 'axios'
 import type { Comment } from '~/utils/types'
-import Comments from './commentsContainer'
+import CommentsContainer from './commentsContainer'
 import { formatDistanceToNow } from 'date-fns'
-import { TbHeartFilled } from 'react-icons/tb'
 import { FaRegComment } from 'react-icons/fa'
 import Liker from './liker'
 
 interface CommentsProps {
   comment: Comment | null
   isReply: boolean
+  likedCommentIds: number[]
 }
 
 export default function CommentItem (props: CommentsProps): JSX.Element {
   const [comment, setComment] = useState<Comment | null>(props.comment ?? null)
   const [replies, setReplies] = useState<Comment[]>(comment?.replies ?? [])
-  const { isReply } = { props }
+  const { likedCommentIds } = props
   const [firstReply, setFirstReply] = useState<Comment | null>(null)
-  const [liking, setLiking] = useState(false)
-  const [isLiked, setIsLiked] = useState(false)
+  const [isLiked, setIsLiked] = useState(likedCommentIds.includes(comment?.id ?? 0))
 
   const [deleting, setDeleting] = useState(false)
   const [showForm, setShowForm] = useState(false)
@@ -69,6 +68,7 @@ export default function CommentItem (props: CommentsProps): JSX.Element {
   const allowReplies = (): boolean => {
     return Boolean(currentUser?.id && comment && comment.threadDepth < 5)
   }
+  console.log(comment)
   if (!comment) return <></>
   return (
     <>
@@ -101,7 +101,7 @@ export default function CommentItem (props: CommentsProps): JSX.Element {
               {replying && <FormComment afterSave={afterSaveReply} onCancel={() => { setReplying(false) }} replyToId={comment.id} /> }
               {!replying &&
                 <div className='flex justify-start'>
-                  <Liker isLiked={isLiked} itemId={comment.id} itemType='comment' count={0}/>
+                  <Liker isLiked={isLiked} itemId={comment.id} itemType='comment' count={comment.likeCount}/>
                 {allowReplies() &&
                   <div className='ml-2'>
                   <FaRegComment className='h-4 w-4 text-grey cursor-pointer' onClick={() => { setReplying(true) }}/>
@@ -113,8 +113,12 @@ export default function CommentItem (props: CommentsProps): JSX.Element {
           </div>
 
         </div>
-
-        {replies && replies.length > 0 && <div className='pl-4'><Comments firstComment={firstReply} comments={replies} isReply={true} /></div>}
+        {/* comment contains replies, so create a new container for those */}
+        {replies && replies.length > 0 &&
+          <div className='pl-4'>
+            <CommentsContainer firstComment={firstReply} likedCommentIds={likedCommentIds} comments={replies} isReply={true} />
+          </div>
+        }
       </>
         )
   }
