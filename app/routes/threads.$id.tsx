@@ -18,6 +18,7 @@ interface ThreadData {
 
 export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
   const currentUser = await requireCurrentUser(args)
+  console.log(currentUser)
   const { params } = args
   if (!params.id) {
     return null
@@ -37,9 +38,9 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
   // get comments
   const comments = await fetchComments({ threadId: thread.id })
   const commentIds = recursivelyCollectCommentIds(comments)
-  const likedCommentIds: number[] = await commentIdsLikedByUser({ commentIds })
+  const likedCommentIds: number[] = currentUser ? await commentIdsLikedByUser({ commentIds, userId: currentUser.id }) : []
   const data: ThreadData = { thread, hasLiked, comments, likedCommentIds }
-  return json(data)
+  return data
 }
 
 export default function ViewThread (): JSX.Element {

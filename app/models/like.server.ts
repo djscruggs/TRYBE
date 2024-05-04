@@ -23,6 +23,7 @@ export async function userHasLiked (params: HasLikedParams): Promise<number> {
 }
 interface CommentsLikedByUserParams {
   commentIds: number[]
+  userId: number
 }
 export async function commentsLikedByUser (params: CommentsLikedByUserParams): Promise<Array<Partial<prisma.Like>>> {
   const { commentIds } = params
@@ -31,12 +32,14 @@ export async function commentsLikedByUser (params: CommentsLikedByUserParams): P
       commentId: true
     },
     where: {
-      commentId: { in: commentIds }
+      commentId: { in: commentIds },
+      userId: params.userId
     }
   })
   return totalCommentsLiked
 }
 export async function commentIdsLikedByUser (params: CommentsLikedByUserParams): Promise<number[]> {
+  if (!params.commentIds.length || !params.userId) return []
   const likes = await commentsLikedByUser(params)
   return likes.map(like => like.commentId)
 }

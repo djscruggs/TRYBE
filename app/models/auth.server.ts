@@ -107,7 +107,7 @@ async function getUserId (request: Request): Promise<string | null> {
   return currentUserId
 }
 
-export async function getUser (request: Request, memberChallenges = false): Promise<CurrentUser | null> {
+export async function getUser (request: Request): Promise<CurrentUser | null> {
   const userId = await getUserId(request)
   if (!userId) {
     return null
