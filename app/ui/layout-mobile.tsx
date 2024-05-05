@@ -21,10 +21,12 @@ import { AnimatePresence, motion } from 'framer-motion'
 const LayoutMobile = (): JSX.Element => {
   const [newOpen, setNewOpen] = useState(false)
   const { currentUser } = useContext(CurrentUserContext)
-
+  // hack to remove padding on welcome screen mobile
   // hide nav if on index, login or register
   const [showNav, setShowNav] = useState(true)
   const location = useLocation()
+  const isWelcome = location.pathname === '/'
+
   useEffect(() => {
     if (['/', '/register', '/login', '/signup', '/signin'].includes(location.pathname)) {
       setShowNav(false)
@@ -47,17 +49,22 @@ const LayoutMobile = (): JSX.Element => {
     hideMenu()
   }
   return (
-            <div className="max-w-screen flex flex-col min-h-screen p-0" onClick={hideMenu}>
+            <div className="max-w-screen flex flex-col min-h-screen max-h-screen min-w-screen p-0" onClick={hideMenu}>
                 {showNav &&
+                <>
+                {/*
                 <div className="flex justify-between items-start mb-4 pt-2 pr-0">
-                    {/* <MagnifyingGlassIcon className='w-6 mr-4 ml-2' />
+                     <MagnifyingGlassIcon className='w-6 mr-4 ml-2' />
                     <BellIcon className='w-6 mr-4' />
                     <Link to="/messages">
                     <ChatBubbleLeftRightIcon className='w-6 mr-4' />
-                    </Link> */}
+                    </Link>
                 </div>
+                */}
+                </>
                 }
-                <div className="flex flex-col items-center justify-start pb-16 px-2">
+
+                <div className={`flex flex-col items-center justify-start  ${isWelcome ? 'p-0' : ' pb-16 px-2'}`}>
                     <Outlet />
                     {/* <AnimatePresence mode='wait' initial={false}>
                         <motion.main
@@ -72,7 +79,7 @@ const LayoutMobile = (): JSX.Element => {
                     </AnimatePresence> */}
                 </div>
                 {showNav &&
-                <div className="fixed bottom-0 left-0 right-0 max-w-screen flex w-full justify-between m-0 p-0 px-2 py-1 bg-gray-50 border-2 border-slate-200 z-10">
+                <div className="fixed bottom-0 left-0 right-0 max-w-screen max-flex w-full justify-between m-0 p-0 px-2 py-1 bg-gray-50 border-2 border-slate-200 z-10">
                     <Link to="/" className='min-w-8'>
                     <HomeIcon className='cursor-pointer' />
                     </Link>

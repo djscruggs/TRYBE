@@ -22,7 +22,7 @@ export const WelcomePage = (): JSX.Element => {
     <>
       {isMobile
         ? (
-        <div className="welcome-page -mt-4">
+        <div className="welcome-page -mt-4 w-full">
           <div className="overlap">
             <div className="graphic-shape">
               <div className="overlap-group">
