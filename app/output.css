@@ -1211,6 +1211,10 @@ video {
   height: 100vh;
 }
 
+.h-1\/2 {
+  height: 50%;
+}
+
 .max-h-60 {
   max-height: 15rem;
 }
@@ -1241,6 +1245,14 @@ video {
 
 .max-h-\[48px\] {
   max-height: 48px;
+}
+
+.max-h-\[80vh\] {
+  max-height: 80vh;
+}
+
+.max-h-\[400px\] {
+  max-height: 400px;
 }
 
 .min-h-\[100px\] {

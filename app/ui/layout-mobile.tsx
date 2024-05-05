@@ -119,7 +119,7 @@ const LayoutMobile = (): JSX.Element => {
                         </AnimatePresence>
                     </div>
 
-                    <Link to={`/members/${currentUser.id}/content`} className='min-w-8'>
+                    <Link to={`/members/${currentUser?.id}/content`} className='min-w-8'>
                     <ArchiveBoxIcon className='cursor-pointer' />
                     </Link>
                     <Link to="/profile" className='min-w-8'>

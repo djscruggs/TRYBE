@@ -17,7 +17,7 @@ import Layout from './ui/layout'
 import stylesheet from './output.css'
 import datepickerStyle from 'react-datepicker/dist/react-datepicker.css'
 import type { LinksFunction, LoaderFunction, LoaderFunctionArgs, MetaFunction } from '@remix-run/node'
-import { type User } from './utils/types'
+import { type CurrentUser } from './utils/types'
 import { Toaster } from 'react-hot-toast'
 import { useLocation, useNavigationType, createRoutesFromChildren, matchRoutes } from 'react-router-dom'
 import getUserLocale from 'get-user-locale'
@@ -91,7 +91,7 @@ export const loader: LoaderFunction = async args => {
     const auth = request.auth
 
     if (auth?.userId) {
-      const user = await getUserByClerkId(auth.userId)
+      const user: CurrentUser = await getUserByClerkId(auth.userId)
       if (!user) {
         return { user: null, auth: null, ENV }
       }
@@ -101,7 +101,7 @@ export const loader: LoaderFunction = async args => {
       user.dateTimeFormat = `${user.dateFormat} @ ${user.timeFormat}`
       return { user, auth, ENV }
     }
-    return { ENV }
+    return { ENV, user: null, auth: null }
   })
 }
 const Document = withEmotionCache(({ children, title }: DocumentProps, emotionCache) => {
@@ -134,10 +134,10 @@ const Document = withEmotionCache(({ children, title }: DocumentProps, emotionCa
 // https://remix.run/docs/en/main/route/component
 // https://remix.run/docs/en/main/file-conventions/routes
 function App (): JSX.Element {
-  const { user, auth } = useLoaderData<{ user: User }>()
-  const [currentUser, setCurrentUser] = useState<User | null>(user)
+  const { user } = useLoaderData<{ user: CurrentUser }>()
+  const [currentUser, setCurrentUser] = useState<CurrentUser | null>(user as CurrentUser)
   useEffect(() => {
-    setCurrentUser(user)
+    setCurrentUser(user as CurrentUser)
   }, [user])
   return (
     <Document>

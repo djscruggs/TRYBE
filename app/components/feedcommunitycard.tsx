@@ -1,15 +1,10 @@
-import {
-  Card,
-  CardBody,
-  CardFooter,
-  Button
-} from '@material-tailwind/react'
+import { Card } from '@material-tailwind/react'
 import { FcLike } from 'react-icons/fc'
 import { SlShareAlt } from 'react-icons/sl'
-import { FaRegComment, FaRegCalendarAlt, FaUserFriends, FaRegHeart } from 'react-icons/fa'
+import { FaRegComment } from 'react-icons/fa'
 import RandomAvatar from './randomavatar'
 import { useMobileSize } from '../utils/useMobileSize'
-export default function FeedCommunityCard () {
+export default function FeedCommunityCard (): JSX.Element {
   const isMobile = useMobileSize()
   return (
     <div className="mt-2 w-md border-0 drop-shadow-none mr-2">

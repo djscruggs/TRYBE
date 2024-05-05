@@ -1,12 +1,8 @@
 import {
-  Card,
-  CardBody,
-  CardFooter,
-  Button
+  Card
 } from '@material-tailwind/react'
-import { FcLike } from 'react-icons/fc'
 import { SlShareAlt } from 'react-icons/sl'
-import { FaRegComment, FaRegCalendarAlt, FaUserFriends, FaRegHeart } from 'react-icons/fa'
+import { FaRegComment, FaRegHeart } from 'react-icons/fa'
 import RandomAvatar from './randomavatar'
 import { useMobileSize } from '../utils/useMobileSize'
 export default function FeedPostCard () {
