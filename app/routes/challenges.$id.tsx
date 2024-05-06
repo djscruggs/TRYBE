@@ -272,7 +272,7 @@ export default function ViewChallenge (): JSX.Element {
   }
   const color = colorToClassName(challenge?.color ?? '', 'red')
   return (
-    <>
+    <div className='flex flex-col'>
     <div className={`max-w-sm md:max-w-md lg:max-w-lg border border-transparent border-b-inherit rounded-md bg-gradient-to-b from-${color} to-90%`}>
       <div className={`mb-2 ${challenge.coverPhoto ? '' : 'mt-0.5'} flex justify-center max-h-80`}>
           {challenge.coverPhoto && <img src={`${challenge.coverPhoto}?${Date.now()}`} alt={`${challenge?.name} cover photo`} className="w-full rounded-sm" />}
@@ -427,6 +427,6 @@ export default function ViewChallenge (): JSX.Element {
         <Outlet />
       </div>
     </div>
-</>
+</div>
   )
 }
