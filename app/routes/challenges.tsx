@@ -9,7 +9,7 @@ export const loader: LoaderFunction = async (args) => {
 export default function ChallengesLayout ({ children }: { children: React.ReactNode }): JSX.Element {
   return (
           <>
-            <div className="mt-10 w-xl p-2 w-screen">
+            <div className="mt-10 w-xl p-2 w-screen flex items-center justify-center">
               <Outlet />
             </div>
           </>
