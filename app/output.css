@@ -1522,6 +1522,10 @@ video {
   max-width: 24rem;
 }
 
+.max-w-xl {
+  max-width: 36rem;
+}
+
 .flex-none {
   flex: none;
 }
@@ -3908,6 +3912,10 @@ video {
   src: url('../public/fonts/source-sans-3/source-sans-3-v15-latin-regular.woff2') format('woff2');
 
   /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+}
+
+div#sentry-feedback #shadow-root button.widget__actor {
+  bottom: 10rem !important;
 }
 
 .welcome-page {

@@ -6,7 +6,6 @@ import { requireCurrentUser } from '../models/auth.server'
 import type { PostSummary } from '~/utils/types'
 import { json, type LoaderFunction, type LoaderFunctionArgs } from '@remix-run/node'
 import { prisma } from '../models/prisma.server'
-import getUserLocale from 'get-user-locale'
 
 export interface PostData {
   post: PostSummary | null

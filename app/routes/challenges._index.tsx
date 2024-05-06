@@ -36,7 +36,7 @@ export default function ChallengesIndex (): JSX.Element {
     return memberships.some((membership: any) => membership.challengeId === challenge.id)
   }
   return (
-        <div className='flex items-center justify-center'>
+        <div className='flex items-center justify-center max-w-lg'>
           <div className="flex flex-col items-center justify-center max-w-lg w-full">
             <h1 className="text-3xl font-bold mb-4 w-full">
               Challenges

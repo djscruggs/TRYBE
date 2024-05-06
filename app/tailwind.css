@@ -2,7 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-
 /* source-serif-4-regular - latin */
 @font-face {
   font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
@@ -19,6 +18,10 @@
   font-weight: 400;
   src: url('../public/fonts/source-sans-3/source-sans-3-v15-latin-regular.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
 }
+div#sentry-feedback #shadow-root button.widget__actor {
+  bottom: 10rem !important; 
+}
+
 
 .welcome-page {
   background-color: #f8f8f8;
