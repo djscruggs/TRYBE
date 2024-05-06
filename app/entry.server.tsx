@@ -10,7 +10,7 @@ import { wrapRemixHandleError } from '@sentry/remix'
 export const handleError = wrapRemixHandleError
 Sentry.init({
   environment: process.env.NODE_ENV,
-  dsn: 'https://4f3a1762974e77da7b1e34738080185@o4506538845929472.ingest.us.sentry.io/4506538846126080',
+  dsn: 'https://4f3a1762974e77da7b1e347738080185@o4506538845929472.ingest.us.sentry.io/4506538846126080',
   tracesSampleRate: 1.0
 })
 export default function handleRequest (
