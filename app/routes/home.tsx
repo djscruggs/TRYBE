@@ -111,6 +111,7 @@ interface FeedItem {
   createdAt?: Date
   updatedAt?: Date
 }
+
 export default function Home (): JSX.Element {
   const data = useLoaderData<FeedLoaderData>()
   const { challenges, memberships } = data

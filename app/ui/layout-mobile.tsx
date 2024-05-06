@@ -79,16 +79,16 @@ const LayoutMobile = (): JSX.Element => {
                     </AnimatePresence> */}
                 </div>
                 {showNav &&
-                <div className="fixed bottom-0 left-0 right-0 max-w-screen max-flex w-full justify-between m-0 p-0 px-2 py-1 bg-gray-50 border-2 border-slate-200 z-10">
-                    <Link to="/" className='min-w-8'>
-                    <HomeIcon className='cursor-pointer' />
+                <div className="fixed bottom-0 left-0 right-0 max-w-screen flex items-center w-full justify-between m-0 p-0 px-2 py-1 bg-gray-50 border-2 border-slate-200 z-10">
+                    <Link to="/" className='w-8 h-8 flex justify-center items-center'>
+                    <HomeIcon className='cursor-pointer w-8 h-8' />
                     </Link>
-                    <Link to="/challenges" className='min-w-8'>
-                    <TrophyIcon className='cursor-pointer' />
+                    <Link to="/challenges" className='w-8 h-8 flex justify-center items-center'>
+                    <TrophyIcon className='cursor-pointer w-8 h-8' />
                     </Link>
                     <div className="flex items-center justify-center relative min-w-8" onClick={(event) => { handlePlusClick(event) }}>
                         {/* Your plus sign */}
-                        <PlusCircleIcon className='min-w-12 text-white rounded-full bg-red text-color-white cursor-pointer text-6xl -mt-10' />
+                        <PlusCircleIcon className='w-12 h-12 text-white rounded-full bg-red text-color-white cursor-pointer text-6xl -mt-10' />
                         <AnimatePresence mode='wait' initial={false}>
                         {newOpen && (
                             <motion.main
@@ -126,11 +126,11 @@ const LayoutMobile = (): JSX.Element => {
                         </AnimatePresence>
                     </div>
 
-                    <Link to={`/members/${currentUser?.id}/content`} className='min-w-8'>
-                    <ArchiveBoxIcon className='cursor-pointer' />
+                    <Link to={`/members/${currentUser?.id}/content`} className='w-8 h-8 flex justify-center items-center'>
+                    <ArchiveBoxIcon className='cursor-pointer w-8 h-8' />
                     </Link>
-                    <Link to="/profile" className='min-w-8'>
-                    <IdentificationIcon className='cursor-pointer' />
+                    <Link to="/profile" className='w-8 h-8 flex justify-center items-center'>
+                    <IdentificationIcon className='cursor-pointer w-8 h-8' />
                     </Link>
                 </div>
                 }
