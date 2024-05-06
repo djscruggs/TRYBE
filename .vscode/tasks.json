@@ -1,0 +1,47 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		
+    {
+      // The name that shows up in terminal tab
+      "label": "node",
+      // The task will launch a shell
+      "type": "shell",
+      "command": "npm run dev",
+      "isBackground": true,
+      "runOptions": {
+        "runOn": "folderOpen"
+      },
+			"presentation": {
+        "group": "Node-Terminal"
+      }
+      
+    },
+    {
+      "label": "zsh",
+      "type": "shell",
+      "command": "zsh",
+      "isBackground": true,
+      "runOptions": {
+        "runOn": "folderOpen"
+      },
+      "presentation": {
+        "group": "Node-Terminal",
+        "reveal": "always",
+        "panel": "shared",
+        "focus": false,
+        "clear": false
+      }
+    },
+		{
+      "label": "styles",
+      "type": "shell",
+      "command": "npm run styles",
+      "isBackground": true,
+      "runOptions": {
+        "runOn": "folderOpen"
+      }
+      
+    }
+	]
+}
