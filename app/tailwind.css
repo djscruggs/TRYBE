@@ -1,6 +1,14 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* bug reporting widget see https://docs.sentry.io/platforms/javascript/user-feedback/configuration/ */
+#sentry-feedback {
+  --bottom: 2.8rem !important; 
+  --right: .3rem !important;
+}
+
 
 /* source-serif-4-regular - latin */
 @font-face {
@@ -17,9 +25,6 @@
   font-style: normal;
   font-weight: 400;
   src: url('../public/fonts/source-sans-3/source-sans-3-v15-latin-regular.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
-}
-div#sentry-feedback #shadow-root button.widget__actor {
-  bottom: 10rem !important; 
 }
 
 
