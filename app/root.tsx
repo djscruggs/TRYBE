@@ -127,7 +127,7 @@ export function ErrorBoundary (): JSX.Element {
         break
 
       default:
-        throw new Error(error.data || error.statusText)
+        throw new Error(`Unhandled error.status: ${error.status}: ${error.data || error.statusText}`)
     }
 
     return (
