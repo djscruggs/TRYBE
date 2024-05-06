@@ -163,7 +163,7 @@ export default function FormNote (props: FormNoteProps): JSX.Element {
   ), [video, videoUrl])
 
   return (
-    <div className='w-full'>
+    <div className='w-full mb-8'>
       <Form method="post" onSubmit={handleSubmit} onKeyDown={handleKeyDown}>
       <FormField
           name='note'

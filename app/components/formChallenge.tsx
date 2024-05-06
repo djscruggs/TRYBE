@@ -67,10 +67,11 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
   const colorOptions = [
     'red',
     'orange',
+    'salmon',
     'yellow',
     'green',
     'blue',
-    'pink',
+    // 'pink',
     'purple'
   ]
   function handleColorChange (value: string): void {
@@ -425,6 +426,8 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
         <div className='text-green-500 bg-green-500 border-green-500 ring-green-500'>green</div>
         <div className='bg-gradient-to-b from-green-500 to-white ring-green-500'>gradient</div>
         <div className='text-grey bg-grey border-grey ring-grey'>grey</div>
+        <div className='bg-salmon text-salmon ring-salmon'>salmon</div>
+        <div className='bg-gradient-to-b from-salmon to-white'>gradient</div>
         <div className='bg-gradient-to-b from-grey to-white'>gradient</div>
         </div>
       </>

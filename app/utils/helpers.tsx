@@ -48,11 +48,12 @@ export function colorToClassName (color: string, defaultColor: string): string {
   const lower = color.toLowerCase()
   const colorMap: Record<string, string> = {
     red: 'red',
+    salmon: 'salmon',
     orange: 'orange-500',
     yellow: 'yellow',
     green: 'green-500',
     blue: 'blue',
-    pink: 'pink-300',
+    // pink: 'pink-300',
     purple: 'purple-400'
   }
   const baseColor = lower.split('-')[0]
