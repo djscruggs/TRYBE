@@ -70,7 +70,7 @@ export async function login ({ email, password, request }: LoginForm): Promise<R
   return await createUserSession(currentUser.id, redirect)
 }
 
-export async function requireCurrentUser (args: any): Promise< CurrentUser | null> {
+export async function requireCurrentUser (args: any): Promise<CurrentUser | null | Response> {
   const request = args.request
   const redirectTo = args.redirectTo || new URL(request.url).pathname
   const clerkUser = await getAuth(args)
@@ -88,7 +88,7 @@ export async function requireCurrentUser (args: any): Promise< CurrentUser | nul
   if (!currentUser) {
     if (!['/login', '/register', '/signup', '/signin'].includes(path)) {
       const searchParams = new URLSearchParams([['redirectTo', redirectTo]])
-      throw redirect(`/signin?${searchParams}`)
+      return redirect(`/signin?${searchParams}`)
     } else {
       console.log('NOT redirecting')
     }
