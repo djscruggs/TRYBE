@@ -56,8 +56,8 @@ export default function CardChallenge ({ challenge, isShare, isMember }: CardCha
     <div className="mt-2 drop-shadow-none mr-2 w-full cursor-pointer">
       <div className="drop-shadow-none">
         <div className={'rounded-md p-1 bg-white'}>
-          <Card onClick={goToChallenge} className={`md:col-span-2 bg-${bgColor} p-2 border-1 drop-shadow-lg border-gray rounded-md`}>
-          <div className={`mt-2 font-bold mb-4 text-center text-${textColor}`}>{challenge.name}</div>
+          <Card onClick={goToChallenge} className={`md:col-span-2 bg-${bgColor} p-2 py-4 border-1 drop-shadow-lg border-gray rounded-md`}>
+          <div className={`font-bold mb-4 text-center text-${textColor}`}>{challenge.name}</div>
             <div className="grid grid-cols-3 gap-4">
               <div className="flex flex-col justify-center items-center col-span-1">
                 <div className={`bg-transparent border-2 border-${textColor} text-${textColor} rounded-full w-16 h-16 flex items-center justify-center `}>
