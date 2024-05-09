@@ -8,6 +8,7 @@ interface VideoRecorderProps {
   onStop: () => void
   onSave: (video: File | null) => void
   onFinish: () => void
+  uploadOnly?: boolean
 }
 
 const VideoRecorder = ({ onStart, onStop, onSave, onFinish, uploadOnly }: VideoRecorderProps): JSX.Element => {
@@ -19,7 +20,6 @@ const VideoRecorder = ({ onStart, onStop, onSave, onFinish, uploadOnly }: VideoR
   const [localVideoUrl, setLocalVideoUrl] = useState<string | null>(null)
   const [videoFile, setVideoFile] = useState<File | null>(null)
   const [videoChunks, setVideoChunks] = useState([])
-  uploadOnly
   useEffect(() => {
     if (isMobileDevice() || uploadOnly) {
       return

@@ -36,7 +36,6 @@ export const action: ActionFunction = async (args) => {
   if (rawData.get('postId')) {
     data.post = { connect: { id: Number(rawData.get('postId')) } }
   }
-  console.log('isThread is', rawData.get('isThread'))
   if (rawData.get('isThread')) {
     data.isThread = rawData.get('isThread') === 'true'
   }

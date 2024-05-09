@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react'
-import { Spinner } from '@material-tailwind/react'
+import { Spinner, Card } from '@material-tailwind/react'
 import AvatarLoader from './avatarLoader'
-import type { ThreadSummary } from '../utils/types'
+import type { ThreadSummary, Thread } from '../utils/types'
 import { FaRegComment } from 'react-icons/fa'
 import { CurrentUserContext } from '../utils/CurrentUserContext'
 import { Link, useNavigate, useLocation } from '@remix-run/react'
@@ -17,11 +17,12 @@ import Liker from './liker'
 import DialogDelete from './dialogDelete'
 
 interface CardThreadProps {
-  thread: ThreadSummary
+  thread: Thread | ThreadSummary
   hasLiked?: boolean
 }
 
 export default function CardThread (props: CardThreadProps): JSX.Element {
+  console.log('top of card, comment count is', props.thread.commentCount)
   const { currentUser } = useContext(CurrentUserContext)
   const { hasLiked } = props
   const [thread, setThread] = useState(props.thread)
@@ -29,7 +30,7 @@ export default function CardThread (props: CardThreadProps): JSX.Element {
   const [editing, setEditing] = useState(false)
   const location = useLocation()
   const isOwnRoute = location.pathname === `/threads/${thread.id}`
-  const [addComment, setAddComment] = useState(true)
+  const [addComment, setAddComment] = useState(false)
   const revalidator = useRevalidator()
   const navigate = useNavigate()
   const [deleteDialog, setDeleteDialog] = useState(false)
@@ -39,7 +40,6 @@ export default function CardThread (props: CardThreadProps): JSX.Element {
     if (isOwnRoute) return
     navigate(`/threads/${thread.id}`)
   }
-  const isQuote = location.pathname === `/threads/${thread.id}/quote`
   const handlePhotoClick = (event: any): void => {
     event.preventDefault()
     event.stopPropagation()
@@ -99,8 +99,8 @@ export default function CardThread (props: CardThreadProps): JSX.Element {
 
       : <div className={'mt-2 w-full border-0  drop-shadow-none mr-2'}>
       <div className={`drop-shadow-none ${!isOwnRoute ? 'cursor-pointer' : ''}`} onClick={goToThread}>
-        <div className="w-lg border-2">
-
+        <div className="w-lg">
+        <Card className={'md:col-span-2 p-2 border-1 drop-shadow-lg  border border-gray rounded-md relative'}>
             <div className="flex items-start">
               <AvatarLoader object={thread} marginClass='mr-4'/>
               <div className="flex flex-col w-full h-full">
@@ -118,6 +118,7 @@ export default function CardThread (props: CardThreadProps): JSX.Element {
                 }
               </div>
             </div>
+          </Card>
             {deleteDialog && <DialogDelete prompt='Are you sure you want to delete this thread?' isOpen={deleteDialog} deleteCallback={(event: any) => { handleDelete(event) }} onCancel={cancelDialog}/>}
         </div>
         {/* <span className="text-xs text-gray-500">2 hours ago</span> */}

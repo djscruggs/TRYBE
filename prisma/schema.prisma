@@ -1,3 +1,4 @@
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -199,6 +200,8 @@ model Comment {
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
   body        String
+  imageMeta   Json?
+  videoMeta   Json?
   userId      Int
   postId      Int?
   challengeId Int?
@@ -207,6 +210,7 @@ model Comment {
   threadDepth Int        @default(0)
   likeCount   Int        @default(0)
   replyCount  Int        @default(0)
+  
   challenge   Challenge? @relation(fields: [challengeId], references: [id])
   thread     Thread?   @relation(fields: [threadId], references: [id])
   post        Post?      @relation(fields: [postId], references: [id])

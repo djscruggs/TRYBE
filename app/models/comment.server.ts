@@ -71,7 +71,7 @@ export const createComment = async (comment: prisma.commentCreateInput): Promise
     const newComment = await prisma.comment.create({
       data: comment
     })
-    void updateCounts(newComment)
+    await updateCounts(newComment)
     return newComment
   } catch (error) {
     console.error('error', error)
@@ -107,7 +107,10 @@ export const loadComment = async (commentId: string | number, userId?: string | 
         include: {
           profile: true
         }
-      }
+      },
+      challenge: true,
+      post: true,
+      thread: true
     }
   })
 }
@@ -119,7 +122,7 @@ export const deleteComment = async (commentId: string | number): Promise<prisma.
       id
     }
   })
-  void updateCounts(deleted)
+  await updateCounts(deleted)
   return deleted
 }
 

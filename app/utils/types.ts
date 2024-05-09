@@ -22,9 +22,9 @@ export interface Note {
   userId?: number
   body: string | null
   image?: string | null
-  imageMeta?: Record<string, unknown> | null
+  imageMeta?: CoudinaryMeta
   video?: string | null
-  videoMeta?: Record<string, unknown> | null
+  videoMeta?: CoudinaryMeta
   challengeId?: number
   challenge?: Challenge
   postId?: number
@@ -52,9 +52,9 @@ export interface Thread {
   title: string | null
   body: string | null
   image: string | null
-  imageMeta: any
+  imageMeta: CoudinaryMeta
   video: string | null
-  videoMeta: any
+  videoMeta: CoudinaryMeta
   challengeId: number
   challenge?: Challenge
   likeCount?: number
@@ -75,9 +75,9 @@ export interface Post {
   title?: string | null
   body?: string | null
   image?: string | null
-  imageMeta?: Record<string, unknown> | null
+  imageMeta?: CoudinaryMeta
   video?: string | null
-  videoMeta?: Record<string, unknown> | null
+  videoMeta?: CoudinaryMeta
   embed?: string | null
   public?: boolean
   challengeId?: number | null
@@ -164,14 +164,25 @@ export interface LoginForm {
   password: string
   request: Request
 }
-
+interface CoudinaryMeta {
+  url: string
+  secure_url: string
+  public_id: string
+  format: string
+  resource_type: string
+}
 export interface Comment {
   id: number
   body: string
+  imageMeta?: CoudinaryMeta
+  videoMeta?: CoudinaryMeta
   userId: number
   challengeId: number
+  challenge?: Challenge | ChallengeSummary
   postId: number
+  post?: Post | PostSummary
   threadId: number
+  thread?: Thread | ThreadSummary
   likeCount: number
   replyCount: number
   createdAt: Date

@@ -69,7 +69,6 @@ export function buttonColorFromContainer (containerColor: string | undefined, de
   }
 }
 export function textColorFromContainer (containerColor: string | undefined, defaultColor: string): string {
-  console.log('containerColor', containerColor)
   if (!containerColor) return defaultColor
   const containerColorLower = containerColor.toLowerCase()
   if (['red', 'blue', 'purple', 'green', 'orange', 'pink'].includes(containerColorLower)) {

@@ -41,7 +41,6 @@ export default function CardNote (props: CardNoteProps): JSX.Element {
   const revalidator = useRevalidator()
   const navigate = useNavigate()
   const [deleteDialog, setDeleteDialog] = useState(false)
-  console.log('isThread', isThread)
   const goToNote = (event: any): void => {
     event.preventDefault()
     event.stopPropagation()
