@@ -141,7 +141,6 @@ const VideoRecorder = ({ onStart, onStop, onSave, onFinish, uploadOnly }: VideoR
     handleFileUpload({ event, setFile: setVideoFile, setFileURL: setLocalVideoUrl })
   }
   const saveVideo = (): void => {
-    console.log('saveVideo, file is', videoFile)
     onSave(videoFile as unknown as File)
     cleanUp()
     onFinish()

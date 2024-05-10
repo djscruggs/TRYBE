@@ -1,4 +1,4 @@
-import React, { useState, useContext, useRef } from 'react'
+import React, { useState, useContext, useRef, useMemo } from 'react'
 import { Form } from '@remix-run/react'
 import axios from 'axios'
 import { FormField } from './formField'
@@ -11,6 +11,7 @@ import VideoChooser from './videoChooser'
 import { handleFileUpload } from '~/utils/helpers'
 import { MdOutlineAddPhotoAlternate } from 'react-icons/md'
 import { TiDeleteOutline } from 'react-icons/ti'
+import VideoPreview from './videoPreview'
 
 interface FormCommentProps {
   challengeId?: number
@@ -33,8 +34,9 @@ export default function FormComment (props: FormCommentProps): JSX.Element {
   const [body, setBody] = useState(comment ? comment.body : '')
   const [error, setError] = useState('')
   const [recording, setRecording] = useState(false)
-  const [image, setImage] = useState<File | null>(null)
-  const [video, setVideo] = useState<File | null>(null)
+  const [image, setImage] = useState<File | string | null>(null)
+  const [video, setVideo] = useState<File | string | null>(null)
+  const [videoUrl, setVideoUrl] = useState<string | null>(comment?.videoMeta?.secure_url ? comment?.videoMeta?.secure_url : null)
   const imageRef = useRef<HTMLInputElement>(null)
   const [videoUploadOnly, setVideoUploadOnly] = useState(false)
   const [showVideoRecorder, setShowVideoRecorder] = useState(false)
@@ -53,11 +55,11 @@ export default function FormComment (props: FormCommentProps): JSX.Element {
   }
   const correctImageUrl = (): string => {
     // if image (file object) is set that means user attached a new image instead of existing url in db
-    if (image) {
-      return URL.createObjectURL(image)
-    }
     if (image && image !== 'delete') {
-      return image
+      return URL.createObjectURL(image as File)
+    }
+    if (comment?.imageMeta?.secure_url) {
+      return comment.imageMeta.secure_url
     }
     return ''
   }
@@ -77,7 +79,14 @@ export default function FormComment (props: FormCommentProps): JSX.Element {
   const videoChooserCallbackHide = (): void => {
     setShowVideoRecorder(false)
   }
-  async function handleSubmit (ev: React.FormEvent<HTMLFormElement>): Promise<void> {
+  const deleteVideo = (): void => {
+    setVideo('delete')
+    setVideoUrl(null)
+  }
+  const renderVideo = useMemo(() => (
+    <VideoPreview video={video} onClear={deleteVideo} />
+  ), [video, videoUrl])
+  async function handleSubmit (ev: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement>): Promise<void> {
     ev.preventDefault()
     if (body.length < 10) {
       setError('Comment must be at least 10 characters long')
@@ -110,12 +119,15 @@ export default function FormComment (props: FormCommentProps): JSX.Element {
       }
       const updated = await axios.post('/api/comments', formData)
       setBody('')
+      setVideo(null)
+      setImage(null)
       if (props.afterSave) {
         props.afterSave(updated.data as Comment)
       }
       toast.success('Comment saved')
     } catch (error: any) {
-      toast.error(error?.message)
+      const errorMessage = typeof error?.message === 'string' ? error.message : 'An unexpected error occurred'
+      toast.error(errorMessage as string)
     }
   }
   const handleCancel = (ev: React.MouseEvent<HTMLButtonElement>): void => {
@@ -156,6 +168,9 @@ export default function FormComment (props: FormCommentProps): JSX.Element {
             <img src={correctImageUrl()} alt="image thumbnail" className='h-24 mb-2' />
             <TiDeleteOutline onClick={deleteCorrectImage} className='text-lg bg-white rounded-full text-red cursor-pointer absolute top-1 right-1' />
           </div>
+        }
+        {video && !showVideoRecorder &&
+          renderVideo
         }
         {showVideoRecorder &&
           <div className='w-full h-full my-6'>
