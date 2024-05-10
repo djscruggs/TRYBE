@@ -15,10 +15,11 @@ const VideoRecorder = ({ onStart, onStop, onSave, onFinish, uploadOnly }: VideoR
   const [permission, setPermission] = useState(true)
   const videoUpload = useRef<HTMLInputElement>(null)
   const liveVideoFeed = useRef(null)
+  const mediaRecorder = useRef(null)
   const [recordingStatus, setRecordingStatus] = useState('inactive')
   const [stream, setStream] = useState<MediaStream | null>()
   const [localVideoUrl, setLocalVideoUrl] = useState<string | null>(null)
-  const [videoFile, setVideoFile] = useState<File | null>(null)
+  const [videoFile, setVideoFile] = useState<File | Blob | null>(null)
   const [videoChunks, setVideoChunks] = useState([])
   useEffect(() => {
     if (isMobileDevice() || uploadOnly) {
@@ -71,7 +72,7 @@ const VideoRecorder = ({ onStart, onStop, onSave, onFinish, uploadOnly }: VideoR
         // set videostream to live feed player
         liveVideoFeed.current.srcObject = videoStream
       } catch (err) {
-        alert(err.message)
+        console.error(err.message)
       }
     } else {
       alert('The MediaRecorder API is not supported in your browser.')
@@ -115,11 +116,11 @@ const VideoRecorder = ({ onStart, onStop, onSave, onFinish, uploadOnly }: VideoR
       onStop()
     }
     setRecordingStatus('recorded')
-
-    mediaRecorder.current.stop()
-
+    console.log('stopping recording')
     mediaRecorder.current.onstop = () => {
+      console.log('onstop called')
       const videoBlob = new Blob(videoChunks, { type: mimeType })
+      console.log('videBlob is', videoBlob)
       setVideoFile(videoBlob)
       const videoUrl = URL.createObjectURL(videoBlob)
 
@@ -127,12 +128,14 @@ const VideoRecorder = ({ onStart, onStop, onSave, onFinish, uploadOnly }: VideoR
 
       setVideoChunks([])
     }
+    mediaRecorder.current.stop()
   }
   const handleVideoUpload = (event: React.ChangeEvent<HTMLInputElement>): void => {
     console.log(event.target)
     handleFileUpload({ event, setFile: setVideoFile, setFileURL: setLocalVideoUrl })
   }
   const saveVideo = (): void => {
+    console.log('saveVideo, file is', videoFile)
     onSave(videoFile)
     const tracks = stream.getTracks()
     if (tracks) {
@@ -178,10 +181,10 @@ const VideoRecorder = ({ onStart, onStop, onSave, onFinish, uploadOnly }: VideoR
                   <p>Allow access to your camera to record a video</p>
             )
           : null}
-      <div className="block min-h-[310px] relative justifys-center">
+      <div className="block min-h-[310px] relative justify-center">
 
             {!localVideoUrl &&
-              <div className='border-2 border-gray-300 rounded-lg h-[3'>
+              <div className='h-full min-h-[310px]'>
                 <video ref={liveVideoFeed} autoPlay></video>
               </div>
             }
@@ -194,7 +197,7 @@ const VideoRecorder = ({ onStart, onStop, onSave, onFinish, uploadOnly }: VideoR
               : null}
 
       </div>
-      <div className='w-full flex justify-center'>
+      <div className='w-full flex justify-center mt-4'>
         {recordingStatus === 'inactive' &&
           <>
           <button className='bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded' onClick={startRecording} type="button">

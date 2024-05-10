@@ -32,6 +32,7 @@ export default function FormComment (props: FormCommentProps): JSX.Element {
   const { currentUser } = useContext(CurrentUserContext)
   const [body, setBody] = useState(comment ? comment.body : '')
   const [error, setError] = useState('')
+  const [recording, setRecording] = useState(false)
   const [image, setImage] = useState<File | null>(null)
   const [video, setVideo] = useState<File | null>(null)
   const imageRef = useRef<HTMLInputElement>(null)
@@ -108,7 +109,6 @@ export default function FormComment (props: FormCommentProps): JSX.Element {
         formData.set('video', video)
       }
       const updated = await axios.post('/api/comments', formData)
-      console.log(updated)
       setBody('')
       if (props.afterSave) {
         props.afterSave(updated.data as Comment)
@@ -158,11 +158,11 @@ export default function FormComment (props: FormCommentProps): JSX.Element {
           </div>
         }
         {showVideoRecorder &&
-          <div>
-            <VideoRecorder uploadOnly={videoUploadOnly} onStart={() => { setSaving(true) }} onStop={() => { setSaving(false) }} onSave={setVideo} onFinish={() => { setShowVideoRecorder(false) }} />
+          <div className='w-full h-full my-6'>
+            <VideoRecorder uploadOnly={videoUploadOnly} onStart={() => { setRecording(true) }} onStop={() => { setRecording(false) }} onSave={setVideo} onFinish={() => { setShowVideoRecorder(false) }} />
           </div>
         }
-        <Button type="submit" onClick={handleSubmit} placeholder='Save' className="bg-red">Save</Button>
+        <Button type="submit" onClick={handleSubmit} placeholder='Save' className="bg-red" disabled={recording}>Save</Button>
         {props.onCancel && (
           <button onClick={handleCancel} className="mt-2 text-sm underline ml-2">cancel</button>
         )}

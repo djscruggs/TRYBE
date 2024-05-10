@@ -22,7 +22,6 @@ interface CardThreadProps {
 }
 
 export default function CardThread (props: CardThreadProps): JSX.Element {
-  console.log('top of card, comment count is', props.thread.commentCount)
   const { currentUser } = useContext(CurrentUserContext)
   const { hasLiked } = props
   const [thread, setThread] = useState(props.thread)

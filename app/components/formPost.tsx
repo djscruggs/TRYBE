@@ -262,7 +262,7 @@ export default function FormPost (props: FormPostProps): JSX.Element {
           renderVideo
         }
         {showVideoRecorder &&
-          <div>
+          <div className='w-full h-full my-6'>
             <VideoRecorder uploadOnly={videoUploadOnly} onStart={() => { setSaving(true) }} onStop={() => { setSaving(false) }} onSave={setVideo} onFinish={() => { setShowVideoRecorder(false) }} />
           </div>
         }

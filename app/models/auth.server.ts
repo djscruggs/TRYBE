@@ -78,7 +78,6 @@ export async function requireCurrentUser (args: any): Promise<CurrentUser | null
   if (!clerkUser.userId) {
     dbUser = await getUser(request)
   } else {
-    console.log('getting by clerk id', clerkUser.userId)
     dbUser = await getUserByClerkId(clerkUser.userId)
   }
   const currentUser = dbUser

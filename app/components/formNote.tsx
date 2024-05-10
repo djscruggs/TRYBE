@@ -42,6 +42,7 @@ export default function FormNote (props: FormNoteProps): JSX.Element {
   const placeholder = prompt ?? 'What\'s on your mind?'
   const [body, setBody] = useState(note?.body || '')
   const [btnDisabled, setBtnDisabled] = useState(false)
+  const [videoRecording, setVideoRecording] = useState(false)
   const [error, setError] = useState('')
   const navigate = useNavigate()
   const imageRef = useRef<HTMLInputElement>(null)
@@ -80,7 +81,6 @@ export default function FormNote (props: FormNoteProps): JSX.Element {
     setImageUrl(null)
   }
   const deleteVideo = (): void => {
-    console.log('setting to delete')
     setVideo('delete')
     setVideoUrl(null)
   }
@@ -161,7 +161,6 @@ export default function FormNote (props: FormNoteProps): JSX.Element {
   const renderVideo = useMemo(() => (
     <VideoPreview video={video} onClear={deleteVideo} />
   ), [video, videoUrl])
-
   return (
     <div className='w-full mb-8'>
       <Form method="post" onSubmit={handleSubmit} onKeyDown={handleKeyDown}>
@@ -202,13 +201,15 @@ export default function FormNote (props: FormNoteProps): JSX.Element {
         }
         {showVideoRecorder &&
           <div className='mt-6'>
-            <VideoRecorder uploadOnly={videoUploadOnly} onStart={() => { setBtnDisabled(true) }} onStop={() => { setBtnDisabled(false) }} onSave={setVideo} onFinish={() => { setShowVideoRecorder(false) }} />
+            <VideoRecorder uploadOnly={videoUploadOnly} onStart={() => { setVideoRecording(true) }} onStop={() => { setVideoRecording(false) }} onSave={setVideo} onFinish={() => { setShowVideoRecorder(false) }} />
           </div>
         }
         <Button type="submit" placeholder='Save' className="bg-red disabled:gray-400" disabled={btnDisabled || (showVideoRecorder && !video)}>
           {btnDisabled
             ? 'Saving...'
-            : 'Save'
+            : videoRecording
+              ? 'Recording...'
+              : 'Save'
           }
         </Button>
         {showCancel() &&
