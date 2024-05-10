@@ -98,13 +98,9 @@ export const action: ActionFunction = async (args) => {
   } catch (error) {
     console.error('error uploading video', error)
   }
-  console.log('to update', result)
-  console.log('before update, comment id is', result.id, 'userId', result.userId)
   const updated = await updateComment(result)
-  console.log('after update, comment id is', updated.id, 'userId', updated.userId)
   // refresh the comment to include user info attached
   const comment = await loadComment(updated.id as number, updated.userId as number)
-  console.log('comment', comment)
   return json(comment)
 }
 
