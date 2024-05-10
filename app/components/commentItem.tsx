@@ -23,7 +23,7 @@ export default function CommentItem (props: CommentsProps): JSX.Element {
   const [replies, setReplies] = useState<Comment[]>(comment?.replies ?? [])
   const { likedCommentIds } = props
   const [firstReply, setFirstReply] = useState<Comment | null>(null)
-  const [isLiked, setIsLiked] = useState(likedCommentIds.includes(comment?.id ?? 0))
+  const [isLiked, setIsLiked] = useState(likedCommentIds?.includes(comment?.id ?? 0))
   const [showLightbox, setShowLightbox] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [showForm, setShowForm] = useState(false)
