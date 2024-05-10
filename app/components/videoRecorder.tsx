@@ -11,16 +11,24 @@ interface VideoRecorderProps {
   uploadOnly?: boolean
 }
 
+// ugly hack to deal with not being able to shut down camera after use
+// see getCameraPermission() and cleanup()
+declare global {
+  interface Window {
+    videoStream: MediaStream | null
+    audioStream: MediaStream | null
+  }
+}
 const VideoRecorder = ({ onStart, onStop, onSave, onFinish, uploadOnly }: VideoRecorderProps): JSX.Element => {
   const [permission, setPermission] = useState(true)
   const videoUpload = useRef<HTMLInputElement>(null)
-  const liveVideoFeed = useRef(null)
-  const mediaRecorder = useRef(null)
+  const liveVideoFeed = useRef<HTMLVideoElement>(null)
+  const mediaRecorder = useRef<MediaRecorder | null>(null)
   const [recordingStatus, setRecordingStatus] = useState('inactive')
   const [stream, setStream] = useState<MediaStream | null>()
   const [localVideoUrl, setLocalVideoUrl] = useState<string | null>(null)
   const [videoFile, setVideoFile] = useState<File | Blob | null>(null)
-  const [videoChunks, setVideoChunks] = useState([])
+  const [videoChunks, setVideoChunks] = useState<Blob[]>([])
   useEffect(() => {
     if (isMobileDevice() || uploadOnly) {
       return
@@ -36,43 +44,37 @@ const VideoRecorder = ({ onStart, onStop, onSave, onFinish, uploadOnly }: VideoR
   // need this to handle setting video file during upload on mobile device
   useEffect(() => {
     if (isMobileDevice() || uploadOnly) {
-      onSave(videoFile)
+      onSave(videoFile as unknown as File)
     }
   }, [videoFile])
 
   const getCameraPermission = async (): Promise<void> => {
-    setLocalVideoUrl(null)
-    // get video and audio permissions and then stream the result media stream to the videoSrc variable
     if ('MediaRecorder' in window) {
       try {
-        const videoConstraints = {
-          audio: false,
-          video: true
-        }
-        const audioConstraints = { audio: true }
+        const videoConstraints = { audio: false, video: true }
+        const audioConstraints = { audio: true, video: false }
 
-        // create audio and video streams separately
-        const audioStream = await navigator.mediaDevices.getUserMedia(
-          audioConstraints
-        )
-        const videoStream = await navigator.mediaDevices.getUserMedia(
-          videoConstraints
-        )
+        if (!window.audioStream || !window.videoStream) {
+          window.audioStream = await navigator.mediaDevices.getUserMedia(
+            audioConstraints
+          )
+          window.videoStream = await navigator.mediaDevices.getUserMedia(
+            videoConstraints
+          )
+          const combinedStream = new MediaStream([
+            ...window.videoStream.getVideoTracks(),
+            ...window.audioStream.getAudioTracks()
+          ])
+          setStream(combinedStream)
+        }
 
         setPermission(true)
-        // combine both audio and video streams
-
-        const combinedStream = new MediaStream([
-          ...videoStream.getVideoTracks(),
-          ...audioStream.getAudioTracks()
-        ])
-
-        setStream(combinedStream)
-
         // set videostream to live feed player
-        liveVideoFeed.current.srcObject = videoStream
-      } catch (err) {
-        console.error(err.message)
+        if (liveVideoFeed.current) {
+          liveVideoFeed.current.srcObject = window.videoStream
+        }
+      } catch (err: unknown) {
+        console.error((err as Error).message)
       }
     } else {
       alert('The MediaRecorder API is not supported in your browser.')
@@ -95,12 +97,14 @@ const VideoRecorder = ({ onStart, onStop, onSave, onFinish, uploadOnly }: VideoR
     setRecordingStatus('recording')
     await getCameraPermission()
 
-    const media = new MediaRecorder(stream, { mimeType })
-    mediaRecorder.current = media
+    if (!mediaRecorder.current) {
+      const media = new MediaRecorder(stream as unknown as MediaStream, { mimeType })
+      mediaRecorder.current = media
+    }
 
     mediaRecorder.current.start()
 
-    const localVideoChunks = []
+    const localVideoChunks: Blob[] = []
 
     mediaRecorder.current.ondataavailable = (event) => {
       if (typeof event.data === 'undefined') return
@@ -117,18 +121,20 @@ const VideoRecorder = ({ onStart, onStop, onSave, onFinish, uploadOnly }: VideoR
     }
     setRecordingStatus('recorded')
     console.log('stopping recording')
-    mediaRecorder.current.onstop = () => {
-      console.log('onstop called')
-      const videoBlob = new Blob(videoChunks, { type: mimeType })
-      console.log('videBlob is', videoBlob)
-      setVideoFile(videoBlob)
-      const videoUrl = URL.createObjectURL(videoBlob)
+    if (mediaRecorder.current) {
+      mediaRecorder.current.onstop = () => {
+        console.log('onstop called')
+        const videoBlob = new Blob(videoChunks, { type: mimeType })
+        console.log('videBlob is', videoBlob)
+        setVideoFile(videoBlob)
+        const videoUrl = URL.createObjectURL(videoBlob)
 
-      setLocalVideoUrl(videoUrl)
+        setLocalVideoUrl(videoUrl)
 
-      setVideoChunks([])
+        setVideoChunks([])
+      }
     }
-    mediaRecorder.current.stop()
+    mediaRecorder.current?.stop()
   }
   const handleVideoUpload = (event: React.ChangeEvent<HTMLInputElement>): void => {
     console.log(event.target)
@@ -136,15 +142,32 @@ const VideoRecorder = ({ onStart, onStop, onSave, onFinish, uploadOnly }: VideoR
   }
   const saveVideo = (): void => {
     console.log('saveVideo, file is', videoFile)
-    onSave(videoFile)
-    const tracks = stream.getTracks()
-    if (tracks) {
-      tracks.forEach(track => { track.stop() })
-    }
-    setStream(null)
+    onSave(videoFile as unknown as File)
+    cleanUp()
+    onFinish()
+  }
+  const cleanUp = (): void => {
+    const tracks = stream?.getTracks()
+
     if (liveVideoFeed?.current?.srcObject) {
+      console.log('liveVideoFeed.current.srcObject', liveVideoFeed.current.srcObject)
       liveVideoFeed.current.srcObject = null
     }
+    if (tracks) {
+      console.log('tracks are', tracks)
+
+      tracks.forEach(track => {
+        track.stop()
+        track.enabled = false
+      })
+      console.log('now tracks are', tracks)
+    }
+    // eslint-disable-next-line
+    window.videoStream = null
+    // eslint-disable-next-line
+    window.audioStream = null
+    setStream(null)
+
     onFinish()
   }
 
@@ -203,7 +226,7 @@ const VideoRecorder = ({ onStart, onStop, onSave, onFinish, uploadOnly }: VideoR
           <button className='bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded' onClick={startRecording} type="button">
               Start Recording
           </button>
-          <button className='bg-red hover:bg-green-700 text-white font-bold py-2 px-4 rounded ml-2' onClick={onFinish} type="button">
+          <button className='bg-red hover:bg-green-700 text-white font-bold py-2 px-4 rounded ml-2' onClick={cleanUp} type="button">
             Never Mind
           </button>
 
