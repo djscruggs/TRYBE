@@ -25,7 +25,7 @@ export const action: ActionFunction = async (args) => {
   }
   // if this is a reply, the other relations will come from the parent
   const replyToId = formData.replyToId
-  if (!replyToId) {
+  if (!replyToId && !data.id) {
     if (formData.postId) {
       data.post = { connect: { id: Number(formData.postId) } }
     }
@@ -39,10 +39,11 @@ export const action: ActionFunction = async (args) => {
       return json({ message: 'Post id or callenge id is required' }, 400)
     }
   }
+
   if (replyToId) {
     data.replyTo = { connect: { id: Number(replyToId) } }
     // increment the thread depth, requires fetching the parent comment
-    const parentComment = await loadComment(replyToId as number)
+    const parentComment = await loadComment(replyToId as unknown as number)
     const { postId, challengeId } = parentComment
     if (postId) {
       data.post = { connect: { id: postId } }
@@ -52,6 +53,7 @@ export const action: ActionFunction = async (args) => {
     }
     data.threadDepth = parentComment.threadDepth >= 5 ? 5 : parentComment.threadDepth + 1
   }
+
   const result = data.id ? await updateComment(data) : await createComment(data)
   // check if there is a video/image OR if it should be deleted
   let image, video
@@ -98,6 +100,7 @@ export const action: ActionFunction = async (args) => {
   } catch (error) {
     console.error('error uploading video', error)
   }
+
   const updated = await updateComment(result)
   // refresh the comment to include user info attached
   const comment = await loadComment(updated.id as number, updated.userId as number)

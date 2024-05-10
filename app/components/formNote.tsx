@@ -5,7 +5,7 @@ import { FormField } from './formField'
 import { handleFileUpload } from '~/utils/helpers'
 import CardChallenge from './cardChallenge'
 import CardPost from './cardPost'
-import { type Note, type NoteSummary, type Challenge, type Post, type ChallengeSummary } from '~/utils/types'
+import { type Note, type NoteSummary, type PostSummary, type Challenge, type Post, type ChallengeSummary } from '~/utils/types'
 import { Button } from '@material-tailwind/react'
 import { MdOutlineAddPhotoAlternate } from 'react-icons/md'
 import { TiDeleteOutline } from 'react-icons/ti'
@@ -101,10 +101,7 @@ export default function FormNote (props: FormNoteProps): JSX.Element {
     try {
       const formData = new FormData()
       formData.append('body', body)
-      if (note) {
-        formData.append('id', note.id.toString())
-      }
-      if (note) {
+      if (note?.id) {
         formData.append('id', note.id.toString())
       }
       if (replyToId) {
@@ -114,7 +111,7 @@ export default function FormNote (props: FormNoteProps): JSX.Element {
       if (challenge) {
         formData.append('challengeId', challenge.id.toString())
       }
-      if (post) {
+      if (post?.id) {
         formData.append('postId', post.id.toString())
       }
       if (image) {
@@ -134,7 +131,7 @@ export default function FormNote (props: FormNoteProps): JSX.Element {
       setVideo(null)
       setShowVideoRecorder(false)
       if (afterSave) {
-        afterSave(result.data)
+        afterSave(result.data as NoteSummary)
       } else {
         navigate('/notes/' + result.data.id)
       }
@@ -215,8 +212,8 @@ export default function FormNote (props: FormNoteProps): JSX.Element {
         {showCancel() &&
           <button onClick={handleCancel} className="mt-2 text-sm underline ml-2">cancel</button>
         }
-        {challenge && !isThread && <CardChallenge challenge={challenge} isShare={true}/>}
-        {post && <CardPost post={post} isShare={true}/>}
+        {challenge && !isThread && <CardChallenge challenge={challenge as ChallengeSummary} isShare={true}/>}
+        {post && <CardPost post={post as PostSummary} isShare={true}/>}
 
       </Form>
 

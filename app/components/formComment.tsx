@@ -64,8 +64,11 @@ export default function FormComment (props: FormCommentProps): JSX.Element {
     return ''
   }
   const deleteCorrectImage = (): void => {
-    if (image) {
+    if (image && image !== 'delete') {
       setImage(null)
+    } else if (comment?.imageMeta?.secure_url) {
+      comment.imageMeta.secure_url = ''
+      setImage('delete')
     }
   }
   const videoChooserCallbackShow = (uploadOnly: boolean): void => {
@@ -84,7 +87,7 @@ export default function FormComment (props: FormCommentProps): JSX.Element {
     setVideoUrl(null)
   }
   const renderVideo = useMemo(() => (
-    <VideoPreview video={video} onClear={deleteVideo} />
+    <VideoPreview video={videoUrl ?? video} onClear={deleteVideo} />
   ), [video, videoUrl])
   async function handleSubmit (ev: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement>): Promise<void> {
     ev.preventDefault()
@@ -126,7 +129,8 @@ export default function FormComment (props: FormCommentProps): JSX.Element {
       }
       toast.success('Comment saved')
     } catch (error: any) {
-      const errorMessage = typeof error?.message === 'string' ? error.message : 'An unexpected error occurred'
+      console.log(error)
+      const errorMessage = typeof error?.response.data.message === 'string' ? error.message : 'An unexpected error occurred'
       toast.error(errorMessage as string)
     }
   }
@@ -169,7 +173,7 @@ export default function FormComment (props: FormCommentProps): JSX.Element {
             <TiDeleteOutline onClick={deleteCorrectImage} className='text-lg bg-white rounded-full text-red cursor-pointer absolute top-1 right-1' />
           </div>
         }
-        {video && !showVideoRecorder &&
+        {(video ?? videoUrl) && !showVideoRecorder &&
           renderVideo
         }
         {showVideoRecorder &&
