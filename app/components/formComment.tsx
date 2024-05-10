@@ -118,7 +118,7 @@ export default function FormComment (props: FormCommentProps): JSX.Element {
       toast.error(error?.message)
     }
   }
-  const handleCancel = (ev: React.FormEvent<HTMLFormElement>): void => {
+  const handleCancel = (ev: React.MouseEvent<HTMLButtonElement>): void => {
     ev.preventDefault()
     if (props.onCancel) {
       props.onCancel()

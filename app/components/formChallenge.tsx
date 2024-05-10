@@ -218,24 +218,7 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
   //     }
   //   }
   // }, [photo])
-  const photoInput = (): JSX.Element => {
-    const textColor = photoURL ? 'white' : 'blue-gray-50'
-    return (
-      <input type="file"
-        name="coverPhoto"
-        onChange={handleCoverPhoto}
-        accept="image/*"
-        className={`text-sm text-${textColor}
-                  file:text-white
-                    file:mr-5 file:py-2 file:px-6
-                    file:rounded-full file:border-0
-                    file:text-sm file:font-medium
-                    file:bg-blue-50 file:text-blue-700
-                    file:cursor-pointer file:bg-blue
-                    hover:file:bg-red`}
-      />
-    )
-  }
+
   return (
       <>
         <div className='w-full flex justify-center md:justify-start'>
@@ -383,7 +366,7 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
                       <div className="flex flex-col items-center justify-end">
                         <p className="text-2xl text-blue-gray-500 text-center">Upload a cover photo</p>
                         <div className='mt-10 ml-36'>
-                          {photoInput()}
+                          <PhotoInput photoURL={photoURL} onChange={handleCoverPhoto} />
                         </div>
                       </div>
                     }
@@ -391,7 +374,7 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
                   <div className='px-[28%] justify-center items-center'>
                     {photoURL &&
                       <>
-                        {photoInput()}
+                        <PhotoInput photoURL={photoURL} onChange={handleCoverPhoto} />
                         <p onClick={removePhoto} className='text-red underline ml-[130px] -mt-8 cursor-pointer'>remove</p>
                       </>
                     }
@@ -431,5 +414,29 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
         <div className='bg-gradient-to-b from-grey to-white'>gradient</div>
         </div>
       </>
+  )
+}
+
+interface photoInputProps {
+  photoURL: string | null
+  onChange: (event: ChangeEvent<HTMLInputElement>) => void
+}
+const PhotoInput = (props: photoInputProps): JSX.Element => {
+  const { photoURL, onChange } = props
+  const textColor = photoURL ? 'white' : 'blue-gray-50'
+  return (
+    <input type="file"
+      name="coverPhoto"
+      onChange={onChange}
+      accept="image/*"
+      className={`text-sm text-${textColor}
+                file:text-white
+                  file:mr-5 file:py-2 file:px-6
+                  file:rounded-full file:border-0
+                  file:text-sm file:font-medium
+                  file:bg-blue-50 file:text-blue-700
+                  file:cursor-pointer file:bg-blue
+                  hover:file:bg-red`}
+    />
   )
 }
