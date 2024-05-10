@@ -37,7 +37,6 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
     })
     hasLiked = likes > 0
   }
-
   const data: PostData = { post, hasLiked }
   return json(data)
 }

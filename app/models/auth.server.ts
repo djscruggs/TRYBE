@@ -6,6 +6,7 @@ import type { CurrentUser } from '~/utils/types'
 import { redirect, json, createCookieSessionStorage } from '@remix-run/node'
 import { getAuth } from '@clerk/remix/ssr.server'
 import { URL } from 'url'
+import { type LoaderFunctionArgs } from '@remix-run/node'
 const sessionSecret = process.env.SESSION_SECRET
 if (!sessionSecret) {
   throw new Error('SESSION_SECRET must be set')
@@ -70,7 +71,7 @@ export async function login ({ email, password, request }: LoginForm): Promise<R
   return await createUserSession(currentUser.id, redirect)
 }
 
-export async function requireCurrentUser (args: any): Promise<CurrentUser | null | Response> {
+export async function requireCurrentUser (args: LoaderFunctionArgs): Promise<CurrentUser | null> {
   const request = args.request
   const redirectTo = args.redirectTo || new URL(request.url).pathname
   const clerkUser = await getAuth(args)

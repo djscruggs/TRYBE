@@ -1,30 +1,36 @@
 import React, { useState, useContext } from 'react'
 import { useParams, useLoaderData, json, useOutletContext } from '@remix-run/react'
 import { type LoaderFunction } from '@remix-run/server-runtime'
-import { fetchComments } from '~/models/comment.server'
 import { useNavigate } from 'react-router-dom'
 import { Button } from '@material-tailwind/react'
-import type { Comment } from '~/utils/types'
+import type { Comment, CurrentUser } from '~/utils/types'
 import CommentsContainer from '~/components/commentsContainer'
 import FormComment from '~/components/formComment'
 import { CurrentUserContext } from '~/utils/CurrentUserContext'
+import { fetchComments, recursivelyCollectCommentIds } from '~/models/comment.server'
+import { commentIdsLikedByUser } from '~/models/like.server'
+import { type LoaderFunctionArgs } from '@remix-run/node'
+import { requireCurrentUser } from '~/models/auth.server'
 
-export const loader: LoaderFunction = async ({ request, params }) => {
-  const postId = Number(params.id)
+export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
+  const currentUser: CurrentUser | null = await requireCurrentUser(args)
+  const postId = Number(args.params.id)
   const result = await fetchComments({ postId })
 
   if (!result) {
     const error = { loadingError: '{pst} not found' }
     return json(error)
   }
-  const data: Comment[] = result
-  console.log(data, postId)
-  return { commentsData: data, postId }
+  const comments: Comment[] = result
+  const commentIds = recursivelyCollectCommentIds(comments)
+  const likedCommentIds: number[] = currentUser?.id ? await commentIdsLikedByUser({ commentIds, userId: currentUser.id }) : []
+
+  return { commentsData: comments, postId, likedCommentIds }
 }
 export default function ViewPostComments (): JSX.Element {
   const [showForm, setShowForm] = useState(false)
-  const { commentsData, postId } = useLoaderData<{ commentsData: Comment[], postId: number }>()
-  const [comments, setComments] = useState<Comment[]>(commentsData)
+  const { commentsData, postId, likedCommentIds } = useLoaderData<{ commentsData: Comment[], postId: number, likedCommentIds: number[] }>()
+  const [comments, setComments] = useState<Comment[]>(commentsData as unknown as Comment[])
   // first comment holds the comment posted by the user
   // it's intiially null, but if they save a commennt it shows at the top
   const [firstComment, setFirstComment] = useState<Comment | null>(null)
@@ -63,7 +69,7 @@ export default function ViewPostComments (): JSX.Element {
         <Button onClick={() => { navigate('/signup') }} className="bg-red p-2 mt-2">Sign Up</Button>
       </div>
     }
-    <CommentsContainer firstComment={firstComment} comments={comments} isReply={false} likedCommentIds={[]}/>
+    <CommentsContainer firstComment={firstComment} comments={comments} isReply={false} likedCommentIds={likedCommentIds}/>
   </div>
 
   )
