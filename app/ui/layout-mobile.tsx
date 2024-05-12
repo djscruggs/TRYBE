@@ -1,7 +1,7 @@
 import * as React from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
+import { Link, Outlet, useLocation } from '@remix-run/react'
 import { useState, useEffect, useContext } from 'react'
-import { Outlet, useLocation } from '@remix-run/react'
 import { CurrentUserContext } from '../utils/CurrentUserContext'
 import {
   // BellIcon,
@@ -81,10 +81,10 @@ const LayoutMobile = (): JSX.Element => {
                 {showNav &&
                 <div className="fixed bottom-0 left-0 right-0 max-w-screen flex items-center w-full justify-between m-0 p-0 px-2 py-1 bg-gray-50 border-2 border-slate-200 z-10">
                     <Link to="/" className='w-8 h-8 flex justify-center items-center'>
-                    <HomeIcon className='cursor-pointer w-8 h-8' />
+                      <HomeIcon className='cursor-pointer w-8 h-8' />
                     </Link>
-                    <Link to="/challenges" className='w-8 h-8 flex justify-center items-center'>
-                    <TrophyIcon className='cursor-pointer w-8 h-8' />
+                    <Link to="/challenges" className='w-8 h-8 flex justify-center items-center' prefetch='render'>
+                      <TrophyIcon className='cursor-pointer w-8 h-8' />
                     </Link>
                     <div className="flex items-center justify-center relative min-w-8" onClick={(event) => { handlePlusClick(event) }}>
                         {/* Your plus sign */}
@@ -127,10 +127,10 @@ const LayoutMobile = (): JSX.Element => {
                     </div>
 
                     <Link to={`/members/${currentUser?.id}/content`} className='w-8 h-8 flex justify-center items-center'>
-                    <ArchiveBoxIcon className='cursor-pointer w-8 h-8' />
+                      <ArchiveBoxIcon className='cursor-pointer w-8 h-8' />
                     </Link>
                     <Link to="/profile" className='w-8 h-8 flex justify-center items-center'>
-                    <IdentificationIcon className='cursor-pointer w-8 h-8' />
+                      <IdentificationIcon className='cursor-pointer w-8 h-8' />
                     </Link>
                 </div>
                 }
