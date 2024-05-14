@@ -6,7 +6,7 @@ import type { CurrentUser } from '~/utils/types'
 import { redirect, json, createCookieSessionStorage } from '@remix-run/node'
 import { getAuth } from '@clerk/remix/ssr.server'
 import { URL } from 'url'
-import { type LoaderFunctionArgs } from '@remix-run/node'
+
 const sessionSecret = process.env.SESSION_SECRET
 if (!sessionSecret) {
   throw new Error('SESSION_SECRET must be set')
@@ -27,7 +27,8 @@ export async function createUserSession (userId: string | number, redirectTo: st
   const session = await storage.getSession()
   session.set('userId', userId)
   if (!redirectTo) {
-    return redirect('/home')
+    // eslint-disable-next-line @typescript-eslint/no-throw-literal
+    throw redirect('/home')
   }
   return redirect(redirectTo, {
     headers: {
