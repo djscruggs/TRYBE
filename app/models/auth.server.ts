@@ -1,6 +1,7 @@
 import { prisma } from './prisma.server'
 import { createUser, getUserByClerkId } from './user.server'
 import { type RegisterForm, type LoginForm } from '../utils/types'
+import { type LoaderFunctionArgs } from '@remix-run/node'
 import bcrypt from 'bcryptjs'
 import type { CurrentUser } from '~/utils/types'
 import { redirect, json, createCookieSessionStorage } from '@remix-run/node'
@@ -27,8 +28,7 @@ export async function createUserSession (userId: string | number, redirectTo: st
   const session = await storage.getSession()
   session.set('userId', userId)
   if (!redirectTo) {
-    // eslint-disable-next-line @typescript-eslint/no-throw-literal
-    throw redirect('/home')
+    return redirect('/home')
   }
   return redirect(redirectTo, {
     headers: {
@@ -74,7 +74,6 @@ export async function login ({ email, password, request }: LoginForm): Promise<R
 
 export async function requireCurrentUser (args: LoaderFunctionArgs): Promise<CurrentUser | null> {
   const request = args.request
-  const redirectTo = args.redirectTo || new URL(request.url).pathname
   const clerkUser = await getAuth(args)
   let dbUser
   if (!clerkUser.userId) {
@@ -84,14 +83,17 @@ export async function requireCurrentUser (args: LoaderFunctionArgs): Promise<Cur
   }
   const currentUser = dbUser
 
-  const url = require('url')
-  const path = url.parse(request.url).pathname
+  const path = new URL(request.url).pathname
   if (!currentUser) {
     if (!['/login', '/register', '/signup', '/signin'].includes(path)) {
-      const searchParams = new URLSearchParams([['redirectTo', redirectTo]])
-      return redirect(`/signin?${searchParams}`)
-    } else {
-      console.log('NOT redirecting')
+      const url = new URL(request.url)
+      const redirectPath = new URL(request.url).pathname
+      const urlWithoutPath = `${url.protocol}//${url.host}${url.search}${url.hash}`
+      const newUrl = new URL(urlWithoutPath)
+      newUrl.searchParams.set('redirectTo', redirectPath)
+      console.log(newUrl.toString())
+      // eslint-disable-next-line @typescript-eslint/no-throw-literal
+      throw redirect(newUrl.toString())
     }
   }
   return currentUser
