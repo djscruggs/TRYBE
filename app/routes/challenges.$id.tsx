@@ -26,6 +26,7 @@ import getUserLocale from 'get-user-locale'
 import Liker from '~/components/liker'
 import ShareMenu from '~/components/shareMenu'
 import DialogDelete from '~/components/dialogDelete'
+import { userLocale } from '../utils/helpers'
 
 interface ViewChallengeData {
   challenge: ChallengeSummary
@@ -115,7 +116,7 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
     }
   })
   if (_post) {
-    latestPost = await loadPostSummary(_post.id) as PostSummary
+    latestPost = await loadPostSummary(_post.id) as unknown as PostSummary
   }
   let latestThread = null
   const _thread = await prisma.thread.findFirst({
@@ -175,7 +176,7 @@ export default function ViewChallenge (): JSX.Element {
   if (location.pathname.includes('edit') || location.pathname.includes('share')) {
     return <Outlet />
   }
-
+  const locale = userLocale()
   const formatNextCheckin = (): string => {
     if (!membership?.nextCheckIn) {
       return ''
@@ -271,6 +272,7 @@ export default function ViewChallenge (): JSX.Element {
     IoFishOutline: <IoFishOutline className={iconStyle(challenge?.color ?? 'red')} />
   }
   const color = colorToClassName(challenge?.color ?? '', 'red')
+
   return (
     <div className='flex flex-col'>
     <div className={`max-w-sm md:max-w-md lg:max-w-lg border border-transparent border-b-inherit rounded-md bg-gradient-to-b from-${color} to-90%`}>
@@ -290,7 +292,7 @@ export default function ViewChallenge (): JSX.Element {
       {deleteDialog && <DialogDelete prompt='Are you sure you want to delete this challenge?' isOpen={deleteDialog} deleteCallback={handleDelete} onCancel={cancelDialog}/>}
       <div className='p-4'>
         <div className="mb-2 text-sm">
-          {new Date(challenge.startAt).toLocaleDateString(undefined, dateOptions)} to {new Date(challenge.endAt).toLocaleDateString(undefined, dateOptions)}
+          {new Date(challenge.startAt).toLocaleDateString(locale, dateOptions)} to {new Date(challenge.endAt).toLocaleDateString(locale, dateOptions)}
         </div>
         <div className="mb-2">
           <div className='text-center text-sm font-bold'>About</div>

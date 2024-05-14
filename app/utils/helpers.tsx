@@ -7,6 +7,7 @@ import { PiBarbellLight } from 'react-icons/pi'
 import { IoFishOutline } from 'react-icons/io5'
 import type { ChangeEvent } from 'react'
 import { toast } from 'react-hot-toast'
+import { type CurrentUser } from './types'
 
 export const copyToClipboard = async (text: string): Promise<void> => {
   try {
@@ -67,6 +68,9 @@ export function buttonColorFromContainer (containerColor: string | undefined, de
   } else {
     return 'red'
   }
+}
+export function userLocale (user: CurrentUser | null | undefined): string {
+  return user?.locale ?? window.navigator.language ?? 'en-US'
 }
 export function textColorFromContainer (containerColor: string | undefined, defaultColor: string): string {
   if (!containerColor) return defaultColor

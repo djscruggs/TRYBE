@@ -6,6 +6,7 @@ import {
 } from '@material-tailwind/react'
 import { type Challenge, type MemberChallenge } from '../utils/types'
 import { CurrentUserContext } from '../utils/CurrentUserContext'
+import { userLocale } from '../utils/helpers'
 import ShareMenu from './shareMenu'
 
 interface CardChallengeProps {
@@ -26,6 +27,7 @@ export default function CardChallengeMembership ({ membership }: CardChallengePr
   const getFullUrl = (): string => {
     return `${window.location.origin}/challenges/${challenge.id}`
   }
+  const locale = userLocale(currentUser)
 
   return (
     <div className="mt-2 border-0 drop-shadow-none mr-2 w-full cursor-pointer">
@@ -35,7 +37,7 @@ export default function CardChallengeMembership ({ membership }: CardChallengePr
             <div className="grid grid-cols-3 gap-4">
               <div className="flex flex-col justify-center items-center col-span-1">
                   <div className="flex flex-col items-center col-span-2">
-                    Member since: {new Date(membership.createdAt).toLocaleDateString(String(currentUser?.locale) ?? 'en-US')}
+                    Member since: {new Date(membership.createdAt).toLocaleDateString(locale)}
                   </div>
               </div>
               <div className="flex flex-col items-center col-span-2">
