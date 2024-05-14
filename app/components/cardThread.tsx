@@ -106,8 +106,8 @@ export default function CardThread (props: CardThreadProps): JSX.Element {
                 <div className='font-bold my-2'>{thread.title}</div>
                 {convertlineTextToJSX(thread.body ?? '')}
                 <div className='mt-4'>
-                  {thread.video && <video className="recorded" src={thread.video} onClick={(event) => { event?.stopPropagation() }} controls />}
-                  {thread.image && <img src={`${thread.image}?${Date.now()}`} alt="thread picture" className="mt-4 cursor-pointer max-w-[200px]" onClick={handlePhotoClick} />}
+                  {thread.videoMeta?.secure_url && <video className="recorded" src={thread.videoMeta.secure_url} onClick={(event) => { event?.stopPropagation() }} controls />}
+                  {thread.imageMeta?.secure_url && <img src={thread.imageMeta.secure_url} alt="thread picture" className="mt-4 cursor-pointer max-w-[200px]" onClick={handlePhotoClick} />}
                 </div>
                 {currentUser?.id === thread.userId &&
                   <div className="mt-2 text-xs text-gray-500 w-full text-right">
@@ -142,7 +142,7 @@ export default function CardThread (props: CardThreadProps): JSX.Element {
         </div>
       </div>
     }
-    {(thread.image && showLightbox) && <Lightbox medium={thread.image} large={thread.image} alt="thread photo" onClose={() => { setShowLightbox(false) }}/>}
+    {(thread.imageMeta?.secure_url && showLightbox) && <Lightbox medium={thread.imageMeta?.secure_url} large={thread.imageMeta?.secure_url} alt="thread photo" onClose={() => { setShowLightbox(false) }}/>}
     {currentUser && addComment &&
         <div className='mt-2 w-full border-0  drop-shadow-none mr-2'>
           <FormComment threadId={thread.id} afterSave={afterCommentSave} onCancel={() => { setAddComment(false) }} prompt='Add your response' />

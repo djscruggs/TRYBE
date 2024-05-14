@@ -96,7 +96,6 @@ export default function FormNote (props: FormNoteProps): JSX.Element {
     if (!validate()) {
       return
     }
-    console.log('video is', video)
     setBtnDisabled(true)
     try {
       const formData = new FormData()

@@ -74,7 +74,7 @@ export default function CardChallenge ({ challenge, isShare, isMember }: CardCha
               </div>
               <div className="flex flex-col items-center col-span-2">
 
-                {challenge.coverPhoto && <img src={`${challenge.coverPhoto}?${Date.now()}`} alt={`${challenge?.name} cover photo`} className="w-full rounded-md" />}
+                {challenge.coverPhotoMeta?.secure_url as string && <img src={challenge.coverPhotoMeta?.secure_url as string} alt={`${challenge?.name} cover photo`} className="w-full rounded-md" />}
                 <Button onClick={goToChallenge} className={`bg-${buttonColor} text-${buttonTextColor} p-3 py-2 rounded-full mt-3`}>{isMember ? 'Check In' : 'Sign up!'}</Button>
               </div>
             </div>

@@ -124,9 +124,9 @@ export default function CardPost (props: CardPostProps): JSX.Element {
               {convertlineTextToJSX(String(shortBody))}
               {isTruncated && <span className='text-xs underline text-blue cursor-pointer mr-1 text-right italic' onClick={goToPost}> more</span>}
               <div className='mt-4'>
-              {post.video && <video className="recorded" src={post.video} onClick={(event) => { event?.stopPropagation() }} controls />}
+              {post.videoMeta?.secure_url && <video className="recorded" src={post.videoMeta.secure_url} onClick={(event) => { event?.stopPropagation() }} controls />}
 
-              {post.image && <img src={`${post.image}?${Date.now()}`} alt="post picture" className="mt-4 cursor-pointer max-w-[200px]" onClick={handlePhotoClick} />}
+              {post.imageMeta?.secure_url && <img src={post.imageMeta.secure_url} alt="post picture" className="mt-4 cursor-pointer max-w-[200px]" onClick={handlePhotoClick} />}
               </div>
               {currentUser?.id === post.userId && !isShare && isOwnRoute &&
                 <div className="mt-2 text-xs text-gray-500 w-full text-right">

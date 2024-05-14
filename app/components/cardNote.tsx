@@ -82,42 +82,6 @@ export default function CardNote (props: CardNoteProps): JSX.Element {
         console.error('Error deleting note:', error)
       })
   }
-  // const handleReply = (event: any): void => {
-  //   setAddReply(true)
-  //   event.preventDefault()
-  //   event.stopPropagation()
-  // }
-  // const handleRepostMenu = (event: any): void => {
-  //   event.preventDefault()
-  //   event.stopPropagation()
-  //   setRepostMenu(!repostMenu)
-  // }
-  // const handleRepost = async (event: any): Promise<void> => {
-  //   event.preventDefault()
-  //   event.stopPropagation()
-  //   setRepostMenu(false)
-  //   const formData = new FormData()
-  //   if (hasReposted) {
-  //     formData.append('unrepost', 'true')
-  //   }
-  //   formData.append('replyToId', note.id?.toString())
-  //   formData.append('isShare', 'true')
-
-  //   try {
-  //     const result = await axios.post(`/api/notes/${note.id}/repost`, formData)
-  //     toast.success(hasReposted ? 'Repost cleared' : 'Note reposted')
-  //     revalidator.revalidate()
-  //   } catch (error) {
-  //     toast.error('Error reposting note')
-  //     console.error(error)
-  //   }
-  // }
-  // const handleQuote = (event: any): void => {
-  //   event.preventDefault()
-  //   event.stopPropagation()
-  //   setRepostMenu(false)
-  //   navigate(`/notes/${note.id}/quote`)
-  // }
   const afterSave = (note: Note): void => {
     setNote(note)
     setEditing(false)
@@ -160,8 +124,8 @@ export default function CardNote (props: CardNoteProps): JSX.Element {
               <div className="flex flex-col w-full h-full">
                 {convertlineTextToJSX(note.body ?? '')}
                 <div className='mt-4'>
-                  {note.video && <video className="recorded" src={note.video} onClick={(event) => { event?.stopPropagation() }} controls />}
-                  {note.image && <img src={`${note.image}?${Date.now()}`} alt="note picture" className="mt-4 cursor-pointer max-w-[200px]" onClick={handlePhotoClick} />}
+                  {note.videoMeta?.secure_url && <video className="recorded" src={note.videoMeta.secure_url} onClick={(event) => { event?.stopPropagation() }} controls />}
+                  {note.imageMeta?.secure_url && <img src={note.imageMeta.secure_url} alt="note picture" className="mt-4 cursor-pointer max-w-[200px]" onClick={handlePhotoClick} />}
                 </div>
                 {note.challenge && !isThread &&
                   <div className='mt-2'>
