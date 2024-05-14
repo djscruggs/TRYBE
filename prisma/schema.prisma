@@ -36,8 +36,8 @@ model User {
 model Profile {
   id           Int     @id @default(autoincrement())
   userId       Int     @unique
-  firstName    String
-  lastName     String
+  firstName    String?   @default("First")
+  lastName     String?   @default("Last")
   profileImage String?
   user         User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
