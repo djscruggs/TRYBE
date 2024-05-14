@@ -17,3 +17,6 @@ app/routes/.DS_Store
 .sentryclirc
 fly-postgres
 sendgrid.env
+
+# Sentry Config File
+.sentryclirc

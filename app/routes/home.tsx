@@ -95,7 +95,7 @@ export const loader: LoaderFunction = async (args): Promise<FeedLoaderData> => {
   // })
   const _memberships = await prisma.memberChallenge.findMany({
     where: {
-      userId: currentUser ? Number(currentUser.id) : undefined
+      userId: currentUser ? Number(currentUser.id) : 0
     }
   })
   // creats an array that just has the challengeIds

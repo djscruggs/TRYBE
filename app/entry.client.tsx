@@ -32,7 +32,10 @@ Sentry.init({
       // Additional SDK configuration goes in here, for example:
       colorScheme: 'system'
     }),
-    Sentry.replayIntegration()
+    Sentry.replayIntegration({
+      maskAllText: false,
+      blockAllMedia: false
+    })
   ],
 
   // Set tracesSampleRate to 1.0 to capture 100%
