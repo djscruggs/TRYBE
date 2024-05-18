@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import axios from 'axios'
 import { Avatar } from '@material-tailwind/react'
 import { Link } from '@remix-run/react'
-
+import { userInitials } from '../utils/helpers'
 interface AvatarLoaderProps {
   object: any
   marginClass?: string
@@ -11,6 +11,7 @@ interface AvatarLoaderProps {
 export default function AvatarLoader ({ object, marginClass = '', clickable = false }: AvatarLoaderProps): JSX.Element {
   const [loading, setLoading] = useState(!object.user?.profile)
   const [profile, setProfile] = useState(object.user?.profile)
+  const initials = userInitials(object.user)
   useEffect(() => {
     if (!profile) {
       setLoading(true)
@@ -42,10 +43,10 @@ export default function AvatarLoader ({ object, marginClass = '', clickable = fa
   }
 
   return (
-      <div className="w-12 h-12 rounded-full bg-gray-500 flex items-center justify-center flex-shrink-0 flex-grow-0">
+      <div className="w-12 h-12 rounded-full bg-gray-500 flex items-center justify-center flex-shrink-0 flex-grow-0 mr-2">
         {loading || !profile.fullName
           ? ''
-          : <span className="text-white">{`${profile.fullName}`}</span>
+          : <span className="text-white">{initials}</span>
         }
       </div>
   )

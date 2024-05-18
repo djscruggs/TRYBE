@@ -101,7 +101,7 @@ export default function CommentItem (props: CommentsProps): JSX.Element {
             }
             <div className='flex'>
               <div className='flex-shrink-0'>
-                <Avatar src={comment.user?.profile?.profileImage} className='mr-4' size='sm'/>
+                <Avatar src={comment.user?.profile?.profileImage} className='mr-2' size='sm'/>
               </div>
               <div className='flex-grow'>
                 <div className='text-xs mb-2'>{comment.user?.profile?.firstName} {comment.user?.profile?.lastName} - <span>{formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true })}</span></div>
