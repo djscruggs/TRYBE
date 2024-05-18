@@ -72,6 +72,12 @@ export function buttonColorFromContainer (containerColor: string | undefined, de
 export function userLocale (user: CurrentUser | null | undefined): string {
   return user?.locale ?? window.navigator.language ?? 'en-US'
 }
+export function userInitials (user: CurrentUser | null | undefined): string {
+  if (!user ?? !user?.profile) return ''
+  const { firstName, lastName } = user.profile
+  const initials = `${firstName ? firstName[0] : ''}${lastName ? lastName[0] : ''}`
+  return initials.toUpperCase()
+}
 export function textColorFromContainer (containerColor: string | undefined, defaultColor: string): string {
   if (!containerColor) return defaultColor
   const containerColorLower = containerColor.toLowerCase()
