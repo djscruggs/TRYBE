@@ -120,6 +120,11 @@ export const fetchUserNotes = async (userId: number): Promise<Note[]> => {
     include: {
       _count: {
         select: { replies: true, likes: true }
+      },
+      user: {
+        include: {
+          profile: true
+        }
       }
     }
   })

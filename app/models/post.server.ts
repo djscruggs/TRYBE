@@ -93,6 +93,11 @@ export const fetchUserPosts = async (userId: number, includeDrafts = false): Pro
     include: {
       _count: {
         select: { comments: true, likes: true }
+      },
+      user: {
+        include: {
+          profile: true
+        }
       }
     }
   })

@@ -28,7 +28,7 @@ function Loading (): JSX.Element {
   return (
     <div className="fixed top-0 left-0 w-full h-full flex flex-col justify-center items-center bg-black bg-opacity-40">
       <div className='text-2xl text-white mb-4'>Loading TRYBE...</div>
-      <div><img src="/logo.png" alt="TRYBE" height="100" width="100" className='block'/></div>
+      <img src="/logo.png" alt="TRYBE" height="100" width="100" className='block'/>
     </div>
   )
 }

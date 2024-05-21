@@ -149,6 +149,11 @@ export const fetchUserChallengesAndMemberships = async (userId: string | number)
     include: {
       _count: {
         select: { members: true, comments: true, likes: true }
+      },
+      user: {
+        include: {
+          profile: true
+        }
       }
     }
   })
@@ -187,7 +192,12 @@ export const fetchUserMemberships = async (userId: string | number, showPrivate 
     {
       where: { userId: uid },
       include: {
-        challenge: true
+        challenge: true,
+        user: {
+          include: {
+            profile: true
+          }
+        }
       }
     }
   )
