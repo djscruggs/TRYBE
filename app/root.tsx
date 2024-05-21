@@ -44,11 +44,11 @@ export const meta: MetaFunction = () => {
 export const loader: LoaderFunction = async args => {
   const userLocale = getUserLocale()
   const ENV = {
-    CLERK_PUBLISHABLE_KEY: process.env.CLERK_PUBLISHABLE_KEY
+    CLERK_PUBLISHABLE_KEY: process.env.CLERK_PUBLISHABLE_KEY,
+    NODE_ENV: process.env.NODE_ENV
   }
   return await rootAuthLoader(args, async ({ request }) => {
     const auth = request.auth
-
     if (auth?.userId) {
       const user: CurrentUser = await getUserByClerkId(auth.userId)
       if (!user) {
@@ -101,12 +101,13 @@ function App (): JSX.Element {
   return (
     <Document>
 
-      <CurrentUserContext.Provider value={{ currentUser, setCurrentUser }}>
         <Toaster position='top-center' />
+        <CurrentUserContext.Provider value={{ currentUser, setCurrentUser }}>
         <Layout>
           <Outlet />
         </Layout>
-      </CurrentUserContext.Provider>
+        </CurrentUserContext.Provider>
+
     </Document>
   )
 }

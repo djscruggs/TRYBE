@@ -31,6 +31,7 @@ export function FormField ({
   required = false,
   autoComplete = '',
   autoFocus = false,
+  autoResize = false,
   cols = 30,
   rows = 10
 
@@ -46,10 +47,16 @@ export function FormField ({
   }
   const textRef = useRef<HTMLTextAreaElement>(null)
   useEffect(() => {
-    if (textRef.current) {
+    if (textRef.current && autoResize) {
       textRef.current.style.height = `${rows * 2}rem`
-      const scrollHeight = textRef.current.scrollHeight
-      textRef.current.style.height = scrollHeight + 'px'
+      let scrollHeight = textRef.current.scrollHeight
+      if (scrollHeight > 10) {
+        if (scrollHeight > 800) {
+          scrollHeight = 800
+        }
+        console.log(scrollHeight)
+        textRef.current.style.height = scrollHeight + 'px'
+      }
     }
   }, [value])
   return <>

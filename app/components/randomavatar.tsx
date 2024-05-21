@@ -1,14 +1,14 @@
-import { Avatar } from "@material-tailwind/react";
+import { Avatar } from '@material-tailwind/react'
 import { CurrentUserContext } from '../utils/CurrentUserContext'
 
-type UserAvatarProps = {
+interface UserAvatarProps {
   variant?: string
   size?: string
   color?: string
   className?: string
   withBorder?: boolean
 }
-const RandomAvatar = ({ variant='circular', size='md', color='gray', className='', withBorder=false }: UserAvatarProps) => {
+const RandomAvatar = ({ variant = 'circular', size = 'md', color = 'gray', className = '', withBorder = false }: UserAvatarProps) => {
   const images = [
     'dj',
     'jigarr',
@@ -17,17 +17,18 @@ const RandomAvatar = ({ variant='circular', size='md', color='gray', className='
     'rocco',
     'tameem'
   ]
-  const randomIndex = Math.floor(Math.random() * images.length);
-  const chosen = '/avatars/' + images[randomIndex] + '.jpeg';
-  return(
-    <Avatar 
-      src={chosen} 
-      className={className} 
+  // const randomIndex = Math.floor(Math.random() * images.length);
+  const randomIndex = 1
+  const chosen = '/avatars/' + images[randomIndex] + '.jpeg'
+  return (
+    <Avatar
+      src={chosen}
+      className={className}
       variant={variant}
-      size={size} 
+      size={size}
       color={color}
-      withBorder={withBorder} 
+      withBorder={withBorder}
     />
-  )  
+  )
 }
-export default RandomAvatar;
+export default RandomAvatar

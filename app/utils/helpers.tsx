@@ -152,7 +152,8 @@ export function convertlineTextToJSX (text: string | undefined): React.ReactNode
     </div>
   )
 }
-export function textToHtml (text): string {
+export function textToHtml (text: string): string {
+  if (!text) return ''
   return text.split('\n').map(line => `<p style="margin-bottom:.5em">${line}</p>`).join('').replace(/\n|\r/g, '')
 }
 

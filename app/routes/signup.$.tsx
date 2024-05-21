@@ -6,7 +6,7 @@ import {
   SignUp,
   SignedIn,
   SignedOut
-} from '@clerk/clerk-react'
+} from '@clerk/remix'
 
 export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
   // const { userId } = await getAuth(args)
@@ -18,13 +18,6 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
 export default function SignUpPage (): JSX.Element {
   return (
     <div className="h-full w-screen justify-center items-center flex flex-col gap-y-4">
-      <SignedIn>
-        <div className='absolute top-40 '>
-        <h1>You are signed in!</h1>
-        <Link to="/home"><Button className="bg-red">Go to Home Page</Button></Link>
-        </div>
-      </SignedIn>
-      <SignedOut>
         <SignUp
         appearance={{
           variables: {
@@ -37,7 +30,7 @@ export default function SignUpPage (): JSX.Element {
           }
         }}
         />
-      </SignedOut>
+
     </div>
   )
 }

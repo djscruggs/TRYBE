@@ -5,7 +5,7 @@ import {
   SignIn,
   SignedIn,
   SignedOut
-} from '@clerk/clerk-react'
+} from '@clerk/remix'
 import { getAuth } from '@clerk/remix/ssr.server'
 
 export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
@@ -17,14 +17,7 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
 export default function SignInPage (): JSX.Element {
   return (
     <div className="justify-center items-center flex flex-col gap-y-4 w-screen h-screen relative">
-      <SignedIn>
-        <div className='absolute top-40 '>
-        <h1>You are signed in!</h1>
-        <Link to="/home"><Button className="bg-red">Go to Home Page</Button></Link>
-        </div>
-      </SignedIn>
-      <SignedOut>
-        <SignIn
+      <SignIn
         appearance={{
           elements: {
             formButtonPrimary:
@@ -32,7 +25,6 @@ export default function SignInPage (): JSX.Element {
           }
         }}
         />
-      </SignedOut>
     </div>
   )
 }

@@ -26,7 +26,7 @@
     "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
   },
   "dependencies": {
-    "@clerk/remix": "^4.0.0-beta.34",
+    "@clerk/remix": "^4.0.10",
     "@emotion/cache": "latest",
     "@emotion/react": "^11.11.3",
     "@emotion/server": "latest",
