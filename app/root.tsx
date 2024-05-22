@@ -41,6 +41,14 @@ export const meta: MetaFunction = () => {
     { viewport: 'width=device-width,initial-scale=1' }
   ]
 }
+export interface RootLoaderData {
+  ENV: {
+    CLERK_PUBLISHABLE_KEY: string
+    NODE_ENV: string
+  }
+  user: CurrentUser | null
+  auth: typeof rootAuthLoader
+}
 export const loader: LoaderFunction = async args => {
   const userLocale = getUserLocale()
   const ENV = {

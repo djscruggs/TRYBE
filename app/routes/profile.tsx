@@ -11,7 +11,7 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
 
 export default function Profile (): JSX.Element {
   return (
-    <div className='h-screen items-center justify-start pt-12 md:h-full md:justify-start md:pt-0 md:flex'>
+    <div className='h-screen items-center md:items-start justify-start md:h-full md:justify-start md:pt-10 md:flex'>
       <UserProfile
         appearance={{
           variables: {

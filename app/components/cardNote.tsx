@@ -165,16 +165,16 @@ export default function CardNote (props: CardNoteProps): JSX.Element {
       {(!isReplyTo && !addReply && !isQuote) &&
       <>
         <hr />
-        <div className="grid grid-cols-3 text-center py-2 cursor-pointer">
-          <div className="flex justify-center items-center">
+        <div className="grid grid-cols-2 text-center py-2 cursor-pointer">
+          {/* <div className="flex justify-center items-center">
           {!isThread &&
-          <Link to={`/notes/${note.id}`}>
-            <FaRegComment className="text-grey mr-1 inline" />
-            <span className="text-xs">{note._count?.replies} replies</span>
+            <Link to={`/notes/${note.id}`}>
+              <FaRegComment className="text-grey mr-1 inline" />
+              <span className="text-xs">{note._count?.replies} replies</span>
             </Link>
 
           }
-          </div>
+          </div> */}
           <div className="flex justify-center items-center cursor-pointer">
 
           <div className='mr-2'><Liker isLiked={Boolean(hasLiked)} itemId={Number(note.id)} itemType='note' count={Number(note._count?.likes)}/></div>

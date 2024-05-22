@@ -42,7 +42,10 @@ export const loader: LoaderFunction = async (args): Promise<FeedLoaderData> => {
     orderBy: [{ createdAt: 'desc' }],
     where: {
       isThread: false,
-      replyTo: null
+      AND: [
+        { replyTo: null },
+        { isShare: false }
+      ]
     },
     include: {
       user: {
@@ -103,7 +106,6 @@ export const loader: LoaderFunction = async (args): Promise<FeedLoaderData> => {
     ..._memberships.map(membership => membership.challengeId),
     ...challenges.filter(challenge => challenge.userId === currentUser?.id).map(challenge => challenge.id)
   ]
-
   return { challenges, notes, memberships }
 }
 interface FeedItem {
@@ -132,9 +134,9 @@ export default function Home (): JSX.Element {
     return <p>Loading...</p>
   }
   return (
-         <>
-            <div className='w-full max-w-2xl px-2 mb-4'>
-               <div className="flex items-center pl-0 mt-10 max-w-lg">
+          <div className='flex-cols cols-1 justify-center max-w-xl'>
+            <div className='w-full flex items-center max-w-2xl px-2 mt-8 mb-4'>
+            <div className='flex items-center justify-center max-w-xl'>
                   <div className="flex-grow-0 justify-self-start">
                      <UserAvatar size={isMobile ? 'md' : 'xxl'} />
                   </div>
@@ -147,21 +149,23 @@ export default function Home (): JSX.Element {
 
             </div>
             {currentUser &&
-              <div className="w-full pl-2 max-w-lg">
+              <div className="w-full flex items-center pl-2 max-w-lg">
                 <FormNote afterSave={onSaveNote} />
               </div>
             }
+
             {feedItems.map(item => {
               if ('mission' in item) {
-                return (<div className="flex items-center pl-0 mt-10 w-full max-w-lg" key={`challenge-${item.id}`}>
-                          <CardChallenge challenge={item as ChallengeSummary} isMember={memberships.includes(item.id)} />
+                return (<div className="pl-0 mt-4 w-full max-w-lg" key={`challenge-${item.id}`}>
+                          <CardChallenge challenge={item as unknown as ChallengeSummary} isMember={memberships.includes(item.id)} />
                         </div>)
               } else {
-                return (<div className=" pl-0 mt-10 w-full max-w-lg" key={`note-${item.id}`}>
+                return (<div className=" pl-0 mt-4 w-full max-w-lg" key={`note-${item.id}`}>
                           <CardNote note={item} />
                         </div>)
               }
             })}
-         </>
+
+          </div>
   )
 }
