@@ -108,14 +108,10 @@ function App (): JSX.Element {
   }, [user])
   return (
     <Document>
-
         <Toaster position='top-center' />
         <CurrentUserContext.Provider value={{ currentUser, setCurrentUser }}>
-        <Layout>
-          <Outlet />
-        </Layout>
+          <Layout />
         </CurrentUserContext.Provider>
-
     </Document>
   )
 }

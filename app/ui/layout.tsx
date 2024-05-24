@@ -30,13 +30,7 @@ export default function Layout (): JSX.Element {
   return (
     <>
 
-      <ClientOnly >
-        {/* Rendering clerk in ClientOnly requires a function
-          @see https://remix.run/resources/remix-utils#clientonly
-         */}
-        {() => <ClerkAndLayout />}
-
-      </ClientOnly>
+      <FullLayout />
 
     </>
   )
@@ -64,7 +58,6 @@ export const FullLayout = (): JSX.Element => {
   const location = useLocation()
   const navigate = useNavigate()
   const navigation = useNavigation()
-  console.log('navigation', navigation.state)
   const [newOpen, setNewOpen] = useState(false)
   // hack to remove padding on welcome screen mobile
   // hide nav if on index, login or register
