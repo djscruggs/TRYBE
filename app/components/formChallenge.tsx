@@ -319,7 +319,7 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
                 <div className="relative max-w-[400px]">
                   <FormField
                     name='description'
-                    placeholder='Develop a new habit, eat healthy and lower your carbon footprint'
+                    placeholder='Eat vegetarian every day for two weeks. Check in daily to stay on track.'
                     required={true}
                     type="textarea"
                     rows={3}
@@ -332,7 +332,7 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
                 <div className="max-w-[400px] relative">
                   <FormField
                     name='mission'
-                    placeholder='Eat vegetarian every day for two weeks. Check in daily to stay on track.'
+                    placeholder='Develop a new habit, eat healthy and lower your carbon footprint'
                     required={true}
                     type="textarea"
                     rows={4}
