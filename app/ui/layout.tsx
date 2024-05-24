@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { ClientOnly } from 'remix-utils/client-only'
-import { ClerkProvider, UserButton } from '@clerk/clerk-react'
+import { SignedIn, SignedOut, UserButton } from '@clerk/remix'
 import useHasLoaded from '../utils/useHasLoaded'
 import { useLocation, Outlet, useNavigate, Link, useNavigation, useLoaderData } from '@remix-run/react'
 
@@ -27,9 +26,9 @@ export default function Layout (): JSX.Element {
   if (!hasLoaded) {
     return <Loading />
   }
+  console.log('loading')
   return (
     <>
-
       <FullLayout />
 
     </>
@@ -45,6 +44,7 @@ function Loading (): JSX.Element {
   )
 }
 function ClerkAndLayout (): JSX.Element {
+  console.log(data.ENV.CLERK_PUBLISHABLE_KEY)
   const data = useLoaderData() as RootLoaderData
   return (
         <ClerkProvider publishableKey={data.ENV.CLERK_PUBLISHABLE_KEY} signInUrl='/signin'>
@@ -55,6 +55,7 @@ function ClerkAndLayout (): JSX.Element {
 
 export const FullLayout = (): JSX.Element => {
   const { currentUser } = useContext(CurrentUserContext)
+  console.log('full layout')
   const location = useLocation()
   const navigate = useNavigate()
   const navigation = useNavigation()
@@ -118,7 +119,7 @@ export const FullLayout = (): JSX.Element => {
                 </div>
               </div>
             }
-            { currentUser &&
+            <SignedIn>
               <div className={`flex-grow pt-4 ${currentUser ?? location.pathname !== '/' ? 'ml-20' : 'ml-0'}`}>
 
                   <div className='absolute right-0 mr-4'>
@@ -131,15 +132,15 @@ export const FullLayout = (): JSX.Element => {
                   </div>
                   <Outlet />
               </div>
-            }
-            {!currentUser &&
+            </SignedIn>
+            <SignedOut>
               <div className='flex-grow  items-center justify-center'>
                 <div className='flex flex-col items-center justify-center h-full'>
 
                   <Outlet />
                 </div>
               </div>
-            }
+            </SignedOut>
           </div>
           <div className={`bg-red w-screen sticky bottom-0 max-h-8 text-xs transition-opacity duration-500 ${wrapperVisible ? 'opacity-100' : 'opacity-0'}`}>
             <div className='flex w-screen flex-row justify-center items-center pt-1 pb-2'>
