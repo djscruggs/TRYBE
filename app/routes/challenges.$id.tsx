@@ -4,7 +4,7 @@ import { loadThreadSummary } from '~/models/thread.server'
 import { Outlet, useLoaderData, Link, useNavigate, useLocation } from '@remix-run/react'
 import React, { useContext, useState } from 'react'
 import { requireCurrentUser } from '../models/auth.server'
-import type { MemberChallenge, ChallengeSummary, PostSummary, NoteSummary } from '~/utils/types'
+import type { MemberChallenge, ChallengeSummary, PostSummary, NoteSummary, ThreadSummary } from '~/utils/types'
 import { type LoaderFunction, type LoaderFunctionArgs } from '@remix-run/node'
 import axios from 'axios'
 import { toast } from 'react-hot-toast'
@@ -31,8 +31,10 @@ import { userLocale } from '../utils/helpers'
 interface ViewChallengeData {
   challenge: ChallengeSummary
   latestPost: PostSummary | null
-  latestThread: NoteSummary | null
+  latestThread: ThreadSummary | null
   hasLiked?: boolean
+  hasLikedPost?: boolean
+  hasLikedThread?: boolean
   membership?: MemberChallenge | null | undefined
   checkInsCount?: number
   isMember?: boolean
@@ -95,6 +97,7 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
   }
   // load most recent post
   let latestPost = null
+  let hasLikedPost = false
   const _post = await prisma.post.findFirst({
     where: {
       challengeId: Number(params.id),
@@ -117,8 +120,15 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
   })
   if (_post) {
     latestPost = await loadPostSummary(_post.id) as unknown as PostSummary
+    hasLikedPost = await prisma.like.count({
+      where: {
+        postId: Number(_post.id),
+        userId: Number(currentUser?.id)
+      }
+    })
   }
   let latestThread = null
+  let hasLikedThread = false
   const _thread = await prisma.thread.findFirst({
     where: {
       challengeId: Number(params.id)
@@ -135,16 +145,22 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
     }
   })
   if (_thread) {
-    latestThread = await loadThreadSummary(_thread.id) as NoteSummary
+    latestThread = await loadThreadSummary(_thread.id) as unknown as ThreadSummary
+    hasLikedThread = await prisma.like.count({
+      where: {
+        threadId: Number(_thread.id),
+        userId: Number(currentUser?.id)
+      }
+    })
   }
 
   const locale = getUserLocale()
-  const data: ViewChallengeData = { challenge: result, membership, hasLiked: Boolean(likes), checkInsCount, locale, latestPost, latestThread }
+  const data: ViewChallengeData = { challenge: result, membership, hasLiked: Boolean(likes), hasLikedPost, hasLikedThread, checkInsCount, locale, latestPost, latestThread }
   return data
 }
 export default function ViewChallenge (): JSX.Element {
   const data: ViewChallengeData = useLoaderData()
-  const { challenge, hasLiked, latestPost, latestThread } = data
+  const { challenge, hasLiked, hasLikedPost, hasLikedThread, latestPost, latestThread } = data
   console.log(latestThread)
   const [membership, setMembership] = useState(data.membership)
 
@@ -405,7 +421,7 @@ export default function ViewChallenge (): JSX.Element {
           Latest Update
           <span className='float-right'><Link className='underline text-blue' to={`/posts/challenge/${challenge?.id}`}>View All</Link></span>
         </h2>
-        <CardPost post={latestPost} fullPost={false} />
+        <CardPost post={latestPost} fullPost={false} hasLiked={hasLikedPost}/>
 
       </div>
       }
@@ -415,7 +431,7 @@ export default function ViewChallenge (): JSX.Element {
           Latest Discussion
           <span className='float-right'><Link className='underline text-blue' to={`/notes/${latestThread?.id}`}>View All</Link></span>
         </h2>
-        <CardThread thread={latestThread}/>
+        <CardThread thread={latestThread} hasLiked={hasLikedThread}/>
 
       </div>
       }
