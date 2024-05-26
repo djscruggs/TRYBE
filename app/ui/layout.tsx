@@ -55,7 +55,6 @@ function ClerkAndLayout (): JSX.Element {
 
 export const FullLayout = (): JSX.Element => {
   const { currentUser } = useContext(CurrentUserContext)
-  console.log('full layout')
   const location = useLocation()
   const navigate = useNavigate()
   const navigation = useNavigation()

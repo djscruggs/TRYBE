@@ -6,7 +6,7 @@ import {
 import { GiShinyApple } from 'react-icons/gi'
 import { FaRegComment, FaRegCalendarAlt, FaUserFriends, FaRegHeart } from 'react-icons/fa'
 import { type ChallengeSummary } from '../utils/types'
-import { colorToClassName, textColorFromContainer, getIconOptionsForColor, buttonColorFromContainer } from '~/utils/helpers'
+import { colorToClassName, textColorFromContainer, getIconOptionsForColor, buttonColorFromContainer, resizeImageToFit } from '~/utils/helpers'
 import { CurrentUserContext } from '../utils/CurrentUserContext'
 import { Link, useNavigate } from '@remix-run/react'
 import { differenceInCalendarDays } from 'date-fns'
@@ -34,6 +34,7 @@ export default function CardChallenge ({ challenge, isShare, isMember }: CardCha
       navigate('/signup')
     }
   }
+  const [imgWidth, imgHeight] = resizeImageToFit(challenge.coverPhotoMeta?.width as number, challenge.coverPhotoMeta?.height as number, 300)
   const howLongToStart = (): string => {
     if (!challenge.startAt) {
       return ''
@@ -74,7 +75,7 @@ export default function CardChallenge ({ challenge, isShare, isMember }: CardCha
               </div>
               <div className="flex flex-col items-center col-span-2">
 
-                {challenge.coverPhotoMeta?.secure_url as string && <img src={challenge.coverPhotoMeta?.secure_url as string} alt={`${challenge?.name} cover photo`} className="w-full rounded-md" />}
+                {challenge.coverPhotoMeta?.secure_url as string && <img src={challenge.coverPhotoMeta?.secure_url as string} alt={`${challenge?.name} cover photo`} width={imgWidth} height={imgHeight} className={`max-w-[${imgWidth}px] max-h-[${imgHeight}px]`} />}
                 <Button onClick={goToChallenge} className={`bg-${buttonColor} text-${buttonTextColor} p-3 py-2 rounded-full mt-3`}>{isMember ? 'Check In' : 'Sign up!'}</Button>
               </div>
             </div>

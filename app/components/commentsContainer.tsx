@@ -1,9 +1,10 @@
 import CommentItem from './commentItem'
+import { useEffect } from 'react'
 import type { Comment } from '~/utils/types'
 
 interface CommentsProps {
   comments: Comment[]
-  firstComment: Comment | null
+  firstComment?: Comment | null
   isReply: boolean
   likedCommentIds: number[]
 }

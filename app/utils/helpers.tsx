@@ -139,6 +139,26 @@ export function iconToJsx (icon: string, color: string): React.ReactNode {
   return <div className={iconStyle(color)}>{toUse}</div>
 }
 
+export function resizeImageToFit (width: number, height: number, maxSize: number = 300): number[] {
+  let newWidth: number, newHeight: number
+
+  if (width <= maxSize && height <= maxSize) {
+    // If both dimensions are already within the maximum size, return them unchanged.
+    newWidth = width
+    newHeight = height
+  } else {
+    // Calculate new dimensions maintaining the aspect ratio.
+    if (width > height) {
+      newWidth = maxSize
+      newHeight = Math.floor((height / width) * maxSize)
+    } else {
+      newHeight = maxSize
+      newWidth = Math.floor((width / height) * maxSize)
+    }
+  }
+
+  return [newWidth, newHeight]
+}
 export function convertlineTextToJSX (text: string | undefined): React.ReactNode {
   if (!text) return null
   return (

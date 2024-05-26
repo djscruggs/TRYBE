@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useState, useEffect } from 'react'
 import { Spinner, Card } from '@material-tailwind/react'
 import AvatarLoader from './avatarLoader'
 import type { ThreadSummary, Thread } from '../utils/types'
@@ -7,7 +7,6 @@ import { CurrentUserContext } from '../utils/CurrentUserContext'
 import { Link, useNavigate, useLocation } from '@remix-run/react'
 import { Lightbox } from 'react-modal-image'
 import { toast } from 'react-hot-toast'
-import FormComment from './formComment'
 import FormThread from './formThread'
 import axios from 'axios'
 import { useRevalidator } from 'react-router-dom'
@@ -29,10 +28,12 @@ export default function CardThread (props: CardThreadProps): JSX.Element {
   const [editing, setEditing] = useState(false)
   const location = useLocation()
   const isOwnRoute = location.pathname === `/threads/${thread.id}`
-  const [addComment, setAddComment] = useState(false)
   const revalidator = useRevalidator()
   const navigate = useNavigate()
   const [deleteDialog, setDeleteDialog] = useState(false)
+  useEffect(() => {
+    setThread(props.thread)
+  }, [props.thread])
   const goToThread = (event: any): void => {
     event.preventDefault()
     event.stopPropagation()
@@ -77,13 +78,6 @@ export default function CardThread (props: CardThreadProps): JSX.Element {
   const afterSave = (thread: ThreadSummary): void => {
     setThread(thread)
     setEditing(false)
-    setAddComment(false)
-  }
-  const afterCommentSave = (comment: Comment): void => {
-    console.log('afterCommentSave', comment)
-    // setThread(thread)
-    // setEditing(false)
-    // setAddComment(false)
   }
   const getFullUrl = (): string => {
     return `${window.location.origin}/threads/${thread.id}`
@@ -124,13 +118,17 @@ export default function CardThread (props: CardThreadProps): JSX.Element {
       </div>
 
       <hr />
-        <div className="grid grid-cols-3 text-center py-2 cursor-pointer">
-          <div className="flex justify-center items-center">
-          <Link to={`/threads/${thread.id}`}>
-            <FaRegComment className="text-grey mr-1 inline" />
-            <span className="text-xs">{thread.commentCount} comments</span>
-            </Link>
-          </div>
+        <div className={`grid ${isOwnRoute ? 'grid-cols-2' : 'grid-cols-3'} text-center py-2 cursor-pointer`}>
+
+          {!isOwnRoute &&
+            <div className="flex justify-center items-center">
+              <Link to={`/threads/${thread.id}`}>
+                <FaRegComment className="text-grey mr-1 inline" />
+                <span className="text-xs">{thread.commentCount} comments</span>
+              </Link>
+            </div>
+          }
+
           <div className="flex justify-center items-center cursor-pointer">
             <div className='mr-2'>
               <Liker isLiked={Boolean(hasLiked)} itemId={Number(thread.id)} itemType='thread' count={Number(thread.likeCount ?? 0)}/>
@@ -143,11 +141,7 @@ export default function CardThread (props: CardThreadProps): JSX.Element {
       </div>
     }
     {(thread.imageMeta?.secure_url && showLightbox) && <Lightbox medium={thread.imageMeta?.secure_url} large={thread.imageMeta?.secure_url} alt="thread photo" onClose={() => { setShowLightbox(false) }}/>}
-    {currentUser && addComment &&
-        <div className='mt-2 w-full border-0  drop-shadow-none mr-2'>
-          <FormComment threadId={thread.id} afterSave={afterCommentSave} onCancel={() => { setAddComment(false) }} prompt='Add your response' />
-        </div>
-      }
+
     </>
   )
 }
