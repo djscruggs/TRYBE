@@ -147,7 +147,7 @@ export default function FormComment (props: FormCommentProps): JSX.Element {
         <Avatar src={currentUser.profile.profileImage} className='mr-2' size='sm'/>
       }
       </div>
-      <div className='w-full'>
+      <div className='w-full ml-4'>
       <Form method="post" onSubmit={handleSubmit}>
       <FormField
           name='comment'
