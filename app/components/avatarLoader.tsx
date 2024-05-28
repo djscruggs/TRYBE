@@ -32,8 +32,7 @@ export default function AvatarLoader ({ object, marginClass = '', clickable = fa
 
     </div>
   }
-
-  const avatarImg = profile?.profileImage ? `${profile.profileImage}?${Date.now()}` : ''
+  const avatarImg = profile?.profileImage ? profile.profileImage : ''
   if (avatarImg) {
     if (clickable) {
       return <Link to={`/members/${object.userId}`}><Avatar src={avatarImg} className={`w-12 h-12 ${marginClass}`}/></Link>
