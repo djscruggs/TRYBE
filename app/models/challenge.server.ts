@@ -225,13 +225,10 @@ export const joinChallenge = async (userId: number, challengeId: number): Promis
     }
   })
 }
-export const unjoinChallenge = async (userId: number, challengeId: number): Promise<any> => {
+export const unjoinChallenge = async (id: number): Promise<any> => {
   return await prisma.memberChallenge.delete({
     where: {
-      challengeId_userId: {
-        userId,
-        challengeId
-      }
+      id
     }
   })
 }

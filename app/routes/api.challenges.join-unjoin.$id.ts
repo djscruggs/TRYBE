@@ -14,9 +14,9 @@ export async function action (args: ActionFunctionArgs): Promise<prisma.challeng
   }
   const { params } = args
   const user = await loadUser(currentUser.id)
-  if (user.memberChallenges.filter((c: MemberChallenge) => c.challengeId === Number(params.id)).length > 0) {
-    const result = await unjoinChallenge(Number(user.id), Number(params.id))
-    console.log('unjoined', result)
+  const memberChallenge = user.memberChallenges.find((c: MemberChallenge) => c.challengeId === Number(params.id))
+  if (memberChallenge) {
+    const result = await unjoinChallenge(memberChallenge.id as number)
     return {
       result: 'unjoined',
       data: result
