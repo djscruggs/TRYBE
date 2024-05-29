@@ -25,7 +25,8 @@ export default function CardChallenge ({ challenge, isShare, isMember }: CardCha
   const bgColor = colorToClassName(challenge.color ?? '', 'red')
   const buttonColor = buttonColorFromContainer(bgColor, 'white')
   const buttonTextColor = textColorFromContainer(buttonColor, 'red')
-  const goToChallenge = (): void => {
+  const goToChallenge = (event: React.MouseEvent<HTMLDivElement>): void => {
+    event.stopPropagation()
     const url = `/challenges/${challenge.id}`
     if (currentUser) {
       navigate(url)
