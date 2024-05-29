@@ -116,7 +116,7 @@ export default function CardNote (props: CardNoteProps): JSX.Element {
         }
       </>
       : <div className={'mt-2 w-full border-0  drop-shadow-none mr-2'}>
-      <div className={`drop-shadow-none ${!isOwnRoute ? 'cursor-pointer' : ''}`} onClick={goToNote}>
+      <div className='drop-shadow-none'>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Card className={'md:col-span-2 p-2 border-1 drop-shadow-lg  border border-gray rounded-md'}>
             <div className="flex items-start">
@@ -177,11 +177,11 @@ export default function CardNote (props: CardNoteProps): JSX.Element {
           </div> */}
           <div className="flex justify-center items-center cursor-pointer">
 
-          <div className='mr-2'><Liker isLiked={Boolean(hasLiked)} itemId={Number(note.id)} itemType='note' count={Number(note._count?.likes)}/></div>
+          {/* <div className='mr-2'><Liker isLiked={Boolean(hasLiked)} itemId={Number(note.id)} itemType='note' count={Number(note._count?.likes)}/></div> */}
           </div>
-          <div className="flex justify-center items-center cursor-pointer">
+          {/* <div className="flex justify-center items-center cursor-pointer">
             <ShareMenu copyUrl={getFullUrl()} itemType='note' itemId={Number(note.id)}/>
-          </div>
+          </div> */}
         </div>
       </>
       }
