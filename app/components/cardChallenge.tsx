@@ -20,6 +20,10 @@ interface CardChallengeProps {
 
 export default function CardChallenge ({ challenge, isShare, isMember }: CardChallengeProps): JSX.Element {
   const { currentUser } = useContext(CurrentUserContext)
+  // in some chases isMember is undefined but a members array is included; check to see if the currentUser is in the members array
+  if (isMember === undefined) {
+    isMember = challenge?.members?.some(member => member.userId === currentUser?.id)
+  }
   const navigate = useNavigate()
   const textColor = textColorFromContainer(challenge.color ?? '', 'white')
   const bgColor = colorToClassName(challenge.color ?? '', 'red')

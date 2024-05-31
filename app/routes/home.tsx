@@ -68,6 +68,22 @@ export const loader: LoaderFunction = async (args): Promise<FeedLoaderData> => {
             include: {
               profile: true
             }
+          },
+          members: {
+            include: {
+              user: true
+            },
+            where: {
+              userId: currentUser?.id ?? 0
+            }
+          },
+          likes: {
+            where: {
+              userId: currentUser?.id ?? 0
+            }
+          },
+          _count: {
+            select: { members: true, comments: true, likes: true }
           }
         }
       },

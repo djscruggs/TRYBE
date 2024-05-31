@@ -131,6 +131,9 @@ export interface ChallengeSummary extends Challenge {
     comments: number
   }
   isMember: boolean
+  members?: Array<{
+    userId: number
+  }>
 }
 
 export interface MemberChallenge {
