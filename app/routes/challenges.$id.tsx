@@ -291,20 +291,21 @@ export default function ViewChallenge (): JSX.Element {
 
   return (
     <div className='flex flex-col'>
-    <div className={`max-w-sm md:max-w-md lg:max-w-lg border border-transparent border-b-inherit rounded-md bg-gradient-to-b from-${color} to-90%`}>
-      <div className={`mb-2 ${challenge.coverPhoto ? '' : 'mt-0.5'} flex justify-center max-h-80`}>
-          {challenge.coverPhoto && <img src={`${challenge.coverPhoto}?${Date.now()}`} alt={`${challenge?.name} cover photo`} className="w-full rounded-sm" />}
+    <div className={`max-w-sm md:max-w-md lg:max-w-lg border border-transparent border-b-inherit rounded-md ${!challenge.coverPhoto ? `bg-gradient-to-b from-${color} to-90%` : ''}`}>
+      <div className={`${challenge.coverPhoto ? '' : 'mt-0.5 mb-2'} flex justify-center max-h-90`}>
+          {challenge.coverPhoto && <img src={`${challenge.coverPhoto}?${Date.now()}`} alt={`${challenge?.name} cover photo`} className="rounded-tl-md rounded-tr-md max-w-full h-auto object-cover" />}
       </div>
-      <div className="mb-6 px-4 flex flex-col justify-center">
-      {challenge.icon && <div className="mb-2 flex justify-center">{iconOptions[challenge.icon]}</div>}
-        <h1 className='flex justify-center text-2xl'>{challenge.name}</h1>
-        {challenge.userId === currentUser?.id && (
-          <div className="flex justify-center mt-2">
-            <Link className='underline text-red' to = {`/challenges/${challenge.id as string | number}/edit`}>edit</Link>&nbsp;&nbsp;
-            <Link className='underline text-red' onClick={handleDeleteDialog} to = {`/challenges/edit/${challenge.id as string | number}`}>delete</Link>&nbsp;&nbsp;
-          </div>
-        )}
-      </div>
+      <div className={`mb-6 px-4 flex flex-col justify-center bg-gradient-to-b from-${color} to-90%`}>
+        <div>
+        {challenge.icon && <div className="mb-2 flex justify-center">{iconOptions[challenge.icon]}</div>}
+          <h1 className='flex justify-center text-2xl'>{challenge.name}</h1>
+          {challenge.userId === currentUser?.id && (
+            <div className="flex justify-center mt-2">
+              <Link className='underline text-red' to = {`/challenges/${challenge.id as string | number}/edit`}>edit</Link>&nbsp;&nbsp;
+              <Link className='underline text-red' onClick={handleDeleteDialog} to = {`/challenges/edit/${challenge.id as string | number}`}>delete</Link>&nbsp;&nbsp;
+            </div>
+          )}
+        </div>
       {deleteDialog && <DialogDelete prompt='Are you sure you want to delete this challenge?' isOpen={deleteDialog} deleteCallback={handleDelete} onCancel={cancelDialog}/>}
       <div className='p-4'>
         <div className="mb-2 text-sm">
@@ -329,7 +330,7 @@ export default function ViewChallenge (): JSX.Element {
         </div>
 
       </div>
-
+      </div>
     </div>
     <div className="max-w-sm md:max-w-md lg:max-w-lg pt-4">
     {!isComments && challenge?.userId === currentUser?.id && (

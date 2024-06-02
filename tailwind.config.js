@@ -19,7 +19,7 @@ module.exports = withMT({
         black: colors.black,
         red: '#EC5F5C',
         darkgrey: '#5F5F5F',
-        yellow: '#FDC94C',
+        yellow: '#F5C44E',
         blue: '#3295B7',
         grey: '#C4C4C4',
         salmon: '#EEAA94'
