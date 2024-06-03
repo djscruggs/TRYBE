@@ -62,22 +62,27 @@ export default function UserSpecificContent (): JSX.Element {
               <TabsHeader className='min-w-full' >
                 <Tab key='memberships' value='memberships' onClick={() => { handleTabChange('memberships') }}>
                   <div className='text-sm w-max'>
-                    <FaPeopleGroup className='text-2xl inline' /> Memberships
+                    <FaPeopleGroup className='text-2xl inline' />
+                    <div className='block md:inline md:ml-1'>Memberships</div>
                   </div>
                 </Tab>
                 <Tab key='challenges' value='challenges' className='text-sm' onClick={() => { handleTabChange('challenges') }}>
                   <div className='text-sm w-max'>
-                    <FaChartLine className='text-2xl inline' /> Challenges
+                    <FaChartLine className='text-2xl inline' />
+                    <div className='block md:inline md:ml-1'>Challenges</div>
                   </div>
                 </Tab>
                 <Tab key='notes' value='notes' className='text-sm' onClick={() => { handleTabChange('notes') }}>
                   <div className='text-sm w-max'>
-                    <LuStickyNote className='text-2xl inline' /> Notes
+                    <LuStickyNote className='text-2xl inline' />
+                    <div className='block md:inline md:ml-1'>Notes</div>
                   </div>
                 </Tab>
                 <Tab key='posts' value='posts' className='text-sm' onClick={() => { handleTabChange('posts') }}>
                   <div className='text-sm w-max'>
-                    <BsJournalBookmark className='text-2xl inline' /> Posts
+                    {/* for some reason this icon needs a tiny bit of margin-top to line up with the others */}
+                    <BsJournalBookmark className='text-2xl inline mt-0.5' />
+                    <div className='block md:inline md:ml-1'>Posts</div>
                   </div>
                 </Tab>
               </TabsHeader>

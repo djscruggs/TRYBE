@@ -1200,6 +1200,10 @@ video {
   height: 74px;
 }
 
+.h-auto {
+  height: auto;
+}
+
 .h-full {
   height: 100%;
 }
@@ -1213,20 +1217,12 @@ video {
   height: 100vh;
 }
 
-.h-auto {
-  height: auto;
-}
-
 .max-h-60 {
   max-height: 15rem;
 }
 
 .max-h-8 {
   max-height: 2rem;
-}
-
-.max-h-80 {
-  max-height: 20rem;
 }
 
 .max-h-96 {
@@ -2787,10 +2783,6 @@ video {
 
 .to-90\% {
   --tw-gradient-to-position: 90%;
-}
-
-.to-100\% {
-  --tw-gradient-to-position: 100%;
 }
 
 .bg-clip-border {
@@ -6553,8 +6545,16 @@ video {
     margin-left: 1rem;
   }
 
+  .md\:ml-1 {
+    margin-left: 0.25rem;
+  }
+
   .md\:block {
     display: block;
+  }
+
+  .md\:inline {
+    display: inline;
   }
 
   .md\:flex {
