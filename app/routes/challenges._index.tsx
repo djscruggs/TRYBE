@@ -42,7 +42,7 @@ export default function ChallengesIndex (): JSX.Element {
               Challenges
             </h1>
             <div className="w-full">
-              <p className="border border-red rounded-md p-4 bg-yellow">We celebrate the power of challenges to help focus, structure and kickstart our growth. When you don't have to do the heavy lifting of planning, scheduling and tracking, you can focus on just showing up, and that's where the magic and self-discovery unfolds!</p>
+              <p className=" rounded-md p-4 bg-yellow">View your current challenges, browse upcoming challenges, or start your own!</p>
               {currentUser && <Button placeholder='Create a Challenge' size="sm" onClick={() => { navigate('./new') }} className="bg-red mb-4 mt-4">Create a Challenge</Button>}
               {challenges?.length > 0 &&
                 challenges.map((challenge: any) => (

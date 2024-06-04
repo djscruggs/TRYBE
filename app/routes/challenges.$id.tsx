@@ -348,11 +348,11 @@ export default function ViewChallenge (): JSX.Element {
     )}
       {challenge?.userId !== currentUser?.id && (
         <>
-          <button
+          <Button
               onClick={toggleJoin}
-              className={`mt-8 bg-${color} text-white rounded-md p-2 text-xs`}>
+              className={'mt-8 bg-red hover:bg-green-500 text-white rounded-md p-2 text-xs'}>
                 {isMember ? 'Leave Challenge' : 'Join this Challenge'}
-            </button>
+            </Button>
             {loading && <Spinner className="h-4 w-4 ml-1 inline" />}
         </>
       )}
