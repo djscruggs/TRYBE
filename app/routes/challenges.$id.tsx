@@ -8,7 +8,14 @@ import type { MemberChallenge, ChallengeSummary, PostSummary, NoteSummary, Threa
 import { type LoaderFunction, type LoaderFunctionArgs } from '@remix-run/node'
 import axios from 'axios'
 import { toast } from 'react-hot-toast'
-import { colorToClassName, convertlineTextToJSX, iconStyle } from '~/utils/helpers'
+import {
+  colorToClassName,
+  convertlineTextToJSX,
+  iconStyle,
+  userLocale,
+  separateTextAndLinks,
+  formatLinks
+} from '~/utils/helpers'
 import { type DateTimeFormatOptions } from 'intl'
 import { CurrentUserContext } from '../utils/CurrentUserContext'
 import { Spinner, Button } from '@material-tailwind/react'
@@ -26,7 +33,6 @@ import getUserLocale from 'get-user-locale'
 import Liker from '~/components/liker'
 import ShareMenu from '~/components/shareMenu'
 import DialogDelete from '~/components/dialogDelete'
-import { userLocale, separateTextAndLinks, formatLinks } from '../utils/helpers'
 
 interface ViewChallengeData {
   challenge: ChallengeSummary
