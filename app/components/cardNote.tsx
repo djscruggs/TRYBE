@@ -18,7 +18,7 @@ import FormNote from './formNote'
 import axios from 'axios'
 import { useRevalidator } from 'react-router-dom'
 import ShareMenu from './shareMenu'
-import { convertlineTextToJSX } from '~/utils/helpers'
+import { convertlineTextToJSX, separateTextAndLinks, formatLinks } from '~/utils/helpers'
 import Liker from './liker'
 import DialogDelete from './dialogDelete'
 
@@ -32,6 +32,7 @@ interface CardNoteProps {
 export default function CardNote (props: CardNoteProps): JSX.Element {
   const { currentUser } = useContext(CurrentUserContext)
   const { isReplyTo, hasLiked, isThread } = props
+  const parsedBody = separateTextAndLinks(props.note.body)
   const [note, setNote] = useState(props.note)
   const [showLightbox, setShowLightbox] = useState(false)
   const [editing, setEditing] = useState(false)
@@ -41,6 +42,7 @@ export default function CardNote (props: CardNoteProps): JSX.Element {
   const revalidator = useRevalidator()
   const navigate = useNavigate()
   const [deleteDialog, setDeleteDialog] = useState(false)
+  // I need a
   const goToNote = (event: any): void => {
     event.preventDefault()
     event.stopPropagation()
@@ -122,7 +124,13 @@ export default function CardNote (props: CardNoteProps): JSX.Element {
             <div className="flex items-start">
               <AvatarLoader object={note} marginClass='mr-4'/>
               <div className="flex flex-col w-full h-full">
-                {convertlineTextToJSX(note.body ?? '')}
+                {parsedBody?.text &&
+                  convertlineTextToJSX(parsedBody.text ?? '')
+                }
+                {parsedBody?.links &&
+                  formatLinks({ links: parsedBody.links, keyPrefix: `note-${note.id}` })
+                }
+
                 <div className='mt-4'>
                   {note.videoMeta?.secure_url && <video className="recorded" src={note.videoMeta.secure_url} onClick={(event) => { event?.stopPropagation() }} controls />}
                   {note.imageMeta?.secure_url && <img src={note.imageMeta.secure_url} alt="note picture" className="mt-4 cursor-pointer max-w-[200px]" onClick={handlePhotoClick} />}

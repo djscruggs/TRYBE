@@ -120,6 +120,38 @@ export function getIconOptionsForColor (color: string): Record<string, JSX.Eleme
   }
   return newIconOptions
 }
+interface SeparatedLinks {
+  text?: string
+  links?: string[]
+}
+
+export function separateTextAndLinks (text: string | null): SeparatedLinks | null {
+  if (!text) return null
+  const urlRegex = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig
+  const links = text.match(urlRegex) ?? []
+  const textWithoutLinks = text.replace(urlRegex, '').trim()
+
+  return {
+    links,
+    text: textWithoutLinks
+  }
+}
+interface LinksToFormat {
+  links: string[]
+  keyPrefix: string
+}
+export function formatLinks (props: LinksToFormat): JSX.Element[] {
+  const { links, keyPrefix } = props
+  if (!links || links.length === 0) return <></>
+  return links.map((link, index) => (
+      <div className='mt-4 text-blue' key={`${keyPrefix}-link-${index}`}>
+        <a href={link} target='_blank' rel='noreferrer'>
+          {link}
+        </a>
+      </div>
+  ))
+}
+
 export function iconToJsx (icon: string, color: string): React.ReactNode {
   const iconMap: Record<string, JSX.Element> = {
     GiShinyApple: <GiShinyApple className={iconStyle(color)} />,

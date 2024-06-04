@@ -1,4 +1,4 @@
-import { useContext, useState, useEffect, useRef } from 'react'
+import { useContext } from 'react'
 import {
   Card,
   Button
@@ -29,7 +29,7 @@ export default function CardChallenge ({ challenge, isShare, isMember }: CardCha
   const bgColor = colorToClassName(challenge.color ?? '', 'red')
   const buttonColor = buttonColorFromContainer(bgColor, 'white')
   const buttonTextColor = textColorFromContainer(buttonColor, 'red')
-  const goToChallenge = (event: React.MouseEvent<HTMLDivElement>): void => {
+  const goToChallenge = (event: any): void => {
     event.stopPropagation()
     const url = `/challenges/${challenge.id}`
     if (currentUser) {

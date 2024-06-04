@@ -26,7 +26,7 @@ import getUserLocale from 'get-user-locale'
 import Liker from '~/components/liker'
 import ShareMenu from '~/components/shareMenu'
 import DialogDelete from '~/components/dialogDelete'
-import { userLocale } from '../utils/helpers'
+import { userLocale, separateTextAndLinks, formatLinks } from '../utils/helpers'
 
 interface ViewChallengeData {
   challenge: ChallengeSummary
@@ -55,7 +55,6 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
   if (!params.id) {
     return null
   }
-  console.log('loading challenge with params', params)
   const result: ChallengeSummaryWithCounts | undefined = await loadChallengeSummary(params.id)
   if (!result) {
     const error = { loadingError: 'Challenge not found' }
@@ -161,6 +160,7 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
 export default function ViewChallenge (): JSX.Element {
   const data: ViewChallengeData = useLoaderData()
   const { challenge, hasLiked, hasLikedPost, hasLikedThread, latestPost, latestThread } = data
+  const parsedDescription = separateTextAndLinks(challenge.description ?? '')
   console.log(latestThread)
   const [membership, setMembership] = useState(data.membership)
 
@@ -309,12 +309,17 @@ export default function ViewChallenge (): JSX.Element {
       {deleteDialog && <DialogDelete prompt='Are you sure you want to delete this challenge?' isOpen={deleteDialog} deleteCallback={handleDelete} onCancel={cancelDialog}/>}
       <div className='p-4'>
         <div className="mb-2 text-sm">
-          {new Date(challenge.startAt).toLocaleDateString(locale, dateOptions)} to {new Date(challenge.endAt).toLocaleDateString(locale, dateOptions)}
+          {new Date(challenge.startAt).toLocaleDateString(locale, dateOptions)} to {new Date(challenge.endAt ?? '').toLocaleDateString(locale, dateOptions)}
         </div>
         <div className="mb-2">
           <div className='text-center text-sm font-bold'>About</div>
           <div className='text-left mb-4'>
-          {convertlineTextToJSX(challenge?.description ?? '')}
+            {parsedDescription?.text &&
+              convertlineTextToJSX(parsedDescription.text ?? '')
+            }
+            {parsedDescription?.links &&
+              formatLinks({ links: parsedDescription.links, keyPrefix: `challenge-${challenge.id}` })
+            }
           </div>
         </div>
         {challenge.mission && (

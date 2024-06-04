@@ -5,7 +5,8 @@ import {
 import type { Post, PostSummary } from '../utils/types'
 // import { AiOutlineRetweet } from 'react-icons/ai'
 // import { GoComment } from 'react-icons/go'
-import { convertlineTextToJSX } from '~/utils/helpers'
+import { convertlineTextToJSX, separateTextAndLinks, formatLinks } from '~/utils/helpers'
+
 import { CurrentUserContext } from '../utils/CurrentUserContext'
 import AvatarLoader from './avatarLoader'
 import { Link, useNavigate, useLocation } from '@remix-run/react'
@@ -36,6 +37,7 @@ export default function CardPost (props: CardPostProps): JSX.Element {
   const { hasLiked, fullPost, isShare, hideMeta, revalidator } = props
   const dateTimeFormat = currentUser?.dateTimeFormat ? currentUser.dateTimeFormat : 'M-dd-yyyy @ h:mm a'
   const [post, setPost] = useState(props.post)
+  const parsedBody = separateTextAndLinks(post.body ?? '')
   const [showLightbox, setShowLightbox] = useState(false)
   const [editing, setEditing] = useState(false)
   const totalLikes = post._count?.likes ?? 0
@@ -121,7 +123,12 @@ export default function CardPost (props: CardPostProps): JSX.Element {
               <AvatarLoader object={post} marginClass='mr-4'/>
               <div className="flex flex-col w-full h-full">
               <div className='font-bold my-2'>{post.title}</div>
-              {convertlineTextToJSX(String(shortBody))}
+              {parsedBody?.text &&
+                  convertlineTextToJSX(parsedBody.text ?? '')
+                }
+                {parsedBody?.links &&
+                  formatLinks({ links: parsedBody.links, keyPrefix: `post-${post.id}` })
+                }
               {isTruncated && <span className='text-xs underline text-blue cursor-pointer mr-1 text-right italic' onClick={goToPost}> more</span>}
               <div className='mt-4'>
               {post.videoMeta?.secure_url && <video className="recorded" src={post.videoMeta.secure_url} onClick={(event) => { event?.stopPropagation() }} controls />}
