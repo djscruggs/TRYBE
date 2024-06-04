@@ -19,7 +19,6 @@ import { CurrentUserContext } from '../utils/CurrentUserContext'
 interface Errors {
   name?: string
   description?: string
-  mission?: string
   startAt?: string
   endAt?: string
   coverPhoto?: string
@@ -27,7 +26,7 @@ interface Errors {
 }
 
 export default function FormChallenge (props: ObjectData): JSX.Element {
-  const frequencies = ['DAILY', 'WEEKDAYS', 'ALTERNATING', 'WEEKLY']
+  const frequencies = ['DAILY', 'WEEKDAYS', 'WEEKLY']
   const navigate = useNavigate()
   const challengeForm = useRef(null)
   const revalidator = useRevalidator()
@@ -112,7 +111,6 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
     const validation: Errors = {}
     if (formData.name.trim() === '') { validation.name = 'Name is required' }
     if (formData.description.trim() === '') { validation.description = 'Description is required' }
-    if (!formData.mission || formData.mission.trim() === '') { validation.mission = 'Mission is required' }
     if (!formData.startAt) { validation.startAt = 'Start date is required' }
     if (!formData.endAt) { validation.endAt = 'End date is required' }
     if (Object.keys(validation).length > 0) {
@@ -319,7 +317,7 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
                 <div className="relative max-w-[400px]">
                   <FormField
                     name='description'
-                    placeholder='Eat vegetarian every day for two weeks. Check in daily to stay on track.'
+                    placeholder='Share a short description of what this challenge is all about'
                     required={true}
                     type="textarea"
                     rows={3}
@@ -327,18 +325,6 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
                     onChange={handleChange}
                     error={errors?.description}
                     label="Description"
-                  />
-                </div>
-                <div className="max-w-[400px] relative">
-                  <FormField
-                    name='mission'
-                    placeholder='Develop a new habit, eat healthy and lower your carbon footprint'
-                    required={true}
-                    type="textarea"
-                    rows={4}
-                    value={formData.mission}
-                    onChange={handleChange}
-                    error={errors?.mission} label="Mission"
                   />
                 </div>
               </div>
@@ -375,7 +361,7 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
                     {photoURL &&
                       <>
                         <PhotoInput photoURL={photoURL} onChange={handleCoverPhoto} />
-                        <p onClick={removePhoto} className='text-red underline ml-[130px] -mt-8 cursor-pointer'>remove</p>
+                        <div onClick={removePhoto} className='underline ml-[130px] -mt-8 cursor-pointer'>remove</div>
                       </>
                     }
 
@@ -385,33 +371,11 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
               </div>
             </div>
             <div className="mt-8 flex justify-left">
-              <Button type="submit" onClick={handleSubmit} placeholder='Save' className="bg-blue">Save Challenge</Button>
-              <Button type="submit" onClick={handleCancel} placeholder='Cancel' className="ml-2 bg-red">Cancel</Button>
+              <Button type="submit" onClick={handleSubmit} placeholder='Save' className="bg-red hover:bg-green-500">Save Challenge</Button>
+              <button onClick={handleCancel} className="underline ml-4">cancel</button>
             </div>
 
           </Form>
-        </div>
-        <div className='hidden'>
-        <div className='text-purple-400 bg-purple-400 border-purple-400 ring-purple-400'>purple</div>
-        <div className='text-blue-gray-50 bg-blue-gray-50 border-blue-gray-50 ring-blue-gray-50'>blue-gray</div>
-        <div className='text-white bg-white border-white ring-white'>white</div>
-        <div className='bg-gradient-to-b from-purple-400 to-white ring-purple-400'>gradient</div>
-        <div className='text-pink-300 bg-pink-300 border-pink-300 ring-pink-300'>pink</div>
-        <div className='bg-gradient-to-b from-pink-300 to-white ring-pink-300'>gradient</div>
-        <div className='text-blue-500 bg-blue border-blue ring-blue'>blue</div>
-        <div className='bg-gradient-to-b from-blue to-white ring-blue'>gradient</div>
-        <div className='text-yellow bg-yellow border-yellow ring-yellow'>yellow</div>
-        <div className='bg-gradient-to-b from-yellow to-white'>gradient</div>
-        <div className='text-orange-500 bg-orange-500 border-orange-500'>orange</div>
-        <div className='bg-gradient-to-b from-orange-500 to-white'>gradient</div>
-        <div className='text-red bg-red border-red'>red</div>
-        <div className='bg-gradient-to-b from-red to-white'>gradient</div>
-        <div className='text-green-500 bg-green-500 border-green-500 ring-green-500'>green</div>
-        <div className='bg-gradient-to-b from-green-500 to-white ring-green-500'>gradient</div>
-        <div className='text-grey bg-grey border-grey ring-grey'>grey</div>
-        <div className='bg-salmon text-salmon ring-salmon'>salmon</div>
-        <div className='bg-gradient-to-b from-salmon to-white'>gradient</div>
-        <div className='bg-gradient-to-b from-grey to-white'>gradient</div>
         </div>
       </>
   )
@@ -435,8 +399,8 @@ const PhotoInput = (props: photoInputProps): JSX.Element => {
                   file:rounded-full file:border-0
                   file:text-sm file:font-medium
                   file:bg-blue-50 file:text-blue-700
-                  file:cursor-pointer file:bg-blue
-                  hover:file:bg-red`}
+                  file:cursor-pointer file:bg-red
+                  hover:file:bg-green-500`}
     />
   )
 }

@@ -181,9 +181,9 @@ export default function FormComment (props: FormCommentProps): JSX.Element {
             <VideoRecorder uploadOnly={videoUploadOnly} onStart={() => { setRecording(true) }} onStop={() => { setRecording(false) }} onSave={setVideo} onFinish={() => { setShowVideoRecorder(false) }} />
           </div>
         }
-        <Button type="submit" onClick={handleSubmit} placeholder='Save' className="bg-red" disabled={recording}>Save</Button>
+        <Button type="submit" onClick={handleSubmit} placeholder='Save' className="bg-red hover:bg-green-500" disabled={recording}>Save</Button>
         {props.onCancel && (
-          <button onClick={handleCancel} className="mt-2 text-sm underline ml-2">cancel</button>
+          <button onClick={handleCancel} className="mt-2 text-sm underline ml-4">cancel</button>
         )}
 
       </Form>

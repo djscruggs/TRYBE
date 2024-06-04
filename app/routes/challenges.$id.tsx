@@ -167,7 +167,6 @@ export default function ViewChallenge (): JSX.Element {
   const data: ViewChallengeData = useLoaderData()
   const { challenge, hasLiked, hasLikedPost, hasLikedThread, latestPost, latestThread } = data
   const parsedDescription = separateTextAndLinks(challenge.description ?? '')
-  const parsedMission = separateTextAndLinks(challenge.mission ?? '')
   console.log(latestThread)
   const [membership, setMembership] = useState(data.membership)
 
@@ -298,14 +297,14 @@ export default function ViewChallenge (): JSX.Element {
 
   return (
     <div className='flex flex-col'>
-    <div className={`max-w-sm md:max-w-md lg:max-w-lg border border-transparent border-b-inherit rounded-md ${!challenge.coverPhoto ? `bg-gradient-to-b from-${color} to-90%` : ''}`}>
+    <div className={'max-w-sm md:max-w-md lg:max-w-lg border border-transparent border-b-inherit rounded-md'}>
       <div className={`${challenge.coverPhoto ? '' : 'mt-0.5 mb-2'} flex justify-center max-h-90`}>
-          {challenge.coverPhoto && <img src={`${challenge.coverPhoto}?${Date.now()}`} alt={`${challenge?.name} cover photo`} className="rounded-tl-md rounded-tr-md max-w-full h-auto object-cover" />}
+          {challenge.coverPhoto && <img src={`${challenge.coverPhoto}?${Date.now()}`} alt={`${challenge?.name} cover photo`} className="max-w-full h-auto object-cover" />}
       </div>
-      <div className={`mb-6 px-4 flex flex-col justify-center bg-gradient-to-b from-${color} to-90%`}>
+      <div className={'mb-6 px-4 flex flex-col justify-center'}>
         <div>
-        {challenge.icon && <div className="mb-2 flex justify-center">{iconOptions[challenge.icon]}</div>}
-          <h1 className='flex justify-center text-2xl'>{challenge.name}</h1>
+
+          <h1 className='flex justify-center text-2xl py-2'>{challenge.name}</h1>
           {challenge.userId === currentUser?.id && (
             <div className="flex justify-center mt-2">
               <Link className='underline text-red' to = {`/challenges/${challenge.id as string | number}/edit`}>edit</Link>&nbsp;&nbsp;
@@ -329,19 +328,6 @@ export default function ViewChallenge (): JSX.Element {
             }
           </div>
         </div>
-        {parsedMission && (
-        <div className="mb-2">
-          <div className='text-center text-sm font-bold'>Mission</div>
-          <div className='text-left mb-4'>
-            {parsedMission?.text &&
-              convertlineTextToJSX(parsedMission.text ?? '')
-            }
-            {parsedMission?.links &&
-              formatLinks({ links: parsedMission.links, keyPrefix: `challenge-${challenge.id}` })
-            }
-          </div>
-        </div>
-        )}
         <div className="mb-2 text-sm">
           Checks in <span className="capitalize">{challenge?.frequency?.toLowerCase()}</span>
         </div>
@@ -352,10 +338,10 @@ export default function ViewChallenge (): JSX.Element {
     <div className="max-w-sm md:max-w-md lg:max-w-lg pt-4">
     {!isComments && challenge?.userId === currentUser?.id && (
         <>
-        <Button className={`bg-${color} p-2 justify-center`} onClick={() => { navigate(`/posts/new/challenge/${challenge.id}`) }}>
+        <Button className={'bg-red p-2 justify-center'} onClick={() => { navigate(`/posts/new/challenge/${challenge.id}`) }}>
           Post an Update
         </Button>
-        <Button className={`bg-${color} p-2 justify-center ml-2`} onClick={() => { navigate(`/threads/new/challenge/${challenge.id}`) }}>
+        <Button className={'bg-yellow p-2 justify-center ml-2'} onClick={() => { navigate(`/threads/new/challenge/${challenge.id}`) }}>
           Start a Thread
         </Button>
       </>

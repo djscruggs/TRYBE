@@ -4139,6 +4139,11 @@ video {
   background-color: rgb(50 149 183 / var(--tw-bg-opacity));
 }
 
+.file\:bg-red::file-selector-button {
+  --tw-bg-opacity: 1;
+  background-color: rgb(236 95 92 / var(--tw-bg-opacity));
+}
+
 .file\:px-6::file-selector-button {
   padding-left: 1.5rem;
   padding-right: 1.5rem;
@@ -5206,6 +5211,11 @@ video {
   background-color: rgb(245 196 78 / var(--tw-bg-opacity));
 }
 
+.hover\:bg-green-500:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgb(16 185 129 / var(--tw-bg-opacity));
+}
+
 .hover\:bg-opacity-80:hover {
   --tw-bg-opacity: 0.8;
 }
@@ -5334,6 +5344,16 @@ video {
 .hover\:file\:bg-red::file-selector-button:hover {
   --tw-bg-opacity: 1;
   background-color: rgb(236 95 92 / var(--tw-bg-opacity));
+}
+
+.hover\:file\:bg-grey::file-selector-button:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgb(196 196 196 / var(--tw-bg-opacity));
+}
+
+.hover\:file\:bg-green-500::file-selector-button:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgb(16 185 129 / var(--tw-bg-opacity));
 }
 
 .hover\:before\:opacity-10:hover::before {
