@@ -161,6 +161,7 @@ export default function ViewChallenge (): JSX.Element {
   const data: ViewChallengeData = useLoaderData()
   const { challenge, hasLiked, hasLikedPost, hasLikedThread, latestPost, latestThread } = data
   const parsedDescription = separateTextAndLinks(challenge.description ?? '')
+  const parsedMission = separateTextAndLinks(challenge.mission ?? '')
   console.log(latestThread)
   const [membership, setMembership] = useState(data.membership)
 
@@ -322,11 +323,16 @@ export default function ViewChallenge (): JSX.Element {
             }
           </div>
         </div>
-        {challenge.mission && (
+        {parsedMission && (
         <div className="mb-2">
           <div className='text-center text-sm font-bold'>Mission</div>
           <div className='text-left mb-4'>
-          {convertlineTextToJSX(challenge.mission)}
+            {parsedMission?.text &&
+              convertlineTextToJSX(parsedMission.text ?? '')
+            }
+            {parsedMission?.links &&
+              formatLinks({ links: parsedMission.links, keyPrefix: `challenge-${challenge.id}` })
+            }
           </div>
         </div>
         )}
