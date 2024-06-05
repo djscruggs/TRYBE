@@ -186,7 +186,7 @@ export const FullLayout = (): JSX.Element => {
                 </div>
                 {showNav &&
                   <div className="fixed bottom-0 left-0 right-0 max-w-screen flex items-center w-full justify-between m-0 p-0 px-2 py-1 bg-gray-50 border-2 border-slate-200 z-10">
-                      <Link to="/" className='w-8 h-8 flex justify-center items-center'>
+                      <Link to="/" className='w-8 h-8 ml-6 flex justify-center items-center'>
                         <HomeIcon className='cursor-pointer w-8 h-8' />
                       </Link>
                       <Link to="/challenges" className='w-8 h-8 flex justify-center items-center' prefetch='render'>
@@ -235,7 +235,7 @@ export const FullLayout = (): JSX.Element => {
                       <Link to={`/members/${currentUser?.id}/content`} className='w-8 h-8 flex justify-center items-center'>
                         <ArchiveBoxIcon className='cursor-pointer w-8 h-8' />
                       </Link>
-                      <Link to="/profile" className='w-8 h-8 flex justify-center items-center'>
+                      <Link to="/profile" className='w-8 h-8 mr-6 flex justify-center items-center'>
                         <IdentificationIcon className='cursor-pointer w-8 h-8' />
                       </Link>
                   </div>
