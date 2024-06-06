@@ -3,8 +3,9 @@ import { loadPostSummary } from '~/models/post.server'
 import { loadThreadSummary } from '~/models/thread.server'
 import { Outlet, useLoaderData, Link, useNavigate, useLocation } from '@remix-run/react'
 import React, { useContext, useState } from 'react'
+import { useRevalidator } from 'react-router-dom'
 import { requireCurrentUser } from '../models/auth.server'
-import type { MemberChallenge, ChallengeSummary, PostSummary, ThreadSummary } from '~/utils/types'
+import type { MemberChallenge, Challenge, ChallengeSummary, PostSummary, ThreadSummary } from '~/utils/types'
 import { type LoaderFunction, type LoaderFunctionArgs } from '@remix-run/node'
 import axios from 'axios'
 import { toast } from 'react-hot-toast'
@@ -96,7 +97,7 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
   }
   // load most recent post
   let latestPost = null
-  let hasLikedPost = false
+  let hasLikedPost = 0
   const _post = await prisma.post.findFirst({
     where: {
       challengeId: Number(params.id),
@@ -127,7 +128,7 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
     })
   }
   let latestThread = null
-  let hasLikedThread = false
+  let hasLikedThread = 0
   const _thread = await prisma.thread.findFirst({
     where: {
       challengeId: Number(params.id)
@@ -154,7 +155,7 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
   }
   console.log('challenge', result)
   const locale = getUserLocale()
-  const data: ViewChallengeData = { challenge: result, membership, hasLiked: Boolean(likes), hasLikedPost, hasLikedThread, checkInsCount, locale, latestPost, latestThread }
+  const data: ViewChallengeData = { challenge: result, membership, hasLiked: Boolean(likes), hasLikedPost: Boolean(hasLikedPost), hasLikedThread: Boolean(hasLikedThread), checkInsCount, locale, latestPost, latestThread }
   return data
 }
 export default function ViewChallenge (): JSX.Element {
@@ -173,7 +174,6 @@ export default function ViewChallenge (): JSX.Element {
   const [loading, setLoading] = useState<boolean>(false)
   const [checkingIn, setCheckingIn] = useState<boolean>(false)
   const [isMember, setIsMember] = useState(Boolean(membership?.id))
-  const [deleteDialog, setDeleteDialog] = useState(false)
   const [imgWidth, imgHeight] = resizeImageToFit(Number(challenge.coverPhotoMeta?.width), Number(challenge.coverPhotoMeta?.height), 450)
   const getFullUrl = (): string => {
     return `${window.location.origin}/challenges/${challenge?.id}`
@@ -221,29 +221,7 @@ export default function ViewChallenge (): JSX.Element {
     }
     return false
   }
-  const handleDeleteDialog = (event: any): void => {
-    event.preventDefault()
-    event.stopPropagation()
-    setDeleteDialog(true)
-  }
-  const cancelDialog = (event: any): void => {
-    event.preventDefault()
-    event.stopPropagation()
-    setDeleteDialog(false)
-  }
-  const handleDelete = async (event: any): Promise<void> => {
-    if (!challenge?.id) {
-      throw new Error('cannot delete without an id')
-    }
-    const url = `/api/challenges/delete/${challenge.id as string | number}`
-    const response = await axios.post(url)
-    if (response.status === 204) {
-      toast.success('Challenge deleted')
-      navigate('/challenges')
-    } else {
-      toast.error('Delete failed')
-    }
-  }
+
   const handleCheckIn = async (event: any): Promise<void> => {
     setCheckingIn(true)
     event.preventDefault()
@@ -289,9 +267,7 @@ export default function ViewChallenge (): JSX.Element {
       {/* only show edit and delete here if there is an image */}
       {challenge.coverPhotoMeta?.secure_url && challenge.userId === currentUser?.id &&
         <div className="flex justify-center mt-1">
-          <Link className='underline hover:text-red' to = {`/challenges/${challenge.id as string | number}/edit`}>edit</Link>&nbsp;&nbsp;
-          <Link className='underline hover:text-red' onClick={handleDeleteDialog} to = {`/challenges/edit/${challenge.id as string | number}`}>delete</Link>&nbsp;&nbsp;
-          {deleteDialog && <DialogDelete prompt='Are you sure you want to delete this challenge?' isOpen={deleteDialog} deleteCallback={handleDelete} onCancel={cancelDialog}/>}
+          <EditLinks challenge={challenge}/>
         </div>
       }
       <div className='mb-6 px-4 md:px-0 justify-start'>
@@ -299,9 +275,7 @@ export default function ViewChallenge (): JSX.Element {
         {/* only show edit and delete here if there is NOT an image */}
         {!challenge.coverPhotoMeta?.secure_url && challenge.userId === currentUser?.id &&
           <div className="flex justify-start mt-1 mb-2">
-            <Link className='underline hover:text-red' to = {`/challenges/${challenge.id as string | number}/edit`}>edit</Link>&nbsp;&nbsp;
-            <Link className='underline hover:text-red' onClick={handleDeleteDialog} to = {`/challenges/edit/${challenge.id as string | number}`}>delete</Link>&nbsp;&nbsp;
-            {deleteDialog && <DialogDelete prompt='Are you sure you want to delete this challenge?' isOpen={deleteDialog} deleteCallback={handleDelete} onCancel={cancelDialog}/>}
+            <EditLinks challenge={challenge}/>
           </div>
         }
         <div className='relative mb-4'>
@@ -327,7 +301,7 @@ export default function ViewChallenge (): JSX.Element {
             }
           </div>
         </div>
-        <h1 className='text-2xl py-2'>Timing</h1>
+        <h1 className='text-xl py-2'>Timing</h1>
         <div className="mb-2 flex flex-cols">
           <div className="w-1/2">
             <div className="font-bold">
@@ -474,5 +448,42 @@ export default function ViewChallenge (): JSX.Element {
       </div>
     </div>
 </div>
+  )
+}
+
+function EditLinks ({ challenge }: { challenge: Challenge | ChallengeSummary }): JSX.Element {
+  const navigate = useNavigate()
+  const [deleteDialog, setDeleteDialog] = useState(false)
+  const revalidator = useRevalidator()
+  const handleDeleteDialog = (event: any): void => {
+    event.preventDefault()
+    event.stopPropagation()
+    setDeleteDialog(true)
+  }
+  const cancelDialog = (event: any): void => {
+    event.preventDefault()
+    event.stopPropagation()
+    setDeleteDialog(false)
+  }
+  const handleDelete = async (event: any): Promise<void> => {
+    if (!challenge?.id) {
+      throw new Error('cannot delete without an id')
+    }
+    const url = `/api/challenges/delete/${challenge.id as string | number}`
+    const response = await axios.post(url)
+    if (response.status === 204) {
+      toast.success('Challenge deleted')
+      revalidator.revalidate()
+      navigate('/challenges')
+    } else {
+      toast.error('Delete failed')
+    }
+  }
+  return (
+      <>
+        <Link className='underline hover:text-red' to = {`/challenges/${challenge.id}/edit`}>edit</Link>&nbsp;&nbsp;
+        <Link className='underline hover:text-red' onClick={handleDeleteDialog} to = {`/challenges/edit/${challenge.id as string | number}`}>delete</Link>&nbsp;&nbsp;
+        {deleteDialog && <DialogDelete prompt='Are you sure you want to delete this challenge?' isOpen={deleteDialog} deleteCallback={handleDelete} onCancel={cancelDialog}/>}
+      </>
   )
 }
