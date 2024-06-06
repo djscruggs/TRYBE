@@ -10,7 +10,7 @@ const UserAvatar = ({ variant = 'circular', size = 'md', color = 'gray', classNa
   const name = userInitials(currentUser) ?? '?'
   return (
     <Avatar
-      src={currentUser.profile.profileImage}
+      src={`${currentUser.profile.profileImage}?t=${Date.now()}`}
       alt={name}
       variant={variant}
       size={size}
