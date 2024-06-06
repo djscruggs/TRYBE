@@ -138,7 +138,6 @@ model Challenge {
   published      Boolean           @default(false)
   userId         Int
   color          String?
-  coverPhoto     String?
   description    String?
   endAt          DateTime?
   icon           String?

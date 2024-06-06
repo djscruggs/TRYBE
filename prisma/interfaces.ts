@@ -119,7 +119,6 @@ export interface Challenge {
   published: boolean;
   userId: number;
   color: string | null;
-  coverPhoto: string | null;
   description: string | null;
   endAt: Date | null;
   icon: string | null;

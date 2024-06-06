@@ -107,8 +107,7 @@ export interface Challenge {
   startAt: Date
   endAt?: Date | null
   frequency?: 'DAILY' | 'WEEKDAYS' | 'ALTERNATING' | 'WEEKLY' | 'CUSTOM'
-  coverPhoto?: string | null
-  coverPhotoMeta?: Record<string, unknown> | null
+  coverPhotoMeta?: Record<string, string> | null
   icon?: string | null
   color?: string | null
   reminders?: boolean

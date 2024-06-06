@@ -310,21 +310,19 @@ export default function FormPost (props: FormPostProps): JSX.Element {
 
           }
         </div>
-        <Button type="submit" onClick={handlePublish} className="bg-blue disabled:gray-400" disabled={saving}>
+        <Button type="submit" onClick={handlePublish} className="bg-red hover:bg-green-500 disabled:bg-gray-400" disabled={saving}>
           {saving
             ? 'Publishing...'
             : formData.publishAt ? 'Schedule' : 'Publish Now'
           }
         </Button>
-        <Button type="submit" onClick={handleDraft} className="bg-yellow text-black ml-2 disabled:gray-400" disabled={saving}>
+        <Button type="submit" onClick={handleDraft} className="bg-grey text-white ml-2 hover:bg-green-500 disabled:bg-gray-400" disabled={saving}>
           {saving
             ? 'Saving'
             : post?.id && post?.published ? 'Unpublish' : 'Save Draft'
           }
         </Button>
-        <Button type="submit" onClick={handleCancel} className="bg-red ml-2 disabled:gray-400" disabled={saving}>
-        Cancel
-        </Button>
+        <button onClick={handleCancel} className="mt-2 text-sm underline ml-4 hover:text-red">cancel</button>
 
       </Form>
 

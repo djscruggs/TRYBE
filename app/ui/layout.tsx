@@ -26,7 +26,6 @@ export default function Layout (): JSX.Element {
   if (!hasLoaded) {
     return <Loading />
   }
-  console.log('loading')
   return (
     <>
       <FullLayout />

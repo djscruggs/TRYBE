@@ -173,6 +173,9 @@ export function iconToJsx (icon: string, color: string): React.ReactNode {
 
 export function resizeImageToFit (width: number, height: number, maxSize: number = 300): number[] {
   let newWidth: number, newHeight: number
+  if (isNaN(width) || isNaN(height)) {
+    return [width, height]
+  }
 
   if (width <= maxSize && height <= maxSize) {
     // If both dimensions are already within the maximum size, return them unchanged.

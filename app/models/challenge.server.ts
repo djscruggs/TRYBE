@@ -242,6 +242,9 @@ export function getSchemaDefaults<Schema extends z.AnyZodObject> (schema: Schema
 }
 export const challengeSchema =
                     z.object({
+                      deleteImage: z.boolean().optional().nullable(),
+                      image: z.instanceof(File).optional().nullable(),
+                      video: z.instanceof(File).optional().nullable(),
                       name: z
                         .string()
                         .min(1, { message: 'Challenge name is required' }),
@@ -259,10 +262,6 @@ export const challengeSchema =
                         .nullable(),
                       frequency: z
                         .enum(['DAILY', 'WEEKDAYS', 'ALTERNATING', 'WEEKLY', 'CUSTOM']),
-                      coverPhoto: z
-                        .string()
-                        .nullable()
-                        .optional(),
                       icon: z
                         .string()
                         .nullable()

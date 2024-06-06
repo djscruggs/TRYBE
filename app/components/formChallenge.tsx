@@ -32,13 +32,18 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
   const revalidator = useRevalidator()
   const [errors, setErrors] = useState<Errors>()
   // make a copy so it doesn't affect parent renders
-  const challenge = { ...props.challenge } as ObectData
-  delete challenge._count
-  const [formData, setFormData] = useState(challenge)
+  const challenge = props.challenge ? props.challenge : {}
+  if (props?.challenge?._count) {
+    delete challenge._count
+  }
+  const [formData, setFormData] = useState({
+    deleteImage: false,
+    ...challenge
+  })
   const { currentUser } = useContext(CurrentUserContext)
   const localDateFormat = currentUser?.locale === 'en-US' ? 'M-dd-YYYY' : 'dd-M-YYYY'
   function selectDate (name: string, value: Date): void {
-    setFormData((prevFormData: ObjectData) => ({
+    setFormData((prevFormData) => ({
       ...prevFormData,
       [name]: value
     }))
@@ -46,19 +51,19 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
   const handleChange = (event: ChangeEvent<HTMLInputElement | HTMLSelectElement>): void => {
     const { name, value } = event.target
     if (name === 'public') {
-      setFormData((prevFormData: ObjectData) => ({
+      setFormData((prevFormData) => ({
         ...prevFormData,
         [name]: value === 'true'
       }))
       return
     }
-    setFormData((prevFormData: ObjectData) => ({
+    setFormData((prevFormData) => ({
       ...prevFormData,
       [name]: value
     }))
   }
   function handleSelect (value: string | undefined): void {
-    setFormData((prevFormData: ObjectData) => ({
+    setFormData((prevFormData) => ({
       ...prevFormData,
       frequency: value
     }))
@@ -74,7 +79,7 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
     'purple'
   ]
   function handleColorChange (value: string): void {
-    setFormData((prevFormData: ObjectData) => ({
+    setFormData((prevFormData) => ({
       ...prevFormData,
       color: value
     }))
@@ -82,7 +87,7 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
 
   const iconOptions: Record<string, JSX.Element> = getIconOptionsForColor(formData?.color as string)
   const handleIconChange = (value: string): void => {
-    setFormData((prevFormData: ObjectData) => ({
+    setFormData((prevFormData) => ({
       ...prevFormData,
       icon: value
     }))
@@ -119,7 +124,7 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
     }
     const toSubmit = new FormData()
     for (const key in formData) {
-      if (key === 'id') continue
+      if (key === 'id' || key === 'coverPhotoMeta') continue
       if (Object.prototype.hasOwnProperty.call(formData, key)) {
         const value = formData[key]
         if (typeof value === 'string') {
@@ -131,13 +136,14 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
         }
       }
     }
-    if (formData.coverPhoto) {
-      toSubmit.set('coverPhoto', formData.coverPhoto)
+    if (formData.deleteImage) {
+      toSubmit.set('deleteImage', 'true')
     }
-    if (photo !== null) {
-      toSubmit.append('photo', photo)
+    console.log(image)
+    if (image !== null) {
+      toSubmit.append('image', image)
     }
-    if (formData.id !== undefined) {
+    if (formData?.id) {
       toSubmit.append('id', String(formData.id))
     }
     const url = '/api/challenges'
@@ -146,6 +152,7 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
         'content-type': 'multipart/form-data'
       }
     }
+    console.log('formData', formData)
     const response = await axios.post(url, toSubmit, headers)
     const msg = (formData.id !== null) ? 'Challenge saved' : 'Challenge created'
     if (!response.data.id || response.data.errors) {
@@ -163,59 +170,26 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
       navigate(`/challenges/${response.data.id}`, { replace: true })
     }
   }
-  const [photo, setPhoto] = useState<File | null>(null)
-  const [photoURL, setPhotoURL] = useState<string | null>(formData.coverPhoto ? String(formData.coverPhoto) : null)
+  const [image, setImage] = useState<File | null>(null)
+  const [imageURL, setImageURL] = useState<string | null>(formData.coverPhotoMeta?.secure_url ? String(formData.coverPhotoMeta.secure_url) : null)
 
   const handleCoverPhoto = (event: ChangeEvent<HTMLInputElement>): void => {
     const params = {
       event,
-      setFile: setPhoto,
-      setFileURL: setPhotoURL
+      setFile: setImage,
+      setFileURL: setImageURL
     }
     // set coverPhoto to null when photo added after a delete
     handleFileUpload(params)
-    if (formData.coverPhoto === 'delete') {
-      setFormData((prevFormData: ObjectData) => ({
-        ...prevFormData,
-        coverPhoto: null
-      }))
-    }
   }
-  const removePhoto = (): void => {
-    setPhoto(null)
-    setPhotoURL(null)
-    if (formData.coverPhoto) {
-      setFormData((prevFormData: ObjectData) => ({
-        ...prevFormData,
-        coverPhoto: 'delete'
-      }))
-    }
+  const removeImage = (): void => {
+    setImage(null)
+    setImageURL(null)
+    setFormData((prevFormData: ObjectData) => ({
+      ...prevFormData,
+      deleteImage: true
+    }))
   }
-
-  // useEffect(() => {
-  //   let fileReader: FileReader | null = null
-  //   let isCancel = false
-  //   if (photo) {
-  //     fileReader = new FileReader()
-  //     fileReader.onload = (e) => {
-  //       const result = e.target?.result
-  //       if (result && !isCancel) {
-  //         if (typeof result === 'string') {
-  //           setPhotoURL(result)
-  //         } else {
-  //           setPhotoURL(null)
-  //         }
-  //       }
-  //     }
-  //     fileReader.readAsDataURL(photo)
-  //   }
-  //   return () => {
-  //     isCancel = true
-  //     if (fileReader && fileReader.readyState === 1) {
-  //       fileReader.abort()
-  //     }
-  //   }
-  // }, [photo])
 
   return (
       <>
@@ -338,30 +312,30 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
                 <div className="mt-4 max-w-[400px] relative flex flex-wrap">
                   <label className='w-full block mb-2 text-left'>Icon</label>
                   {Object.keys(iconOptions).map((key, index) => (
-                    <div key={key} onClick={() => { handleIconChange(key) }} className={`w-12 h-12 cursor-pointer rounded-full mr-4 mb-2 ${formData.icon === key ? 'outline outline-2 outline-offset-2 outline-darkgrey' : ''}`}>{iconOptions[key]}</div>
+                    <div key={key} onClick={() => { handleIconChange(key) }} className={`w-10 h-10 cursor-pointer rounded-full mr-4 mb-2 ${formData.icon === key ? 'outline outline-2 outline-offset-2 outline-darkgrey' : ''}`}>{iconOptions[key]}</div>
                   ))}
                 </div>
-                <div className='w-full mt-2'>
-                  <div className={`max-w-md mb-2 h-60 rounded-md flex items-center justify-center ${photoURL ? '' : 'bg-blue-gray-50'}`}>
-                    {photoURL &&
+                <div className='w-full mt-4'>
+                  <div className={`max-w-md mb-2 h-60 rounded-md flex items-center justify-center ${imageURL ? '' : 'bg-blue-gray-50'}`}>
+                    {imageURL &&
                       <>
-                      <img src={photoURL} alt="cover photo" className="max-w-full max-h-60" />
+                      <img src={imageURL} alt="cover photo" className="max-w-full max-h-60" />
                       </>
                     }
-                    {!photoURL &&
+                    {!imageURL &&
                       <div className="flex flex-col items-center justify-end">
                         <p className="text-2xl text-blue-gray-500 text-center">Upload a cover photo</p>
                         <div className='mt-10 ml-36'>
-                          <PhotoInput photoURL={photoURL} onChange={handleCoverPhoto} />
+                          <ImageInput imageURL={imageURL} onChange={handleCoverPhoto} />
                         </div>
                       </div>
                     }
                   </div>
                   <div className='px-[28%] justify-center items-center'>
-                    {photoURL &&
+                    {imageURL &&
                       <>
-                        <PhotoInput photoURL={photoURL} onChange={handleCoverPhoto} />
-                        <div onClick={removePhoto} className='underline ml-[130px] -mt-8 cursor-pointer'>remove</div>
+                        <ImageInput imageURL={imageURL} onChange={handleCoverPhoto} />
+                        <div onClick={removeImage} className='underline ml-[130px] -mt-8 cursor-pointer'>remove</div>
                       </>
                     }
 
@@ -372,7 +346,7 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
             </div>
             <div className="mt-8 flex justify-left">
               <Button type="submit" onClick={handleSubmit} placeholder='Save' className="bg-red hover:bg-green-500">Save Challenge</Button>
-              <button onClick={handleCancel} className="underline ml-4">cancel</button>
+              <button onClick={handleCancel} className="underline ml-4 4 hover:text-red">cancel</button>
             </div>
 
           </Form>
@@ -381,16 +355,16 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
   )
 }
 
-interface photoInputProps {
-  photoURL: string | null
+interface imageInputProps {
+  imageURL: string | null
   onChange: (event: ChangeEvent<HTMLInputElement>) => void
 }
-const PhotoInput = (props: photoInputProps): JSX.Element => {
-  const { photoURL, onChange } = props
-  const textColor = photoURL ? 'white' : 'blue-gray-50'
+const ImageInput = (props: imageInputProps): JSX.Element => {
+  const { imageURL, onChange } = props
+  const textColor = imageURL ? 'white' : 'blue-gray-50'
   return (
     <input type="file"
-      name="coverPhoto"
+      name="image"
       onChange={onChange}
       accept="image/*"
       className={`text-sm text-${textColor}

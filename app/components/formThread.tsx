@@ -207,7 +207,7 @@ export default function FormThread (props: FormThreadProps): JSX.Element {
           }
         </Button>
         {showCancel() &&
-          <button onClick={handleCancel} className="mt-2 text-sm underline ml-2">cancel</button>
+          <button onClick={handleCancel} className="mt-2 text-sm underline ml-2 hover:text-red">cancel</button>
         }
       </Form>
 

@@ -106,7 +106,6 @@ function App (): JSX.Element {
   useEffect(() => {
     setCurrentUser(user as CurrentUser)
   }, [user])
-  console.log('app')
   return (
     <Document>
         <Toaster position='top-center' />

@@ -183,7 +183,7 @@ export default function FormComment (props: FormCommentProps): JSX.Element {
         }
         <Button type="submit" onClick={handleSubmit} placeholder='Save' className="bg-red hover:bg-green-500" disabled={recording}>Save</Button>
         {props.onCancel && (
-          <button onClick={handleCancel} className="mt-2 text-sm underline ml-4">cancel</button>
+          <button onClick={handleCancel} className="mt-2 text-sm underline ml-4 hover:text-red">cancel</button>
         )}
 
       </Form>

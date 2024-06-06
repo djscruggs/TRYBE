@@ -18,18 +18,22 @@ export async function action (args: ActionFunctionArgs): Promise<any> {
   if (!cleanData.userId) {
     cleanData.userId = currentUser.id
   }
+  console.log('cleanData', cleanData)
   try {
-    const validation = challengeSchema.safeParse(cleanData)
-    if (!validation.success) {
-      return ({
-        formData,
-        errors: validation.error.format()
-      })
-    }
+    // const validation = challengeSchema.safeParse(cleanData)
+    // if (!validation.success) {
+    //   return ({
+    //     formData,
+    //     errors: validation.error.format()
+    //   })
+    // }
     // convert types where necessary
     const converted = cleanData
-    delete converted.photo
+    delete converted.image
+    delete converted.video
     delete converted.userId
+    delete converted.deleteImage
+    delete converted.coverPhoto
     converted.endAt = converted.endAt ? new Date(converted.endAt).toISOString() : null
     converted.startAt = converted.startAt ? new Date(converted.startAt).toISOString() : null
     converted.publishAt = converted.publishAt ? new Date(converted.publishAt).toISOString() : new Date().toISOString()
@@ -43,20 +47,18 @@ export async function action (args: ActionFunctionArgs): Promise<any> {
     // now handle the photo
     let newCoverPhoto
     // new photo is uploaded as photo, not coverPhoto
-    if (rawData.get('photo')) {
-      newCoverPhoto = rawData.get('photo') as File
+    if (rawData.get('image')) {
+      newCoverPhoto = rawData.get('image') as File
     }
-    if (rawData.get('coverPhoto') === 'delete') {
+    if (rawData.get('deleteImage') === 'true') {
       if (data.coverPhotoMeta?.public_id) {
         await deleteFromCloudinary(data.coverPhotoMeta?.public_id, 'image')
       }
       data.coverPhotoMeta = {}
-      data.coverPhoto = ''
     }
     if (newCoverPhoto) {
       const nameNoExt = `challenge-${data.id}-cover`
       const coverPhotoMeta = await saveToCloudinary(newCoverPhoto, nameNoExt)
-      data.coverPhoto = coverPhotoMeta.secure_url
       data.coverPhotoMeta = coverPhotoMeta
     }
     await updateChallenge(data)

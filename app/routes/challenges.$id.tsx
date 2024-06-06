@@ -4,26 +4,20 @@ import { loadThreadSummary } from '~/models/thread.server'
 import { Outlet, useLoaderData, Link, useNavigate, useLocation } from '@remix-run/react'
 import React, { useContext, useState } from 'react'
 import { requireCurrentUser } from '../models/auth.server'
-import type { MemberChallenge, ChallengeSummary, PostSummary, NoteSummary, ThreadSummary } from '~/utils/types'
+import type { MemberChallenge, ChallengeSummary, PostSummary, ThreadSummary } from '~/utils/types'
 import { type LoaderFunction, type LoaderFunctionArgs } from '@remix-run/node'
 import axios from 'axios'
 import { toast } from 'react-hot-toast'
 import {
-  colorToClassName,
   convertlineTextToJSX,
-  iconStyle,
   userLocale,
   separateTextAndLinks,
-  formatLinks
+  formatLinks,
+  resizeImageToFit
 } from '~/utils/helpers'
 import { type DateTimeFormatOptions } from 'intl'
 import { CurrentUserContext } from '../utils/CurrentUserContext'
 import { Spinner, Button } from '@material-tailwind/react'
-import { GiShinyApple, GiMeditation } from 'react-icons/gi'
-import { FaRegLightbulb } from 'react-icons/fa6'
-import { RiMentalHealthLine } from 'react-icons/ri'
-import { PiBarbellLight } from 'react-icons/pi'
-import { IoFishOutline } from 'react-icons/io5'
 import CardPost from '~/components/cardPost'
 import CardThread from '~/components/cardThread'
 import { LiaUserFriendsSolid } from 'react-icons/lia'
@@ -158,7 +152,7 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
       }
     })
   }
-
+  console.log('challenge', result)
   const locale = getUserLocale()
   const data: ViewChallengeData = { challenge: result, membership, hasLiked: Boolean(likes), hasLikedPost, hasLikedThread, checkInsCount, locale, latestPost, latestThread }
   return data
@@ -167,10 +161,9 @@ export default function ViewChallenge (): JSX.Element {
   const data: ViewChallengeData = useLoaderData()
   const { challenge, hasLiked, hasLikedPost, hasLikedThread, latestPost, latestThread } = data
   const parsedDescription = separateTextAndLinks(challenge.description ?? '')
-  console.log(latestThread)
   const [membership, setMembership] = useState(data.membership)
 
-  const likesCount = challenge?._count.likes
+  const likesCount = challenge?._count?.likes ?? 0
   const location = useLocation()
 
   const showLatest = !location.pathname.includes('members')
@@ -181,6 +174,7 @@ export default function ViewChallenge (): JSX.Element {
   const [checkingIn, setCheckingIn] = useState<boolean>(false)
   const [isMember, setIsMember] = useState(Boolean(membership?.id))
   const [deleteDialog, setDeleteDialog] = useState(false)
+  const [imgWidth, imgHeight] = resizeImageToFit(Number(challenge.coverPhotoMeta?.width), Number(challenge.coverPhotoMeta?.height), 450)
   const getFullUrl = (): string => {
     return `${window.location.origin}/challenges/${challenge?.id}`
   }
@@ -198,7 +192,7 @@ export default function ViewChallenge (): JSX.Element {
   if (location.pathname.includes('edit') || location.pathname.includes('share')) {
     return <Outlet />
   }
-  const locale = userLocale()
+  const locale = userLocale(currentUser)
   const formatNextCheckin = (): string => {
     if (!membership?.nextCheckIn) {
       return ''
@@ -285,41 +279,46 @@ export default function ViewChallenge (): JSX.Element {
     month: 'short',
     day: 'numeric'
   }
-  const iconOptions: Record<string, JSX.Element> = {
-    GiShinyApple: <GiShinyApple className={iconStyle(challenge?.color ?? 'red')} />,
-    GiMeditation: <GiMeditation className={iconStyle(challenge?.color ?? 'red')} />,
-    FaRegLightbulb: <FaRegLightbulb className={iconStyle(challenge?.color ?? 'red')} />,
-    RiMentalHealthLine: <RiMentalHealthLine className={iconStyle(challenge?.color ?? 'red')} />,
-    PiBarbellLight: <PiBarbellLight className={iconStyle(challenge?.color ?? 'red')} />,
-    IoFishOutline: <IoFishOutline className={iconStyle(challenge?.color ?? 'red')} />
-  }
-  const color = colorToClassName(challenge?.color ?? '', 'red')
 
   return (
     <div className='flex flex-col'>
-    <div className={'max-w-sm md:max-w-md lg:max-w-lg border border-transparent border-b-inherit rounded-md'}>
-      <div className={`${challenge.coverPhoto ? '' : 'mt-0.5 mb-2'} flex justify-center max-h-90`}>
-          {challenge.coverPhoto && <img src={`${challenge.coverPhoto}?${Date.now()}`} alt={`${challenge?.name} cover photo`} className="max-w-full h-auto object-cover" />}
+    <div className='max-w-sm md:max-w-md lg:max-w-lg'>
+      <div className={`${challenge.coverPhotoMeta?.secure_url ? '' : 'mt-0.5 mb-2'} flex justify-center`}>
+        {challenge.coverPhotoMeta?.secure_url && <img src={challenge.coverPhotoMeta?.secure_url} alt={`${challenge?.name} cover photo`} width={imgWidth} height={imgHeight} className={`max-w-[${imgWidth}px] max-h-[${imgHeight}px]`} />}
       </div>
-      <div className={'mb-6 px-4 flex flex-col justify-center'}>
-        <div>
-
-          <h1 className='flex justify-center text-2xl py-2'>{challenge.name}</h1>
-          {challenge.userId === currentUser?.id && (
-            <div className="flex justify-center mt-2">
-              <Link className='underline text-red' to = {`/challenges/${challenge.id as string | number}/edit`}>edit</Link>&nbsp;&nbsp;
-              <Link className='underline text-red' onClick={handleDeleteDialog} to = {`/challenges/edit/${challenge.id as string | number}`}>delete</Link>&nbsp;&nbsp;
-            </div>
-          )}
+      {/* only show edit and delete here if there is an image */}
+      {challenge.coverPhotoMeta?.secure_url && challenge.userId === currentUser?.id &&
+        <div className="flex justify-center mt-1">
+          <Link className='underline hover:text-red' to = {`/challenges/${challenge.id as string | number}/edit`}>edit</Link>&nbsp;&nbsp;
+          <Link className='underline hover:text-red' onClick={handleDeleteDialog} to = {`/challenges/edit/${challenge.id as string | number}`}>delete</Link>&nbsp;&nbsp;
+          {deleteDialog && <DialogDelete prompt='Are you sure you want to delete this challenge?' isOpen={deleteDialog} deleteCallback={handleDelete} onCancel={cancelDialog}/>}
         </div>
-      {deleteDialog && <DialogDelete prompt='Are you sure you want to delete this challenge?' isOpen={deleteDialog} deleteCallback={handleDelete} onCancel={cancelDialog}/>}
-      <div className='p-4'>
-        <div className="mb-2 text-sm">
-          {new Date(challenge.startAt).toLocaleDateString(locale, dateOptions)} to {new Date(challenge.endAt ?? '').toLocaleDateString(locale, dateOptions)}
+      }
+      <div className='mb-6 px-4 md:px-0 justify-start'>
+        <h1 className='text-2xl py-2'>Overview</h1>
+        {/* only show edit and delete here if there is NOT an image */}
+        {!challenge.coverPhotoMeta?.secure_url && challenge.userId === currentUser?.id &&
+          <div className="flex justify-start mt-1 mb-2">
+            <Link className='underline hover:text-red' to = {`/challenges/${challenge.id as string | number}/edit`}>edit</Link>&nbsp;&nbsp;
+            <Link className='underline hover:text-red' onClick={handleDeleteDialog} to = {`/challenges/edit/${challenge.id as string | number}`}>delete</Link>&nbsp;&nbsp;
+            {deleteDialog && <DialogDelete prompt='Are you sure you want to delete this challenge?' isOpen={deleteDialog} deleteCallback={handleDelete} onCancel={cancelDialog}/>}
+          </div>
+        }
+        <div className='relative mb-4'>
+          <div className="font-bold">
+            Name
+          </div>
+          <div>
+            {challenge.name}
+            {/* <div className='float-right text-red'>Edit</div> */}
+          </div>
         </div>
-        <div className="mb-2">
-          <div className='text-center text-sm font-bold'>About</div>
-          <div className='text-left mb-4'>
+        <div className='relative'>
+          <div className="font-bold">
+            Description
+          </div>
+          <div>
+            {/* <div className='float-right text-red'>Edit</div> */}
             {parsedDescription?.text &&
               convertlineTextToJSX(parsedDescription.text ?? '')
             }
@@ -328,20 +327,45 @@ export default function ViewChallenge (): JSX.Element {
             }
           </div>
         </div>
-        <div className="mb-2 text-sm">
-          Checks in <span className="capitalize">{challenge?.frequency?.toLowerCase()}</span>
+        <h1 className='text-2xl py-2'>Timing</h1>
+        <div className="mb-2 flex flex-cols">
+          <div className="w-1/2">
+            <div className="font-bold">
+              Start Date
+            </div>
+            {new Date(challenge.startAt).toLocaleDateString(locale, dateOptions)}
+          </div>
+          <div className="w-1/2">
+            <div className="font-bold">
+              End Date
+            </div>
+            {new Date(challenge.endAt ?? '').toLocaleDateString(locale, dateOptions)}
+          </div>
         </div>
-
-      </div>
+        <div className="mb-2 flex flex-cols">
+          <div className="w-1/2">
+            <div className="font-bold">
+              Frequency
+            </div>
+            <div className="capitalize">
+              {challenge?.frequency?.toLowerCase()}
+            </div>
+          </div>
+          <div className="w-1/2">
+            <div className="font-bold">
+              Reminders
+            </div>
+          </div>
+        </div>
       </div>
     </div>
     <div className="max-w-sm md:max-w-md lg:max-w-lg pt-4">
     {!isComments && challenge?.userId === currentUser?.id && (
         <>
-        <Button className={'bg-red p-2 justify-center'} onClick={() => { navigate(`/posts/new/challenge/${challenge.id}`) }}>
+        <Button className='bg-red p-2 justify-center hover:bg-green-500' onClick={() => { navigate(`/posts/new/challenge/${challenge.id}`) }}>
           Post an Update
         </Button>
-        <Button className={'bg-yellow p-2 justify-center ml-2'} onClick={() => { navigate(`/threads/new/challenge/${challenge.id}`) }}>
+        <Button className='bg-grey p-2 justify-center ml-2 hover:bg-green-500' onClick={() => { navigate(`/threads/new/challenge/${challenge.id}`) }}>
           Start a Thread
         </Button>
       </>
@@ -350,7 +374,7 @@ export default function ViewChallenge (): JSX.Element {
         <>
           <Button
               onClick={toggleJoin}
-              className={'mt-8 bg-red hover:bg-green-500 text-white rounded-md p-2 text-xs'}>
+              className='mt-8 bg-red hover:bg-green-500 text-white rounded-md p-2 text-xs'>
                 {isMember ? 'Leave Challenge' : 'Join this Challenge'}
             </Button>
             {loading && <Spinner className="h-4 w-4 ml-1 inline" />}
@@ -375,13 +399,13 @@ export default function ViewChallenge (): JSX.Element {
               )}
           </div>
           <div className="text-xs my-2 justify-end w-1/2">
-            <button
+            <Button
               onClick={handleCheckIn}
               disabled={checkingIn || !canCheckInNow()}
-              className='bg-red text-white rounded-md p-2 justify-center text-xs disabled:bg-gray-400'
+              className='bg-red hover:bg-green-500 text-white rounded-md p-2 justify-center text-xs disabled:bg-gray-400'
             >
               {checkingIn ? 'Checking In...' : canCheckInNow() ? 'Check In Now' : 'Checked In'}
-            </button>
+            </Button>
         </div>
         </>
       )}
