@@ -85,10 +85,10 @@ export default function FormNote (props: FormNoteProps): JSX.Element {
     setVideoUrl(null)
   }
   const validate = (): boolean => {
-    if (body.length < 10) {
-      setError('Note must be at least 10 characters long')
-      return false
-    }
+    // if (body.length < 10) {
+    //   setError('Note must be at least 10 characters long')
+    //   return false
+    // }
     return true
   }
   async function handleSubmit (ev: React.FormEvent<HTMLFormElement>): Promise<void> {
