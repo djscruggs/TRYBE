@@ -3,12 +3,12 @@ import {
   Links,
   LiveReload,
   Meta,
-  Outlet,
   Scripts,
   ScrollRestoration,
   useRouteError,
   isRouteErrorResponse,
   useLoaderData
+  , useRevalidator
 } from '@remix-run/react'
 import { withEmotionCache } from '@emotion/react'
 import { useEffect, useState } from 'react'
@@ -22,9 +22,8 @@ import { Toaster } from 'react-hot-toast'
 import getUserLocale from 'get-user-locale'
 import { getUserByClerkId } from './models/user.server'
 import { rootAuthLoader } from '@clerk/remix/ssr.server'
-import { ClerkApp } from '@clerk/remix'
+import { ClerkApp, useUser } from '@clerk/remix'
 import { captureRemixErrorBoundaryError } from '@sentry/remix'
-
 interface DocumentProps {
   children: React.ReactNode
   title?: string
@@ -102,10 +101,16 @@ const Document = withEmotionCache(({ children, title }: DocumentProps, emotionCa
 // https://remix.run/docs/en/main/file-conventions/routes
 function App (): JSX.Element {
   const { user } = useLoaderData<{ user: CurrentUser }>()
+  const clerkUser = useUser()
+  const revalidator = useRevalidator()
   const [currentUser, setCurrentUser] = useState<CurrentUser | null>(user as CurrentUser)
+
   useEffect(() => {
+    // callback for when user profile is updated via clerk
+    revalidator.revalidate()
     setCurrentUser(user as CurrentUser)
-  }, [user])
+  }, [user, clerkUser.user])
+
   return (
     <Document>
         <Toaster position='top-center' />
