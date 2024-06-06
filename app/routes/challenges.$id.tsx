@@ -12,7 +12,8 @@ import { toast } from 'react-hot-toast'
 import {
   textToJSX,
   userLocale,
-  resizeImageToFit
+  resizeImageToFit,
+  pluralize
 } from '~/utils/helpers'
 import { type DateTimeFormatOptions } from 'intl'
 import { CurrentUserContext } from '../utils/CurrentUserContext'
@@ -392,10 +393,8 @@ export default function ViewChallenge (): JSX.Element {
             {challenge?._count?.members && challenge?._count?.members > 0
               ? (
             <div>
-              <Link className="underline" to={`/challenges/${challenge.id}/members`}>
                 <LiaUserFriendsSolid className="text-grey h-5 w-5 inline ml-4 -mt-1 mr-1" />
-                {challenge?._count.members} members
-              </Link>
+                {challenge?._count.members} {pluralize(challenge?._count.members, 'member')}
             </div>
                 )
               : (

@@ -233,6 +233,14 @@ export function textToHtml (text: string): string {
   return text.split('\n').map(line => `<p style="margin-bottom:.5em">${line}</p>`).join('').replace(/\n|\r/g, '')
 }
 
+export function pluralize (count: number, singular: string, plural = ''): string {
+  if (count === 1) return singular
+  if (plural !== '') {
+    return plural
+  }
+  return singular + 's'
+}
+
 interface HandleFileUploadProps {
   event: ChangeEvent<HTMLInputElement> // event that triggers the file upload
   setFile: (file: File | null) => void // callback that sets the file in the component's state

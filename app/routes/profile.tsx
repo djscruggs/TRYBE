@@ -16,13 +16,10 @@ export default function Profile (): JSX.Element {
       <UserProfile
         appearance={{
           variables: {
-            colorPrimary: '#FABFC4',
-            colorText: '#6b7280'
-          },
-          formButtonPrimary:
-              'bg-slate-500 hover:bg-slate-400 text-sm normal-case'
+            colorPrimary: '#EC5F5C'
+          }
         }}
-        />
+      />
       </SignedIn>
       <SignedOut>
         <SignIn />
