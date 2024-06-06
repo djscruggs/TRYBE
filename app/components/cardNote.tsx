@@ -96,9 +96,6 @@ export default function CardNote (props: CardNoteProps): JSX.Element {
   const getFullUrl = (): string => {
     return `${window.location.origin}/notes/${note.id}`
   }
-  if (revalidator.state === 'loading') {
-    return <Spinner className="h-4 w-4" />
-  }
   return (
     <>
     {note.replyTo && !note.isShare &&

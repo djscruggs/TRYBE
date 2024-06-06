@@ -54,7 +54,6 @@ export function FormField ({
         if (scrollHeight > 800) {
           scrollHeight = 800
         }
-        console.log(scrollHeight)
         textRef.current.style.height = scrollHeight + 'px'
       }
     }

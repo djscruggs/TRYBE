@@ -104,13 +104,13 @@ function App (): JSX.Element {
   const clerkUser = useUser()
   const revalidator = useRevalidator()
   const [currentUser, setCurrentUser] = useState<CurrentUser | null>(user as CurrentUser)
-
   useEffect(() => {
-    // callback for when user profile is updated via clerk
-    revalidator.revalidate()
     setCurrentUser(user as CurrentUser)
-  }, [user, clerkUser.user])
-
+  }, [user])
+  // callback for when user profile is updated via clerk
+  useEffect(() => {
+    revalidator.revalidate()
+  }, [clerkUser.user])
   return (
     <Document>
         <Toaster position='top-center' />
