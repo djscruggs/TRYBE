@@ -12,8 +12,6 @@ import { toast } from 'react-hot-toast'
 import {
   textToJSX,
   userLocale,
-  separateTextAndLinks,
-  formatLinks,
   resizeImageToFit
 } from '~/utils/helpers'
 import { type DateTimeFormatOptions } from 'intl'
@@ -161,7 +159,7 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
 export default function ViewChallenge (): JSX.Element {
   const data: ViewChallengeData = useLoaderData()
   const { challenge, hasLiked, hasLikedPost, hasLikedThread, latestPost, latestThread } = data
-  const parsedDescription = separateTextAndLinks(challenge.description ?? '')
+  const parsedDescription = textToJSX(challenge.description ?? '')
   const [membership, setMembership] = useState(data.membership)
 
   const likesCount = challenge?._count?.likes ?? 0
@@ -293,12 +291,7 @@ export default function ViewChallenge (): JSX.Element {
           </div>
           <div>
             {/* <div className='float-right text-red'>Edit</div> */}
-            {parsedDescription?.text &&
-              textToJSX(parsedDescription.text ?? '')
-            }
-            {parsedDescription?.links &&
-              formatLinks({ links: parsedDescription.links, keyPrefix: `challenge-${challenge.id}` })
-            }
+            {parsedDescription}
           </div>
         </div>
         <h1 className='text-xl py-2'>Timing</h1>
