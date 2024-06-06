@@ -194,17 +194,38 @@ export function resizeImageToFit (width: number, height: number, maxSize: number
 
   return [newWidth, newHeight]
 }
-export function convertlineTextToJSX (text: string | undefined): React.ReactNode {
+export function textToJSX (text: string | undefined): React.ReactNode {
   if (!text) return null
   return (
     <div>
       {text.split('\n').map((line: string, index: number) => (
         <React.Fragment key={index}>
-          {line}
+          {convertTextToJSXAnchors(line)}
           <br />
         </React.Fragment>
       ))}
     </div>
+  )
+}
+export function convertTextToJSXAnchors (text: string): React.ReactNode {
+  const urlRegex = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig
+  // Split the text into parts that are URLs and non-URLs
+  const parts = text.split(urlRegex)
+
+  // for some reason the regex is returning additional http, https, and \r
+  // Filter out any parts that are just those
+  const filteredParts = parts.filter(part => part !== 'http' && part !== 'https' && part !== '\r')
+  return (
+    <>
+      {filteredParts.map((part, index) => {
+        // Check if the part is a URL
+        if (part.match(urlRegex)) {
+          return <a className='underline blue' key={index} href={part} target="_blank" rel="noopener noreferrer">{part}</a>
+        } else {
+          return part
+        }
+      })}
+    </>
   )
 }
 export function textToHtml (text: string): string {

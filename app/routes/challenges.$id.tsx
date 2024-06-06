@@ -10,7 +10,7 @@ import { type LoaderFunction, type LoaderFunctionArgs } from '@remix-run/node'
 import axios from 'axios'
 import { toast } from 'react-hot-toast'
 import {
-  convertlineTextToJSX,
+  textToJSX,
   userLocale,
   separateTextAndLinks,
   formatLinks,
@@ -294,7 +294,7 @@ export default function ViewChallenge (): JSX.Element {
           <div>
             {/* <div className='float-right text-red'>Edit</div> */}
             {parsedDescription?.text &&
-              convertlineTextToJSX(parsedDescription.text ?? '')
+              textToJSX(parsedDescription.text ?? '')
             }
             {parsedDescription?.links &&
               formatLinks({ links: parsedDescription.links, keyPrefix: `challenge-${challenge.id}` })

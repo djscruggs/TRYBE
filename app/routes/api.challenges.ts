@@ -18,7 +18,6 @@ export async function action (args: ActionFunctionArgs): Promise<any> {
   if (!cleanData.userId) {
     cleanData.userId = currentUser.id
   }
-  console.log('cleanData', cleanData)
   try {
     // const validation = challengeSchema.safeParse(cleanData)
     // if (!validation.success) {

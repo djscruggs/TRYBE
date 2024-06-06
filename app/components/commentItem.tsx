@@ -3,7 +3,7 @@ import FormComment from './formComment'
 import { Avatar, Spinner } from '@material-tailwind/react'
 import { CurrentUserContext } from '~/utils/CurrentUserContext'
 import {
-  convertlineTextToJSX,
+  textToJSX,
   separateTextAndLinks,
   formatLinks
 } from '~/utils/helpers'
@@ -26,7 +26,6 @@ export default function CommentItem (props: CommentsProps): JSX.Element {
   const [comment, setComment] = useState<Comment | null>(props.comment ?? null)
   const [replies, setReplies] = useState<Comment[]>(comment?.replies ?? [])
   const { likedCommentIds } = props
-  const parsedBody = separateTextAndLinks(comment?.body ?? '')
   const [firstReply, setFirstReply] = useState<Comment | null>(null)
   const [isLiked, setIsLiked] = useState(likedCommentIds?.includes(comment?.id ?? 0))
   const [showLightbox, setShowLightbox] = useState(false)
@@ -110,12 +109,7 @@ export default function CommentItem (props: CommentsProps): JSX.Element {
               </div>
               <div className='flex-grow'>
                 <div className='text-xs mb-2'>{comment.user?.profile?.firstName} {comment.user?.profile?.lastName} - <span>{formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true })}</span></div>
-                  {parsedBody?.text &&
-                    convertlineTextToJSX(parsedBody.text ?? '')
-                  }
-                  {parsedBody?.links &&
-                    formatLinks({ links: parsedBody.links, keyPrefix: `comment-${comment.id}` })
-                  }
+                  {comment?.body && textToJSX(comment.body)}
                 </div>
               </div>
             <div className='ml-10 mb-4'>

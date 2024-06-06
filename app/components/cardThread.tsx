@@ -11,7 +11,7 @@ import FormThread from './formThread'
 import axios from 'axios'
 import { useRevalidator } from 'react-router-dom'
 import ShareMenu from './shareMenu'
-import { convertlineTextToJSX, separateTextAndLinks, formatLinks } from '~/utils/helpers'
+import { textToJSX, separateTextAndLinks, formatLinks } from '~/utils/helpers'
 import Liker from './liker'
 import DialogDelete from './dialogDelete'
 
@@ -23,7 +23,6 @@ interface CardThreadProps {
 export default function CardThread (props: CardThreadProps): JSX.Element {
   const { currentUser } = useContext(CurrentUserContext)
   const { hasLiked } = props
-  const parsedBody = separateTextAndLinks(props.thread.body)
   const [thread, setThread] = useState(props.thread)
   const [showLightbox, setShowLightbox] = useState(false)
   const [editing, setEditing] = useState(false)
@@ -100,12 +99,7 @@ export default function CardThread (props: CardThreadProps): JSX.Element {
               <div className="flex flex-col w-full h-full">
                 <div className='font-bold my-2'>{thread.title}</div>
 
-                {parsedBody?.text &&
-                  convertlineTextToJSX(parsedBody.text ?? '')
-                }
-                {parsedBody?.links &&
-                  formatLinks({ links: parsedBody.links, keyPrefix: `thread-${thread.id}` })
-                }
+                {thread.body && textToJSX(thread.body)}
                 <div className='mt-4'>
                   {thread.videoMeta?.secure_url && <video className="recorded" src={thread.videoMeta.secure_url} onClick={(event) => { event?.stopPropagation() }} controls />}
                   {thread.imageMeta?.secure_url && <img src={thread.imageMeta.secure_url} alt="thread picture" className="mt-4 cursor-pointer max-w-[200px]" onClick={handlePhotoClick} />}
