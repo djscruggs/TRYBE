@@ -102,7 +102,9 @@ export const FullLayout = (): JSX.Element => {
   return (
       <>
         <div className='hidden md:block w-screen'>
-          <div className={`z-10 bg-yellow sw-screen sticky top-0 h-4 text-xs transition-opacity duration-500 ${wrapperVisible ? 'opacity-100' : 'opacity-0'}`}></div>
+          {location.pathname !== '/' &&
+            <div className={`z-10 bg-yellow sw-screen sticky top-0 h-4 text-xs transition-opacity duration-500 ${wrapperVisible ? 'opacity-100' : 'opacity-0'}`}></div>
+          }
           <div className='flex min-h-screen max-w-screen-2xl'>
             {currentUser &&
               <div className="hidden md:flex flex-col justify-start items-start mr-8">
@@ -140,18 +142,20 @@ export const FullLayout = (): JSX.Element => {
               </div>
             </SignedOut>
           </div>
-          <div className={`z-10 bg-red w-screen sticky bottom-0 max-h-8 text-xs transition-opacity duration-500 ${wrapperVisible ? 'opacity-100' : 'opacity-0'}`}>
-            <div className='flex w-screen flex-row justify-center items-center pt-1 pb-2'>
-              <a href='https://www.notion.so/jointhetrybe/About-TRYBE-ed415205d1a5411f96807cf9e04ee0f6?pvs=4' className='mx-2 text-white underline' >About Us</a>
-              <a href='https://www.jointhetrybe.com/trybepartnerships' className='mx-2 text-white underline' >Sponsors & Partnerships</a>
-              {navigation.state === 'loading'
-                ? <Spinner />
-                : <img src="/logo.png" className='h-[24px] bg-yellow rounded-full' />
-          }
-              <a href='https://jointhetrybe.notion.site/Code-of-Conduct-096eb9cbd5ef41f789be899de5004d8e' className='mx-2 text-white underline'>Community Guidelines</a>
-              <a href='https://jointhetrybe.notion.site/Privacy-Policy-4b7f09f5efde49adb95fb1845b5b58e9' className='mx-2 text-white underline'>Privacy Policy</a>
+          {location.pathname !== '/' &&
+            <div className={`z-10 bg-red w-screen sticky bottom-0 max-h-8 text-xs transition-opacity duration-500 ${wrapperVisible ? 'opacity-100' : 'opacity-0'}`}>
+              <div className='flex w-screen flex-row justify-center items-center pt-1 pb-2'>
+                <a href='https://www.notion.so/jointhetrybe/About-TRYBE-ed415205d1a5411f96807cf9e04ee0f6?pvs=4' className='mx-2 text-white underline' >About Us</a>
+                <a href='https://www.jointhetrybe.com/trybepartnerships' className='mx-2 text-white underline' >Sponsors & Partnerships</a>
+                {navigation.state === 'loading'
+                  ? <Spinner />
+                  : <img src="/logo.png" className='h-[24px] bg-yellow rounded-full' />
+                }
+                <a href='https://jointhetrybe.notion.site/Code-of-Conduct-096eb9cbd5ef41f789be899de5004d8e' className='mx-2 text-white underline'>Community Guidelines</a>
+                <a href='https://jointhetrybe.notion.site/Privacy-Policy-4b7f09f5efde49adb95fb1845b5b58e9' className='mx-2 text-white underline'>Privacy Policy</a>
+              </div>
             </div>
-          </div>
+          }
         </div>
         {/* mobile layout */}
         <div className="md:hidden max-w-screen flex flex-col min-h-screen max-h-screen min-w-screen p-0" onClick={hideMenu}>
