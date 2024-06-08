@@ -1,7 +1,8 @@
 import { useNavigate, useNavigation } from '@remix-run/react'
 import {
   Card,
-  Button
+  Button,
+  Spinner
 } from '@material-tailwind/react'
 
 export const WelcomePage = (): JSX.Element => {
