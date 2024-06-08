@@ -188,7 +188,7 @@ export const FullLayout = (): JSX.Element => {
                     </AnimatePresence> */}
                 </div>
                 {showNav &&
-                  <div className="fixed bottom-0 left-0 right-0 max-w-screen flex items-center w-full justify-between m-0 p-0 px-2 py-1 bg-gray-50 border-2 border-slate-200 z-10">
+                  <div className={`${wrapperVisible ? 'opacity-100' : 'opacity-0'} transition-opacity duration-500 fixed bottom-0 left-0 right-0 max-w-screen flex items-center w-full justify-between m-0 p-0 px-2 py-1 bg-gray-50 border-2 border-slate-200 z-10`}>
                       <Link to="/" className='w-8 h-8 ml-6 flex justify-center items-center'>
                         <HomeIcon className='cursor-pointer w-8 h-8' />
                       </Link>
