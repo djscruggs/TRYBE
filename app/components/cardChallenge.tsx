@@ -80,7 +80,7 @@ export default function CardChallenge ({ challenge, isShare, isMember }: CardCha
               </div>
               <div className="flex flex-col items-center col-span-2">
 
-                {challenge.coverPhotoMeta?.secure_url as string && <img src={challenge.coverPhotoMeta?.secure_url as string} alt={`${challenge?.name} cover photo`} width={imgWidth} height={imgHeight} className={`max-w-[${imgWidth}px] max-h-[${imgHeight}px]`} />}
+                {challenge.coverPhotoMeta?.secure_url! && <img src={challenge.coverPhotoMeta?.secure_url} alt={`${challenge?.name} cover photo`} width={imgWidth} height={imgHeight} className={`max-w-full max-h-[${imgHeight}px]`} />}
                 <Button onClick={goToChallenge} className={`bg-${buttonColor} text-${buttonTextColor} p-3 py-2 rounded-full mt-3`}>{isMember ? 'Check In' : 'Sign up!'}</Button>
               </div>
             </div>
