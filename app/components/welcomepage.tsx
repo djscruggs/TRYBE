@@ -9,24 +9,29 @@ export const WelcomePage = (): JSX.Element => {
           <>
             {/* <div className='w-screen bg-white absolute top-0 h-10 z-10'> kjahsdkjasd</div> */}
             <div className='w-screen min-h-full items-center bg-white flex flex-col  text-[#555555]'>
-              <div className='flex  border  bg-yellow pb-4'>
+              <div className='flex bg-yellow pb-0'>
                 <div className='hidden md:block md:w-1/12'></div>
                 <div className='flex items-center h-full w-full md:w-5/12'>
                   <div className='flex flex-col px-10 md:px-0 h-full items-center md:items-start'>
-                    <div className='justify-start  mt-20 min-w[380px]'>
+                    <div className='justify-start  mt-20 min-w[380px] z-10'>
                       <h1 className='text-5xl font-bold'>BUILD NEW HABITS.</h1>
                       <h1 className='text-5xl font-bold'>JOIN CHALLENGES.</h1>
                       <h1 className='text-5xl font-bold'>MEET YOUR TRYBE.</h1>
-                      <div className='flex flex-col justify-center items-center w-7/8 md:w-2/3 text-xl  italic mt-10 mb-10'>
+                      <div className='flex flex-col justify-center items-center w-7/8 md:w-5/6 text-xl  italic mt-10 mb-10'>
                         Join 200+ people getting weekly insights, perspectives and useful tools that accelerate their growth.
                       </div>
                     </div>
-                    <CardSignup />
+                    <div className='hidden lg:flex w-full max-w[240px] mb-4 justify-start items-center'>
+                      <CardSignup maxWidth='300px'/>
+                    </div>
                   </div>
                 </div>
-                <div className='hidden md:flex md:flex-col w-5/12 justify-center items-center'>
-                  <img src="/images/welcome/hero.webp" alt="Landing Graphic" className='w-full  md:min-w-[400px] lg:min-w-[607px]' />
+                <div className='hidden md:flex md:flex-col w-5/12 lg:justify-start md:justify-center items-center'>
+                  <img src="/images/welcome/hero.webp" alt="Landing Graphic" className='w-full  md:min-w-[600px] lg:min-w-[800px] overflow-hidden' />
                 </div>
+              </div>
+              <div className='hidden w-full md:flex md:items-center md:justify-center lg:hidden bg-yellow py-2'>
+                <CardSignup />
               </div>
               <div className='hidden md:block md:w-1/12'></div>
               <div className='w-full block md:flex justify-start pt-10'>
@@ -35,12 +40,12 @@ export const WelcomePage = (): JSX.Element => {
                   <h1 className='text-5xl font-bold'>TRYBE</h1>
 
                   <div className='text-2xl italic'>/try-b/</div>
-                  <div className='text-lg italic leading-5'>
+                  <div className='text-lg italic leading-7'>
                     A group of humans <span className='font-bold'>trying</span> to reach new personal heights with a likeminded <span className='font-bold'>tribe</span> of people
                   </div>
 
                 </div>
-                <div className='w-full md:w-2/3 text-start px-10 md:pl-4 md:pr-0'>
+                <div className='w-full md:w-2/3 text-start px-10 md:pl-4 md:pr-0 leading-7'>
                   <p className='mb-2'>A personal development community that sets goals, takes on challenges, and authentically shares our journey of growth with other like-minded people.</p>
 
                   <p className='font-bold'>We make personal growth a community mission</p>
@@ -82,11 +87,29 @@ export const WelcomePage = (): JSX.Element => {
                     </div>
                   </div>
                 </div>
-                <div className='bg-yellow flex flex-col p-10 px-2 h-full md:hidden'>
+                <div className='bg-yellow flex flex-col p-10 px-2 h-full items-center md:hidden'>
                   <CardSignup />
                 </div>
-              </div>
 
+              </div>
+              <div className='bg-red min-h-[50px] w-full justify-center'>
+                <div className='text-white text-md text-center w-full'>
+                  <div className='flex w-screen flex-row justify-center items-center pt-1 pb-2 text-xs md:text-sm'>
+                    <a href='https://www.notion.so/jointhetrybe/About-TRYBE-ed415205d1a5411f96807cf9e04ee0f6?pvs=4' className='mx-2 text-white underline' >About Us</a>
+                    <a href='https://www.jointhetrybe.com/trybepartnerships' className='mx-2 text-white underline' >Sponsors & Partnerships</a>
+                    {navigation.state === 'loading'
+                      ? <Spinner />
+                      : <img src="/logo.png" className='h-[24px] bg-yellow rounded-full' />
+                    }
+                    <a href='https://jointhetrybe.notion.site/Code-of-Conduct-096eb9cbd5ef41f789be899de5004d8e' className='mx-2 text-white underline'>Community Guidelines</a>
+                    <a href='https://jointhetrybe.notion.site/Privacy-Policy-4b7f09f5efde49adb95fb1845b5b58e9' className='mx-2 text-white underline'>Privacy Policy</a>
+                  </div>
+                </div>
+                <div className='text-white text-sm opacity-70 text-center w-full text-xs md:text-sm'>
+                  © 2023 TRYBE. All Rights Reserved.<br />
+                  info@jointhetrybe.com
+                </div>
+              </div>
             </div>
 
           </>
@@ -94,7 +117,8 @@ export const WelcomePage = (): JSX.Element => {
   )
 }
 
-function CardSignup (): JSX.Element {
+function CardSignup ({ maxWidth = '400px' }: { maxWidth?: string }): JSX.Element {
+  console.log(maxWidth)
   const navigate = useNavigate()
   const handleSignIn = (event: any): void => {
     event.preventDefault()
@@ -105,7 +129,7 @@ function CardSignup (): JSX.Element {
     navigate('/signup')
   }
   return (
-        <Card className='drop-shadow-lg border-gray rounded-lg w-full max-h-[400px] max-w-[400px] p-8 pt-4 text-gray-500'>
+        <Card className={`drop-shadow-lg border-gray rounded-lg w-full max-h-[400px] max-w-[${maxWidth}] p-8 pt-4 text-gray-500`}>
           <div className='flex items-center justify-center mb-6'>
             <img src="/logo.png" alt="TRYBE" height="50" width="50"/> <span className='ml-2 text-2xl'>TRYBE</span>
           </div>
