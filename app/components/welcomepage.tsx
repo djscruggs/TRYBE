@@ -58,7 +58,7 @@ export const WelcomePage = (): JSX.Element => {
                     <div className='flex justify-center items-center h-[224px]'>
                       <img src="/images/welcome/challenges.webp" alt="challenges" className=' max-h-[224px]'/>
                     </div>
-                    <div className='p-2 text-center'>
+                    <div className='p-4 text-center md:px-2'>
                         <div className='text-2xl mt-2 font-bold'>Challenges</div>
                         <div>We celebrate the power of challenges to help focus, structure and kickstart our growth. When you don&apos;t have to do the heavy lifting of planning, scheduling and tracking, you can focus on just showing up, and that&apos;s where the magic and self-discovery unfolds!</div>
                     </div>
@@ -67,7 +67,7 @@ export const WelcomePage = (): JSX.Element => {
                     <div className='flex justify-center items-center h-[224px]'>
                       <img src="/images/welcome/community.png" alt="community" className=' max-h-[224px]'/>
                     </div>
-                    <div className='p-2 text-center'>
+                    <div className='p-4 text-center md:px-2'>
                         <div className='text-2xl mt-2 font-bold'>Community</div>
                         <div>Connect with other like-minded people who understand you, your desire for growth, your struggles, and your triumphs. Surround yourself with others who&apos;ve been there, are there right now, or aspire to be. Feel the growth that comes with finding your TRYBE</div>
                     </div>
@@ -76,7 +76,7 @@ export const WelcomePage = (): JSX.Element => {
                     <div className='flex justify-center items-center h-[224px]'>
                       <img src="/images/welcome/coaching.webp" alt="coaching" className=' max-h-[224px]'/>
                     </div>
-                    <div className='p-2 text-center'>
+                    <div className='p-4 text-center md:px-4'>
                         <div className='text-2xl mt-2 font-bold'>Coaching</div>
                         <div>Sometimes we need a cheerleader, sometimes we need a coach - at TRYBE you get both. With access to others who&apos;ve walked your path before, peer coaching opportunities and systems designed for progress, you can feel both celebrated and guided.</div>
                     </div>
