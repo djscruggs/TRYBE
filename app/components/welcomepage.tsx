@@ -1,10 +1,11 @@
-import { Link, useNavigate } from '@remix-run/react'
+import { useNavigate, useNavigation } from '@remix-run/react'
 import {
   Card,
   Button
 } from '@material-tailwind/react'
 
 export const WelcomePage = (): JSX.Element => {
+  const navigation = useNavigation()
   return (
           <>
             {/* <div className='w-screen bg-white absolute top-0 h-10 z-10'> kjahsdkjasd</div> */}
