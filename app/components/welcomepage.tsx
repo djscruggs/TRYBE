@@ -14,9 +14,9 @@ export const WelcomePage = (): JSX.Element => {
                 <div className='flex items-center h-full w-full md:w-5/12'>
                   <div className='flex flex-col px-10 md:px-0 h-full items-center md:items-start'>
                     <div className='justify-start  mt-20 min-w[380px] z-10'>
-                      <h1 className='text-5xl font-bold'>BUILD NEW HABITS.</h1>
-                      <h1 className='text-5xl font-bold'>JOIN CHALLENGES.</h1>
-                      <h1 className='text-5xl font-bold'>MEET YOUR TRYBE.</h1>
+                      <h1 className='text-5xl font-bold '>BUILD NEW HABITS.</h1>
+                      <h1 className='text-5xl font-bold '><span className='bg-yellow z-10 z-10 rounded-tr-lg'>JOIN CHALLENGES.</span></h1>
+                      <h1 className='text-5xl font-bold '><span className='bg-yellow z-10 rounded-br-lg'>MEET YOUR TRYBE.</span></h1>
                       <div className='flex flex-col justify-center items-center w-7/8 md:w-5/6 text-xl  italic mt-10 mb-10'>
                         Join 200+ people getting weekly insights, perspectives and useful tools that accelerate their growth.
                       </div>
