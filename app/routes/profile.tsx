@@ -11,16 +11,16 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
 
 export default function Profile (): JSX.Element {
   return (
-    <div className='h-screen items-center md:items-start justify-start md:h-full md:justify-start md:pt-10 md:flex'>
+    <div className='h-screen items-center pt-10 justify-center md:items-start  md:h-full md:justify-start md:flex'>
       <SignedIn>
-      <UserProfile
-        appearance={{
-          variables: {
-            colorPrimary: '#EC5F5C'
-          }
-        }}
-      />
-      </SignedIn>
+        <UserProfile
+          appearance={{
+            variables: {
+              colorPrimary: '#EC5F5C'
+            }
+          }}
+        />
+        </SignedIn>
       <SignedOut>
         <SignIn />
       </SignedOut>

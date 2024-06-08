@@ -173,7 +173,7 @@ export const FullLayout = (): JSX.Element => {
                 </>
                 }
 
-                <div className={`flex flex-col items-center justify-start  ${isWelcome ? 'p-0' : ' pb-16 px-2'}`}>
+                <div className={`flex flex-col items-center justify-center  ${isWelcome ? 'p-0' : ' px-2'}`}>
                     <Outlet />
                     {/* <AnimatePresence mode='wait' initial={false}>
                         <motion.main
