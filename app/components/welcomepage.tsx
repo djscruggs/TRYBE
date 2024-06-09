@@ -32,8 +32,8 @@ export const WelcomePage = (): JSX.Element => {
                   <img src="/images/welcome/hero.webp" alt="Landing Graphic" className='w-full  md:min-w-[600px] lg:min-w-[800px] overflow-hidden' />
                 </div>
               </div>
-              <div className='hidden w-full md:flex md:items-center md:justify-center lg:hidden bg-yellow py-2'>
-                <CardSignup />
+              <div className='w-full flex items-center justify-center lg:hidden bg-yellow py-2 px-2 md:px-0'>
+                <CardSignup maxWidth='300px' />
               </div>
               <div className='hidden md:block md:w-1/12'></div>
               <div className='w-full block md:flex justify-start pt-10'>
@@ -120,7 +120,6 @@ export const WelcomePage = (): JSX.Element => {
 }
 
 function CardSignup ({ maxWidth = '400px' }: { maxWidth?: string }): JSX.Element {
-  console.log(maxWidth)
   const navigate = useNavigate()
   const handleSignIn = (event: any): void => {
     event.preventDefault()
