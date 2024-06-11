@@ -103,7 +103,7 @@ export const FullLayout = (): JSX.Element => {
       <>
         <div className='hidden md:block w-screen'>
           {location.pathname !== '/' &&
-            <div className={`z-10 bg-yellow sw-screen sticky top-0 h-4 text-xs transition-opacity duration-500 ${wrapperVisible ? 'opacity-100' : 'opacity-0'}`}></div>
+            <div className={`z-10 bg-yellow sw-screen sticky top-0 h-4 text-xs transition-opacity duration-500 ${wrapperVisible ? 'opacity-100' : 'opacity-30'}`}></div>
           }
           <div className='flex min-h-screen max-w-screen-2xl'>
             {currentUser &&
@@ -143,7 +143,7 @@ export const FullLayout = (): JSX.Element => {
             </SignedOut>
           </div>
           {location.pathname !== '/' &&
-            <div className={`z-10 bg-red w-screen sticky bottom-0 max-h-8 text-xs transition-opacity duration-500 ${wrapperVisible ? 'opacity-100' : 'opacity-0'}`}>
+            <div className={`z-10 bg-red w-screen sticky bottom-0 max-h-8 text-xs transition-opacity duration-500 ${wrapperVisible ? 'opacity-100' : 'opacity-30'}`}>
               <div className='flex w-screen flex-row justify-center items-center pt-1 pb-2'>
                 <a href='https://www.notion.so/jointhetrybe/About-TRYBE-ed415205d1a5411f96807cf9e04ee0f6?pvs=4' className='mx-2 text-white underline' >About Us</a>
                 <a href='https://www.jointhetrybe.com/trybepartnerships' className='mx-2 text-white underline' >Sponsors & Partnerships</a>
@@ -188,7 +188,7 @@ export const FullLayout = (): JSX.Element => {
                     </AnimatePresence> */}
                 </div>
                 {showNav &&
-                  <div className={`${wrapperVisible ? 'opacity-100' : 'opacity-0'} transition-opacity duration-500 fixed bottom-0 left-0 right-0 max-w-screen flex items-center w-full justify-between m-0 p-0 px-2 py-1 bg-gray-50 border-2 border-slate-200 z-10`}>
+                  <div className={`${wrapperVisible ? 'opacity-100' : 'opacity-30'} transition-opacity duration-500 fixed bottom-0 left-0 right-0 max-w-screen flex items-center w-full justify-between m-0 p-0 px-2 py-1 bg-gray-50 border-2 border-slate-200 z-10`}>
                       <Link to="/" className='w-8 h-8 ml-6 flex justify-center items-center'>
                         <HomeIcon className='cursor-pointer w-8 h-8' />
                       </Link>
