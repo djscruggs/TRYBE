@@ -8,9 +8,15 @@ const UserAvatar = ({ variant = 'circular', size = 'md', color = 'gray', classNa
   const { currentUser } = useContext(CurrentUserContext)
   if (!currentUser?.profile) return <></>
   const name = userInitials(currentUser) ?? '?'
+  let src = currentUser.profile.profileImage
+  if (src.includes('?')) {
+    src += `&t=${Date.now()}`
+  } else {
+    src += `?t=${Date.now()}`
+  }
   return (
     <Avatar
-      src={`${currentUser.profile.profileImage}?t=${Date.now()}`}
+      src={src}
       alt={name}
       variant={variant}
       size={size}
