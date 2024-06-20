@@ -6,6 +6,7 @@
 
 [Super-early alpha site](https://trybe-icy-smoke-8833.fly.dev/) - updated frequently, expect bugs
 
+![Trybe](https://github.com/djscruggs/TRYBE/assets/41671/f8a3e71e-535d-4364-becb-20fb839adf8c)
 
 **Development Info**
 
@@ -22,3 +23,4 @@ Download or fork the repo and do the following.
 `npm install`
 
 `npm run dev`
+
