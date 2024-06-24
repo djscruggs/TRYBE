@@ -1,6 +1,6 @@
 import { CurrentUserContext } from '../utils/CurrentUserContext'
 import { requireCurrentUser } from '../models/auth.server'
-import React, { useContext, useState, useEffect } from 'react'
+import { useContext, useState, useEffect } from 'react'
 import UserAvatar from '../components/useravatar'
 import FormNote from '../components/formNote'
 import { useLoaderData } from '@remix-run/react'
@@ -10,7 +10,6 @@ import { type LoaderFunction } from '@remix-run/node'
 import { prisma } from '../models/prisma.server'
 import CardChallenge from '../components/cardChallenge'
 import CardNote from '~/components/cardNote'
-import { useRevalidator } from 'react-router-dom'
 
 interface FeedLoaderData {
   challenges: Array<Partial<ChallengeSummary>>

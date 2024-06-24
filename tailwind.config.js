@@ -8,6 +8,9 @@ module.exports = withMT({
   theme: {
     
     extend: {
+      fontFamily: {
+        'sans': ['Source Sans Pro', 'Roboto', 'Helvetica', 'Arial', 'sans-serif']
+      },
       colors: {
         transparent: 'transparent',
         current: 'currentColor',
@@ -26,5 +29,6 @@ module.exports = withMT({
       }
     },
   },
+  
   plugins: [],
 })
