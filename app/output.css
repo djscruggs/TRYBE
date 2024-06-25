@@ -1228,6 +1228,10 @@ video {
   height: 100vh;
 }
 
+.h-\[40px\] {
+  height: 40px;
+}
+
 .max-h-60 {
   max-height: 15rem;
 }
@@ -1424,6 +1428,10 @@ video {
 
 .w-screen {
   width: 100vw;
+}
+
+.w-\[40px\] {
+  width: 40px;
 }
 
 .min-w-36 {
@@ -1757,6 +1765,10 @@ video {
 
 .items-center {
   align-items: center;
+}
+
+.items-baseline {
+  align-items: baseline;
 }
 
 .justify-start {

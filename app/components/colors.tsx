@@ -25,6 +25,7 @@ export function Colors (): JSX.Element {
         <div className='bg-gradient-to-b from-grey to-white'>gradient</div>
         <div className='max-w-[300px] bg-gradient-to-b from-grey to-white'>max width 300</div>
         <div className='max-w-[400px] bg-gradient-to-b from-grey to-white'>max width 400</div>
+        <div className='w-[40px] h-[40px] bg-yellow'>width 40px</div>
         </div>
 
   )

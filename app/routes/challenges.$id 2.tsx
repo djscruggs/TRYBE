@@ -1,7 +1,7 @@
 import { loadChallengeSummary } from '~/models/challenge.server'
 import { loadPostSummary } from '~/models/post.server'
 import { loadThreadSummary } from '~/models/thread.server'
-import { Outlet, useLoaderData, Link, useNavigate, useLocation, useMatches } from '@remix-run/react'
+import { Outlet, useLoaderData, Link, useNavigate, useLocation } from '@remix-run/react'
 import React, { useContext, useState } from 'react'
 import { useRevalidator } from 'react-router-dom'
 import { requireCurrentUser } from '../models/auth.server'
@@ -19,7 +19,6 @@ import { type DateTimeFormatOptions } from 'intl'
 import { CurrentUserContext } from '../utils/CurrentUserContext'
 import { Spinner, Button } from '@material-tailwind/react'
 import CardPost from '~/components/cardPost'
-import Logo from '~/components/logo'
 import CardThread from '~/components/cardThread'
 import { LiaUserFriendsSolid } from 'react-icons/lia'
 import { prisma } from '../models/prisma.server'
@@ -160,10 +159,6 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
 }
 export default function ViewChallenge (): JSX.Element {
   const data: ViewChallengeData = useLoaderData()
-  const matches = useMatches()
-  console.log(matches.length)
-  const isOverviewRoute = matches.length === 3
-  console.log(matches)
   const { challenge, hasLiked, hasLikedPost, hasLikedThread, latestPost, latestThread } = data
   const parsedDescription = textToJSX(challenge.description ?? '')
   const [membership, setMembership] = useState(data.membership)
@@ -191,6 +186,10 @@ export default function ViewChallenge (): JSX.Element {
   }
   if (!data?.challenge) {
     return <p>Loading...</p>
+  }
+
+  if (location.pathname.includes('edit') || location.pathname.includes('share')) {
+    return <Outlet />
   }
   const locale = userLocale(currentUser)
   const formatNextCheckin = (): string => {
@@ -257,219 +256,190 @@ export default function ViewChallenge (): JSX.Element {
     month: 'short',
     day: 'numeric'
   }
-  if (!isOverviewRoute) {
-    return (
-      <div className='flex flex-col'>
-      <ChallengeHeader challenge={challenge} />
-      <Outlet />
-      </div>
-    )
-  }
 
   return (
     <div className='flex flex-col'>
-      <div className='max-w-sm md:max-w-md lg:max-w-lg'>
-        <div className={`${challenge.coverPhotoMeta?.secure_url ? '' : 'mt-0.5 mb-2'} flex justify-center`}>
-          {challenge.coverPhotoMeta?.secure_url && <img src={challenge.coverPhotoMeta?.secure_url} alt={`${challenge?.name} cover photo`} width={imgWidth} height={imgHeight} className={`max-w-[${imgWidth}px] max-h-[${imgHeight}px]`} />}
+    <div className='max-w-sm md:max-w-md lg:max-w-lg'>
+      <div className={`${challenge.coverPhotoMeta?.secure_url ? '' : 'mt-0.5 mb-2'} flex justify-center`}>
+        {challenge.coverPhotoMeta?.secure_url && <img src={challenge.coverPhotoMeta?.secure_url} alt={`${challenge?.name} cover photo`} width={imgWidth} height={imgHeight} className={`max-w-[${imgWidth}px] max-h-[${imgHeight}px]`} />}
+      </div>
+      {/* only show edit and delete here if there is an image */}
+      {challenge.coverPhotoMeta?.secure_url && challenge.userId === currentUser?.id &&
+        <div className="flex justify-center mt-1">
+          <EditLinks challenge={challenge}/>
         </div>
-        {/* only show edit and delete here if there is an image */}
-        {challenge.coverPhotoMeta?.secure_url && challenge.userId === currentUser?.id &&
-          <div className="flex justify-center mt-1">
+      }
+      <div className='mb-6 px-4 md:px-0 justify-start'>
+        <h1 className='text-2xl py-2'>Overview</h1>
+        {/* only show edit and delete here if there is NOT an image */}
+        {!challenge.coverPhotoMeta?.secure_url && challenge.userId === currentUser?.id &&
+          <div className="flex justify-start mt-1 mb-2">
             <EditLinks challenge={challenge}/>
           </div>
         }
-        <div className='mb-6 px-4 md:px-0 justify-start'>
-          <h1 className='text-2xl py-2'>Overview</h1>
-          {/* only show edit and delete here if there is NOT an image */}
-          {!challenge.coverPhotoMeta?.secure_url && challenge.userId === currentUser?.id &&
-            <div className="flex justify-start mt-1 mb-2">
-              <EditLinks challenge={challenge}/>
-            </div>
-          }
-          <div className='relative mb-4'>
+        <div className='relative mb-4'>
+          <div className="font-bold">
+            Name
+          </div>
+          <div>
+            {challenge.name}
+            {/* <div className='float-right text-red'>Edit</div> */}
+          </div>
+        </div>
+        <div className='relative'>
+          <div className="font-bold">
+            Description
+          </div>
+          <div>
+            {/* <div className='float-right text-red'>Edit</div> */}
+            {parsedDescription}
+          </div>
+        </div>
+        <h1 className='text-xl py-2'>Timing</h1>
+        <div className="mb-2 flex flex-cols">
+          <div className="w-1/2">
             <div className="font-bold">
-              Name
+              Start Date
             </div>
-            <div>
-              {challenge.name}
-              {/* <div className='float-right text-red'>Edit</div> */}
-            </div>
+            {new Date(challenge.startAt).toLocaleDateString(locale, dateOptions)}
           </div>
-          <div className='relative'>
+          <div className="w-1/2">
             <div className="font-bold">
-              Description
+              End Date
             </div>
-            <div>
-              {/* <div className='float-right text-red'>Edit</div> */}
-              {parsedDescription}
+            {new Date(challenge.endAt ?? '').toLocaleDateString(locale, dateOptions)}
+          </div>
+        </div>
+        <div className="mb-2 flex flex-cols">
+          <div className="w-1/2">
+            <div className="font-bold">
+              Frequency
+            </div>
+            <div className="capitalize">
+              {challenge?.frequency?.toLowerCase()}
             </div>
           </div>
-          <h1 className='text-xl py-2'>Timing</h1>
-          <div className="mb-2 flex flex-cols">
-            <div className="w-1/2">
-              <div className="font-bold">
-                Start Date
-              </div>
-              {new Date(challenge.startAt).toLocaleDateString(locale, dateOptions)}
-            </div>
-            <div className="w-1/2">
-              <div className="font-bold">
-                End Date
-              </div>
-              {new Date(challenge.endAt ?? '').toLocaleDateString(locale, dateOptions)}
-            </div>
-          </div>
-          <div className="mb-2 flex flex-cols">
-            <div className="w-1/2">
-              <div className="font-bold">
-                Frequency
-              </div>
-              <div className="capitalize">
-                {challenge?.frequency?.toLowerCase()}
-              </div>
-            </div>
-            <div className="w-1/2">
-              <div className="font-bold">
-                Reminders
-              </div>
+          <div className="w-1/2">
+            <div className="font-bold">
+              Reminders
             </div>
           </div>
         </div>
       </div>
-
-      <div className="max-w-sm md:max-w-md lg:max-w-lg pt-4">
-      {!isComments && challenge?.userId === currentUser?.id && (
-          <>
-          <Button className='bg-red p-2 justify-center hover:bg-green-500' onClick={() => { navigate(`/posts/new/challenge/${challenge.id}`) }}>
-            Post an Update
-          </Button>
-          <Button className='bg-grey p-2 justify-center ml-2 hover:bg-green-500' onClick={() => { navigate(`/threads/new/challenge/${challenge.id}`) }}>
-            Start a Thread
-          </Button>
+    </div>
+    <div className="max-w-sm md:max-w-md lg:max-w-lg pt-4">
+    {!isComments && challenge?.userId === currentUser?.id && (
+        <>
+        <Button className='bg-red p-2 justify-center hover:bg-green-500' onClick={() => { navigate(`/posts/new/challenge/${challenge.id}`) }}>
+          Post an Update
+        </Button>
+        <Button className='bg-grey p-2 justify-center ml-2 hover:bg-green-500' onClick={() => { navigate(`/threads/new/challenge/${challenge.id}`) }}>
+          Start a Thread
+        </Button>
+      </>
+    )}
+      {challenge?.userId !== currentUser?.id && (
+        <>
+          <Button
+              onClick={toggleJoin}
+              className='mt-8 bg-red hover:bg-green-500 text-white rounded-md p-2 text-xs'>
+                {isMember ? 'Leave Challenge' : 'Join this Challenge'}
+            </Button>
+            {loading && <Spinner className="h-4 w-4 ml-1 inline" />}
         </>
       )}
-        {challenge?.userId !== currentUser?.id && (
-          <>
+
+      <div className="my-2 flex text-sm items-center justify-start w-full p-2">
+      {isMember && (
+        <>
+
+          <div className="text-xs my-2 justify-start w-1/2">
+          {membership?.lastCheckIn
+            ? (
+            <>
+            Last check-in: {formatDistanceToNow(membership.lastCheckIn)} ago <br />
+            {membership.nextCheckIn && <p>Next check-in {formatNextCheckin()}</p>}
+            {Number(membership?._count?.checkIns) > 0 && <p>{membership?._count?.checkIns} check-ins total</p>}
+            </>
+              )
+            : (
+            <p>You haven&apos;t checked in yet</p>
+              )}
+          </div>
+          <div className="text-xs my-2 justify-end w-1/2">
             <Button
-                onClick={toggleJoin}
-                className='mt-8 bg-red hover:bg-green-500 text-white rounded-md p-2 text-xs'>
-                  {isMember ? 'Leave Challenge' : 'Join this Challenge'}
-              </Button>
-              {loading && <Spinner className="h-4 w-4 ml-1 inline" />}
-          </>
-        )}
+              onClick={handleCheckIn}
+              disabled={checkingIn || !canCheckInNow()}
+              className='bg-red hover:bg-green-500 text-white rounded-md p-2 justify-center text-xs disabled:bg-gray-400'
+            >
+              {checkingIn ? 'Checking In...' : canCheckInNow() ? 'Check In Now' : 'Checked In'}
+            </Button>
+        </div>
+        </>
+      )}
+      </div>
+      <div className='w-full'>
+        <div className='flex flex-row justify-between w-full'>
 
-        <div className="my-2 flex text-sm items-center justify-start w-full p-2">
-        {isMember && (
-          <>
+          {/* {challenge?._count?.comments > 0 && !isComments && (
+            <div className="underline ml-4">
 
-            <div className="text-xs my-2 justify-start w-1/2">
-            {membership?.lastCheckIn
+                <Link to={`/challenges/${challenge?.id}/comments#comments`}>
+                  <FaRegComment className="h-5 w-5 -mt-1 text-grey mr-1 inline" />
+                  {challenge?._count?.comments} comments
+                </Link>
+            </div>
+          )} */}
+            {challenge?._count?.members && challenge?._count?.members > 0
               ? (
-              <>
-              Last check-in: {formatDistanceToNow(membership.lastCheckIn)} ago <br />
-              {membership.nextCheckIn && <p>Next check-in {formatNextCheckin()}</p>}
-              {Number(membership?._count?.checkIns) > 0 && <p>{membership?._count?.checkIns} check-ins total</p>}
-              </>
+            <div>
+                <LiaUserFriendsSolid className="text-grey h-5 w-5 inline ml-4 -mt-1 mr-1" />
+                {challenge?._count.members} {pluralize(challenge?._count.members, 'member')}
+            </div>
                 )
               : (
-              <p>You haven&apos;t checked in yet</p>
-                )}
+            <div>
+              <LiaUserFriendsSolid className="text-grey h-5 w-5 inline ml-4 -mt-1 mr-1" />
+                No members yet
             </div>
-            <div className="text-xs my-2 justify-end w-1/2">
-              <Button
-                onClick={handleCheckIn}
-                disabled={checkingIn || !canCheckInNow()}
-                className='bg-red hover:bg-green-500 text-white rounded-md p-2 justify-center text-xs disabled:bg-gray-400'
-              >
-                {checkingIn ? 'Checking In...' : canCheckInNow() ? 'Check In Now' : 'Checked In'}
-              </Button>
-          </div>
-          </>
-        )}
-        </div>
-        <div className='w-full'>
-          <div className='flex flex-row justify-between w-full'>
-
-            {/* {challenge?._count?.comments > 0 && !isComments && (
-              <div className="underline ml-4">
-
-                  <Link to={`/challenges/${challenge?.id}/comments#comments`}>
-                    <FaRegComment className="h-5 w-5 -mt-1 text-grey mr-1 inline" />
-                    {challenge?._count?.comments} comments
-                  </Link>
-              </div>
-            )} */}
-              {challenge?._count?.members && challenge?._count?.members > 0
-                ? (
-              <div>
-                  <LiaUserFriendsSolid className="text-grey h-5 w-5 inline ml-4 -mt-1 mr-1" />
-                  {challenge?._count.members} {pluralize(challenge?._count.members, 'member')}
-              </div>
-                  )
-                : (
-              <div>
-                <LiaUserFriendsSolid className="text-grey h-5 w-5 inline ml-4 -mt-1 mr-1" />
-                  No members yet
-              </div>
-                  )}
-              <div className='relative flex justify-end'>
-                <div className='mr-2 inline'><Liker isLiked={Boolean(hasLiked)} itemId={Number(challenge?.id)} itemType='challenge' count={Number(likesCount)}/></div>
-                <ShareMenu copyUrl={getFullUrl()} itemType='challenge' itemId={challenge?.id}/>
-              </div>
-          </div>
-        </div>
-        {latestPost && showLatest &&
-        <div className='mt-4'>
-          <h2>
-            Latest Update
-            <span className='float-right'><Link className='underline text-blue' to={`/posts/challenge/${challenge?.id}`}>View All</Link></span>
-          </h2>
-          <CardPost post={latestPost} fullPost={false} hasLiked={hasLikedPost}/>
-
-        </div>
-        }
-        {latestThread && showLatest &&
-        <div className='mt-4'>
-          <h2>
-            Latest Discussion
-            <span className='float-right'><Link className='underline text-blue' to={`/notes/${latestThread?.id}`}>View All</Link></span>
-          </h2>
-          <CardThread thread={latestThread} hasLiked={hasLikedThread}/>
-
-        </div>
-        }
-
-        {/* {challenge?._count.comments === 0 && !isComments && (
-          <div className="w-full">
-            No comments yet. <Link to={`/challenges/${challenge.id}/comments`} className="underline">Add comment</Link>
-          </div>
-        )} */}
-        <div className='mb-16'>
-          <Outlet />
+                )}
+            <div className='relative flex justify-end'>
+              <div className='mr-2 inline'><Liker isLiked={Boolean(hasLiked)} itemId={Number(challenge?.id)} itemType='challenge' count={Number(likesCount)}/></div>
+              <ShareMenu copyUrl={getFullUrl()} itemType='challenge' itemId={challenge?.id}/>
+            </div>
         </div>
       </div>
+      {latestPost && showLatest &&
+      <div className='mt-4'>
+        <h2>
+          Latest Update
+          <span className='float-right'><Link className='underline text-blue' to={`/posts/challenge/${challenge?.id}`}>View All</Link></span>
+        </h2>
+        <CardPost post={latestPost} fullPost={false} hasLiked={hasLikedPost}/>
+
+      </div>
+      }
+      {latestThread && showLatest &&
+      <div className='mt-4'>
+        <h2>
+          Latest Discussion
+          <span className='float-right'><Link className='underline text-blue' to={`/notes/${latestThread?.id}`}>View All</Link></span>
+        </h2>
+        <CardThread thread={latestThread} hasLiked={hasLikedThread}/>
+
+      </div>
+      }
+
+      {/* {challenge?._count.comments === 0 && !isComments && (
+        <div className="w-full">
+          No comments yet. <Link to={`/challenges/${challenge.id}/comments`} className="underline">Add comment</Link>
+        </div>
+      )} */}
+      <div className='mb-16'>
+        <Outlet />
+      </div>
+    </div>
 </div>
-  )
-}
-function ChallengeHeader ({ challenge }: { challenge: Challenge | ChallengeSummary }): JSX.Element {
-  const [imgWidth, imgHeight] = resizeImageToFit(Number(challenge.coverPhotoMeta?.width), Number(challenge.coverPhotoMeta?.height), 60)
-  return (
-      <div className='flex flex-row justify-start items-center w-full'>
-        <Link to={`/challenges/${challenge.id}`}>
-          {challenge.coverPhotoMeta?.secure_url
-            ? <img
-              src={challenge.coverPhotoMeta?.secure_url}
-              alt={`${challenge?.name} cover photo`}
-              width={imgWidth}
-              height={imgHeight}
-              className={`max-w-[${imgWidth}px] max-h-[${imgHeight}px] rounded-md`}
-            />
-            : <Logo size='40px' backgroundColor='yellow'/>
-          }
-          </Link>
-        <div className='text-2xl pl-2'>{challenge.name}</div>
-      </div>
   )
 }
 
