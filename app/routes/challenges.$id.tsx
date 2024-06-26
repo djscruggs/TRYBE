@@ -165,6 +165,7 @@ export default function ViewChallenge (): JSX.Element {
   const likesCount = challenge?._count?.likes ?? 0
   const location = useLocation()
   const isOverview = matches.length === 3
+  const isProgram = location.pathname.includes('program')
   const isPosts = location.pathname.includes('posts')
 
   const { currentUser } = useContext(CurrentUserContext)
@@ -210,9 +211,10 @@ export default function ViewChallenge (): JSX.Element {
     <div className='flex flex-col'>
       <div className='max-w-sm md:max-w-md lg:max-w-lg relative'>
         <ChallengeHeader challenge={challenge} size='large' />
-        <div className='text-xl py-2 flex items-center justify-center w-full'>
-          <div className={`w-fit mr-2 ${isOverview ? 'border-b-2 border-red' : 'cursor-pointer'}`} onClick={() => { navigate(`/challenges/${challenge.id}`) }}>Overview</div>
-          <div className={`w-fit  ml-2 ${isPosts ? 'border-b-2 border-red' : 'cursor-pointer'}`} onClick={() => { navigate(`/challenges/${challenge.id}/posts`) }}>Posts</div>
+        <div className='text-lg py-2 flex items-center justify-center w-full'>
+          <div className={`w-fit ${isOverview ? 'border-b-2 border-red' : 'cursor-pointer'}`} onClick={() => { navigate(`/challenges/${challenge.id}`) }}>Overview</div>
+          <div className={`w-fit mx-8 ${isProgram ? 'border-b-2 border-red' : 'cursor-pointer'}`} onClick={() => { navigate(`/challenges/${challenge.id}/program`) }}>Program</div>
+          <div className={`w-fit ${isPosts ? 'border-b-2 border-red' : 'cursor-pointer'}`} onClick={() => { navigate(`/challenges/${challenge.id}/posts`) }}>Posts</div>
           <div className='absolute right-0'>
             <ChallengeMenu challenge={challenge}/>
           </div>
@@ -475,21 +477,19 @@ function ChallengeOverview ({ challenge }: { challenge: Challenge | ChallengeSum
       </div>
       <h1 className='text-xl py-2'>Timing</h1>
       <div className="mb-2 flex flex-cols">
-        <div className="w-1/2">
+        <div className="w-1/3">
           <div className="font-bold">
             Start Date
           </div>
           {new Date(challenge.startAt).toLocaleDateString(locale, dateOptions)}
         </div>
-        <div className="w-1/2">
+        <div className="w-1/3">
           <div className="font-bold">
             End Date
           </div>
           {new Date(challenge.endAt ?? '').toLocaleDateString(locale, dateOptions)}
         </div>
-      </div>
-      <div className="mb-2 flex flex-cols">
-        <div className="w-1/2">
+        <div className="w-1/3">
           <div className="font-bold">
             Frequency
           </div>
@@ -497,12 +497,8 @@ function ChallengeOverview ({ challenge }: { challenge: Challenge | ChallengeSum
             {challenge?.frequency?.toLowerCase()}
           </div>
         </div>
-        <div className="w-1/2">
-          <div className="font-bold">
-            Reminders
-          </div>
-        </div>
       </div>
+
     </div>
   )
 }

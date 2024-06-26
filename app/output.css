@@ -887,6 +887,26 @@ video {
   margin-bottom: 1.5rem;
 }
 
+.mx-6 {
+  margin-left: 1.5rem;
+  margin-right: 1.5rem;
+}
+
+.mx-10 {
+  margin-left: 2.5rem;
+  margin-right: 2.5rem;
+}
+
+.mx-5 {
+  margin-left: 1.25rem;
+  margin-right: 1.25rem;
+}
+
+.mx-8 {
+  margin-left: 2rem;
+  margin-right: 2rem;
+}
+
 .-ml-1 {
   margin-left: -0.25rem;
 }
