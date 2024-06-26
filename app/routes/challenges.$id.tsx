@@ -18,9 +18,7 @@ import {
 import { type DateTimeFormatOptions } from 'intl'
 import { CurrentUserContext } from '../utils/CurrentUserContext'
 import { Spinner, Button, Menu, MenuHandler, MenuList, MenuItem } from '@material-tailwind/react'
-import CardPost from '~/components/cardPost'
 import Logo from '~/components/logo'
-import CardThread from '~/components/cardThread'
 import { LiaUserFriendsSolid } from 'react-icons/lia'
 import { prisma } from '../models/prisma.server'
 import { formatDistanceToNow, format, differenceInDays, differenceInHours } from 'date-fns'
@@ -155,7 +153,6 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
       }
     })
   }
-  console.log('challenge', result)
   const locale = getUserLocale()
   const data: ViewChallengeData = { challenge: result, membership, hasLiked: Boolean(likes), hasLikedPost: Boolean(hasLikedPost), hasLikedThread: Boolean(hasLikedThread), checkInsCount, locale, latestPost, latestThread }
   return data
@@ -163,22 +160,17 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
 export default function ViewChallenge (): JSX.Element {
   const data: ViewChallengeData = useLoaderData()
   const matches = useMatches()
-  const { challenge, hasLiked, hasLikedPost, hasLikedThread, latestPost, latestThread } = data
-  const [membership, setMembership] = useState(data.membership)
+  const { challenge, hasLiked, membership } = data
 
   const likesCount = challenge?._count?.likes ?? 0
   const location = useLocation()
   const isOverview = matches.length === 3
   const isPosts = location.pathname.includes('posts')
 
-  const showLatest = !location.pathname.includes('members')
-  const isComments = location.pathname.includes('comments')
   const { currentUser } = useContext(CurrentUserContext)
   const navigate = useNavigate()
   const [loading, setLoading] = useState<boolean>(false)
-  const [checkingIn, setCheckingIn] = useState<boolean>(false)
   const [isMember, setIsMember] = useState(Boolean(membership?.id))
-  const [imgWidth, imgHeight] = resizeImageToFit(Number(challenge.coverPhotoMeta?.width), Number(challenge.coverPhotoMeta?.height), 450)
   const getFullUrl = (): string => {
     return `${window.location.origin}/challenges/${challenge?.id}`
   }
@@ -192,6 +184,124 @@ export default function ViewChallenge (): JSX.Element {
   if (!data?.challenge) {
     return <p>Loading...</p>
   }
+
+  const toggleJoin = async (event: any): Promise<void> => {
+    event.preventDefault()
+    if (!challenge?.id) {
+      throw new Error('cannot join without an id')
+    }
+    setLoading(true)
+
+    const url = `/api/challenges/join-unjoin/${challenge.id as string | number}`
+    const response = await axios.post(url)
+    setIsMember(response.data.result === 'joined')
+    setLoading(false)
+  }
+  if (!isOverview && !isPosts) {
+    return (
+      <div className='flex flex-col'>
+        <ChallengeHeader challenge={challenge} size='small' />
+        <Outlet />
+      </div>
+    )
+  }
+
+  return (
+    <div className='flex flex-col'>
+      <div className='max-w-sm md:max-w-md lg:max-w-lg relative'>
+        <ChallengeHeader challenge={challenge} size='large' />
+        <div className='text-xl py-2 flex items-center justify-center w-full'>
+          <div className={`w-fit mr-2 ${isOverview ? 'border-b-2 border-red' : 'cursor-pointer'}`} onClick={() => { navigate(`/challenges/${challenge.id}`) }}>Overview</div>
+          <div className={`w-fit  ml-2 ${isPosts ? 'border-b-2 border-red' : 'cursor-pointer'}`} onClick={() => { navigate(`/challenges/${challenge.id}/posts`) }}>Posts</div>
+          <div className='absolute right-0'>
+            <ChallengeMenu challenge={challenge}/>
+          </div>
+        </div>
+        {isOverview &&
+          <ChallengeOverview challenge={challenge} />
+        }
+      </div>
+      {isOverview &&
+          <div className="max-w-sm md:max-w-md lg:max-w-lg">
+            {challenge?.userId !== currentUser?.id && (
+              <>
+                <Button
+                    onClick={toggleJoin}
+                    className=' bg-red hover:bg-green-500 text-white rounded-md p-2 text-xs'>
+                      {isMember ? 'Leave Challenge' : 'Join this Challenge'}
+                  </Button>
+                  {loading && <Spinner className="h-4 w-4 ml-1 inline" />}
+              </>
+            )}
+            {membership && <ChallengeMemberInfo challenge={challenge} memberChallenge={membership}/>}
+            <div className='w-full'>
+              <div className='flex flex-row justify-between w-full'>
+                  {challenge?._count?.members && challenge?._count?.members > 0
+                    ? (
+                  <div>
+                      <LiaUserFriendsSolid className="text-grey h-5 w-5 inline ml-4 -mt-1 mr-1" />
+                      {challenge?._count.members} {pluralize(challenge?._count.members, 'member')}
+                  </div>
+                      )
+                    : (
+                  <div>
+                    <LiaUserFriendsSolid className="text-grey h-5 w-5 inline ml-4 -mt-1 mr-1" />
+                      No members yet
+                  </div>
+                      )}
+                  <div className='relative flex justify-end'>
+                    <div className='mr-2 inline'><Liker isLiked={Boolean(hasLiked)} itemId={Number(challenge?.id)} itemType='challenge' count={Number(likesCount)}/></div>
+                    <ShareMenu copyUrl={getFullUrl()} itemType='challenge' itemId={challenge?.id}/>
+                  </div>
+              </div>
+            </div>
+
+            <div className='mb-16'>
+              <Outlet />
+            </div>
+          </div>
+      }
+      <Outlet />
+</div>
+  )
+}
+function ChallengeHeader ({ challenge, size }: { challenge: Challenge | ChallengeSummary, size: 'small' | 'large' }): JSX.Element {
+  const [imgWidth, imgHeight] = resizeImageToFit(Number(challenge.coverPhotoMeta?.width), Number(challenge.coverPhotoMeta?.height), 60)
+  return (
+    <>
+    {size === 'large'
+      ? (
+          <>
+            <div className={`${challenge.coverPhotoMeta?.secure_url ? '' : 'mt-0.5 mb-2'} flex justify-center`}>
+            {challenge.coverPhotoMeta?.secure_url && <img src={challenge.coverPhotoMeta?.secure_url} alt={`${challenge?.name} cover photo`} className={`max-w-[${imgWidth}px] max-h-[${imgHeight}px] object-cover`} />}
+            </div>
+          </>
+        )
+      : (
+      <div className='flex flex-row justify-start items-center w-full'>
+        <Link to={`/challenges/${challenge.id}`}>
+          {challenge.coverPhotoMeta?.secure_url
+            ? <img
+              src={challenge.coverPhotoMeta?.secure_url}
+              alt={`${challenge?.name} cover photo`}
+              width={imgWidth}
+              height={imgHeight}
+              className={`max-w-[${imgWidth}px] max-h-[${imgHeight}px] rounded-md`}
+            />
+            : <Logo size='40px' backgroundColor='yellow'/>
+          }
+          </Link>
+        <div className='text-2xl pl-2'>{challenge.name}</div>
+      </div>
+        )}
+    </>
+  )
+}
+
+function ChallengeMemberInfo ({ challenge, memberChallenge }: { challenge: Challenge, memberChallenge: MemberChallenge | null }): JSX.Element {
+  const isMember = Boolean(memberChallenge?.id)
+  const [checkingIn, setCheckingIn] = useState<boolean>(false)
+  const [membership, setMembership] = useState(memberChallenge)
   const formatNextCheckin = (): string => {
     if (!membership?.nextCheckIn) {
       return ''
@@ -232,188 +342,45 @@ export default function ViewChallenge (): JSX.Element {
       toast.success('You are checked in! 🙌')
     } catch (error) {
       console.error(error)
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-      toast.error(error.response.statusText)
+      if (axios.isAxiosError(error)) {
+        toast.error(error.response?.statusText ?? 'An error occurred')
+      } else {
+        toast.error('An unexpected error occurred')
+      }
     } finally {
       setCheckingIn(false)
     }
   }
-
-  const toggleJoin = async (event: any): Promise<void> => {
-    event.preventDefault()
-    if (!challenge?.id) {
-      throw new Error('cannot join without an id')
-    }
-    setLoading(true)
-
-    const url = `/api/challenges/join-unjoin/${challenge.id as string | number}`
-    const response = await axios.post(url)
-    setIsMember(response.data.result === 'joined')
-    setLoading(false)
-  }
-  if (!isOverview && !isPosts) {
-    return (
-      <div className='flex flex-col'>
-        <ChallengeHeader challenge={challenge} size='small' />
-        <Outlet />
-      </div>
-    )
-  }
-
   return (
-    <div className='flex flex-col'>
-      <div className='max-w-sm md:max-w-md lg:max-w-lg relative'>
-        <ChallengeHeader challenge={challenge} size='large' />
-        <div className='text-xl py-2 flex items-center justify-center w-full'>
-          <div className={`w-fit mr-2 ${isOverview ? 'border-b-2 border-red' : 'cursor-pointer'}`} onClick={() => { navigate(`/challenges/${challenge.id}`) }}>Overview</div>
-          <div className={`w-fit  ml-2 ${isPosts ? 'border-b-2 border-red' : 'cursor-pointer'}`} onClick={() => { navigate(`/challenges/${challenge.id}/posts`) }}>Posts</div>
-          <div className='absolute right-0'>
-            <ChallengeMenu challenge={challenge}/>
+    <div className="flex text-sm items-center justify-start w-full p-2">
+      {isMember && (
+        <>
+
+          <div className="text-xs my-2 justify-start w-1/2">
+          {membership?.lastCheckIn
+            ? (
+            <>
+            Last check-in: {formatDistanceToNow(membership.lastCheckIn)} ago <br />
+            {membership.nextCheckIn && <p>Next check-in {formatNextCheckin()}</p>}
+            {Number(membership?._count?.checkIns) > 0 && <p>{memberChallenge?._count?.checkIns} check-ins total</p>}
+            </>
+              )
+            : (
+            <p>You haven&apos;t checked in yet</p>
+              )}
           </div>
+          <div className="text-xs my-2 justify-end w-1/2">
+            <Button
+              onClick={handleCheckIn}
+              disabled={checkingIn || !canCheckInNow()}
+              className='bg-red hover:bg-green-500 text-white rounded-md p-2 justify-center text-xs disabled:bg-gray-400'
+            >
+              {checkingIn ? 'Checking In...' : canCheckInNow() ? 'Check In Now' : 'Checked In'}
+            </Button>
         </div>
-        {isOverview &&
-          <ChallengeOverview challenge={challenge} />
-        }
-      </div>
-      {isOverview &&
-          <div className="max-w-sm md:max-w-md lg:max-w-lg pt-4">
-            {challenge?.userId !== currentUser?.id && (
-              <>
-                <Button
-                    onClick={toggleJoin}
-                    className='mt-8 bg-red hover:bg-green-500 text-white rounded-md p-2 text-xs'>
-                      {isMember ? 'Leave Challenge' : 'Join this Challenge'}
-                  </Button>
-                  {loading && <Spinner className="h-4 w-4 ml-1 inline" />}
-              </>
-            )}
-
-            <div className="my-2 flex text-sm items-center justify-start w-full p-2">
-            {isMember && (
-              <>
-
-                <div className="text-xs my-2 justify-start w-1/2">
-                {membership?.lastCheckIn
-                  ? (
-                  <>
-                  Last check-in: {formatDistanceToNow(membership.lastCheckIn)} ago <br />
-                  {membership.nextCheckIn && <p>Next check-in {formatNextCheckin()}</p>}
-                  {Number(membership?._count?.checkIns) > 0 && <p>{membership?._count?.checkIns} check-ins total</p>}
-                  </>
-                    )
-                  : (
-                  <p>You haven&apos;t checked in yet</p>
-                    )}
-                </div>
-                <div className="text-xs my-2 justify-end w-1/2">
-                  <Button
-                    onClick={handleCheckIn}
-                    disabled={checkingIn || !canCheckInNow()}
-                    className='bg-red hover:bg-green-500 text-white rounded-md p-2 justify-center text-xs disabled:bg-gray-400'
-                  >
-                    {checkingIn ? 'Checking In...' : canCheckInNow() ? 'Check In Now' : 'Checked In'}
-                  </Button>
-              </div>
-              </>
-            )}
-            </div>
-            <div className='w-full'>
-              <div className='flex flex-row justify-between w-full'>
-
-                {/* {challenge?._count?.comments > 0 && !isComments && (
-                  <div className="underline ml-4">
-
-                      <Link to={`/challenges/${challenge?.id}/comments#comments`}>
-                        <FaRegComment className="h-5 w-5 -mt-1 text-grey mr-1 inline" />
-                        {challenge?._count?.comments} comments
-                      </Link>
-                  </div>
-                )} */}
-                  {challenge?._count?.members && challenge?._count?.members > 0
-                    ? (
-                  <div>
-                      <LiaUserFriendsSolid className="text-grey h-5 w-5 inline ml-4 -mt-1 mr-1" />
-                      {challenge?._count.members} {pluralize(challenge?._count.members, 'member')}
-                  </div>
-                      )
-                    : (
-                  <div>
-                    <LiaUserFriendsSolid className="text-grey h-5 w-5 inline ml-4 -mt-1 mr-1" />
-                      No members yet
-                  </div>
-                      )}
-                  <div className='relative flex justify-end'>
-                    <div className='mr-2 inline'><Liker isLiked={Boolean(hasLiked)} itemId={Number(challenge?.id)} itemType='challenge' count={Number(likesCount)}/></div>
-                    <ShareMenu copyUrl={getFullUrl()} itemType='challenge' itemId={challenge?.id}/>
-                  </div>
-              </div>
-            </div>
-
-            {/* {latestPost && showLatest &&
-            <div className='mt-4'>
-              <h2>
-                Latest Update
-                <span className='float-right'><Link className='underline text-blue' to={`/posts/challenge/${challenge?.id}`}>View All</Link></span>
-              </h2>
-              <CardPost post={latestPost} fullPost={false} hasLiked={hasLikedPost}/>
-
-            </div>
-            }
-            {latestThread && showLatest &&
-            <div className='mt-4'>
-              <h2>
-                Latest Discussion
-                <span className='float-right'><Link className='underline text-blue' to={`/notes/${latestThread?.id}`}>View All</Link></span>
-              </h2>
-              <CardThread thread={latestThread} hasLiked={hasLikedThread}/>
-
-            </div>
-            } */}
-
-            {/* {challenge?._count.comments === 0 && !isComments && (
-              <div className="w-full">
-                No comments yet. <Link to={`/challenges/${challenge.id}/comments`} className="underline">Add comment</Link>
-              </div>
-            )} */}
-            <div className='mb-16'>
-              <Outlet />
-            </div>
-          </div>
-      }
-      <Outlet />
-</div>
-  )
-}
-function ChallengeHeader ({ challenge, size }: { challenge: Challenge | ChallengeSummary, size: 'small' | 'large' }): JSX.Element {
-  const [imgWidth, imgHeight] = resizeImageToFit(Number(challenge.coverPhotoMeta?.width), Number(challenge.coverPhotoMeta?.height), 60)
-  return (
-    <>
-    {size === 'large'
-      ? (
-          <>
-            <div className={`${challenge.coverPhotoMeta?.secure_url ? '' : 'mt-0.5 mb-2'} flex justify-center`}>
-            {challenge.coverPhotoMeta?.secure_url && <img src={challenge.coverPhotoMeta?.secure_url} alt={`${challenge?.name} cover photo`} className={`max-w-[${imgWidth}px] max-h-[${imgHeight}px] object-cover`} />}
-            </div>
-          </>
-        )
-      : (
-      <div className='flex flex-row justify-start items-center w-full'>
-        <Link to={`/challenges/${challenge.id}`}>
-          {challenge.coverPhotoMeta?.secure_url
-            ? <img
-              src={challenge.coverPhotoMeta?.secure_url}
-              alt={`${challenge?.name} cover photo`}
-              width={imgWidth}
-              height={imgHeight}
-              className={`max-w-[${imgWidth}px] max-h-[${imgHeight}px] rounded-md`}
-            />
-            : <Logo size='40px' backgroundColor='yellow'/>
-          }
-          </Link>
-        <div className='text-2xl pl-2'>{challenge.name}</div>
-      </div>
-        )}
-    </>
+        </>
+      )}
+    </div>
   )
 }
 function ChallengeMenu ({ challenge }: { challenge: Challenge | ChallengeSummary }): JSX.Element {
@@ -459,7 +426,7 @@ function ChallengeMenu ({ challenge }: { challenge: Challenge | ChallengeSummary
             </Button>
           </MenuHandler>
           <MenuList>
-            <MenuItem onClick={() => { navigate(`/posts/new/challenge/${challenge.id}`) }}>
+            <MenuItem onClick={() => { navigate(`/pos ts/new/challenge/${challenge.id}`) }}>
               Post an Update
             </MenuItem>
             <MenuItem onClick={() => { navigate(`/threads/new/challenge/${challenge.id}`) }} >
@@ -488,92 +455,54 @@ function ChallengeOverview ({ challenge }: { challenge: Challenge | ChallengeSum
     day: 'numeric'
   }
   return (
-    <div className='mb-6 px-4 md:px-0 justify-start'>
-          {/* only show edit and delete here if there is NOT an image */}
-          <div className='relative mb-4'>
-            <div className="font-bold">
-              Name
-            </div>
-            <div>
-              {challenge.name}
-              {/* <div className='float-right text-red'>Edit</div> */}
-            </div>
+    <div className='md:px-0 justify-start'>
+      <div className='relative mb-4'>
+        <div className="font-bold">
+          Name
+        </div>
+        <div>
+          {challenge.name}
+        </div>
+      </div>
+      <div className='relative'>
+        <div className="font-bold">
+          Description
+        </div>
+        <div>
+          {/* <div className='float-right text-red'>Edit</div> */}
+          {parsedDescription}
+        </div>
+      </div>
+      <h1 className='text-xl py-2'>Timing</h1>
+      <div className="mb-2 flex flex-cols">
+        <div className="w-1/2">
+          <div className="font-bold">
+            Start Date
           </div>
-          <div className='relative'>
-            <div className="font-bold">
-              Description
-            </div>
-            <div>
-              {/* <div className='float-right text-red'>Edit</div> */}
-              {parsedDescription}
-            </div>
+          {new Date(challenge.startAt).toLocaleDateString(locale, dateOptions)}
+        </div>
+        <div className="w-1/2">
+          <div className="font-bold">
+            End Date
           </div>
-          <h1 className='text-xl py-2'>Timing</h1>
-          <div className="mb-2 flex flex-cols">
-            <div className="w-1/2">
-              <div className="font-bold">
-                Start Date
-              </div>
-              {new Date(challenge.startAt).toLocaleDateString(locale, dateOptions)}
-            </div>
-            <div className="w-1/2">
-              <div className="font-bold">
-                End Date
-              </div>
-              {new Date(challenge.endAt ?? '').toLocaleDateString(locale, dateOptions)}
-            </div>
+          {new Date(challenge.endAt ?? '').toLocaleDateString(locale, dateOptions)}
+        </div>
+      </div>
+      <div className="mb-2 flex flex-cols">
+        <div className="w-1/2">
+          <div className="font-bold">
+            Frequency
           </div>
-          <div className="mb-2 flex flex-cols">
-            <div className="w-1/2">
-              <div className="font-bold">
-                Frequency
-              </div>
-              <div className="capitalize">
-                {challenge?.frequency?.toLowerCase()}
-              </div>
-            </div>
-            <div className="w-1/2">
-              <div className="font-bold">
-                Reminders
-              </div>
-            </div>
+          <div className="capitalize">
+            {challenge?.frequency?.toLowerCase()}
           </div>
         </div>
-  )
-}
-function EditLinks ({ challenge }: { challenge: Challenge | ChallengeSummary }): JSX.Element {
-  const navigate = useNavigate()
-  const [deleteDialog, setDeleteDialog] = useState(false)
-  const revalidator = useRevalidator()
-  const handleDeleteDialog = (event: any): void => {
-    event.preventDefault()
-    event.stopPropagation()
-    setDeleteDialog(true)
-  }
-  const cancelDialog = (event: any): void => {
-    event.preventDefault()
-    event.stopPropagation()
-    setDeleteDialog(false)
-  }
-  const handleDelete = async (event: any): Promise<void> => {
-    if (!challenge?.id) {
-      throw new Error('cannot delete without an id')
-    }
-    const url = `/api/challenges/delete/${challenge.id as string | number}`
-    const response = await axios.post(url)
-    if (response.status === 204) {
-      toast.success('Challenge deleted')
-      revalidator.revalidate()
-      navigate('/challenges')
-    } else {
-      toast.error('Delete failed')
-    }
-  }
-  return (
-      <>
-        <Link className='underline hover:text-red' to = {`/challenges/${challenge.id}/edit`}>edit</Link>&nbsp;&nbsp;
-        <Link className='underline hover:text-red' onClick={handleDeleteDialog} to = {`/challenges/edit/${challenge.id as string | number}`}>delete</Link>&nbsp;&nbsp;
-        {deleteDialog && <DialogDelete prompt='Are you sure you want to delete this challenge?' isOpen={deleteDialog} deleteCallback={handleDelete} onCancel={cancelDialog}/>}
-      </>
+        <div className="w-1/2">
+          <div className="font-bold">
+            Reminders
+          </div>
+        </div>
+      </div>
+    </div>
   )
 }

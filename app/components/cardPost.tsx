@@ -21,7 +21,7 @@ import DialogDelete from './dialogDelete'
 import { format } from 'date-fns'
 
 interface CardPostProps {
-  post: PostSummary
+  post: PostSummary | null
   isShare?: boolean
   hasLiked?: boolean
   fullPost?: boolean
@@ -37,6 +37,7 @@ export default function CardPost (props: CardPostProps): JSX.Element {
   const { hasLiked, fullPost, isShare, hideMeta, revalidator } = props
   const dateTimeFormat = currentUser?.dateTimeFormat ? currentUser.dateTimeFormat : 'M-dd-yyyy @ h:mm a'
   const [post, setPost] = useState(props.post)
+  if (!post) return <></>
   const [showLightbox, setShowLightbox] = useState(false)
   const [editing, setEditing] = useState(false)
   const totalLikes = post._count?.likes ?? 0
@@ -122,7 +123,7 @@ export default function CardPost (props: CardPostProps): JSX.Element {
               <AvatarLoader object={post} marginClass='mr-4'/>
               <div className="flex flex-col w-full h-full">
               <div className='font-bold my-2'>{post.title}</div>
-              {post.body && textToJSX(post.body)}
+              {shortBody && textToJSX(shortBody)}
 
               {isTruncated && <span className='text-xs underline text-blue cursor-pointer mr-1 text-right italic' onClick={goToPost}> more</span>}
               <div className='mt-4'>

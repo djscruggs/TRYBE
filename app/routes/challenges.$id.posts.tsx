@@ -51,8 +51,8 @@ export default function ViewChallengePosts (): JSX.Element {
     <>
       {posts?.map((post) => {
         return (
-            <div key={`post-${post.id}`} className='max-w-sm md:max-w-md lg:max-w-lg'>
-              <CardPost post={post} hideMeta={true}/>
+            <div key={`post-${post.id}`} className='max-w-sm md:max-w-md lg:max-w-lg mb-6'>
+              <CardPost post={post} hideMeta={true} fullPost={false}/>
             </div>
         )
       })}

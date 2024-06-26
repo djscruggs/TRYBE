@@ -57,7 +57,7 @@ export default function ViewPost (): JSX.Element {
   return (
     <>
     <div className='max-w-[400px] md:max-w-lg mt-10'>
-      <CardPost post={_post} hasLiked={Boolean(hasLiked)} />
+      <CardPost post={_post} hasLiked={Boolean(hasLiked)} fullPost={true} />
     </div>
     <Outlet context={{ _post, hasLiked }} />
 
