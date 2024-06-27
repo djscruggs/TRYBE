@@ -336,7 +336,7 @@ function ChallengeMemberInfo ({ challenge, memberChallenge }: { challenge: Chall
             </>
               )
             : (
-            <p>You haven&apos;t checked in yet</p>
+            <p>No check-ins yet</p>
               )}
           </div>
           <div className="text-xs my-2 justify-end w-1/2">
