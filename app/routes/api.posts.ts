@@ -18,10 +18,11 @@ export const action: ActionFunction = async (args) => {
   const rawData = await unstable_parseMultipartFormData(request, uploadHandler)
   const formData = Object.fromEntries(rawData)
   // remove title from formData because the convertStringValues function will screws up on values like "Day 1"
-  const { title, ...formDataWithoutTitle } = formData
+  const { title, body, ...formDataWithoutTitle } = formData
   const cleanData = convertStringValues(formDataWithoutTitle)
 
   cleanData.title = title
+  cleanData.body = body
   // if this is for a challenge, load it and check whether it's public
   const challengeId = rawData.get('challengeId') ? Number(rawData.get('challengeId')) : null
   let challenge
