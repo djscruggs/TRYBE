@@ -3,7 +3,7 @@ import { requireCurrentUser } from '../models/auth.server'
 import { type Post } from '@prisma/client'
 import { type LoaderFunction, type LoaderFunctionArgs } from '@remix-run/node'
 import { prisma } from '../models/prisma.server'
-import { eachDayOfInterval, startOfMonth, format, differenceInDays } from 'date-fns'
+import { eachDayOfInterval, startOfWeek, format, differenceInDays } from 'date-fns'
 import { CiCirclePlus } from 'react-icons/ci'
 import { type ObjectData } from '~/utils/types'
 import { userLocale } from '~/utils/helpers'
@@ -58,7 +58,7 @@ export default function ChallengeSchedule (): JSX.Element {
   const startDate = new Date(challenge?.startAt as unknown as Date)
   const endDate = new Date(challenge?.endAt as unknown as Date)
   // const endDate = new Date(2024, 6, 4)
-  const days = eachDayOfInterval({ start: startOfMonth(startDate), end: endDate })
+  const days = eachDayOfInterval({ start: startOfWeek(startDate), end: endDate })
   const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
   return (
     <>
@@ -101,8 +101,8 @@ export default function ChallengeSchedule (): JSX.Element {
                     </div>
                   )}
                   {isInRange && !postsByDay[day.getDate()] && (currentUser?.id === challenge?.userId) &&
-                    <div className='flex items-start -mt-4 pt-6 justify-center w-full h-full cursor-pointer'>
-                      <CiCirclePlus className='text-4xl text-white bg-red hover:bg-green-600 rounded-full' onClick={() => {
+                    <div className='flex items-start -mt-3 pt-6 justify-center w-full h-full cursor-pointer'>
+                      <CiCirclePlus className='h-8 w-8 text-white bg-red hover:bg-green-600 rounded-full' onClick={() => {
                         const params = new URLSearchParams()
                         params.set('publishAt', format(day, 'dd-MM-yy'))
                         setSearchParams(params)
