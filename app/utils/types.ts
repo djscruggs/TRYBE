@@ -10,6 +10,7 @@ export interface User {
 export interface CurrentUser extends User {
   profile: Profile
   id: number
+  role: 'ADMIN' | 'USER'
   // the four below are added in root loader, not currently in the db
   locale?: string
   dateFormat?: string
@@ -100,22 +101,22 @@ export interface PostSummary extends Post {
 }
 
 export interface Challenge {
-  id: number
-  name: string | null
-  description: string | null
-  mission: string | null
-  startAt: Date
-  endAt?: Date | null
-  frequency?: 'DAILY' | 'WEEKDAYS' | 'ALTERNATING' | 'WEEKLY' | 'CUSTOM'
+  id: number | undefined
+  name: string | null | undefined
+  description: string | null | undefined
+  mission: string | null | undefined
+  startAt: Date | null | unknown
+  endAt: Date | null | undefined
+  frequency?: 'DAILY' | 'WEEKDAYS' | 'ALTERNATING' | 'WEEKLY' | 'CUSTOM' | undefined
   coverPhotoMeta?: Record<string, string> | null
-  icon?: string | null
-  color?: string | null
-  reminders?: boolean
-  syncCalendar?: boolean
-  publishAt?: Date
-  published?: boolean
-  public?: boolean
-  userId: number
+  icon?: string | null | undefined
+  color?: string | null | undefined
+  reminders?: boolean | undefined
+  syncCalendar?: boolean | undefined
+  publishAt?: Date | undefined
+  published?: boolean | undefined
+  public?: boolean | undefined
+  userId: number | undefined
   _count?: CountType
 }
 interface CountType {

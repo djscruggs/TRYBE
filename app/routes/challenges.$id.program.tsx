@@ -53,14 +53,10 @@ export default function ChallengeSchedule (): JSX.Element {
     month: 'long',
     day: 'numeric'
   }
-  const dateOptionsMobile = {
-    month: 'long',
-    day: 'numeric'
-  }
   const { currentUser } = useContext(CurrentUserContext)
   const locale = userLocale(currentUser)
-  const startDate = new Date(challenge.startAt)
-  const endDate = new Date(challenge.endAt)
+  const startDate = new Date(challenge?.startAt as unknown as Date)
+  const endDate = new Date(challenge?.endAt as unknown as Date)
   // const endDate = new Date(2024, 6, 4)
   const days = eachDayOfInterval({ start: startOfMonth(startDate), end: endDate })
   const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
@@ -99,12 +95,12 @@ export default function ChallengeSchedule (): JSX.Element {
 
                   {postsByDay[day.getDate()]?.map((post) =>
                     <div key={post.id} className='text-xs overflow-hidden border border-red bg-white rounded-md p-1 text-red w-full text-ellipsis mb-1 cursor-pointer' onClick={() => {
-                      navigate(`/posts/${post.id}/edit`)
+                      navigate(`/posts/${post.id}`)
                     }}>
                     {post.title}
                     </div>
                   )}
-                  {isInRange && !postsByDay[day.getDate()] &&
+                  {isInRange && !postsByDay[day.getDate()] && (currentUser?.id === challenge?.userId) &&
                     <div className='flex items-start -mt-4 pt-6 justify-center w-full h-full cursor-pointer'>
                       <CiCirclePlus className='text-4xl text-white bg-red hover:bg-green-600 rounded-full' onClick={() => {
                         const params = new URLSearchParams()
