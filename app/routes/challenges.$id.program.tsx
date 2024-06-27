@@ -80,9 +80,10 @@ export default function ChallengeSchedule (): JSX.Element {
               key={day.toISOString()}
               className={`relative p-2  h-24  ${isInRange ? 'bg-grey' : 'bg-white'}`}
             >
-              <div className="absolute top-0 left-0 m-1 text-xs">
+              <div className="absolute top-0 left-0 m-1 text-xs ">
                 <span className='md:hidden'>
                   {day.toLocaleDateString(locale, {
+                    weekday: 'short',
                     month: 'long',
                     day: 'numeric'
                   })}
