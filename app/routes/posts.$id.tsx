@@ -2,6 +2,7 @@ import { loadPostSummary } from '~/models/post.server'
 import { useState } from 'react'
 import { Outlet, useLoaderData, useLocation } from '@remix-run/react'
 import CardPost from '~/components/cardPost'
+import ChallengeHeader from '~/components/challengeHeader'
 import { requireCurrentUser } from '../models/auth.server'
 import type { PostSummary } from '~/utils/types'
 import { json, type LoaderFunction, type LoaderFunctionArgs } from '@remix-run/node'
@@ -54,8 +55,10 @@ export default function ViewPost (): JSX.Element {
   if (!post) {
     return <p>Loading...</p>
   }
+
   return (
     <>
+    {post.challenge && <ChallengeHeader size='small' challenge={post.challenge} />}
     <div className='max-w-[400px] md:max-w-lg mt-10'>
       <CardPost post={_post} hasLiked={Boolean(hasLiked)} fullPost={true} />
     </div>
