@@ -53,6 +53,10 @@ export default function ChallengeSchedule (): JSX.Element {
     month: 'long',
     day: 'numeric'
   }
+  const dateOptionsMobile = {
+    month: 'long',
+    day: 'numeric'
+  }
   const { currentUser } = useContext(CurrentUserContext)
   const locale = userLocale(currentUser)
   const startDate = new Date(challenge.startAt)
@@ -63,11 +67,11 @@ export default function ChallengeSchedule (): JSX.Element {
   return (
     <>
       <div className="w-full mt-4">
-      Time frame: {new Date(challenge.startAt).toLocaleDateString(locale, dateOptions)} to {new Date(challenge.endAt).toLocaleDateString(locale, dateOptions)}
+        {new Date(challenge.startAt).toLocaleDateString(locale, dateOptions)} to {new Date(challenge.endAt).toLocaleDateString(locale, dateOptions)}
       </div>
-      <div className="grid grid-cols-7 gap-1 w-full mt-4">
+      <div className="block md:grid grid-cols-7 gap-1 w-full mt-4">
         {weekDays.map((day) => (
-            <div key={day} className="text-center font-bold">
+            <div key={day} className="hidden md:block text-center font-bold">
               {day}
             </div>
         ))}
@@ -81,7 +85,15 @@ export default function ChallengeSchedule (): JSX.Element {
               className={`relative p-2  h-24  ${isInRange ? 'bg-grey' : 'bg-white'}`}
             >
               <div className="absolute top-0 left-0 m-1 text-xs">
+                <span className='md:hidden'>
+                  {day.toLocaleDateString(locale, {
+                    month: 'long',
+                    day: 'numeric'
+                  })}
+                </span>
+                <span className='hidden md:block'>
                 {day.getDate()}
+                </span>
               </div>
               <div className="flex flex-col items-start justify-start h-full mt-4 mb-2 overflow-hidden pb-2">
 
