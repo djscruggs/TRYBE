@@ -5156,6 +5156,11 @@ video {
   background-color: rgb(236 95 92 / var(--tw-bg-opacity));
 }
 
+.hover\:bg-green-600:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgb(5 150 105 / var(--tw-bg-opacity));
+}
+
 .hover\:bg-opacity-80:hover {
   --tw-bg-opacity: 0.8;
 }
@@ -5430,6 +5435,11 @@ video {
   border-color: rgb(255 255 255 / var(--tw-border-opacity));
 }
 
+.focus\:border-grey:focus {
+  --tw-border-opacity: 1;
+  border-color: rgb(196 196 196 / var(--tw-border-opacity));
+}
+
 .focus\:border-t-transparent:focus {
   border-top-color: transparent;
 }
@@ -5584,10 +5594,45 @@ video {
   opacity: 1;
 }
 
+.focus-visible\:border:focus-visible {
+  border-width: 1px;
+}
+
+.focus-visible\:border-grey:focus-visible {
+  --tw-border-opacity: 1;
+  border-color: rgb(196 196 196 / var(--tw-border-opacity));
+}
+
+.focus-visible\:outline-none:focus-visible {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+}
+
+.focus-visible\:outline:focus-visible {
+  outline-style: solid;
+}
+
+.focus-visible\:outline-1:focus-visible {
+  outline-width: 1px;
+}
+
+.focus-visible\:outline-grey:focus-visible {
+  outline-color: #C4C4C4;
+}
+
 .active\:scale-100:active {
   --tw-scale-x: 1;
   --tw-scale-y: 1;
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+
+.active\:border-2:active {
+  border-width: 2px;
+}
+
+.active\:border-grey:active {
+  --tw-border-opacity: 1;
+  border-color: rgb(196 196 196 / var(--tw-border-opacity));
 }
 
 .active\:bg-amber-500\/30:active {

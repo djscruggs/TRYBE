@@ -6,7 +6,9 @@ import { prisma } from '../models/prisma.server'
 import { eachDayOfInterval, startOfMonth, format, differenceInDays } from 'date-fns'
 import { CiCirclePlus } from 'react-icons/ci'
 import { type ObjectData } from '~/utils/types'
-
+import { userLocale } from '~/utils/helpers'
+import { CurrentUserContext } from '../utils/CurrentUserContext'
+import { useContext } from 'react'
 interface ChallengeScheduleData {
   posts: Post[]
 }
@@ -33,7 +35,7 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs): Challeng
 }
 export default function ChallengeSchedule (): JSX.Element {
   const matches = useMatches()
-  const { challenge, locale } = matches.find((match) => match.id === 'routes/challenges.$id')?.data as ObjectData
+  const { challenge } = matches.find((match) => match.id === 'routes/challenges.$id')?.data as ObjectData
   const { posts } = useLoaderData() as ChallengeScheduleData
   const navigate = useNavigate()
   const postsByDay = posts.reduce<Record<number, Post[]>>((acc, post) => {
@@ -46,6 +48,13 @@ export default function ChallengeSchedule (): JSX.Element {
     return acc
   }, {})
   const [searchParams, setSearchParams] = useSearchParams()
+  const dateOptions = {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  }
+  const { currentUser } = useContext(CurrentUserContext)
+  const locale = userLocale(currentUser)
   const startDate = new Date(challenge.startAt)
   const endDate = new Date(challenge.endAt)
   // const endDate = new Date(2024, 6, 4)
@@ -53,6 +62,9 @@ export default function ChallengeSchedule (): JSX.Element {
   const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
   return (
     <>
+      <div className="w-full mt-4">
+      Time frame: {new Date(challenge.startAt).toLocaleDateString(locale, dateOptions)} to {new Date(challenge.endAt).toLocaleDateString(locale, dateOptions)}
+      </div>
       <div className="grid grid-cols-7 gap-1 w-full mt-4">
         {weekDays.map((day) => (
             <div key={day} className="text-center font-bold">
@@ -82,7 +94,7 @@ export default function ChallengeSchedule (): JSX.Element {
                   )}
                   {isInRange && !postsByDay[day.getDate()] &&
                     <div className='flex items-start -mt-4 pt-6 justify-center w-full h-full cursor-pointer'>
-                      <CiCirclePlus className='text-4xl text-black hover:text-white hover:bg-red hover:rounded-full' onClick={() => {
+                      <CiCirclePlus className='text-4xl text-white bg-red hover:bg-green-600 rounded-full' onClick={() => {
                         const params = new URLSearchParams()
                         params.set('publishAt', format(day, 'dd-MM-yy'))
                         setSearchParams(params)
