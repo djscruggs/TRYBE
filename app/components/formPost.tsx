@@ -169,6 +169,7 @@ export default function FormPost (props: FormPostProps): JSX.Element {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         toSubmit.set(String(key), value)
       })
+
       // these are blob objects  to upload
       if (image) {
         toSubmit.set('image', image)
@@ -177,18 +178,15 @@ export default function FormPost (props: FormPostProps): JSX.Element {
         toSubmit.set('video', video)
       }
       const result = await axios.post('/api/posts', toSubmit)
-      console.log(result.data)
       toast.success('Post saved')
-      return
       if (afterSave) {
-        console.log('afterSave')
         afterSave(result.data as PostSummary)
       } else {
         navigate('/posts/' + result.data.id)
       }
     } catch (error) {
       console.error(error)
-      toast.error(error)
+      toast.error(String(error))
     } finally {
       setSaving(false)
     }
@@ -217,10 +215,8 @@ export default function FormPost (props: FormPostProps): JSX.Element {
   const handleCancel = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>): void => {
     event.preventDefault()
     if (onCancel) {
-      console.log('onCancel', onCancel)
       onCancel()
     } else {
-      console.log('navigate')
       navigate(-1)
     }
   }

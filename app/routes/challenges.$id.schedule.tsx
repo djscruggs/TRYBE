@@ -71,29 +71,29 @@ export default function ChallengeSchedule (): JSX.Element {
               <div className="absolute top-0 left-0 m-1 text-xs">
                 {day.getDate()}
               </div>
-              <div className="flex flex-col items-start justify-start h-full mt-4 mb-2 overflow-hidden pb-1">
+              <div className="flex flex-col items-start justify-start h-full mt-4 mb-2 overflow-hidden pb-2">
 
                   {postsByDay[day.getDate()]?.map((post) =>
-                    <div key={post.id} className='text-xs overflow-hidden text-ellipsis mb-1 cursor-pointer' onClick={() => {
+                    <div key={post.id} className='text-xs overflow-hidden border border-red bg-white rounded-md p-1 text-red w-full text-ellipsis mb-1 cursor-pointer' onClick={() => {
                       navigate(`/posts/${post.id}/edit`)
                     }}>
                     {post.title}
                     </div>
                   )}
                   {isInRange && !postsByDay[day.getDate()] &&
-                  <div className='flex items-start -mt-4 pt-6 justify-center w-full h-full cursor-pointer'>
-                    <CiCirclePlus className='text-4xl text-black hover:text-white hover:bg-red hover:rounded-full' onClick={() => {
-                      const params = new URLSearchParams()
-                      params.set('publishAt', format(day, 'dd-MM-yy'))
-                      setSearchParams(params)
-                      navigate(`/posts/new/challenge/${challenge?.id}`, {
-                        state: {
-                          title: `Day ${dayNum}`,
-                          publishAt: format(day, 'yyyy-MM-dd 08:00:00')
-                        }
-                      })
-                    }}/>
-                  </div>
+                    <div className='flex items-start -mt-4 pt-6 justify-center w-full h-full cursor-pointer'>
+                      <CiCirclePlus className='text-4xl text-black hover:text-white hover:bg-red hover:rounded-full' onClick={() => {
+                        const params = new URLSearchParams()
+                        params.set('publishAt', format(day, 'dd-MM-yy'))
+                        setSearchParams(params)
+                        navigate(`/posts/new/challenge/${challenge?.id}`, {
+                          state: {
+                            title: `Day ${dayNum}`,
+                            publishAt: format(day, 'yyyy-MM-dd 08:00:00')
+                          }
+                        })
+                      }}/>
+                    </div>
                   }
 
               </div>

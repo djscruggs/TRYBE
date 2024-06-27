@@ -17,14 +17,17 @@ export const action: ActionFunction = async (args) => {
   const request = args.request
   const rawData = await unstable_parseMultipartFormData(request, uploadHandler)
   const formData = Object.fromEntries(rawData)
-  const cleanData = convertStringValues(formData)
+  // remove title from formData because the convertStringValues function will screws up on values like "Day 1"
+  const { title, ...formDataWithoutTitle } = formData
+  const cleanData = convertStringValues(formDataWithoutTitle)
+
+  cleanData.title = title
   // if this is for a challenge, load it and check whether it's public
   const challengeId = rawData.get('challengeId') ? Number(rawData.get('challengeId')) : null
   let challenge
   if (challengeId) {
     challenge = await loadChallenge(challengeId) as Challenge
   }
-  console.log('publishAt is', rawData.get('publishAt'))
   const data: Partial<Post> = {
     body: cleanData.body ?? null,
     title: cleanData.title ?? '',
@@ -44,11 +47,15 @@ export const action: ActionFunction = async (args) => {
   }
   // save what we have so far
   let result
-  if (rawData.get('id')) {
-    data.id = Number(rawData.get('id'))
-    result = await updatePost(data)
-  } else {
-    result = await createPost(data as Post)
+  try {
+    if (rawData.get('id')) {
+      data.id = Number(rawData.get('id'))
+      result = await updatePost(data)
+    } else {
+      result = await createPost(data as Post)
+    }
+  } catch (error) {
+    console.error('error creating post', error)
   }
   // check if there is a video/image OR if it should be deleted
   let image, video
