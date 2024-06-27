@@ -64,7 +64,7 @@ export function buttonColorFromContainer (containerColor: string | undefined, de
   if (!containerColor) return defaultColor
   const containerColorLower = containerColor.toLowerCase()
   if (['red'].includes(containerColorLower)) {
-    return 'gray-200'
+    return 'black'
   } else {
     return 'red'
   }
