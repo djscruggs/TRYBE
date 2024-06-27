@@ -43,7 +43,7 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
 
 export default function ViewPost (): JSX.Element {
   const location = useLocation()
-  if (location.pathname.includes('share')) {
+  if (location.pathname.includes('edit')) {
     return <Outlet />
   }
   const { hasLiked, loadingError, post } = useLoaderData() as PostData
@@ -59,7 +59,6 @@ export default function ViewPost (): JSX.Element {
     <div className='max-w-[400px] md:max-w-lg mt-10'>
       <CardPost post={_post} hasLiked={Boolean(hasLiked)} fullPost={true} />
     </div>
-    <Outlet context={{ _post, hasLiked }} />
 
     </>
   )

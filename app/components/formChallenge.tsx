@@ -22,7 +22,6 @@ interface Errors {
   startAt?: string
   endAt?: string
   coverPhoto?: string
-  locale?: string
 }
 
 export default function FormChallenge (props: ObjectData): JSX.Element {

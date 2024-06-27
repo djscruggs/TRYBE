@@ -18,6 +18,8 @@ import { format } from 'date-fns'
 interface FormPostProps {
   afterSave?: (post: PostSummary) => void
   onCancel?: () => void
+  publishAt?: string | null
+  title?: string | null
   post?: PostSummary
   challenge?: ChallengeSummary | null
   forwardRef?: React.RefObject<HTMLTextAreaElement>
@@ -34,7 +36,7 @@ interface Errors {
 
 export default function FormPost (props: FormPostProps): JSX.Element {
   const { currentUser } = useContext(CurrentUserContext)
-  const { afterSave, onCancel, post, challenge } = props
+  const { afterSave, onCancel, post, challenge, publishAt, title } = props
   const locale = currentUser?.locale ?? 'en-US'
   const [showVideoRecorder, setShowVideoRecorder] = useState(false)
   const [errors, setErrors] = useState<Errors>({})
@@ -44,12 +46,12 @@ export default function FormPost (props: FormPostProps): JSX.Element {
   const navigate = useNavigate()
   const imageRef = useRef<HTMLInputElement>(null)
   const [videoUploadOnly, setVideoUploadOnly] = useState(false)
-  const [showDatePicker, setShowDatePicker] = useState(Boolean(post?.publishAt))
+  const [showDatePicker, setShowDatePicker] = useState(Boolean(post?.publishAt) || Boolean(publishAt))
   const [formData, setFormData] = useState(post ?? {
     published: true,
-    publishAt: null,
+    publishAt: publishAt ? new Date(publishAt) : null,
     public: true,
-    title: '',
+    title: title ?? '',
     body: '',
     userId: currentUser?.id,
     challengeId: challenge ? challenge.id : null,
@@ -160,7 +162,6 @@ export default function FormPost (props: FormPostProps): JSX.Element {
     if (!validate()) {
       return
     }
-    console.log(formData)
     try {
       setSaving(true)
       const toSubmit = new FormData()
@@ -178,6 +179,7 @@ export default function FormPost (props: FormPostProps): JSX.Element {
       const result = await axios.post('/api/posts', toSubmit)
       console.log(result.data)
       toast.success('Post saved')
+      return
       if (afterSave) {
         console.log('afterSave')
         afterSave(result.data as PostSummary)
@@ -215,8 +217,10 @@ export default function FormPost (props: FormPostProps): JSX.Element {
   const handleCancel = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>): void => {
     event.preventDefault()
     if (onCancel) {
+      console.log('onCancel', onCancel)
       onCancel()
     } else {
+      console.log('navigate')
       navigate(-1)
     }
   }

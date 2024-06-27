@@ -17,7 +17,7 @@ import {
 } from '~/utils/helpers'
 import { type DateTimeFormatOptions } from 'intl'
 import { CurrentUserContext } from '../utils/CurrentUserContext'
-import { Spinner, Button, Menu, MenuHandler, MenuList, MenuItem } from '@material-tailwind/react'
+import { Spinner, Button } from '@material-tailwind/react'
 import Logo from '~/components/logo'
 import { LiaUserFriendsSolid } from 'react-icons/lia'
 import { prisma } from '../models/prisma.server'
@@ -25,9 +25,7 @@ import { formatDistanceToNow, format, differenceInDays, differenceInHours } from
 import getUserLocale from 'get-user-locale'
 import Liker from '~/components/liker'
 import ShareMenu from '~/components/shareMenu'
-import DialogDelete from '~/components/dialogDelete'
-
-import { GiHamburgerMenu } from 'react-icons/gi'
+import MenuChallenge from '~/components/menuChallenge'
 
 interface ViewChallengeData {
   challenge: ChallengeSummary
@@ -167,6 +165,7 @@ export default function ViewChallenge (): JSX.Element {
   const isOverview = matches.length === 3
   const isProgram = location.pathname.includes('program')
   const isPosts = location.pathname.includes('posts')
+  const isSchedule = location.pathname.includes('schedule')
 
   const { currentUser } = useContext(CurrentUserContext)
   const navigate = useNavigate()
@@ -216,7 +215,7 @@ export default function ViewChallenge (): JSX.Element {
           <div className={`w-fit mx-8 ${isProgram ? 'border-b-2 border-red' : 'cursor-pointer'}`} onClick={() => { navigate(`/challenges/${challenge.id}/program`) }}>Program</div>
           <div className={`w-fit ${isPosts ? 'border-b-2 border-red' : 'cursor-pointer'}`} onClick={() => { navigate(`/challenges/${challenge.id}/posts`) }}>Posts</div>
           <div className='absolute right-0'>
-            <ChallengeMenu challenge={challenge}/>
+            <MenuChallenge challenge={challenge}/>
           </div>
         </div>
         {isOverview &&
@@ -280,7 +279,7 @@ function ChallengeHeader ({ challenge, size }: { challenge: Challenge | Challeng
           </>
         )
       : (
-      <div className='flex flex-row justify-start items-center w-full'>
+      <div className='flex flex-row justify-start items-center w-full relative'>
         <Link to={`/challenges/${challenge.id}`}>
           {challenge.coverPhotoMeta?.secure_url
             ? <img
@@ -294,6 +293,9 @@ function ChallengeHeader ({ challenge, size }: { challenge: Challenge | Challeng
           }
           </Link>
         <div className='text-2xl pl-2'>{challenge.name}</div>
+        <div className='ml-4'>
+          <MenuChallenge challenge={challenge} />
+        </div>
       </div>
         )}
     </>
@@ -385,68 +387,7 @@ function ChallengeMemberInfo ({ challenge, memberChallenge }: { challenge: Chall
     </div>
   )
 }
-function ChallengeMenu ({ challenge }: { challenge: Challenge | ChallengeSummary }): JSX.Element {
-  const navigate = useNavigate()
-  const location = useLocation()
-  const { currentUser } = useContext(CurrentUserContext)
-  const isComments = location.pathname.includes('comments')
-  const [deleteDialog, setDeleteDialog] = useState(false)
-  const revalidator = useRevalidator()
-  const handleDeleteDialog = (event: any): void => {
-    event.preventDefault()
-    event.stopPropagation()
-    setDeleteDialog(true)
-  }
-  const cancelDialog = (event: any): void => {
-    event.preventDefault()
-    event.stopPropagation()
-    setDeleteDialog(false)
-  }
-  const handleDelete = async (event: any): Promise<void> => {
-    if (!challenge?.id) {
-      throw new Error('cannot delete without an id')
-    }
-    const url = `/api/challenges/delete/${challenge.id as string | number}`
-    const response = await axios.post(url)
-    if (response.status === 204) {
-      toast.success('Challenge deleted')
-      revalidator.revalidate()
-      navigate('/challenges')
-    } else {
-      toast.error('Delete failed')
-    }
-  }
-  return (
-    <>
-    {!isComments && challenge?.userId === currentUser?.id && (
-      <>
-        <Menu placement='left'>
-          <MenuHandler>
-            <Button className='bg-red p-1 md:p-2'>
-              <GiHamburgerMenu className='h-6 w-6 md:hidden'/>
-              <span className='hidden md:block'>Menu</span>
-            </Button>
-          </MenuHandler>
-          <MenuList>
-            <MenuItem onClick={() => { navigate(`/pos ts/new/challenge/${challenge.id}`) }}>
-              Post an Update
-            </MenuItem>
-            <MenuItem onClick={() => { navigate(`/threads/new/challenge/${challenge.id}`) }} >
-              Start a Discussion
-            </MenuItem>
-            posts/new/challenge/$challengeId
-            <MenuItem onClick={() => { navigate(`/challenges/${challenge.id}/edit`) }}>Edit</MenuItem>
-            <MenuItem onClick={handleDeleteDialog}>
-              Delete
-            </MenuItem>
-          </MenuList>
-        </Menu>
-      {deleteDialog && <DialogDelete prompt='Are you sure you want to delete this challenge?' isOpen={deleteDialog} deleteCallback={handleDelete} onCancel={cancelDialog}/>}
-      </>
-    )}
-  </>
-  )
-}
+
 function ChallengeOverview ({ challenge }: { challenge: Challenge | ChallengeSummary }): JSX.Element {
   const parsedDescription = textToJSX(challenge.description ?? '')
   const { currentUser } = useContext(CurrentUserContext)
