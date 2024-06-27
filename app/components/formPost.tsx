@@ -227,7 +227,7 @@ export default function FormPost (props: FormPostProps): JSX.Element {
 
     <div className='w-full'>
 
-      <Form method="post" onSubmit={handleSubmit}>
+      <Form method="post" onSubmit={handleSubmit} className='pb-4'>
       <FormField
         name='title'
         type='text'
