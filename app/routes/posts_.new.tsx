@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom'
 import { type LoaderFunction, type LoaderFunctionArgs } from '@remix-run/node'
 import { loadChallengeSummary } from '../models/challenge.server'
 import FormPost from '../components/formPost'
-
+import ChallengeHeader from '~/components/challengeHeader'
 interface LoaderData {
   challenge: ChallengeSummary | null
 };
@@ -43,7 +43,7 @@ export default function PostsNew (props: PostsNewProps): JSX.Element {
   return (
           <>
           {challenge &&
-            <p>Post an update for {challenge.name}</p>
+            <ChallengeHeader challenge={challenge} size='small' />
           }
           <div className='w-full max-w-lg mt-10'>
             {challenge // only navigate if there is a challenge attached to this post

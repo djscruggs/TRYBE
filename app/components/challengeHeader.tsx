@@ -18,7 +18,7 @@ export default function ChallengeHeader ({ challenge, size }: { challenge: Chall
         )
       : (
       <div className='flex flex-row justify-start items-center w-full relative'>
-        <Link to={`/challenges/${challenge.id}`}>
+        <Link to={`/challenges/v/${challenge.id}`}>
           {challenge.coverPhotoMeta?.secure_url
             ? <img
               src={challenge.coverPhotoMeta?.secure_url}

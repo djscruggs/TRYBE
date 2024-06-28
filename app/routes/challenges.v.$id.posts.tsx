@@ -40,7 +40,7 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
   return data
 }
 export default function ViewChallengePosts (): JSX.Element {
-  const data: ViewChallengePostsData = useLoaderData() as ViewChallengePostsData
+  const data: ViewChallengePostsData = useLoaderData<typeof loader>()
   const { posts } = data
 
   if (!data) {

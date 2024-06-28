@@ -31,7 +31,7 @@ export default function CardChallenge ({ challenge, isShare, isMember }: CardCha
   const buttonTextColor = textColorFromContainer(buttonColor, 'red')
   const goToChallenge = (event: any): void => {
     event.stopPropagation()
-    const url = `/challenges/${challenge.id}`
+    const url = `/challenges/v/${challenge.id}`
     if (currentUser) {
       navigate(url)
     } else {
@@ -55,7 +55,7 @@ export default function CardChallenge ({ challenge, isShare, isMember }: CardCha
     }
   }
   const getFullUrl = (): string => {
-    return `${window.location.origin}/challenges/${challenge.id}`
+    return `${window.location.origin}/challenges/v/${challenge.id}`
   }
   const iconOptions: Record<string, JSX.Element> = getIconOptionsForColor(bgColor)
   return (
@@ -92,7 +92,7 @@ export default function CardChallenge ({ challenge, isShare, isMember }: CardCha
       <>
         <div className="grid grid-cols-3 text-center py-2 cursor-pointer">
           <div className="flex justify-center items-center">
-          <Link to={`/challenges/${challenge.id}/comments#comments`}>
+          <Link to={`/challenges/v/${challenge.id}/comments#comments`}>
             <FaRegComment className="text-grey mr-1 inline" />
             <span className="text-xs">{challenge._count.comments} comments</span>
             </Link>

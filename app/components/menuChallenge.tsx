@@ -63,8 +63,8 @@ export default function MenuChallenge (props: MenuChallengeProps): JSX.Element {
             <MenuItem onClick={() => { navigate(`/threads/new/challenge/${challenge.id}`) }} >
               Start a Discussion
             </MenuItem>
-            <MenuItem onClick={() => { navigate(`/challenges/${challenge.id}/edit`) }}>Edit Challenge</MenuItem>
-            <MenuItem onClick={() => { navigate(`/challenges/${challenge.id}/program`) }}>Edit Schedule</MenuItem>
+            <MenuItem onClick={() => { navigate(`/challenges/v/${challenge.id}/edit`) }}>Edit Challenge</MenuItem>
+            <MenuItem onClick={() => { navigate(`/challenges/v/${challenge.id}/program`) }}>Edit Schedule</MenuItem>
             <MenuItem onClick={handleDeleteDialog}>
               Delete
             </MenuItem>

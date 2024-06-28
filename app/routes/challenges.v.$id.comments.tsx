@@ -23,7 +23,7 @@ export default function ViewChallengeComments (): JSX.Element {
     setShowForm(false)
     revalidator.revalidate()
   }
-  const comments = useLoaderData() as Array<Record<string, any>>
+  const comments = useLoaderData<typeof loader>()
   const [showForm, setShowForm] = useState(comments.length === 0)
 
   const params = useParams()

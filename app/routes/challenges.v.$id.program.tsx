@@ -35,8 +35,8 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs): Challeng
 }
 export default function ChallengeSchedule (): JSX.Element {
   const matches = useMatches()
-  const { challenge } = matches.find((match) => match.id === 'routes/challenges.$id')?.data as ObjectData
-  const { posts } = useLoaderData() as ChallengeScheduleData
+  const { challenge } = matches.find((match) => match.id === 'routes/challenges.v.$id')?.data as ObjectData
+  const { posts } = useLoaderData<typeof loader>() as ChallengeScheduleData
   const navigate = useNavigate()
   const postsByDay = posts.reduce<Record<number, Post[]>>((acc, post) => {
     const date = post.publishAt ? new Date(post.publishAt) : new Date(post.createdAt)
@@ -61,7 +61,7 @@ export default function ChallengeSchedule (): JSX.Element {
   const days = eachDayOfInterval({ start: startOfWeek(startDate), end: endDate })
   const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
   return (
-    <>
+    <div className=' max-w-sm md:max-w-xl lg:max-w-2xl'>
       <div className="w-full mt-4">
         {new Date(challenge.startAt).toLocaleDateString(locale, dateOptions)} to {new Date(challenge.endAt).toLocaleDateString(locale, dateOptions)}
       </div>
@@ -122,6 +122,6 @@ export default function ChallengeSchedule (): JSX.Element {
           )
         })}
       </div>
-    </>
+    </div>
   )
 }

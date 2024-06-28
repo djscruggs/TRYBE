@@ -20,12 +20,12 @@ export default function CardChallengeMembership ({ membership }: CardChallengePr
   const challenge: Challenge = membership.challenge!
   const goToChallenge = (): void => {
     if (challenge) {
-      const url = `/challenges/${challenge.id}`
+      const url = `/challenges/v/${challenge.id}`
       navigate(url)
     }
   }
   const getFullUrl = (): string => {
-    return `${window.location.origin}/challenges/${challenge.id}`
+    return `${window.location.origin}/challenges/v/${challenge.id}`
   }
   const locale = userLocale(currentUser)
 

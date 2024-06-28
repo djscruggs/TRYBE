@@ -16,7 +16,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
   return json(data)
 }
 export default function ViewChallengeMembers (): JSX.Element {
-  const members = useLoaderData() as Array<Record<string, any>>
+  const members = useLoaderData<typeof loader>()
   console.log(members)
   return (
     <>

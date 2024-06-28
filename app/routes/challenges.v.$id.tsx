@@ -163,7 +163,8 @@ export default function ViewChallenge (): JSX.Element {
 
   const likesCount = challenge?._count?.likes ?? 0
   const location = useLocation()
-  const isOverview = matches.length === 3
+  console.log('matches', matches)
+  const isOverview = matches.length === 2
   const isProgram = location.pathname.includes('program')
   const isPosts = location.pathname.includes('posts')
   const isSchedule = location.pathname.includes('schedule')
@@ -173,7 +174,7 @@ export default function ViewChallenge (): JSX.Element {
   const [loading, setLoading] = useState<boolean>(false)
   const [isMember, setIsMember] = useState(Boolean(membership?.id))
   const getFullUrl = (): string => {
-    return `${window.location.origin}/challenges/${challenge?.id}`
+    return `${window.location.origin}/challenges/v/${challenge?.id}`
   }
 
   if (!data) {
@@ -202,7 +203,9 @@ export default function ViewChallenge (): JSX.Element {
     return (
       <div className='flex flex-col'>
         <ChallengeHeader challenge={challenge} size='small' />
+        <div className='mb-16'>
         <Outlet />
+        </div>
       </div>
     )
   }
@@ -210,14 +213,17 @@ export default function ViewChallenge (): JSX.Element {
   return (
     <div className='flex flex-col'>
       <div className='max-w-sm md:max-w-md lg:max-w-lg relative'>
-        <ChallengeHeader challenge={challenge} size='large' />
+        <ChallengeHeader challenge={challenge} size={challenge.coverPhotoMeta?.secure_url ? 'large' : 'small'} />
         <div className='text-lg py-2 flex items-center justify-center w-full'>
-          <div className={`w-fit ${isOverview ? 'border-b-2 border-red' : 'cursor-pointer'}`} onClick={() => { navigate(`/challenges/${challenge.id}`) }}>Overview</div>
-          <div className={`w-fit mx-8 ${isProgram ? 'border-b-2 border-red' : 'cursor-pointer'}`} onClick={() => { navigate(`/challenges/${challenge.id}/program`) }}>Program</div>
-          <div className={`w-fit ${isPosts ? 'border-b-2 border-red' : 'cursor-pointer'}`} onClick={() => { navigate(`/challenges/${challenge.id}/posts`) }}>Posts</div>
+          <div className={`w-fit ${isOverview ? 'border-b-2 border-red' : 'cursor-pointer'}`} onClick={() => { navigate(`/challenges/v/${challenge.id}`) }}>Overview</div>
+          <div className={`w-fit mx-8 ${isProgram ? 'border-b-2 border-red' : 'cursor-pointer'}`} onClick={() => { navigate(`/challenges/v/${challenge.id}/program`) }}>Program</div>
+          <div className={`w-fit ${isPosts ? 'border-b-2 border-red' : 'cursor-pointer'}`} onClick={() => { navigate(`/challenges/v/${challenge.id}/posts`) }}>Posts</div>
+          {/* only show menu here if there is a cover photo */}
+          {challenge.coverPhotoMeta &&
           <div className='absolute right-0'>
             <MenuChallenge challenge={challenge}/>
           </div>
+          }
         </div>
         {isOverview &&
           <ChallengeOverview challenge={challenge} />
@@ -258,13 +264,12 @@ export default function ViewChallenge (): JSX.Element {
               </div>
             </div>
 
-            <div className='mb-16'>
               <Outlet />
-            </div>
+
           </div>
       }
       <Outlet />
-</div>
+  </div>
   )
 }
 

@@ -166,7 +166,7 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
     } else {
       revalidator.revalidate()
       toast.success(msg)
-      navigate(`/challenges/${response.data.id}`, { replace: true })
+      navigate(`/challenges/v/${response.data.id}`, { replace: true })
     }
   }
   const [image, setImage] = useState<File | null>(null)

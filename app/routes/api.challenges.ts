@@ -1,4 +1,6 @@
-import { createChallenge, updateChallenge, challengeSchema, loadChallengeSummary } from '~/models/challenge.server'
+import { fetchMemberChallenges } from '~/models/user.server'
+
+import { createChallenge, updateChallenge, loadChallengeSummary, fetchChallengeSummaries } from '~/models/challenge.server'
 import { requireCurrentUser } from '~/models/auth.server'
 import {
   json, type LoaderFunction,
@@ -72,6 +74,18 @@ export async function action (args: ActionFunctionArgs): Promise<any> {
     }
   }
 }
+
 export const loader: LoaderFunction = async (args) => {
-  return json({ message: 'This route does not accept GET requests' }, 200)
+  const { params } = args
+  console.log(params)
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const currentUser = await requireCurrentUser(args)
+  const uid = Number(currentUser?.id)
+  const challenges = await fetchChallengeSummaries(uid) as { error?: string }
+  if (!challenges || (challenges.error != null)) {
+    const error = { loadingError: 'Unable to load challenges' }
+    return json(error)
+  }
+  const memberships = await fetchMemberChallenges(uid) || []
+  return json({ challenges, memberships, error: null })
 }
