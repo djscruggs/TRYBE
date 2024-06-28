@@ -100,15 +100,25 @@ export const fetchChallenges = async (userId: string | number): Promise<Challeng
     }
   })
 }
-export const fetchChallengeSummaries = async (userId?: string | number): Promise<ChallengeSummary[]> => {
+export const fetchChallengeSummaries = async (userId?: string | number, status?: string): Promise<ChallengeSummary[]> => {
   const uid = userId ? Number(userId) : undefined
   const where: any[] = [{ public: true }]
-  if (uid) {
-    where.push({ userId: uid })
+  if (status === 'upcoming') {
+    where.push({ startAt: { gt: new Date() } })
   }
+  if (status === 'archived') {
+    where.push({ endAt: { lt: new Date() } })
+  }
+  if (status === 'active') {
+    where.push({ endAt: { gt: new Date() } })
+  }
+  if (uid) {
+    // where.push({ userId: uid })
+  }
+  console.log('where', where)
   const params: prisma.challengeFindManyArgs = {
     where: {
-      OR: where
+      AND: where
     },
     include: {
       _count: {

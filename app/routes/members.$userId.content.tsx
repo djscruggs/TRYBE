@@ -44,7 +44,7 @@ export default function UserSpecificContent (): JSX.Element {
 
   const handleTabChange = (value: string): void => {
     setSelected(value)
-    navigate(`/members/${userId}/content/${selected}`)
+    navigate(`/members/${userId}/content/${value}`)
   }
 
   if (data?.error) {

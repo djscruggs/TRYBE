@@ -16,8 +16,6 @@ export const loader: LoaderFunction = async (args) => {
     const error = { error: 'Unable to load challenges' }
     return json(error)
   }
-  console.log('end of my loader')
-  console.log(challenges)
   return json({ challenges })
 }
 
