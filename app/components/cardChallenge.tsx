@@ -94,13 +94,13 @@ export default function CardChallenge ({ challenge, isShare, isMember }: CardCha
           <div className="flex justify-center items-center">
           <Link to={`/challenges/v/${challenge.id}/comments#comments`}>
             <FaRegComment className="text-grey mr-1 inline" />
-            <span className="text-xs">{challenge._count.comments} comments</span>
+            { challenge._count?.comments && <span className="text-xs">{challenge._count?.comments} comments</span>}
             </Link>
           </div>
           <div className="flex justify-center items-center cursor-pointer">
             {/* Replace with the actual heart icon import */}
             <FaRegHeart className="text-grey text-sm mr-1" />
-            <span className="text-xs" onClick={goToChallenge}>{challenge._count.likes} likes</span>
+            { challenge._count?.likes && <span className="text-xs" onClick={goToChallenge}>{challenge._count?.likes} likes</span>}
           </div>
           <div className="flex justify-center items-center cursor-pointer">
             <ShareMenu copyUrl={getFullUrl()} itemType='challenge' itemId={challenge.id}/>
