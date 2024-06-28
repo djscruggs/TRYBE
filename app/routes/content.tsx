@@ -37,7 +37,6 @@ export default function UserSpecificContent (): JSX.Element {
   const data: any = useLoaderData()
   const { challenges, notes, posts, memberships } = data
   const params = useParams()
-  console.log(params.tab)
   const [selected, setSelected] = useState(params.tab ?? 'memberships')
   const navigate = useNavigate()
 

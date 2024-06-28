@@ -9,7 +9,7 @@ import { type ChallengeSummary } from '../utils/types'
 import { colorToClassName, textColorFromContainer, getIconOptionsForColor, buttonColorFromContainer, resizeImageToFit } from '~/utils/helpers'
 import { CurrentUserContext } from '../utils/CurrentUserContext'
 import { Link, useNavigate } from '@remix-run/react'
-import { differenceInCalendarDays } from 'date-fns'
+import { differenceInCalendarDays, isPast } from 'date-fns'
 import ShareMenu from './shareMenu'
 
 interface CardChallengeProps {
@@ -51,6 +51,10 @@ export default function CardChallenge ({ challenge, isShare, isMember }: CardCha
       }
       return `${daysUntilStart} days`
     } else {
+      console.log('challenge.endAt', challenge.endAt)
+      if (isPast(challenge.endAt)) {
+        return 'Ended'
+      }
       return 'Started'
     }
   }
