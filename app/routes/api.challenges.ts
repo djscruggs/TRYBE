@@ -18,31 +18,23 @@ export async function action (args: ActionFunctionArgs): Promise<any> {
   const formData = Object.fromEntries(rawData)
   const cleanData = convertStringValues(formData)
   if (!cleanData.userId) {
-    cleanData.userId = currentUser.id
+    cleanData.userId = currentUser?.id
   }
   try {
-    // const validation = challengeSchema.safeParse(cleanData)
-    // if (!validation.success) {
-    //   return ({
-    //     formData,
-    //     errors: validation.error.format()
-    //   })
-    // }
-    // convert types where necessary
     const converted = cleanData
     delete converted.image
     delete converted.video
     delete converted.userId
     delete converted.deleteImage
     delete converted.coverPhoto
-    converted.endAt = converted.endAt ? new Date(converted.endAt).toISOString() : null
-    converted.startAt = converted.startAt ? new Date(converted.startAt).toISOString() : null
-    converted.publishAt = converted.publishAt ? new Date(converted.publishAt).toISOString() : new Date().toISOString()
+    converted.endAt = converted.endAt ? new Date(converted.endAt as Date).toISOString() : null
+    converted.startAt = converted.startAt ? new Date(converted.startAt as Date).toISOString() : null
+    converted.publishAt = converted.publishAt ? new Date(converted.publishAt as Date).toISOString() : new Date().toISOString()
     let data: any
     if (converted.id) {
       data = await updateChallenge(converted)
     } else {
-      converted.userId = currentUser.id
+      converted.userId = currentUser?.id
       data = await createChallenge(converted)
     }
     // now handle the photo
@@ -53,7 +45,7 @@ export async function action (args: ActionFunctionArgs): Promise<any> {
     }
     if (rawData.get('deleteImage') === 'true') {
       if (data.coverPhotoMeta?.public_id) {
-        await deleteFromCloudinary(data.coverPhotoMeta?.public_id, 'image')
+        await deleteFromCloudinary(data.coverPhotoMeta?.public_id as string, 'image')
       }
       data.coverPhotoMeta = {}
     }

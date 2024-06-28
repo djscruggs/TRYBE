@@ -148,6 +148,17 @@ export interface MemberChallenge {
   }
 }
 
+export interface CheckIn {
+  id: number
+  userId: number
+  challengeId: number
+  createdAt: Date
+  data: string
+  challenge?: Challenge
+  user?: User
+  memberChallenge?: MemberChallenge
+}
+
 export interface Profile {
   id: number | string
   firstName: string

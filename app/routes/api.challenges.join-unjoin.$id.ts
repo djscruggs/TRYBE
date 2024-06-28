@@ -1,8 +1,7 @@
-import { joinChallenge, unjoinChallenge, challengeSchema } from '~/models/challenge.server'
+import { joinChallenge, unjoinChallenge } from '~/models/challenge.server'
 import { requireCurrentUser } from '~/models/auth.server'
 import { loadUser } from '~/models/user.server'
-import { json, type LoaderFunction } from '@remix-run/node'
-import type { ActionFunctionArgs } from '@remix-run/node' // or cloudflare/deno
+import { json, type LoaderFunction, type ActionFunctionArgs } from '@remix-run/node'
 import type { MemberChallenge } from '@prisma/client'
 
 export async function action (args: ActionFunctionArgs): Promise<prisma.challenge> {

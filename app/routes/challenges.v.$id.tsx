@@ -162,7 +162,6 @@ export default function ViewChallenge (): JSX.Element {
 
   const likesCount = challenge?._count?.likes ?? 0
   const location = useLocation()
-  console.log('matches', matches)
   const isOverview = matches.length === 2
   const isProgram = location.pathname.includes('program')
   const isPosts = location.pathname.includes('posts')

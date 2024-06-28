@@ -1,6 +1,5 @@
 import { prisma } from './prisma.server'
-import type { Challenge, ChallengeSummary, MemberChallenge } from '~/utils/types'
-import z from 'zod'
+import type { Challenge, ChallengeSummary, MemberChallenge, CheckIn } from '~/utils/types'
 import { addDays, isFriday, isSaturday } from 'date-fns'
 import { deleteFromCloudinary } from '~/utils/uploadFile'
 
@@ -196,7 +195,7 @@ export const fetchUserChallenges = async (userId: string | number, showPrivate =
     }
   })
 }
-export const fetchUserMemberships = async (userId: string | number, showPrivate = false): Promise<MemberChallenge[]> => {
+export const fetchUserMemberships = async (userId: string | number): Promise<MemberChallenge[]> => {
   const uid = Number(userId)
   return await prisma.memberChallenge.findMany(
     {
@@ -210,9 +209,9 @@ export const fetchUserMemberships = async (userId: string | number, showPrivate 
         }
       }
     }
-  )
+  ) as unknown as MemberChallenge[]
 }
-export const fetchChallengeMembers = async (cId: string | number): Promise<any> => {
+export const fetchChallengeMembers = async (cId: string | number): Promise<MemberChallenge[]> => {
   const params: prisma.memberChallengeFindManyArgs = {
     where: { challengeId: Number(cId.toString()) },
     include: {
@@ -225,78 +224,38 @@ export const fetchChallengeMembers = async (cId: string | number): Promise<any> 
     }
   }
   // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-  return await prisma.memberChallenge.findMany(params)
+  return await prisma.memberChallenge.findMany(params) as unknown as MemberChallenge[]
 }
-export const joinChallenge = async (userId: number, challengeId: number): Promise<any> => {
+export const joinChallenge = async (userId: number, challengeId: number): Promise<MemberChallenge> => {
   return await prisma.memberChallenge.create({
     data: {
       userId,
       challengeId
     }
-  })
+  }) as unknown as MemberChallenge
 }
-export const unjoinChallenge = async (id: number): Promise<any> => {
+export const unjoinChallenge = async (id: number): Promise<MemberChallenge> => {
   return await prisma.memberChallenge.delete({
     where: {
       id
     }
-  })
+  }) as unknown as MemberChallenge
 }
-export function getSchemaDefaults<Schema extends z.AnyZodObject> (schema: Schema) {
-  return Object.fromEntries(
-    Object.entries(schema.shape).map(([key, value]) => {
-      if (value instanceof z.ZodDefault) return [key, value._def.defaultValue()]
-      return [key, undefined]
-    })
-  )
+export async function fetchCheckIns (userId?: number, challengeId?: number, orderBy: 'asc' | 'desc' = 'desc'): Promise<CheckIn[]> {
+  const where: any = {}
+  if (userId) {
+    where.userId = userId
+  }
+  if (challengeId) {
+    where.challengeId = challengeId
+  }
+  return await prisma.checkIn.findMany({
+    where,
+    orderBy: {
+      createdAt: orderBy
+    },
+    include: {
+      user: true
+    }
+  }) as unknown as CheckIn[]
 }
-export const challengeSchema =
-                    z.object({
-                      deleteImage: z.boolean().optional().nullable(),
-                      image: z.instanceof(File).optional().nullable(),
-                      video: z.instanceof(File).optional().nullable(),
-                      name: z
-                        .string()
-                        .min(1, { message: 'Challenge name is required' }),
-                      description: z
-                        .string({ invalid_type_error: 'Wrong type' })
-                        .min(1, { message: 'Description is required' }),
-                      mission: z
-                        .string({ invalid_type_error: 'Wrong type' })
-                        .min(1, { message: 'Mission is required' }),
-                      startAt: z
-                        .date({ required_error: 'Please select a date' }),
-                      endAt: z
-                        .date()
-                        .or(z.literal(''))
-                        .nullable(),
-                      frequency: z
-                        .enum(['DAILY', 'WEEKDAYS', 'ALTERNATING', 'WEEKLY', 'CUSTOM']),
-                      icon: z
-                        .string()
-                        .nullable()
-                        .optional(),
-                      color: z
-                        .string()
-                        .nullable()
-                        .optional(),
-                      reminders: z
-                        .boolean()
-                        .default(false),
-                      syncCalendar: z
-                        .boolean()
-                        .default(false),
-                      publishAt: z
-                        .string()
-                        .pipe(z.coerce.date())
-                        .or(z.date())
-                        .or(z.literal(''))
-                        .nullable()
-                        .optional(),
-                      published: z
-                        .boolean()
-                        .default(false),
-                      userId: z
-                        .coerce
-                        .bigint()
-                    })

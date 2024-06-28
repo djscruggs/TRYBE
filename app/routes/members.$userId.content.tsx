@@ -1,10 +1,10 @@
 import { requireCurrentUser } from '../models/auth.server'
 import { type LoaderFunction, json } from '@remix-run/node'
-import { useLoaderData, Link, useParams, useNavigate, Outlet } from '@remix-run/react'
+import { useLoaderData, Link, useParams, useNavigate } from '@remix-run/react'
 import { fetchUserChallenges, fetchUserMemberships } from '~/models/challenge.server'
 import { fetchUserNotes } from '~/models/note.server'
 import { fetchUserPosts } from '~/models/post.server'
-import React, { useState, useContext } from 'react'
+import React, { useState } from 'react'
 // import { bo } from '~/public/icons/icons8-box'
 import {
   Tabs,
@@ -17,7 +17,6 @@ import CardChallenge from '~/components/cardChallenge'
 import CardChallengeMembership from '~/components/cardChallengeMembership'
 import CardPost from '~/components/cardPost'
 import CardNote from '~/components/cardNote'
-import { CurrentUserContext } from '~/utils/CurrentUserContext'
 import { LuStickyNote } from 'react-icons/lu'
 import { FaPeopleGroup } from 'react-icons/fa6'
 import { FaChartLine } from 'react-icons/fa'
@@ -30,7 +29,7 @@ export const loader: LoaderFunction = async (args) => {
   const userId = Number(args.params.userId ?? currentUser?.id)
   const showPrivate = userId === currentUser?.id
   const challenges = await fetchUserChallenges(userId, showPrivate) as { error?: string }
-  const memberships = await fetchUserMemberships(userId, showPrivate) as { error?: string }
+  const memberships = await fetchUserMemberships(userId) as { error?: string }
   const notes = await fetchUserNotes(userId) as { error?: string }
   const posts = await fetchUserPosts(userId, showPrivate) as { error?: string }
   return json({ challenges, notes, posts, memberships, userId })
