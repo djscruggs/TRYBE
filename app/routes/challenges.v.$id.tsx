@@ -18,10 +18,9 @@ import {
 import { type DateTimeFormatOptions } from 'intl'
 import { CurrentUserContext } from '../utils/CurrentUserContext'
 import { Spinner, Button } from '@material-tailwind/react'
-import Logo from '~/components/logo'
 import { LiaUserFriendsSolid } from 'react-icons/lia'
 import { prisma } from '../models/prisma.server'
-import { formatDistanceToNow, format, differenceInDays, differenceInHours } from 'date-fns'
+import { formatDistanceToNow, format, differenceInDays, differenceInHours, isPast } from 'date-fns'
 import getUserLocale from 'get-user-locale'
 import Liker from '~/components/liker'
 import ShareMenu from '~/components/shareMenu'
@@ -157,7 +156,7 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
   return data
 }
 export default function ViewChallenge (): JSX.Element {
-  const data: ViewChallengeData = useLoaderData()
+  const data = useLoaderData<typeof loader>()
   const matches = useMatches()
   const { challenge, hasLiked, membership } = data
 
@@ -167,8 +166,7 @@ export default function ViewChallenge (): JSX.Element {
   const isOverview = matches.length === 2
   const isProgram = location.pathname.includes('program')
   const isPosts = location.pathname.includes('posts')
-  const isSchedule = location.pathname.includes('schedule')
-
+  const isExpired = isPast(challenge.endAt as Date)
   const { currentUser } = useContext(CurrentUserContext)
   const navigate = useNavigate()
   const [loading, setLoading] = useState<boolean>(false)
@@ -231,7 +229,7 @@ export default function ViewChallenge (): JSX.Element {
       </div>
       {isOverview &&
           <div className="max-w-sm md:max-w-md lg:max-w-lg">
-            {challenge?.userId !== currentUser?.id && (
+            {challenge?.userId !== currentUser?.id && !isExpired && (
               <>
                 <Button
                     onClick={toggleJoin}
@@ -248,7 +246,7 @@ export default function ViewChallenge (): JSX.Element {
                     ? (
                   <div>
                       <LiaUserFriendsSolid className="text-grey h-5 w-5 inline ml-4 -mt-1 mr-1" />
-                      {challenge?._count.members} {pluralize(challenge?._count.members, 'member')}
+                      {challenge?._count.members} {pluralize(challenge?._count.members as number, 'member')}
                   </div>
                       )
                     : (
@@ -277,6 +275,8 @@ function ChallengeMemberInfo ({ challenge, memberChallenge }: { challenge: Chall
   const isMember = Boolean(memberChallenge?.id)
   const [checkingIn, setCheckingIn] = useState<boolean>(false)
   const [membership, setMembership] = useState(memberChallenge)
+  const isExpired = isPast(challenge?.endAt)
+  const isStarted = isPast(challenge?.startAt)
   const formatNextCheckin = (): string => {
     if (!membership?.nextCheckIn) {
       return ''
@@ -295,6 +295,10 @@ function ChallengeMemberInfo ({ challenge, memberChallenge }: { challenge: Chall
     return format(membership.nextCheckIn, 'cccc')
   }
   const canCheckInNow = (): boolean => {
+    if (isExpired) {
+      return false
+    }
+
     if (!membership?.nextCheckIn) {
       return true
     }
@@ -336,7 +340,7 @@ function ChallengeMemberInfo ({ challenge, memberChallenge }: { challenge: Chall
             ? (
             <>
             Last check-in: {formatDistanceToNow(membership.lastCheckIn)} ago <br />
-            {membership.nextCheckIn && <p>Next check-in {formatNextCheckin()}</p>}
+            {!isExpired && membership.nextCheckIn && <p>Next check-in {formatNextCheckin()}</p>}
             {Number(membership?._count?.checkIns) > 0 && <p>{memberChallenge?._count?.checkIns} check-ins total</p>}
             </>
               )
@@ -344,15 +348,17 @@ function ChallengeMemberInfo ({ challenge, memberChallenge }: { challenge: Chall
             <p>No check-ins yet</p>
               )}
           </div>
-          <div className="text-xs my-2 justify-end w-1/2">
-            <Button
-              onClick={handleCheckIn}
-              disabled={checkingIn || !canCheckInNow()}
-              className='bg-red hover:bg-green-500 text-white rounded-md p-2 justify-center text-xs disabled:bg-gray-400'
-            >
-              {checkingIn ? 'Checking In...' : canCheckInNow() ? 'Check In Now' : 'Checked In'}
-            </Button>
-        </div>
+          {!isExpired && (
+            <div className="text-xs my-2 justify-end w-1/2">
+              <Button
+                  onClick={handleCheckIn}
+                  disabled={checkingIn || !canCheckInNow()}
+                  className='bg-red hover:bg-green-500 text-white rounded-md p-2 justify-center text-xs disabled:bg-gray-400'
+                >
+                  {checkingIn ? 'Checking In...' : canCheckInNow() ? 'Check In Now' : 'Checked In'}
+                </Button>
+            </div>
+          )}
         </>
       )}
     </div>
@@ -361,6 +367,8 @@ function ChallengeMemberInfo ({ challenge, memberChallenge }: { challenge: Chall
 
 function ChallengeOverview ({ challenge }: { challenge: Challenge | ChallengeSummary }): JSX.Element {
   const parsedDescription = textToJSX(challenge.description ?? '')
+  const isExpired = isPast(challenge?.endAt)
+  const isStarted = isPast(challenge?.startAt)
   const { currentUser } = useContext(CurrentUserContext)
   const locale = userLocale(currentUser)
   const dateOptions: DateTimeFormatOptions = {
@@ -370,6 +378,7 @@ function ChallengeOverview ({ challenge }: { challenge: Challenge | ChallengeSum
   }
   return (
     <div className='md:px-0 justify-start'>
+      {isExpired && <div className='text-red text-center'>This challenge has ended</div>}
       <div className='relative mb-4'>
         <div className="font-bold">
           Name
@@ -391,13 +400,13 @@ function ChallengeOverview ({ challenge }: { challenge: Challenge | ChallengeSum
       <div className="mb-2 flex flex-cols">
         <div className="w-1/3">
           <div className="font-bold">
-            Start Date
+            {isExpired || isStarted ? 'Started' : 'Start Date'}
           </div>
           {new Date(challenge.startAt).toLocaleDateString(locale, dateOptions)}
         </div>
         <div className="w-1/3">
           <div className="font-bold">
-            End Date
+            {isExpired ? 'Ended' : 'End Date'}
           </div>
           {new Date(challenge.endAt ?? '').toLocaleDateString(locale, dateOptions)}
         </div>

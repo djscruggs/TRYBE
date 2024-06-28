@@ -29,6 +29,7 @@ export default function CardChallenge ({ challenge, isShare, isMember }: CardCha
   const bgColor = colorToClassName(challenge.color ?? '', 'red')
   const buttonColor = buttonColorFromContainer(bgColor, 'white')
   const buttonTextColor = textColorFromContainer(buttonColor, 'red')
+  const isExpired = isPast(challenge.endAt)
   const goToChallenge = (event: any): void => {
     event.stopPropagation()
     const url = `/challenges/v/${challenge.id}`
@@ -51,8 +52,7 @@ export default function CardChallenge ({ challenge, isShare, isMember }: CardCha
       }
       return `${daysUntilStart} days`
     } else {
-      console.log('challenge.endAt', challenge.endAt)
-      if (isPast(challenge.endAt)) {
+      if (isExpired) {
         return 'Ended'
       }
       return 'Started'
@@ -64,10 +64,14 @@ export default function CardChallenge ({ challenge, isShare, isMember }: CardCha
   const iconOptions: Record<string, JSX.Element> = getIconOptionsForColor(bgColor)
   return (
     <div className="mt-2 drop-shadow-none mr-2 w-full cursor-pointer">
+
       <div className="drop-shadow-none">
         <div className={'rounded-md p-1 bg-white'}>
           <Card onClick={goToChallenge} className={`md:col-span-2 bg-${bgColor} p-2 py-4 border-1 drop-shadow-lg border-gray rounded-md`}>
-          <div className={`font-bold mb-4 text-center text-${textColor}`}>{challenge.name}</div>
+          <div className={`font-bold mb-4 text-center text-${textColor}`}>
+            {challenge.name}
+
+          </div>
             <div className="grid grid-cols-3 gap-4">
               <div className="flex flex-col justify-center items-center col-span-1">
                 <div className={`bg-transparent border-2 border-${textColor} text-${textColor} rounded-full w-16 h-16 flex items-center justify-center `}>
@@ -84,8 +88,9 @@ export default function CardChallenge ({ challenge, isShare, isMember }: CardCha
               </div>
               <div className="flex flex-col items-center col-span-2">
 
-                {challenge.coverPhotoMeta?.secure_url! && <img src={challenge.coverPhotoMeta?.secure_url} alt={`${challenge?.name} cover photo`} width={imgWidth} height={imgHeight} className={`max-w-full max-h-[${imgHeight}px]`} />}
-                <Button onClick={goToChallenge} className={`bg-${buttonColor} text-${buttonTextColor} p-3 py-2 rounded-full mt-3`}>{isMember ? 'Check In' : 'Sign up!'}</Button>
+                {challenge.coverPhotoMeta?.secure_url && <img src={challenge.coverPhotoMeta?.secure_url} alt={`${challenge?.name} cover photo`} width={imgWidth} height={imgHeight} className={`max-w-full max-h-[${imgHeight}px]`} />}
+                {isExpired && <div className='text-red mt-4'>Challenge has ended</div>}
+                {!isExpired && <Button onClick={goToChallenge} className={`bg-${buttonColor} text-${buttonTextColor} p-3 py-2 rounded-full mt-3`}>{isMember ? 'Check In' : 'Sign up!'}</Button>}
               </div>
             </div>
           </Card>

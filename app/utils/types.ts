@@ -105,18 +105,18 @@ export interface Challenge {
   name: string | null | undefined
   description: string | null | undefined
   mission: string | null | undefined
-  startAt: Date | null | unknown
-  endAt: Date | null | undefined
-  frequency?: 'DAILY' | 'WEEKDAYS' | 'ALTERNATING' | 'WEEKLY' | 'CUSTOM' | undefined
-  coverPhotoMeta?: Record<string, string> | null
+  startAt: Date
+  endAt: Date
+  frequency: 'DAILY' | 'WEEKDAYS' | 'ALTERNATING' | 'WEEKLY' | 'CUSTOM' | undefined
+  coverPhotoMeta: Record<string, string> | null
   icon?: string | null | undefined
   color?: string | null | undefined
-  reminders?: boolean | undefined
-  syncCalendar?: boolean | undefined
-  publishAt?: Date | undefined
-  published?: boolean | undefined
-  public?: boolean | undefined
-  userId: number | undefined
+  reminders: boolean
+  syncCalendar: boolean
+  publishAt?: Date
+  published?: boolean
+  public?: boolean
+  userId: number
   _count?: CountType
 }
 interface CountType {
