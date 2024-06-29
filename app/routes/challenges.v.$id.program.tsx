@@ -6,7 +6,7 @@ import { prisma } from '../models/prisma.server'
 import { eachDayOfInterval, startOfWeek, format, differenceInDays, isFuture } from 'date-fns'
 import { CiCirclePlus } from 'react-icons/ci'
 import { type Challenge } from '~/utils/types'
-import { userLocale } from '~/utils/helpers'
+import { userLocale, pluralize } from '~/utils/helpers'
 import { CurrentUserContext } from '../utils/CurrentUserContext'
 import { BsExclamationCircleFill } from 'react-icons/bs'
 import { useContext } from 'react'
@@ -79,7 +79,7 @@ export default function ChallengeSchedule (): JSX.Element {
       {unscheduled.length > 0 && currentUser?.id === challenge.userId &&
         <div className='border border-red p-2 my-2 rounded-md'>
           <BsExclamationCircleFill className='h-4 w-4  text-red inline-block mr-2 -mt-1' />
-          There are {unscheduled.length} unschedued posts.
+          There {pluralize(unscheduled.length, 'is', 'are')} {unscheduled.length} unscheduled {pluralize(unscheduled.length, 'post', 'posts')}.
           {unscheduled.map((post) => {
             return (
               <Link to={`/posts/${post.id}/edit`} key={post.id}>
