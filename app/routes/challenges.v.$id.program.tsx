@@ -104,13 +104,11 @@ export default function ChallengeSchedule (): JSX.Element {
                   {isInRange && !postsByDay[day.getDate()] && (currentUser?.id === challenge?.userId) &&
                     <div className='flex items-start -mt-3 pt-6 justify-center w-full h-full cursor-pointer'>
                       <CiCirclePlus className='h-8 w-8 text-white bg-red hover:bg-green-600 rounded-full' onClick={() => {
-                        const params = new URLSearchParams()
-                        params.set('publishAt', format(day, 'dd-MM-yy'))
-                        setSearchParams(params)
                         navigate(`/posts/new/challenge/${challenge?.id}`, {
                           state: {
                             title: `Day ${dayNum}`,
-                            publishAt: format(day, 'yyyy-MM-dd 08:00:00')
+                            publishAt: format(day, 'yyyy-MM-dd 08:00:00'),
+                            notifyMembers: true
                           }
                         })
                       }}/>

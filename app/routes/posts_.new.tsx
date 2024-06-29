@@ -32,6 +32,7 @@ export default function PostsNew (props: PostsNewProps): JSX.Element {
   const location = useLocation()
   const publishAt = location.state?.publishAt ?? null
   const title = location.state?.title ?? null
+  const notifyMembers = location.state?.notifyMembers ?? false
 
   const afterSaveCallback = (post: Post | PostSummary): void => {
     if (afterSave) {
@@ -53,10 +54,12 @@ export default function PostsNew (props: PostsNewProps): JSX.Element {
                     afterSave={afterSaveCallback}
                     publishAt={publishAt}
                     title={title}
+                    notifyMembers={notifyMembers}
                   />
               : <FormPost
                   publishAt={publishAt}
                   title={title}
+                  notifyMembers={notifyMembers}
                   />
             }
 

@@ -22,6 +22,7 @@ interface FormPostProps {
   title?: string | null
   post?: PostSummary
   challenge?: ChallengeSummary | null
+  notifyMembers?: boolean
   forwardRef?: React.RefObject<HTMLTextAreaElement>
 }
 interface Errors {
@@ -36,7 +37,7 @@ interface Errors {
 
 export default function FormPost (props: FormPostProps): JSX.Element {
   const { currentUser } = useContext(CurrentUserContext)
-  const { afterSave, onCancel, post, challenge, publishAt, title } = props
+  const { afterSave, onCancel, post, challenge, publishAt, title, notifyMembers } = props
   const locale = currentUser?.locale ?? 'en-US'
   const [showVideoRecorder, setShowVideoRecorder] = useState(false)
   const [errors, setErrors] = useState<Errors>({})
@@ -58,7 +59,7 @@ export default function FormPost (props: FormPostProps): JSX.Element {
     embed: '',
     video: '',
     image: '',
-    notifyMembers: false,
+    notifyMembers,
     notificationSentOn: null
   })
   const localDateTimeFormat = locale === 'en-US' ? 'M-dd-yyyy @ h:mm a' : 'dd-M-yyyy @ HH:MM'
@@ -299,7 +300,7 @@ export default function FormPost (props: FormPostProps): JSX.Element {
                 <>
                 <Checkbox defaultChecked={formData.notifyMembers ?? false} color="green" onClick={handleNotifyCheck} crossOrigin={undefined} label={'Email this post to challenge members.'}/>
                 {formData.notifyMembers && currentUser &&
-                <p className='ml-12 text-xs'>Member replies will go to {currentUser.email}</p>
+                <p className='ml-12 text-xs'>Replies will go to {currentUser.email}</p>
                 }
                 </>
                   )
