@@ -1580,6 +1580,10 @@ video {
   max-width: 36rem;
 }
 
+.max-w-\[100px\] {
+  max-width: 100px;
+}
+
 .flex-none {
   flex: none;
 }

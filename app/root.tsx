@@ -16,6 +16,7 @@ import { CurrentUserContext } from './utils/CurrentUserContext'
 import Layout from './ui/layout'
 import stylesheet from './output.css'
 import datepickerStyle from 'react-datepicker/dist/react-datepicker.css'
+import circularProgressbarStyle from 'react-circular-progressbar/dist/styles.css'
 import type { LinksFunction, LoaderFunction, MetaFunction } from '@remix-run/node'
 import { type CurrentUser } from './utils/types'
 import { Toaster } from 'react-hot-toast'
@@ -31,7 +32,8 @@ interface DocumentProps {
 
 export const links: LinksFunction = () => [
   { rel: 'stylesheet', href: stylesheet },
-  { rel: 'stylesheet', href: datepickerStyle }
+  { rel: 'stylesheet', href: datepickerStyle },
+  { rel: 'stylesheet', href: circularProgressbarStyle }
 
 ]
 export const meta: MetaFunction = () => {

@@ -211,6 +211,21 @@ export const fetchUserMemberships = async (userId: string | number): Promise<Mem
     }
   ) as unknown as MemberChallenge[]
 }
+export const loadMemberChallenge = async (userId: number, challengeId: number): Promise<MemberChallenge | null> => {
+  const uid = Number(userId)
+  const cid = Number(challengeId)
+  return await prisma.memberChallenge.findFirst({
+    where: {
+      userId: Number(uid),
+      challengeId: Number(cid)
+    },
+    include: {
+      _count: {
+        select: { checkIns: true }
+      }
+    }
+  }) as MemberChallenge | null
+}
 export const fetchChallengeMembers = async (cId: string | number): Promise<MemberChallenge[]> => {
   const params: prisma.memberChallengeFindManyArgs = {
     where: { challengeId: Number(cId.toString()) },
