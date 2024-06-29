@@ -340,7 +340,13 @@ function ChallengeMemberInfo ({ challenge, memberChallenge }: { challenge: Chall
             <>
             Last check-in: {formatDistanceToNow(membership.lastCheckIn)} ago <br />
             {!isExpired && membership.nextCheckIn && <p>Next check-in {formatNextCheckin()}</p>}
-            {Number(membership?._count?.checkIns) > 0 && <p>{memberChallenge?._count?.checkIns} check-ins total</p>}
+            {Number(membership?._count?.checkIns) > 0 &&
+              <div className='underline'>
+                <Link to={`/challenges/v/${challenge.id}/checkins`}>
+                  {memberChallenge?._count?.checkIns} check-ins total
+                </Link>
+              </div>
+            }
             </>
               )
             : (
