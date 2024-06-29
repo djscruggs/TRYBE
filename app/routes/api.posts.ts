@@ -105,35 +105,45 @@ export const action: ActionFunction = async (args) => {
   } catch (error) {
     console.error('error uploading video', error)
   }
-  const updated = await updatePost(result)
+  let updated = {}
+  try {
+    updated = await updatePost(result)
+  } catch (error) {
+    console.error('error updating post', error)
+  }
   // @ts-expect-error live is a computed field and not recognized in prisma Post type -- see prisma.server
   if (updated.live && updated.notifyMembers) {
+    console.log('prepping email')
     const baseUrl = new URL(args.request.url).origin
     // @ts-expect-error fullName is a computed field and not recognized in prisma Profile type -- see prisma.server
     const replyToName = currentUser.profile.fullName
     const dateFormat = getUserLocale() === 'en-US' ? 'MMMM d' : 'd MMMM'
     // const escaped = updated.body?.replace(/['"&’]/g, match => `&#${match.charCodeAt(0)};`)
-    const msg = {
-      to: 'info@jointhetrybe.com',
-      replyTo: currentUser.email,
-      dynamic_template_data: {
-        name: replyToName,
-        post_url: `${baseUrl}/posts/${updated.id}`,
-        date: format(updated.updatedAt, dateFormat), // format based on user's country
-        subject: `New challenge post from ${senderName} on Trybe`,
-        title: updated.title,
-        body: textToHtml(escape(updated.body))
-      }
-    }
     try {
-      const mailed = await mailPost(msg)
-      console.log('mailer result', mailed)
+      const msg = {
+        to: 'info@jointhetrybe.com',
+        replyTo: currentUser.email,
+        dynamic_template_data: {
+          name: replyToName,
+          post_url: `${baseUrl}/posts/${updated.id}`,
+          date: format(updated.updatedAt, dateFormat), // format based on user's country
+          subject: `New challenge post from ${replyToName} on Trybe`,
+          title: updated.title,
+          body: textToHtml(escape(updated.body))
+        }
+      }
+      try {
+        const mailed = await mailPost(msg)
+        console.log('mailer result', mailed)
+      } catch (error) {
+        console.log('Error from SendGrid')
+        console.log(error)
+      }
+      updated.notificationSentOn = new Date()
+      await updatePost(updated)
     } catch (error) {
-      console.log('Error from SendGrid')
-      console.log(error.response.body.errors)
+      console.error('error preparing email', error)
     }
-    updated.notificationSentOn = new Date()
-    await updatePost(updated)
   }
   // send back the full post with counts, user etc
   const finalPost = await loadPostSummary(updated.id)
