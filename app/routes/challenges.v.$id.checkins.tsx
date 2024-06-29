@@ -20,17 +20,18 @@ export const loader: LoaderFunction = async (args) => {
   return json({ checkIns, memberChallenge })
 }
 export default function CheckIns (): JSX.Element {
-  const data = useLoaderData<typeof loader>()
-  const { checkIns, memberChallenge } = data
   const matches = useMatches()
   const { challenge } = matches.find((match) => match.id === 'routes/challenges.v.$id')?.data as { challenge: Challenge }
-  const numDays = differenceInDays(challenge.endAt, challenge.startAt)
+  const data = useLoaderData<typeof loader>()
+  const { checkIns, memberChallenge } = data
   const { currentUser } = useContext(CurrentUserContext)
   const locale = userLocale(currentUser)
   const dateFormat = {
     month: 'long',
     day: 'numeric'
   }
+  const numDays = differenceInDays(challenge.endAt, challenge.startAt)
+
   if (data?.error) {
     return <h1>{data.error}</h1>
   }
