@@ -11,14 +11,16 @@ import { CurrentUserContext } from '~/utils/CurrentUserContext'
 import { Link, useNavigate } from '@remix-run/react'
 import { differenceInCalendarDays, isPast } from 'date-fns'
 import ShareMenu from './shareMenu'
+import Liker from './liker'
 
 interface CardChallengeProps {
   challenge: ChallengeSummary
   isShare?: boolean
   isMember?: boolean
+  isLiked?: boolean
 }
 
-export default function CardChallenge ({ challenge, isShare, isMember }: CardChallengeProps): JSX.Element {
+export default function CardChallenge ({ challenge, isShare, isMember, isLiked }: CardChallengeProps): JSX.Element {
   const { currentUser } = useContext(CurrentUserContext)
   // in some chases isMember is undefined but a members array is included; check to see if the currentUser is in the members array
   if (isMember === undefined) {
@@ -107,12 +109,10 @@ export default function CardChallenge ({ challenge, isShare, isMember }: CardCha
             </Link>
           </div>
           <div className="flex justify-center items-center cursor-pointer">
-            {/* Replace with the actual heart icon import */}
-            <FaRegHeart className="text-grey text-sm mr-1" />
-            { challenge._count?.likes && <span className="text-xs" onClick={goToChallenge}>{challenge._count?.likes} likes</span>}
+            <Liker isLiked={Boolean(isLiked)} itemId={Number(challenge.id)} itemType='challenge' count={challenge.likeCount}/>
           </div>
           <div className="flex justify-center items-center cursor-pointer">
-            <ShareMenu copyUrl={getFullUrl()} itemType='challenge' itemId={challenge.id}/>
+            <ShareMenu copyUrl={getFullUrl()} itemType='challenge' itemId={Number(challenge.id)}/>
           </div>
         </div>
       </>

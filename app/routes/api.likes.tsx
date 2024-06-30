@@ -11,6 +11,7 @@ export const action: ActionFunction = async (args: ActionFunctionArgs) => {
   const postId: number | null = formData.get('postId') ? Number(formData.get('postId')) : null
   const noteId: number | null = formData.get('noteId') ? Number(formData.get('noteId')) : null
   const threadId: number | null = formData.get('threadId') ? Number(formData.get('threadId')) : null
+  const checkinId: number | null = formData.get('checkinId') ? Number(formData.get('checkinId')) : null
   let where: prisma.likeWhere = {}
   let totalLikes = 0
   if (formData.get('unlike')) {
@@ -20,8 +21,9 @@ export const action: ActionFunction = async (args: ActionFunctionArgs) => {
     if (postId) where.postId = postId
     if (noteId) where.noteId = noteId
     if (threadId) where.threadId = threadId
+    if (checkinId) where.checkinId = checkinId
     const like = await prisma.like.deleteMany({ where })
-    const toUpdate = { challengeId, commentId, postId, noteId }
+    const toUpdate = { challengeId, commentId, postId, noteId, checkinId }
     void updateLikeCounts(toUpdate)
     return json({ like })
   }
@@ -80,7 +82,7 @@ const getLikeCount = async (itemId: number, fieldName: string): Promise<number> 
 }
 
 const updateLikeCounts = async (like: Partial<Like>): Promise<any> => {
-  const { challengeId, commentId, postId, noteId, threadId } = like
+  const { challengeId, commentId, postId, noteId, threadId, checkinId } = like
   try {
     if (challengeId) {
       const chLikes = await prisma.like.count({ where: { challengeId } })
@@ -115,6 +117,13 @@ const updateLikeCounts = async (like: Partial<Like>): Promise<any> => {
       return await prisma.thread.update({
         where: { id: threadId },
         data: { likeCount: tLikes }
+      })
+    }
+    if (checkinId) {
+      const cLikes = await prisma.like.count({ where: { checkinId } })
+      return await prisma.checkIn.update({
+        where: { id: checkinId },
+        data: { likeCount: cLikes }
       })
     }
   } catch (error) {

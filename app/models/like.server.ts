@@ -5,9 +5,10 @@ interface HasLikedParams {
   commentId?: number
   threadId?: number
   challengeId?: number
+  checkinId?: number
 }
 export async function userHasLiked (params: HasLikedParams): Promise<number> {
-  const { postId, commentId, threadId, challengeId } = params
+  const { postId, commentId, threadId, challengeId, checkinId } = params
   const result = await prisma.like.aggregate({
     _count: { id: true },
     where: {
@@ -15,6 +16,7 @@ export async function userHasLiked (params: HasLikedParams): Promise<number> {
         { challengeId: challengeId ? Number(challengeId) : undefined },
         { postId: postId ? Number(postId) : undefined },
         { threadId: threadId ? Number(threadId) : undefined },
+        { checkinId: checkinId ? Number(checkinId) : undefined },
         { commentId: commentId ? Number(commentId) : undefined }
       ]
     }
@@ -37,6 +39,14 @@ export async function commentsLikedByUser (params: CommentsLikedByUserParams): P
     }
   })
   return totalCommentsLiked
+}
+export async function fetchUserLikes (userId: number): Promise<prisma.Like[]> {
+  const likes = await prisma.like.findMany({
+    where: {
+      userId
+    }
+  })
+  return likes
 }
 export async function commentIdsLikedByUser (params: CommentsLikedByUserParams): Promise<number[]> {
   if (!params.commentIds.length || !params.userId) return []

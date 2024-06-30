@@ -157,7 +157,8 @@ export interface MemberChallenge {
 
 export interface CheckIn {
   id: number;
-  data: string | null;
+  data: JsonValue | null;
+  note: string | null;
   createdAt: Date;
   updatedAt: Date;
   userId: number;
@@ -166,6 +167,8 @@ export interface CheckIn {
   challenge?: Challenge;
   memberChallenge?: MemberChallenge;
   user?: User;
+  likes?: Like[];
+  likeCount: number;
 }
 
 export interface Comment {
@@ -202,11 +205,13 @@ export interface Like {
   challengeId: number | null;
   commentId: number | null;
   noteId: number | null;
+  checkinId: number | null;
   challenge?: Challenge | null;
   comment?: Comment | null;
   thread?: Thread | null;
   note?: Note | null;
   post?: Post | null;
+  checkin?: CheckIn | null;
   user?: User;
 }
 

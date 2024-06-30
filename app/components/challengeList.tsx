@@ -2,15 +2,18 @@ import CardChallenge from '~/components/cardChallenge'
 import { Spinner } from '@material-tailwind/react'
 import {
   type ChallengeSummary,
-  type MemberChallenge
+  type MemberChallenge,
+  type Like
 } from '~/utils/types'
 
 interface ChallengeListProps {
   challenges: ChallengeSummary[]
   memberships: MemberChallenge[]
   isLoading: boolean
+  likes: Like[]
 }
-export default function ChallengeList ({ challenges, memberships, isLoading }: ChallengeListProps): JSX.Element {
+export default function ChallengeList ({ challenges, memberships, isLoading, likes }: ChallengeListProps): JSX.Element {
+  console.log('likes in list', likes)
   function isMember (challenge: ChallengeSummary): boolean {
     return memberships.some((membership: MemberChallenge) => membership.challengeId === challenge.id)
   }
@@ -25,7 +28,7 @@ export default function ChallengeList ({ challenges, memberships, isLoading }: C
               : challenges?.length > 0 &&
               challenges.map((challenge: ChallengeSummary) => (
                 <div key={challenge.id} className="w-full">
-                  <CardChallenge challenge={challenge} isMember={isMember(challenge)} />
+                  <CardChallenge challenge={challenge} isMember={isMember(challenge)} isLiked={likes.includes(Number(challenge.id))} />
                  </div>
               ))
             }

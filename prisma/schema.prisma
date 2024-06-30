@@ -183,7 +183,8 @@ model MemberChallenge {
 
 model CheckIn {
   id                Int             @id @default(autoincrement())
-  data              String?
+  data              Json?
+  note              String?
   createdAt         DateTime        @default(now())
   updatedAt         DateTime        @updatedAt
   userId            Int
@@ -192,7 +193,8 @@ model CheckIn {
   challenge         Challenge       @relation(fields: [challengeId], references: [id], onDelete: Cascade)
   memberChallenge   MemberChallenge @relation(fields: [memberChallengeId], references: [id])
   user              User            @relation(fields: [userId], references: [id], onDelete: SetNull)
-
+  likes             Like[]
+  likeCount         Int             @default(0)
   @@index([userId, challengeId])
   @@index([userId])
 }
@@ -232,15 +234,17 @@ model Like {
   createdAt   DateTime   @default(now())
   userId      Int
   postId      Int?
-  threadId      Int?
+  threadId     Int?
   challengeId Int?
   commentId   Int?
   noteId      Int?
+  checkinId   Int?
   challenge   Challenge? @relation(fields: [challengeId], references: [id], onDelete: Cascade)
   comment     Comment?   @relation(fields: [commentId], references: [id], onDelete: Cascade)
   thread     Thread?   @relation(fields: [threadId], references: [id], onDelete: Cascade)
   note        Note?      @relation(fields: [noteId], references: [id], onDelete: Cascade)
   post        Post?      @relation(fields: [postId], references: [id], onDelete: Cascade)
+  checkin     CheckIn?   @relation(fields: [checkinId], references: [id], onDelete: Cascade)
   user        User       @relation(fields: [userId], references: [id])
 
   @@index([userId])

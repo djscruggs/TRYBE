@@ -1,3 +1,15 @@
+// JSON types for db
+export type JSONValue =
+    | string
+    | number
+    | boolean
+    | Date
+    | JSONObject
+    | JSONArray
+
+export interface JSONObject extends Record<string, JSONValue> { }
+export interface JSONArray extends Array<JSONValue> { }
+
 export interface User {
   id?: number | string
   email: string
@@ -109,15 +121,16 @@ export interface Challenge {
   endAt: Date
   frequency: 'DAILY' | 'WEEKDAYS' | 'ALTERNATING' | 'WEEKLY' | 'CUSTOM' | undefined
   coverPhotoMeta: Record<string, string> | null
-  icon?: string | null | undefined
-  color?: string | null | undefined
+  icon: string | null | undefined
+  colo?: string | null | undefined
   reminders: boolean
   syncCalendar: boolean
-  publishAt?: Date
-  published?: boolean
-  public?: boolean
+  publishAt: Date
+  published: boolean
+  public: boolean
   userId: number
-  _count?: CountType
+  likeCount: number
+  _count: CountType
 }
 interface CountType {
   members?: number
@@ -147,16 +160,38 @@ export interface MemberChallenge {
     checkIns?: number
   }
 }
+export interface Like {
+  id: number
+  userId: number
+  postId: number
+  threadId: number
+  thread?: Thread
+  challengeId: number
+  challenge?: Challenge
+  commentId: number
+  comment?: Comment
+  noteId: number
+  note?: Note
+  checkInId: number
+  checkIn?: CheckIn
+  createdAt: Date
+}
 
 export interface CheckIn {
   id: number
   userId: number
   challengeId: number
   createdAt: Date
-  data: string
+  data: JSONObject
+  note?: string
   challenge?: Challenge
   user?: User
   memberChallenge?: MemberChallenge
+  _count?: {
+    likes: number
+  }
+  likes?: Like[]
+  likeCount?: number
 }
 
 export interface Profile {
