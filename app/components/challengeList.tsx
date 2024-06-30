@@ -1,27 +1,34 @@
 import CardChallenge from '~/components/cardChallenge'
+import { Spinner } from '@material-tailwind/react'
 import {
-  type Challenge,
   type ChallengeSummary,
   type MemberChallenge
 } from '~/utils/types'
 
 interface ChallengeListProps {
-  challenges: Challenge[] | ChallengeSummary[]
+  challenges: ChallengeSummary[]
   memberships: MemberChallenge[]
+  isLoading: boolean
 }
-export default function ChallengeList ({ challenges, memberships }: ChallengeListProps): JSX.Element {
-  function isMember (challenge: Challenge | ChallengeSummary): boolean {
+export default function ChallengeList ({ challenges, memberships, isLoading }: ChallengeListProps): JSX.Element {
+  function isMember (challenge: ChallengeSummary): boolean {
     return memberships.some((membership: MemberChallenge) => membership.challengeId === challenge.id)
   }
   return (
-          <div className="w-full">
-            {challenges?.length > 0 &&
-              challenges.map((challenge: any) => (
+          <div className="w-full h-full flex-cols justify-center items-center">
+
+            {isLoading
+              ? <div className="mt-8 w-full flex items-center justify-center">
+                  <Spinner className="h-4 w-4" />
+                </div>
+
+              : challenges?.length > 0 &&
+              challenges.map((challenge: ChallengeSummary) => (
                 <div key={challenge.id} className="w-full">
                   <CardChallenge challenge={challenge} isMember={isMember(challenge)} />
-                </div>
+                 </div>
               ))
             }
-          </div>
+    </div>
   )
 }

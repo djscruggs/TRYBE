@@ -6,7 +6,7 @@ import { fetchMemberChallenges } from '~/models/user.server'
 import { CurrentUserContext } from '~/utils/CurrentUserContext'
 import React, { useContext, useEffect, useState } from 'react'
 import ChallengeList from '~/components/challengeList'
-import { Button, Spinner } from '@material-tailwind/react'
+import { Button } from '@material-tailwind/react'
 
 export const loader: LoaderFunction = async (args) => {
   const { searchParams } = new URL(args.request.url)
@@ -57,9 +57,7 @@ export default function ChallengesIndex (): JSX.Element {
         <div className='flex items-center  max-w-xl'>
           <div className="flex flex-col items-center max-w-lg w-full">
             <h1 className="text-3xl font-bold mb-4 w-full">
-              Challenges {fetcher.state === 'loading' && (
-              <Spinner className='inline'/>
-            )}
+              Challenges
             </h1>
             <p className="rounded-md p-4 bg-yellow">View your current challenges, browse upcoming challenges, or start your own!</p>
             {currentUser && <Button placeholder='Create a Challenge' size="sm" onClick={() => { navigate('./new') }} className="bg-red mb-4 mt-4">Create a Challenge</Button>}
@@ -73,10 +71,10 @@ export default function ChallengesIndex (): JSX.Element {
               </div>
 
               <div className="flex flex-col items-center max-w-lg w-full">
-                {challenges.length === 0 &&
-                <div className="text-center mt-10">No {status !== 'mine' ? status : ''} challenges found</div>
+                {fetcher.state === 'idle' && challenges.length === 0 &&
+                  <div className="text-center mt-10">No {status !== 'mine' ? status : ''} challenges found</div>
                 }
-                <ChallengeList challenges={challenges} memberships={memberships} />
+                <ChallengeList challenges={challenges} memberships={memberships} isLoading={fetcher.state === 'loading'} />
               </div>
           </div>
         </div>
