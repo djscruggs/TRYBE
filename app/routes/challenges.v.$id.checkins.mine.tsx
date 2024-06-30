@@ -37,6 +37,7 @@ export default function CheckIns (): JSX.Element {
     return <p>Loading...</p>
   }
   const progress = (checkIns.length / numDays) * 100
+  console.log('progress', progress)
   return (
         <div className='max-w-sm md:max-w-xl lg:max-w-2xl mt-10 flex flex-col items-center md:items-start'>
           <div className='max-w-[200px] flex items-center justify-center'>

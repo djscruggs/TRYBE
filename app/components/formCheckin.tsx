@@ -11,6 +11,7 @@ import { TiDeleteOutline } from 'react-icons/ti'
 import VideoRecorder from './videoRecorder'
 import VideoPreview from './videoPreview'
 import VideoChooser from './videoChooser'
+import { toast } from 'react-hot-toast'
 
 interface FormCheckinProps {
   checkIn?: CheckIn
@@ -89,9 +90,10 @@ export default function FormCheckIn (props: FormCheckinProps): JSX.Element {
     if (!validate()) {
       return
     }
-    if (currentUser?.id) {
+    if (!currentUser?.id) {
       throw new Error('User ID is required')
     }
+    setBtnDisabled(true)
     try {
       const formData = new FormData()
       formData.append('body', body)
@@ -107,15 +109,20 @@ export default function FormCheckIn (props: FormCheckinProps): JSX.Element {
         formData.append('video', video)
       }
 
-      const result = await axios.post('/api/checkins', formData)
+      const result = await axios.post('/api/challenges/' + challengeId + '/checkins', formData)
       clearInputs()
+      toast.success('🎉🎉  Woo hoo! Great job!')
       if (afterCheckIn) {
         afterCheckIn(result.data as CheckIn)
       } else {
-        navigate('/home')
+        navigate('/challenges/v/' + challengeId + '/checkins/mine')
       }
     } catch (error) {
-      console.error(error)
+      if (axios.isAxiosError(error)) {
+        toast.error(error.response?.statusText ?? 'An error occurred')
+      } else {
+        toast.error('An unexpected error occurred')
+      }
     } finally {
       setBtnDisabled(false)
     }
@@ -150,8 +157,7 @@ export default function FormCheckIn (props: FormCheckinProps): JSX.Element {
           autoResize={true}
           placeholder={'Add a note (optional)'}
           type='textarea'
-          rows={4}
-          required={true}
+          rows={2}
           value={body}
           onKeyDown={handleKeyDown}
           onChange={(ev) => {
@@ -187,15 +193,15 @@ export default function FormCheckIn (props: FormCheckinProps): JSX.Element {
         }
         <Button type="submit" placeholder='Save' className="bg-red disabled:gray-400" disabled={btnDisabled || (showVideoRecorder && !video)}>
           {btnDisabled
-            ? 'Saving...'
+            ? 'Checking In...'
             : videoRecording
               ? 'Recording...'
-              : 'Save'
+              : 'Check In'
           }
         </Button>
-        {showCancel() &&
+
           <button onClick={handleCancel} className="mt-2 text-sm underline ml-2 hover:text-red">cancel</button>
-        }
+
       </Form>
 
     </div>

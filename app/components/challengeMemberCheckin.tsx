@@ -18,6 +18,9 @@ interface ChallengeMemberCheckinProps {
 }
 export function ChallengeMemberCheckin ({ challenge, memberChallenge, afterCheckIn }: ChallengeMemberCheckinProps): JSX.Element {
   const isMember = Boolean(memberChallenge?.id)
+  if (!challenge?.id) {
+    throw new Error('Challenge object with id is required')
+  }
   const [showForm, setShowForm] = useState<boolean>(false)
   const [checkingIn, setCheckingIn] = useState<boolean>(false)
   const [membership, setMembership] = useState(memberChallenge)
@@ -40,7 +43,6 @@ export function ChallengeMemberCheckin ({ challenge, memberChallenge, afterCheck
     return format(membership.nextCheckIn, 'cccc')
   }
   const canCheckInNow = (): boolean => {
-    return true
     if (isExpired) {
       return false
     }
@@ -55,12 +57,18 @@ export function ChallengeMemberCheckin ({ challenge, memberChallenge, afterCheck
     }
     return false
   }
-
+  const handleAfterCheckIn = (checkIn: CheckIn): void => {
+    setShowForm(false)
+    setCheckingIn(false)
+    if (afterCheckIn) {
+      afterCheckIn(checkIn)
+    }
+  }
   const handleCheckIn = async (event: any): Promise<void> => {
-    console.log('handleCheckin')
     setShowForm(true)
-    return
     setCheckingIn(true)
+    return
+
     event.preventDefault()
     try {
       const url = `/api/challenges/${challenge?.id as string | number}/checkIn`
@@ -82,9 +90,9 @@ export function ChallengeMemberCheckin ({ challenge, memberChallenge, afterCheck
       setCheckingIn(false)
     }
   }
-  console.log('showForm', showForm)
-  console.log('challenge', challenge)
+
   return (
+    <>
     <div className="flex text-sm items-center justify-start w-full p-2">
       {isMember && (
         <>
@@ -96,7 +104,7 @@ export function ChallengeMemberCheckin ({ challenge, memberChallenge, afterCheck
               {!isExpired && membership.nextCheckIn && <p>Next check-in {formatNextCheckin()}</p>}
               {Number(membership?._count?.checkIns) > 0 &&
                 <div className='underline'>
-                  <Link to={`/challenges/v/${challenge.id}/checkins`}>
+                  <Link to={`/challenges/v/${challenge.id}/checkins/mine`}>
                     {memberChallenge?._count?.checkIns} check-ins total
                   </Link>
                 </div>
@@ -107,21 +115,26 @@ export function ChallengeMemberCheckin ({ challenge, memberChallenge, afterCheck
               <p>No check-ins yet</p>
                 )}
           </div>
-          {!isExpired && (
+          {!isExpired && !showForm && (
             <div className="text-xs my-2 justify-end w-1/2">
               <Button
                   onClick={handleCheckIn}
-                  disabled={checkingIn || !canCheckInNow()}
+                  disabled={!canCheckInNow()}
                   className='bg-red hover:bg-green-500 text-white rounded-md p-2 justify-center text-xs disabled:bg-gray-400'
                 >
-                  {checkingIn ? 'Checking In...' : canCheckInNow() ? 'Check In Now' : 'Checked In'}
+                  {canCheckInNow() ? 'Check In Now' : 'Checked In'}
                 </Button>
             </div>
           )}
         </>
       )}
-      <DialogCheckIn challengeId={challenge.id} isOpen={showForm} onCancel={() => { setShowForm(false) }} afterCheckIn={afterCheckIn} />}
     </div>
+    {showForm &&
+      <div className='w-full max-w-sm'>
+        <FormCheckIn challengeId={challenge.id} onCancel={() => { setShowForm(false) }} afterCheckIn={handleAfterCheckIn} />
+      </div>
+    }
+    </>
   )
 }
 
@@ -131,8 +144,7 @@ interface CheckinProps {
   onCancel: () => void
   afterCheckIn: (checkIn: CheckIn) => void
 }
-function DialogCheckIn ({ challengeId, isOpen, onCancel, afterCheckIn }: CheckinProps): JSX.Element {
-  console.log('DialogCheckIn')
+function DialogCheckIn ({ challengeId, onCancel, afterCheckIn, isOpen }: CheckinProps): JSX.Element {
   const [open, setOpen] = useState<boolean>(isOpen)
   const handleOpen = (): void => {
     setOpen(true)
