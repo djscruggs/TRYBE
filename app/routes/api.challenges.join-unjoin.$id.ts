@@ -22,7 +22,6 @@ export async function action (args: ActionFunctionArgs): Promise<prisma.challeng
     }
   } else {
     const result = await joinChallenge(Number(user.id), Number(params.id))
-    console.log('joined', result)
     return {
       result: 'joined',
       data: result

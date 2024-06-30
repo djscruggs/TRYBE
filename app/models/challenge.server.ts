@@ -114,7 +114,6 @@ export const fetchChallengeSummaries = async (userId?: string | number, status?:
   if (uid) {
     // where.push({ userId: uid })
   }
-  console.log('where', where)
   const params: prisma.challengeFindManyArgs = {
     where: {
       AND: where

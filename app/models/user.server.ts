@@ -33,7 +33,7 @@ export const loadUser = async (userId: string | number | undefined): Promise<pri
     })
     return user
   } catch (err) {
-    console.log('error loading user', err)
+    console.error('error loading user', err)
     return null
   }
 }
@@ -81,6 +81,5 @@ export const deleteUser = async (user: prisma.UserUpdateInput): Promise<prisma.U
   } else if (user.clerkId) {
     where = { clerkId: user.clerkId }
   }
-  console.log('in delete where is', where)
   return await prisma.user.deleteMany({ where })
 }

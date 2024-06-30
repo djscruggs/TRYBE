@@ -129,7 +129,7 @@ export default function FormComment (props: FormCommentProps): JSX.Element {
       }
       toast.success('Comment saved')
     } catch (error: any) {
-      console.log(error)
+      console.error(error)
       const errorMessage = typeof error?.response.data.message === 'string' ? error.message : 'An unexpected error occurred'
       toast.error(errorMessage as string)
     }

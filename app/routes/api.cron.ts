@@ -37,7 +37,6 @@ export const loader: LoaderFunction = async (args) => {
   await Promise.all(posts.map(async post => {
     if (post.challenge?.members) {
       await Promise.all(post.challenge?.members.map(async member => {
-        console.log(member.user.email, member.user.profile?.fullName)
         const props = {
           to: member.user.email,
           replyTo: post.user.email,
@@ -53,7 +52,7 @@ export const loader: LoaderFunction = async (args) => {
         try {
           await mailPost(props)
         } catch (err) {
-          console.log('Error sending notification', err)
+          console.error('Error sending notification', err)
         }
       }))
 
@@ -65,7 +64,6 @@ export const loader: LoaderFunction = async (args) => {
           notificationSentOn: new Date()
         }
       })
-      console.log(update)
     }
     // update the send date even if there were no members to mail
     const update = await prisma.post.update({
@@ -76,7 +74,6 @@ export const loader: LoaderFunction = async (args) => {
         notificationSentOn: new Date()
       }
     })
-    console.log(update)
   }))
 
   // send email

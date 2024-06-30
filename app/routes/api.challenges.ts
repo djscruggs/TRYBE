@@ -59,7 +59,7 @@ export async function action (args: ActionFunctionArgs): Promise<any> {
     const updatedChallenge = await loadChallengeSummary(Number(data.id))
     return updatedChallenge
   } catch (error) {
-    console.log('error', error)
+    console.error('error', error)
     return {
       formData,
       error
@@ -69,7 +69,6 @@ export async function action (args: ActionFunctionArgs): Promise<any> {
 
 export const loader: LoaderFunction = async (args) => {
   const { params } = args
-  console.log(params)
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const currentUser = await requireCurrentUser(args)
   const uid = Number(currentUser?.id)

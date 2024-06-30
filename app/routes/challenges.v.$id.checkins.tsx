@@ -1,10 +1,10 @@
 import { requireCurrentUser } from '../models/auth.server'
 import { type LoaderFunction, json } from '@remix-run/node'
-import { useLoaderData, useMatches, useRevalidator } from '@remix-run/react'
+import { useLoaderData, useRevalidator, useRouteLoaderData } from '@remix-run/react'
 import { useContext } from 'react'
 import { CurrentUserContext } from '../utils/CurrentUserContext'
-import { fetchCheckIns, loadChallengeSummary, loadMemberChallenge } from '~/models/challenge.server'
-import { type Challenge, type MemberChallenge } from '~/utils/types'
+import { fetchCheckIns, loadMemberChallenge } from '~/models/challenge.server'
+import type { Challenge, MemberChallenge } from '~/utils/types'
 import { userLocale, pluralize } from '~/utils/helpers'
 import { differenceInDays } from 'date-fns'
 import { CircularProgressbarWithChildren, buildStyles } from 'react-circular-progressbar'
@@ -16,27 +16,24 @@ export const loader: LoaderFunction = async (args) => {
   const userId = Number(args.params.userId ?? currentUser?.id)
   const challengeId = Number(args.params.id)
   const checkIns = await fetchCheckIns(userId, challengeId) as { error?: string }
-  const memberChallenge = await loadMemberChallenge(userId, challengeId)
-  return json({ checkIns, memberChallenge })
+  return json({ checkIns })
 }
 export default function CheckIns (): JSX.Element {
-  const matches = useMatches()
   const revalidator = useRevalidator()
-  const { challenge } = matches.find((match) => match.id === 'routes/challenges.v.$id')?.data as { challenge: Challenge }
-  const data = useLoaderData<typeof loader>()
-  const { checkIns, memberChallenge } = data
+  const { checkIns, error } = useLoaderData<typeof loader>()
+  const { membership, challenge } = useRouteLoaderData<typeof useRouteLoaderData>('routes/challenges.v.$id')
   const { currentUser } = useContext(CurrentUserContext)
   const locale = userLocale(currentUser)
   const dateFormat = {
     month: 'long',
     day: 'numeric'
   }
-  const numDays = differenceInDays(challenge.endAt, challenge.startAt)
+  const numDays = differenceInDays(challenge.endAt as Date, challenge.startAt as Date)
 
-  if (data?.error) {
-    return <h1>{data.error}</h1>
+  if (error) {
+    return <h1>{error}</h1>
   }
-  if (!data) {
+  if (!membership) {
     return <p>Loading...</p>
   }
   const progress = (checkIns.length / numDays) * 100
@@ -58,7 +55,7 @@ export default function CheckIns (): JSX.Element {
               </div>
             </CircularProgressbarWithChildren>
           </div>
-          <ChallengeMemberCheckin challenge={challenge} memberChallenge={memberChallenge} afterCheckIn={() => { revalidator.revalidate() }} />
+          <ChallengeMemberCheckin challenge={challenge} memberChallenge={membership} afterCheckIn={() => { revalidator.revalidate() }} />
           <div className='flex flex-col items-start justify-center mt-4'>
             <p className='text-center text-xl text-gray-500 mb-2'>You&apos;ve checked in {checkIns.length} {pluralize(checkIns.length as number, 'time', 'times')} so far.</p>
             <div className='text-left text-xl text-gray-500'>

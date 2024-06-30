@@ -54,7 +54,6 @@ export async function action (args: ActionFunctionArgs): Promise<prisma.challeng
         nextCheckIn: calculateNextCheckin(challenge)
       }
     })
-    console.log('dateUpdate', dateUpdate)
     // reload membership
     const reloaded = await prisma.memberChallenge.findFirst({
       where: {

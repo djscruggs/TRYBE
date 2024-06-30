@@ -42,15 +42,6 @@ function Loading (): JSX.Element {
     </div>
   )
 }
-function ClerkAndLayout (): JSX.Element {
-  console.log(data.ENV.CLERK_PUBLISHABLE_KEY)
-  const data = useLoaderData() as RootLoaderData
-  return (
-        <ClerkProvider publishableKey={data.ENV.CLERK_PUBLISHABLE_KEY} signInUrl='/signin'>
-          <FullLayout />
-        </ClerkProvider>
-  )
-}
 
 export const FullLayout = (): JSX.Element => {
   const { currentUser } = useContext(CurrentUserContext)

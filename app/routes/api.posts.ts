@@ -113,7 +113,6 @@ export const action: ActionFunction = async (args) => {
   }
   // @ts-expect-error live is a computed field and not recognized in prisma Post type -- see prisma.server
   if (updated.live && updated.notifyMembers) {
-    console.log('prepping email')
     const baseUrl = new URL(args.request.url).origin
     // @ts-expect-error fullName is a computed field and not recognized in prisma Profile type -- see prisma.server
     const replyToName = currentUser.profile.fullName
@@ -134,10 +133,8 @@ export const action: ActionFunction = async (args) => {
       }
       try {
         const mailed = await mailPost(msg)
-        console.log('mailer result', mailed)
       } catch (error) {
-        console.log('Error from SendGrid')
-        console.log(error)
+        console.error('Error from SendGrid', error)
       }
       updated.notificationSentOn = new Date()
       await updatePost(updated)

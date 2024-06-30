@@ -91,7 +91,6 @@ export async function requireCurrentUser (args: LoaderFunctionArgs): Promise<Cur
       const urlWithoutPath = `${url.protocol}//${url.host}${url.search}${url.hash}`
       const newUrl = new URL(urlWithoutPath)
       newUrl.searchParams.set('redirectTo', redirectPath)
-      console.log(newUrl.toString())
       // eslint-disable-next-line @typescript-eslint/no-throw-literal
       throw redirect(newUrl.toString())
     }

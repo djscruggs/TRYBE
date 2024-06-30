@@ -46,6 +46,5 @@ export async function mailPost (props: PostMailerProps): Promise<any> {
     dynamic_template_data
   }
   const result = await sgMail.send(msg)
-  console.log('Email sent', result)
   return result
 }

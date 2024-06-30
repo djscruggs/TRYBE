@@ -138,7 +138,6 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
     if (formData.deleteImage) {
       toSubmit.set('deleteImage', 'true')
     }
-    console.log(image)
     if (image !== null) {
       toSubmit.append('image', image)
     }
@@ -151,7 +150,6 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
         'content-type': 'multipart/form-data'
       }
     }
-    console.log('formData', formData)
     const response = await axios.post(url, toSubmit, headers)
     const msg = (formData.id !== null) ? 'Challenge saved' : 'Challenge created'
     if (!response.data.id || response.data.errors) {
@@ -160,7 +158,6 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
       if (response.data.errors) {
         console.error('errors', response.data.errors)
         const parsedErrors = parseErrors(response.data.errors)
-        console.log('parsedErrors', parsedErrors)
         setErrors(parsedErrors as Errors)
       }
     } else {

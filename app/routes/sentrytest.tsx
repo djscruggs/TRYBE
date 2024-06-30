@@ -5,7 +5,6 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
   try {
     throw new Error('loader error test of Sentry')
   } catch (error) {
-    console.log(error)
     Sentry.captureException(error)
   }
   return null

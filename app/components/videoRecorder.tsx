@@ -36,7 +36,7 @@ const VideoRecorder = ({ onStart, onStop, onSave, onFinish, uploadOnly }: VideoR
     getCameraPermission().then(() => {
       setPermission(true)
     }).catch((err) => {
-      console.log(err.message)
+      console.error(err.message)
       setPermission(false)
     })
   }, [])
@@ -111,7 +111,6 @@ const VideoRecorder = ({ onStart, onStop, onSave, onFinish, uploadOnly }: VideoR
       if (event.data.size === 0) return
       localVideoChunks.push(event.data)
     }
-    console.log(mediaRecorder)
     setVideoChunks(localVideoChunks)
   }
 
@@ -120,12 +119,9 @@ const VideoRecorder = ({ onStart, onStop, onSave, onFinish, uploadOnly }: VideoR
       onStop()
     }
     setRecordingStatus('recorded')
-    console.log('stopping recording')
     if (mediaRecorder.current) {
       mediaRecorder.current.onstop = () => {
-        console.log('onstop called')
         const videoBlob = new Blob(videoChunks, { type: mimeType })
-        console.log('videBlob is', videoBlob)
         setVideoFile(videoBlob)
         const videoUrl = URL.createObjectURL(videoBlob)
 
@@ -137,7 +133,6 @@ const VideoRecorder = ({ onStart, onStop, onSave, onFinish, uploadOnly }: VideoR
     mediaRecorder.current?.stop()
   }
   const handleVideoUpload = (event: React.ChangeEvent<HTMLInputElement>): void => {
-    console.log(event.target)
     handleFileUpload({ event, setFile: setVideoFile, setFileURL: setLocalVideoUrl })
   }
   const saveVideo = (): void => {
@@ -149,17 +144,13 @@ const VideoRecorder = ({ onStart, onStop, onSave, onFinish, uploadOnly }: VideoR
     const tracks = stream?.getTracks()
 
     if (liveVideoFeed?.current?.srcObject) {
-      console.log('liveVideoFeed.current.srcObject', liveVideoFeed.current.srcObject)
       liveVideoFeed.current.srcObject = null
     }
     if (tracks) {
-      console.log('tracks are', tracks)
-
       tracks.forEach(track => {
         track.stop()
         track.enabled = false
       })
-      console.log('now tracks are', tracks)
     }
     // eslint-disable-next-line
     window.videoStream = null
@@ -261,7 +252,6 @@ interface FileInputProps {
 const FileInput = ({ passedRef, onChange, immediateTrigger }: FileInputProps): JSX.Element => {
   const textColor = 'white'
   useEffect(() => {
-    console.log(passedRef)
     if (immediateTrigger) {
       passedRef.current.click()
     }

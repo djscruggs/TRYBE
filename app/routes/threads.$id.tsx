@@ -64,7 +64,6 @@ export default function ViewThread (): JSX.Element {
     return <p>Loading...</p>
   }
   const afterCommentSave = (comment: Comment): void => {
-    console.log('in parent, comment', comment)
     comments.splice(0, 0, comment)
     setThread(comment?.thread as ThreadSummary)
   }

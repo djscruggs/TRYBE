@@ -26,6 +26,5 @@ export const loader: LoaderFunction = async (args) => {
     }
   }
   const result = await mailPost(msg)
-  console.log('Email sent', result)
   return result
 }

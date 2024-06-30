@@ -76,8 +76,6 @@ export default function FormThread (props: FormThreadProps): JSX.Element {
     setImageUrl(null)
   }
   const deleteVideo = (): void => {
-    console.log('setting to delete')
-    setVideo('delete')
     setVideoUrl(null)
   }
   const validate = (): boolean => {
@@ -92,7 +90,6 @@ export default function FormThread (props: FormThreadProps): JSX.Element {
     if (!validate()) {
       return
     }
-    console.log('video is', video)
     setBtnDisabled(true)
     try {
       const formData = new FormData()

@@ -11,7 +11,6 @@ import { Button, Spinner } from '@material-tailwind/react'
 export const loader: LoaderFunction = async (args) => {
   const { searchParams } = new URL(args.request.url)
   const status = searchParams.get('status') ?? 'active'
-  console.log('loader status', status)
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const currentUser = await requireCurrentUser(args)
   const uid = Number(currentUser?.id)
@@ -21,7 +20,6 @@ export const loader: LoaderFunction = async (args) => {
   } else {
     challenges = await fetchChallengeSummaries(uid, status) as { error?: string }
   }
-  console.log('challenges count', challenges.length)
   if (!challenges || (challenges.error != null)) {
     const error = { loadingError: 'Unable to load challenges' }
     return json(error)
@@ -54,8 +52,6 @@ export default function ChallengesIndex (): JSX.Element {
       method: 'GET'
     })
   }, [status])
-  console.log('fetcher state', fetcher.state)
-  console.log('challenges length', challenges.length)
   return (
 
         <div className='flex items-center  max-w-xl'>

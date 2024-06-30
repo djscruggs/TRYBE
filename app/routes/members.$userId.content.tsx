@@ -23,7 +23,6 @@ import { FaChartLine } from 'react-icons/fa'
 import { BsJournalBookmark } from 'react-icons/bs'
 
 export const loader: LoaderFunction = async (args) => {
-  console.log('in child load')
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const currentUser = await requireCurrentUser(args)
   const userId = Number(args.params.userId ?? currentUser?.id)

@@ -59,10 +59,8 @@ export const action: ActionFunction = async (args: ActionFunctionArgs) => {
   // first see if it already exists
   const existingLike = await prisma.like.findFirst({ where })
   if (existingLike) {
-    console.log('existing like', existingLike)
     void updateLikeCounts(existingLike)
     totalLikes = await getLikeCount(itemId, fieldName)
-    console.log('totalLikes', totalLikes)
     return json({ like: existingLike, totalLikes })
   }
   const like = await prisma.like.create({ data })
@@ -120,7 +118,7 @@ const updateLikeCounts = async (like: Partial<Like>): Promise<any> => {
       })
     }
   } catch (error) {
-    console.log('error updating counts', error)
+    console.error('error updating counts', error)
     return error
   }
 }

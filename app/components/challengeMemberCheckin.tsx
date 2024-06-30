@@ -76,25 +76,24 @@ export function ChallengeMemberCheckin ({ challenge, memberChallenge, afterCheck
     <div className="flex text-sm items-center justify-start w-full p-2">
       {isMember && (
         <>
-
           <div className="text-xs my-2 justify-start w-1/2">
-          {membership?.lastCheckIn
-            ? (
-            <>
-            Last check-in: {formatDistanceToNow(membership.lastCheckIn)} ago <br />
-            {!isExpired && membership.nextCheckIn && <p>Next check-in {formatNextCheckin()}</p>}
-            {Number(membership?._count?.checkIns) > 0 &&
-              <div className='underline'>
-                <Link to={`/challenges/v/${challenge.id}/checkins`}>
-                  {memberChallenge?._count?.checkIns} check-ins total
-                </Link>
-              </div>
-            }
-            </>
-              )
-            : (
-            <p>No check-ins yet</p>
-              )}
+            {membership?.lastCheckIn
+              ? (
+              <>
+              Last check-in: {formatDistanceToNow(membership.lastCheckIn)} ago <br />
+              {!isExpired && membership.nextCheckIn && <p>Next check-in {formatNextCheckin()}</p>}
+              {Number(membership?._count?.checkIns) > 0 &&
+                <div className='underline'>
+                  <Link to={`/challenges/v/${challenge.id}/checkins`}>
+                    {memberChallenge?._count?.checkIns} check-ins total
+                  </Link>
+                </div>
+              }
+              </>
+                )
+              : (
+              <p>No check-ins yet</p>
+                )}
           </div>
           {!isExpired && (
             <div className="text-xs my-2 justify-end w-1/2">

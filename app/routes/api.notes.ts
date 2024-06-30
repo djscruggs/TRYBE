@@ -20,9 +20,6 @@ export const action: ActionFunction = async (args) => {
   }
   const request = args.request
   const rawData = await unstable_parseMultipartFormData(request, uploadHandler)
-  // for (const [key, value] of rawData.entries()) {
-  //   console.log(key, value, typeof value)
-  // }
   const data: Partial<NoteData> = {
     body: rawData.get('body') as string ?? '',
     user: { connect: { id: currentUser.id } }
@@ -51,9 +48,7 @@ export const action: ActionFunction = async (args) => {
   } else {
     result = await createNote(data)
   }
-  console.log('checking raw data')
-  console.log(rawData.get('image'))
-  console.log(rawData.get('video'))
+  // check if there is a video/image OR if it should be deleted
   // check if there is a video/image OR if it should be deleted
   let image, video
   if (rawData.get('image') === 'delete') {

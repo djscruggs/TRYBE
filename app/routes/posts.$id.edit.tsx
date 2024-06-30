@@ -1,11 +1,11 @@
 import {
-  useMatches,
+  useRouteLoaderData,
   useNavigate
 } from '@remix-run/react'
+import type { PostSummary } from '~/utils/types'
 import FormPost from '~/components/formPost'
 export default function EditPost (): JSX.Element {
-  const matches = useMatches()
-  const { post } = matches.find((match) => match.id === 'routes/posts.$id')?.data as ObjectData
+  const { post } = useRouteLoaderData<typeof useRouteLoaderData>('routes/posts.$id') as { post: PostSummary }
   const navigate = useNavigate()
   return (
     <div className='flex flex-col'>

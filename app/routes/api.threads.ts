@@ -17,9 +17,6 @@ export const action: ActionFunction = async (args) => {
   }
   const request = args.request
   const rawData = await unstable_parseMultipartFormData(request, uploadHandler)
-  // for (const [key, value] of rawData.entries()) {
-  //   console.log(key, value, typeof value)
-  // }
   const data: Partial<ThreadData> = {
     title: rawData.get('title') as string ?? '',
     body: rawData.get('body') as string ?? '',
@@ -31,7 +28,6 @@ export const action: ActionFunction = async (args) => {
   if (rawData.get('challengeId')) {
     data.challenge = { connect: { id: Number(rawData.get('challengeId')) } }
   }
-  console.log(data)
   let result
   if (data.id) {
     result = await updateThread(data)

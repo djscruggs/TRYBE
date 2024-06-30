@@ -1,4 +1,4 @@
-import { useLoaderData, useMatches, useNavigate, Link } from '@remix-run/react'
+import { useLoaderData, useRouteLoaderData, useNavigate, Link } from '@remix-run/react'
 import { requireCurrentUser } from '../models/auth.server'
 import { type Post } from '@prisma/client'
 import { type LoaderFunction, type LoaderFunctionArgs } from '@remix-run/node'
@@ -35,8 +35,7 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs): Promise<
   return data
 }
 export default function ChallengeSchedule (): JSX.Element {
-  const matches = useMatches()
-  const { challenge } = matches.find((match) => match.id === 'routes/challenges.v.$id')?.data as { challenge: Challenge }
+  const { challenge } = useRouteLoaderData<typeof useRouteLoaderData>('routes/challenges.v.$id') as { challenge: Challenge }
   const { posts } = useLoaderData<typeof loader>() as ChallengeScheduleData
   const navigate = useNavigate()
   // Need to capture any dangling posts that are unscheduled in the date range
@@ -45,8 +44,6 @@ export default function ChallengeSchedule (): JSX.Element {
     const date = post.publishAt ? new Date(post.publishAt) : new Date(post.createdAt)
     // const day = date.getDate()
     const day = differenceInDays(date, new Date(challenge.startAt)) + 1// Calculate days since challenge.startAt
-    console.log(day)
-    console.log(post.title, post.publishAt)
     if (day <= 0) {
       unscheduled.push(post)
     } else {

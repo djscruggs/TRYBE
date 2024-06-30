@@ -24,7 +24,6 @@ export default function ChallengesIndex (): JSX.Element {
   const navigate = useNavigate()
   const data: any = useLoaderData()
   const { challenges } = data
-  console.log(challenges)
   if (data?.error) {
     return <h1>{data.error}</h1>
   }

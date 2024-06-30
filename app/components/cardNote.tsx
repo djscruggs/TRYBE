@@ -86,7 +86,6 @@ export default function CardNote (props: CardNoteProps): JSX.Element {
       })
   }
   const afterSave = (note: Note): void => {
-    console.log('afterSave', note)
     setEditing(false)
     setAddReply(false)
     setNote(note)
