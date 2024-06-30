@@ -1,11 +1,10 @@
-import React, { useState, useRef, useMemo } from 'react'
+import React, { useState, useRef, useMemo, useContext } from 'react'
+import { CurrentUserContext } from '~/utils/CurrentUserContext'
 import { Form, useNavigate } from '@remix-run/react'
 import axios from 'axios'
 import { FormField } from './formField'
 import { handleFileUpload } from '~/utils/helpers'
-import CardChallenge from './cardChallenge'
-import CardPost from './cardPost'
-import { type Note, type NoteSummary, type PostSummary, type Challenge, type Post, type ChallengeSummary } from '~/utils/types'
+import { type CheckIn } from '~/utils/types'
 import { Button } from '@material-tailwind/react'
 import { MdOutlineAddPhotoAlternate } from 'react-icons/md'
 import { TiDeleteOutline } from 'react-icons/ti'
@@ -13,23 +12,18 @@ import VideoRecorder from './videoRecorder'
 import VideoPreview from './videoPreview'
 import VideoChooser from './videoChooser'
 
-interface FormNoteProps {
-  afterSave?: (note: NoteSummary) => void
+interface FormCheckinProps {
+  checkIn?: CheckIn
+  afterCheckIn?: (checkIn: CheckIn) => void
   onCancel?: () => void
-  note?: Note
-  challenge?: Challenge | ChallengeSummary
-  post?: Post
-  replyToId?: number
-  prompt?: string
-  isShare?: boolean
-  isThread?: boolean
-  forwardRef?: React.RefObject<HTMLTextAreaElement>
+  challengeId: number
 }
 
-export default function FormNote (props: FormNoteProps): JSX.Element {
-  let { afterSave, onCancel, note, challenge, prompt, replyToId, post, isThread } = props
-  if (note?.challenge) {
-    challenge = note.challenge
+export default function FormCheckIn (props: FormCheckinProps): JSX.Element {
+  const { afterCheckIn, onCancel, checkIn, challengeId } = props
+  const { currentUser } = useContext(CurrentUserContext)
+  if (!challengeId) {
+    throw new Error('challengeId is required')
   }
   const handleKeyDown = async (event: React.KeyboardEvent<HTMLFormElement>): Promise<void> => {
     if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) {
@@ -39,19 +33,18 @@ export default function FormNote (props: FormNoteProps): JSX.Element {
   }
 
   const [showVideoRecorder, setShowVideoRecorder] = useState(false)
-  const placeholder = prompt ?? 'What\'s on your mind?'
-  const [body, setBody] = useState(note?.body || '')
+  const [body, setBody] = useState(checkIn?.body ?? '')
   const [btnDisabled, setBtnDisabled] = useState(false)
   const [videoRecording, setVideoRecording] = useState(false)
   const [error, setError] = useState('')
   const navigate = useNavigate()
   const imageRef = useRef<HTMLInputElement>(null)
   const [image, setImage] = useState<File | string | null>(null)
-  const [imageUrl, setImageUrl] = useState<string | null>(note?.image ? note.image : null)
+  const [imageUrl, setImageUrl] = useState<string | null>(checkIn?.imageMeta?.secure_url ?? null)
   const [videoUploadOnly, setVideoUploadOnly] = useState(false)
 
   const [video, setVideo] = useState<File | string | null>(null)
-  const [videoUrl, setVideoUrl] = useState<string | null>(note?.video ? note.video : null)
+  const [videoUrl, setVideoUrl] = useState<string | null>(checkIn?.videoMeta?.secure_url ?? null)
   const imageDialog = (): void => {
     if (imageRef.current) {
       imageRef.current.click()
@@ -96,41 +89,28 @@ export default function FormNote (props: FormNoteProps): JSX.Element {
     if (!validate()) {
       return
     }
-    setBtnDisabled(true)
+    if (currentUser?.id) {
+      throw new Error('User ID is required')
+    }
     try {
       const formData = new FormData()
       formData.append('body', body)
-      if (note?.id) {
-        formData.append('id', note.id.toString())
-      }
-      if (replyToId) {
-        formData.append('replyToId', replyToId.toString())
-        formData.append('isShare', 'true')
-      }
-      if (challenge) {
-        formData.append('challengeId', challenge.id.toString())
-      }
-      if (post?.id) {
-        formData.append('postId', post.id.toString())
-      }
+      formData.append('userId', String(currentUser?.id))
+      // if (checkIn?.id) {
+      //   formData.append('id', checkIn.id.toString())
+      // }
+      formData.append('challengeId', challengeId.toString())
       if (image) {
         formData.append('image', image)
       }
       if (video) {
         formData.append('video', video)
       }
-      if (isThread) {
-        formData.append('isThread', 'true')
-      }
 
-      const result = await axios.post('/api/notes', formData)
-      setBody('')
-      setImage(null)
-      setImageUrl(null)
-      setVideo(null)
-      setShowVideoRecorder(false)
-      if (afterSave) {
-        afterSave(result.data as NoteSummary)
+      const result = await axios.post('/api/checkins', formData)
+      clearInputs()
+      if (afterCheckIn) {
+        afterCheckIn(result.data as CheckIn)
       } else {
         navigate('/home')
       }
@@ -140,19 +120,24 @@ export default function FormNote (props: FormNoteProps): JSX.Element {
       setBtnDisabled(false)
     }
   }
-  const handleCancel = (ev: React.MouseEvent<HTMLButtonElement, MouseEvent>): void => {
-    ev.preventDefault()
+  const clearInputs = (): void => {
     setBody('')
     setImage(null)
     setImageUrl(null)
     setVideo(null)
+    setVideoUrl(null)
+    setShowVideoRecorder(false)
+  }
+  const handleCancel = (ev: React.MouseEvent<HTMLButtonElement, MouseEvent>): void => {
+    ev.preventDefault()
+    clearInputs()
     if (onCancel) {
       onCancel()
     }
   }
   const showCancel = (): boolean => {
     // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
-    return Boolean(video || body || image || challenge || post || replyToId)
+    return Boolean(video || body || image || video)
   }
   const renderVideo = useMemo(() => (
     <VideoPreview video={video} onClear={deleteVideo} />
@@ -163,7 +148,7 @@ export default function FormNote (props: FormNoteProps): JSX.Element {
       <FormField
           name='note'
           autoResize={true}
-          placeholder={placeholder}
+          placeholder={'Add a note (optional)'}
           type='textarea'
           rows={4}
           required={true}
@@ -211,9 +196,6 @@ export default function FormNote (props: FormNoteProps): JSX.Element {
         {showCancel() &&
           <button onClick={handleCancel} className="mt-2 text-sm underline ml-2 hover:text-red">cancel</button>
         }
-        {challenge && !isThread && <CardChallenge challenge={challenge as ChallengeSummary} isShare={true}/>}
-        {post && <CardPost post={post as PostSummary} isShare={true}/>}
-
       </Form>
 
     </div>

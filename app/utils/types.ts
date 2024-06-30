@@ -183,7 +183,9 @@ export interface CheckIn {
   challengeId: number
   createdAt: Date
   data: JSONObject
-  note?: string
+  body?: string
+  imageMeta?: CoudinaryMeta
+  videoMeta?: CoudinaryMeta
   challenge?: Challenge
   user?: User
   memberChallenge?: MemberChallenge

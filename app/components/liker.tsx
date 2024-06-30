@@ -7,7 +7,7 @@ import { toast } from 'react-hot-toast'
 interface LikerProps {
   isLiked: boolean
   itemId: number
-  itemType: 'comment' | 'post' | 'note' | 'challenge' | 'thread' | 'checkin'
+  itemType: 'comment' | 'post' | 'note' | 'challenge' | 'thread' | 'checkIn'
   count: number
   className?: string
 }
@@ -34,7 +34,7 @@ export default function Liker (props: LikerProps): JSX.Element {
     if (itemType === 'thread') {
       formData.append('threadId', String(itemId))
     }
-    if (itemType === 'checkin') {
+    if (itemType === 'checkIn') {
       formData.append('checkinId', String(itemId))
     }
     if (isLiked) {

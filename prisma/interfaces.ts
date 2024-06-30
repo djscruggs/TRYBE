@@ -158,7 +158,9 @@ export interface MemberChallenge {
 export interface CheckIn {
   id: number;
   data: JsonValue | null;
-  note: string | null;
+  body: string | null;
+  imageMeta: JsonValue | null;
+  videoMeta: JsonValue | null;
   createdAt: Date;
   updatedAt: Date;
   userId: number;

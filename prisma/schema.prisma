@@ -184,7 +184,9 @@ model MemberChallenge {
 model CheckIn {
   id                Int             @id @default(autoincrement())
   data              Json?
-  note              String?
+  body              String?
+  imageMeta         Json?
+  videoMeta         Json?
   createdAt         DateTime        @default(now())
   updatedAt         DateTime        @updatedAt
   userId            Int

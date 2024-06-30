@@ -1,18 +1,24 @@
 import { formatDistanceToNow, format, differenceInDays, differenceInHours, isPast } from 'date-fns'
 import { useState } from 'react'
-import { Button } from '@material-tailwind/react'
-import type { Challenge, MemberChallenge } from '~/utils/types'
+import type { Challenge, MemberChallenge, CheckIn } from '~/utils/types'
 import { toast } from 'react-hot-toast'
 import axios from 'axios'
 import { Link } from '@remix-run/react'
+import FormCheckIn from './formCheckin'
+import {
+  Button,
+  Dialog,
+  DialogBody
+} from '@material-tailwind/react'
 
 interface ChallengeMemberCheckinProps {
   challenge: Challenge
   memberChallenge: MemberChallenge | null
-  afterCheckIn?: () => void
+  afterCheckIn?: (checkIn: CheckIn) => void
 }
 export function ChallengeMemberCheckin ({ challenge, memberChallenge, afterCheckIn }: ChallengeMemberCheckinProps): JSX.Element {
   const isMember = Boolean(memberChallenge?.id)
+  const [showForm, setShowForm] = useState<boolean>(false)
   const [checkingIn, setCheckingIn] = useState<boolean>(false)
   const [membership, setMembership] = useState(memberChallenge)
   const isExpired = isPast(challenge?.endAt)
@@ -34,6 +40,7 @@ export function ChallengeMemberCheckin ({ challenge, memberChallenge, afterCheck
     return format(membership.nextCheckIn, 'cccc')
   }
   const canCheckInNow = (): boolean => {
+    return true
     if (isExpired) {
       return false
     }
@@ -50,10 +57,13 @@ export function ChallengeMemberCheckin ({ challenge, memberChallenge, afterCheck
   }
 
   const handleCheckIn = async (event: any): Promise<void> => {
+    console.log('handleCheckin')
+    setShowForm(true)
+    return
     setCheckingIn(true)
     event.preventDefault()
     try {
-      const url = `/api/challenges/${challenge?.id as string | number}/checkin`
+      const url = `/api/challenges/${challenge?.id as string | number}/checkIn`
       const response = await axios.post(url)
       setMembership(response.data.memberChallenge as MemberChallenge)
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
@@ -72,6 +82,8 @@ export function ChallengeMemberCheckin ({ challenge, memberChallenge, afterCheck
       setCheckingIn(false)
     }
   }
+  console.log('showForm', showForm)
+  console.log('challenge', challenge)
   return (
     <div className="flex text-sm items-center justify-start w-full p-2">
       {isMember && (
@@ -108,6 +120,28 @@ export function ChallengeMemberCheckin ({ challenge, memberChallenge, afterCheck
           )}
         </>
       )}
+      <DialogCheckIn challengeId={challenge.id} isOpen={showForm} onCancel={() => { setShowForm(false) }} afterCheckIn={afterCheckIn} />}
     </div>
+  )
+}
+
+interface CheckinProps {
+  challengeId: number
+  isOpen: boolean
+  onCancel: () => void
+  afterCheckIn: (checkIn: CheckIn) => void
+}
+function DialogCheckIn ({ challengeId, isOpen, onCancel, afterCheckIn }: CheckinProps): JSX.Element {
+  console.log('DialogCheckIn')
+  const [open, setOpen] = useState<boolean>(isOpen)
+  const handleOpen = (): void => {
+    setOpen(true)
+  }
+  return (
+    <Dialog open={open} handler={handleOpen} size='xs'>
+        <DialogBody>
+          <FormCheckIn challengeId={challengeId} onCancel={onCancel} afterCheckIn={afterCheckIn} />
+        </DialogBody>
+      </Dialog>
   )
 }

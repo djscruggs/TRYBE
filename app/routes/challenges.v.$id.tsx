@@ -163,6 +163,7 @@ export default function ViewChallenge (): JSX.Element {
   const isOverview = matches.length === 2
   const isProgram = location.pathname.includes('program')
   const isPosts = location.pathname.includes('posts')
+  const isComments = location.pathname.includes('comments')
   const isExpired = isPast(challenge.endAt as Date)
   const { currentUser } = useContext(CurrentUserContext)
   const navigate = useNavigate()
@@ -194,7 +195,7 @@ export default function ViewChallenge (): JSX.Element {
     setIsMember(response.data.result === 'joined')
     setLoading(false)
   }
-  if (!isOverview && !isPosts) {
+  if (!isOverview && !isPosts && !isComments) {
     return (
       <div className='flex flex-col'>
         <ChallengeHeader challenge={challenge} size='small' />

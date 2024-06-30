@@ -4,14 +4,18 @@ import { loadUser } from '~/models/user.server'
 import { loadChallenge, calculateNextCheckin } from '~/models/challenge.server'
 import { json, type LoaderFunction, type ActionFunctionArgs } from '@remix-run/node'
 import type { MemberChallenge } from '@prisma/client'
+import { unstable_parseMultipartFormData } from '@remix-run/node'
+import { uploadHandler, saveToCloudinary, deleteFromCloudinary } from '~/utils/uploadFile'
 
-export async function action (args: ActionFunctionArgs): Promise<prisma.challenge> {
+export async function action (args: ActionFunctionArgs): Promise<prisma.checkIn> {
   const currentUser = await requireCurrentUser(args)
   if (!currentUser) {
     return {
       result: 'not-logged-in'
     }
   }
+  const request = args.request
+  const rawData = await unstable_parseMultipartFormData(request, uploadHandler)
 
   const { params } = args
   const challenge = await loadChallenge(Number(params.id))
@@ -24,6 +28,7 @@ export async function action (args: ActionFunctionArgs): Promise<prisma.challeng
   }
   // allow user who created the challenge to check in even if not a member
   const user = await loadUser(currentUser.id)
+  const body = rawData.get('body') as string ?? ''
   const membership = await prisma.memberChallenge.findFirst({
     where: {
       userId: Number(currentUser.id),
@@ -41,13 +46,14 @@ export async function action (args: ActionFunctionArgs): Promise<prisma.challeng
       data: {
         userId: Number(currentUser.id),
         challengeId: Number(params.id),
-        memberChallengeId: membership.id
+        body,
+        memberChallengeId: membership?.id
       }
     })
     // update last check in on subscription
     const dateUpdate = await prisma.memberChallenge.update({
       where: {
-        id: membership.id
+        id: membership?.id ?? 0
       },
       data: {
         lastCheckIn: new Date(),
