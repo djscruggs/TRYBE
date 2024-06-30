@@ -5,11 +5,11 @@ import React, {
   type ChangeEvent
 } from 'react'
 import { Form, useNavigate } from '@remix-run/react'
-import type { ObjectData } from '~/utils/types'
+import type { ObjectData, Challenge, ChallengeSummary } from '~/utils/types'
 import { Button, Select, Option, Radio } from '@material-tailwind/react'
 import { FormField } from '~/components/formField'
 import DatePicker from 'react-datepicker'
-import { addDays } from 'date-fns'
+import { addDays, endOfMonth, isFirstDayOfMonth } from 'date-fns'
 import { toast } from 'react-hot-toast'
 import axios from 'axios'
 import { colorToClassName, getIconOptionsForColor, handleFileUpload } from '~/utils/helpers'
@@ -32,20 +32,38 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
   const [errors, setErrors] = useState<Errors>()
   // make a copy so it doesn't affect parent renders
   const challenge = props.challenge ? props.challenge : {}
-  if (props?.challenge?._count) {
+  if (challenge?._count) {
     delete challenge._count
   }
   const [formData, setFormData] = useState({
     deleteImage: false,
-    ...challenge
+    ...(typeof challenge === 'object' && challenge !== null ? challenge : {})
   })
   const { currentUser } = useContext(CurrentUserContext)
   const localDateFormat = currentUser?.locale === 'en-US' ? 'M-dd-YYYY' : 'dd-M-YYYY'
   function selectDate (name: string, value: Date): void {
-    setFormData((prevFormData) => ({
+    setFormData((prevFormData: typeof formData) => ({
       ...prevFormData,
       [name]: value
     }))
+    // if no end date set, default to 30 days from now
+    if (name === 'startAt') {
+      if (!formData.endAt) {
+        const newEnd = calculateEndDate(value)
+        setFormData((prevFormData: typeof formData) => ({
+          ...prevFormData,
+          endAt: newEnd
+        }))
+      }
+    }
+  }
+  function calculateEndDate (startAt: Date): Date {
+    if (isFirstDayOfMonth(startAt)) {
+      const endAt = endOfMonth(startAt)
+      return endAt
+    }
+    const endAt = addDays(startAt, 30)
+    return endAt
   }
   const handleChange = (event: ChangeEvent<HTMLInputElement | HTMLSelectElement>): void => {
     const { name, value } = event.target
@@ -84,7 +102,7 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
     }))
   }
 
-  const iconOptions: Record<string, JSX.Element> = getIconOptionsForColor(formData?.color as string)
+  const iconOptions: Record<string, JSX.Element> = getIconOptionsForColor(formData?.color)
   const handleIconChange = (value: string): void => {
     setFormData((prevFormData) => ({
       ...prevFormData,
@@ -269,7 +287,6 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
                     <DatePicker
                       name='endAt'
                       required={true}
-                      placeholderText='At least one week long'
                       dateFormat={localDateFormat}
                       minDate={formData.startAt ? addDays(new Date(formData.startAt), 7) : addDays(new Date(), 7)}
                       selected={formData.endAt ? new Date(formData.endAt) : null}
