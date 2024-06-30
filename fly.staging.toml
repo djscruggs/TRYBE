@@ -6,6 +6,8 @@
 app = 'trybe'
 primary_region = 'dfw'
 
+ENV = { NODE_ENV = "staging" }
+
 [build]
 
 [http_service]
