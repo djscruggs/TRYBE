@@ -9,7 +9,7 @@ import { AiFillCaretDown } from 'react-icons/ai'
 import { SlShareAlt } from 'react-icons/sl'
 import { FaRegComment, FaRegCalendarAlt, FaUserFriends, FaRegHeart } from 'react-icons/fa'
 import RandomAvatar from './randomavatar'
-import { useMobileSize } from '../utils/useMobileSize'
+import { useMobileSize } from '~/utils/useMobileSize'
 
 export default function FeedChallengeCard () {
   const isMobile = useMobileSize()

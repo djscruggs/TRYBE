@@ -1,6 +1,6 @@
 // app/utils/user.server.ts
 import bcrypt from 'bcryptjs'
-import type { RegisterForm } from '../utils/types'
+import type { RegisterForm } from '~/utils/types'
 import { prisma } from './prisma.server'
 
 export const createUser = async (user: RegisterForm | prisma.UserCreateInput): Promise<{ id: number, email: string }> => {

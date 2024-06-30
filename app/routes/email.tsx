@@ -1,6 +1,6 @@
-import { requireCurrentUser } from '../models/auth.server'
+import { requireCurrentUser } from '~/models/auth.server'
 import { type LoaderFunction } from '@remix-run/node'
-import { loadPostSummary } from '../models/post.server'
+import { loadPostSummary } from '~/models/post.server'
 
 import { mailPost } from '~/utils/mailer'
 function textToHtml (text): string {

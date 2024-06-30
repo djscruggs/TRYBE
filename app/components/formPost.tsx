@@ -11,7 +11,7 @@ import VideoRecorder from './videoRecorder'
 import VideoPreview from './videoPreview'
 import VideoChooser from './videoChooser'
 import DatePicker from 'react-datepicker'
-import { CurrentUserContext } from '../utils/CurrentUserContext'
+import { CurrentUserContext } from '~/utils/CurrentUserContext'
 import { toast } from 'react-hot-toast'
 import { format } from 'date-fns'
 

@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import { json, type LoaderFunction, type ActionFunction } from '@remix-run/node'
-import { updateUser, createUser, deleteUser } from '../models/user.server'
+import { updateUser, createUser, deleteUser } from '~/models/user.server'
 import { Webhook } from 'svix'
-import { prisma } from '../models/prisma.server'
+import { prisma } from '~/models/prisma.server'
 
 // @see https://clerk.com/docs/integrations/webhooks/sync-data
 // {

@@ -1,11 +1,11 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { SignedIn, SignedOut, UserButton } from '@clerk/remix'
-import useHasLoaded from '../utils/useHasLoaded'
+import useHasLoaded from '~/utils/useHasLoaded'
 import { useLocation, Outlet, useNavigate, Link, useNavigation, useLoaderData } from '@remix-run/react'
 
 import NavLinks from './navlinks'
 import { Spinner } from '@material-tailwind/react'
-import { CurrentUserContext } from '../utils/CurrentUserContext'
+import { CurrentUserContext } from '~/utils/CurrentUserContext'
 import {
   // BellIcon,
   // MagnifyingGlassIcon,
@@ -20,7 +20,7 @@ import {
   ChatBubbleLeftEllipsisIcon
 } from '@heroicons/react/24/outline'
 import { AnimatePresence, motion } from 'framer-motion'
-import type { RootLoaderData } from '../root'
+import type { RootLoaderData } from '~/root'
 export default function Layout (): JSX.Element {
   const hasLoaded = useHasLoaded()
   if (!hasLoaded) {

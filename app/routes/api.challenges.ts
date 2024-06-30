@@ -7,8 +7,8 @@ import {
   unstable_parseMultipartFormData
   , type ActionFunctionArgs
 } from '@remix-run/node'
-import { convertStringValues } from '../utils/helpers'
-import { uploadHandler, saveToCloudinary, deleteFromCloudinary } from '../utils/uploadFile'
+import { convertStringValues } from '~/utils/helpers'
+import { uploadHandler, saveToCloudinary, deleteFromCloudinary } from '~/utils/uploadFile'
 
 export async function action (args: ActionFunctionArgs): Promise<any> {
   const currentUser = await requireCurrentUser(args)

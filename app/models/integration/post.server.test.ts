@@ -1,4 +1,4 @@
-import { createPost } from '../post.server'
+import { createPost } from '~/post.server'
 
 describe('creating posts', () => {
   // integration object is fully typed

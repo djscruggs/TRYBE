@@ -1,4 +1,4 @@
-import { requireCurrentUser } from '../models/auth.server'
+import { requireCurrentUser } from '~/models/auth.server'
 import { type LoaderFunction, json } from '@remix-run/node'
 import { useLoaderData, useNavigate } from '@remix-run/react'
 import { fetchUserChallengesAndMemberships } from '~/models/challenge.server'

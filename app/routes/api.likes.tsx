@@ -1,6 +1,6 @@
 import { requireCurrentUser } from '~/models/auth.server'
 import { json, type LoaderFunction, type ActionFunction, type ActionFunctionArgs } from '@remix-run/node'
-import { prisma, prisma } from '../models/prisma.server'
+import { prisma, prisma } from '~/models/prisma.server'
 import { type Like } from '@prisma/client'
 
 export const action: ActionFunction = async (args: ActionFunctionArgs) => {

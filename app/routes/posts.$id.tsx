@@ -3,10 +3,10 @@ import { useState } from 'react'
 import { Outlet, useLoaderData, useLocation } from '@remix-run/react'
 import CardPost from '~/components/cardPost'
 import ChallengeHeader from '~/components/challengeHeader'
-import { requireCurrentUser } from '../models/auth.server'
+import { requireCurrentUser } from '~/models/auth.server'
 import type { PostSummary } from '~/utils/types'
 import { json, type LoaderFunction, type LoaderFunctionArgs } from '@remix-run/node'
-import { prisma } from '../models/prisma.server'
+import { prisma } from '~/models/prisma.server'
 
 export interface PostData {
   post: PostSummary | null

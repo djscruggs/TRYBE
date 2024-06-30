@@ -1,6 +1,6 @@
 import { useNavigate, useLocation, useRevalidator } from 'react-router-dom'
 import { useState, useContext } from 'react'
-import { CurrentUserContext } from '../utils/CurrentUserContext'
+import { CurrentUserContext } from '~/utils/CurrentUserContext'
 import { type Challenge, type ChallengeSummary } from '~/utils/types'
 import { Button, Menu, MenuHandler, MenuList, MenuItem } from '@material-tailwind/react'
 import DialogDelete from './dialogDelete'

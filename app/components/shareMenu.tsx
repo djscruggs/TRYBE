@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { SlShareAlt } from 'react-icons/sl'
-import { copyToClipboard } from '../utils/helpers'
+import { copyToClipboard } from '~/utils/helpers'
 
 interface ShareMenuProps {
   copyUrl: string

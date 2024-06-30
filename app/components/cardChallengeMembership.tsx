@@ -4,9 +4,9 @@ import {
   Card,
   Button
 } from '@material-tailwind/react'
-import { type Challenge, type MemberChallenge } from '../utils/types'
-import { CurrentUserContext } from '../utils/CurrentUserContext'
-import { userLocale } from '../utils/helpers'
+import { type Challenge, type MemberChallenge } from '~/utils/types'
+import { CurrentUserContext } from '~/utils/CurrentUserContext'
+import { userLocale } from '~/utils/helpers'
 import ShareMenu from './shareMenu'
 
 interface CardChallengeProps {

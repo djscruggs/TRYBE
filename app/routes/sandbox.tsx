@@ -1,4 +1,4 @@
-import { requireCurrentUser } from '../models/auth.server'
+import { requireCurrentUser } from '~/models/auth.server'
 import { type LoaderFunction } from '@remix-run/node'
 const ogs = require('open-graph-scraper')
 const options = { url: 'http://ogp.me/' }

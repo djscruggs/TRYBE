@@ -1,9 +1,9 @@
 import { Outlet, useLoaderData } from '@remix-run/react'
 import React from 'react'
-import { requireCurrentUser } from '../models/auth.server'
+import { requireCurrentUser } from '~/models/auth.server'
 import type { Post } from '~/utils/types'
 import { type LoaderFunction, type LoaderFunctionArgs } from '@remix-run/node'
-import { prisma } from '../models/prisma.server'
+import { prisma } from '~/models/prisma.server'
 import CardPost from '~/components/cardPost'
 
 interface ViewChallengePostsData {

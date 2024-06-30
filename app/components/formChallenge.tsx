@@ -14,7 +14,7 @@ import { toast } from 'react-hot-toast'
 import axios from 'axios'
 import { colorToClassName, getIconOptionsForColor, handleFileUpload } from '~/utils/helpers'
 import { useRevalidator } from 'react-router-dom'
-import { CurrentUserContext } from '../utils/CurrentUserContext'
+import { CurrentUserContext } from '~/utils/CurrentUserContext'
 
 interface Errors {
   name?: string
@@ -308,7 +308,7 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
                 <div className="mt-4 max-w-[400px] relative flex flex-wrap">
                   <label className='w-full block mb-2 text-left'>Icon</label>
                   {Object.keys(iconOptions).map((key, index) => (
-                    <div key={key} onClick={() => { handleIconChange(key) }} className={`w-10 h-10 cursor-pointer rounded-full mr-4 mb-2 ${formData.icon === key ? 'outline outline-2 outline-offset-2 outline-darkgrey' : ''}`}>{iconOptions[key]}</div>
+                    <div key={key} onClick={() => { handleIconChange(key) }} className={`w-12 h-12 cursor-pointer rounded-full mr-3 mb-2 ${formData.icon === key ? 'outline outline-2 outline-offset-2 outline-darkgrey' : ''}`}>{iconOptions[key]}</div>
                   ))}
                 </div>
                 <div className='w-full mt-4'>

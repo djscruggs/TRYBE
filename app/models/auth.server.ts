@@ -1,6 +1,6 @@
 import { prisma } from './prisma.server'
 import { createUser, getUserByClerkId } from './user.server'
-import { type RegisterForm, type LoginForm } from '../utils/types'
+import { type RegisterForm, type LoginForm } from '~/utils/types'
 import { type LoaderFunctionArgs } from '@remix-run/node'
 import bcrypt from 'bcryptjs'
 import type { CurrentUser } from '~/utils/types'

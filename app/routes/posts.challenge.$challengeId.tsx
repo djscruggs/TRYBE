@@ -1,4 +1,4 @@
-import { requireCurrentUser } from '../models/auth.server'
+import { requireCurrentUser } from '~/models/auth.server'
 import { type LoaderFunction } from '@remix-run/node'
 import React, { useLoaderData } from '@remix-run/react'
 import { prisma } from '~/models/prisma.server'

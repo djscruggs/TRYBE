@@ -1,4 +1,4 @@
-import { prisma } from '../models/prisma.server'
+import { prisma } from '~/models/prisma.server'
 import { requireCurrentUser } from '~/models/auth.server'
 import { loadUser } from '~/models/user.server'
 import { loadChallenge, calculateNextCheckin } from '~/models/challenge.server'

@@ -1,5 +1,5 @@
-import { prisma } from '../models/prisma.server'
-import { mailPost } from '../utils/mailer'
+import { prisma } from '~/models/prisma.server'
+import { mailPost } from '~/utils/mailer'
 import type { LoaderFunction } from '@remix-run/node'
 import { json } from '@remix-run/node'
 

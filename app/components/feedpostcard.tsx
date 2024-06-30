@@ -4,7 +4,7 @@ import {
 import { SlShareAlt } from 'react-icons/sl'
 import { FaRegComment, FaRegHeart } from 'react-icons/fa'
 import RandomAvatar from './randomavatar'
-import { useMobileSize } from '../utils/useMobileSize'
+import { useMobileSize } from '~/utils/useMobileSize'
 export default function FeedPostCard () {
   const isMobile = useMobileSize()
   return (

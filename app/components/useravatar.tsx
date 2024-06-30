@@ -1,8 +1,8 @@
 import { Avatar } from '@material-tailwind/react'
-import { CurrentUserContext } from '../utils/CurrentUserContext'
+import { CurrentUserContext } from '~/utils/CurrentUserContext'
 import React, { useContext } from 'react'
 import type { AvatarProps } from '@material-tailwind/react'
-import { userInitials } from '../utils/helpers'
+import { userInitials } from '~/utils/helpers'
 
 const UserAvatar = ({ variant = 'circular', size = 'md', color = 'gray', className = '', withBorder = false }: AvatarProps) => {
   const { currentUser } = useContext(CurrentUserContext)
