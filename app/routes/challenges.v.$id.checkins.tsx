@@ -1,6 +1,6 @@
 import { requireCurrentUser } from '../models/auth.server'
 import { type LoaderFunction, json } from '@remix-run/node'
-import { useLoaderData, useMatches } from '@remix-run/react'
+import { useLoaderData, useMatches, useRevalidator } from '@remix-run/react'
 import { useContext } from 'react'
 import { CurrentUserContext } from '../utils/CurrentUserContext'
 import { fetchCheckIns, loadChallengeSummary, loadMemberChallenge } from '~/models/challenge.server'
@@ -21,6 +21,7 @@ export const loader: LoaderFunction = async (args) => {
 }
 export default function CheckIns (): JSX.Element {
   const matches = useMatches()
+  const revalidator = useRevalidator()
   const { challenge } = matches.find((match) => match.id === 'routes/challenges.v.$id')?.data as { challenge: Challenge }
   const data = useLoaderData<typeof loader>()
   const { checkIns, memberChallenge } = data
@@ -57,7 +58,7 @@ export default function CheckIns (): JSX.Element {
               </div>
             </CircularProgressbarWithChildren>
           </div>
-          <ChallengeMemberCheckin challenge={challenge} memberChallenge={memberChallenge}/>
+          <ChallengeMemberCheckin challenge={challenge} memberChallenge={memberChallenge} afterCheckIn={() => { revalidator.revalidate() }} />
           <div className='flex flex-col items-start justify-center mt-4'>
             <p className='text-center text-xl text-gray-500 mb-2'>You&apos;ve checked in {checkIns.length} {pluralize(checkIns.length as number, 'time', 'times')} so far.</p>
             <div className='text-left text-xl text-gray-500'>

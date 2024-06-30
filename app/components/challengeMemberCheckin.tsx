@@ -6,12 +6,16 @@ import { toast } from 'react-hot-toast'
 import axios from 'axios'
 import { Link } from '@remix-run/react'
 
-export function ChallengeMemberCheckin ({ challenge, memberChallenge }: { challenge: Challenge, memberChallenge: MemberChallenge | null }): JSX.Element {
+interface ChallengeMemberCheckinProps {
+  challenge: Challenge
+  memberChallenge: MemberChallenge | null
+  afterCheckIn?: () => void
+}
+export function ChallengeMemberCheckin ({ challenge, memberChallenge, afterCheckIn }: ChallengeMemberCheckinProps): JSX.Element {
   const isMember = Boolean(memberChallenge?.id)
   const [checkingIn, setCheckingIn] = useState<boolean>(false)
   const [membership, setMembership] = useState(memberChallenge)
   const isExpired = isPast(challenge?.endAt)
-  const isStarted = isPast(challenge?.startAt)
   const formatNextCheckin = (): string => {
     if (!membership?.nextCheckIn) {
       return ''
@@ -54,6 +58,9 @@ export function ChallengeMemberCheckin ({ challenge, memberChallenge }: { challe
       setMembership(response.data.memberChallenge as MemberChallenge)
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       toast.success('You are checked in! 🙌')
+      if (afterCheckIn) {
+        afterCheckIn()
+      }
     } catch (error) {
       console.error(error)
       if (axios.isAxiosError(error)) {
