@@ -3,28 +3,32 @@ import { useState } from 'react'
 import type { Challenge, MemberChallenge, CheckIn } from '~/utils/types'
 import { toast } from 'react-hot-toast'
 import axios from 'axios'
-import { Link } from '@remix-run/react'
+import { Link, useLocation } from '@remix-run/react'
 import FormCheckIn from './formCheckin'
 import {
   Button,
   Dialog,
   DialogBody
 } from '@material-tailwind/react'
+import { pluralize } from '~/utils/helpers'
 
 interface ChallengeMemberCheckinProps {
   challenge: Challenge
   memberChallenge: MemberChallenge | null
+  showDetails?: boolean
   afterCheckIn?: (checkIn: CheckIn) => void
 }
-export function ChallengeMemberCheckin ({ challenge, memberChallenge, afterCheckIn }: ChallengeMemberCheckinProps): JSX.Element {
+export function ChallengeMemberCheckin ({ challenge, memberChallenge, showDetails, afterCheckIn }: ChallengeMemberCheckinProps): JSX.Element {
   const isMember = Boolean(memberChallenge?.id)
   if (!challenge?.id) {
     throw new Error('Challenge object with id is required')
   }
+  const [checkinCount, setCheckinCount] = useState<number>(memberChallenge?._count?.checkIns ?? 0)
   const [showForm, setShowForm] = useState<boolean>(false)
-  const [checkingIn, setCheckingIn] = useState<boolean>(false)
   const [membership, setMembership] = useState(memberChallenge)
-  const isExpired = isPast(challenge?.endAt)
+  const challengeIsExpired = isPast(challenge?.endAt)
+  const location = useLocation()
+  const linkToCheckins = !location.pathname.includes('checkins/mine')
   const formatNextCheckin = (): string => {
     if (!membership?.nextCheckIn) {
       return ''
@@ -38,12 +42,12 @@ export function ChallengeMemberCheckin ({ challenge, memberChallenge, afterCheck
       if (hoursToNext <= 1) {
         return 'now'
       }
-      return `in ${hoursToNext} hours`
+      return `${hoursToNext} ${pluralize(hoursToNext, 'hour')}`
     }
     return format(membership.nextCheckIn, 'cccc')
   }
   const canCheckInNow = (): boolean => {
-    if (isExpired) {
+    if (challengeIsExpired) {
       return false
     }
 
@@ -59,66 +63,46 @@ export function ChallengeMemberCheckin ({ challenge, memberChallenge, afterCheck
   }
   const handleAfterCheckIn = (checkIn: CheckIn): void => {
     setShowForm(false)
-    setCheckingIn(false)
+    setCheckinCount(checkinCount + 1)
     if (afterCheckIn) {
       afterCheckIn(checkIn)
-    }
-  }
-  const handleCheckIn = async (event: any): Promise<void> => {
-    setShowForm(true)
-    setCheckingIn(true)
-    return
-
-    event.preventDefault()
-    try {
-      const url = `/api/challenges/${challenge?.id as string | number}/checkIn`
-      const response = await axios.post(url)
-      setMembership(response.data.memberChallenge as MemberChallenge)
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-      toast.success('You are checked in! 🙌')
-      if (afterCheckIn) {
-        afterCheckIn()
-      }
-    } catch (error) {
-      console.error(error)
-      if (axios.isAxiosError(error)) {
-        toast.error(error.response?.statusText ?? 'An error occurred')
-      } else {
-        toast.error('An unexpected error occurred')
-      }
-    } finally {
-      setCheckingIn(false)
     }
   }
 
   return (
     <>
-    <div className="flex text-sm items-center justify-start w-full p-2">
-      {isMember && (
+    <div className="flex text-sm items-center w-full md:w-1/2 p-2">
+      {/* this is gnarly -- we want to only show details if the flag is set */}
+      {/* then, only who the link to the checkins page if we currently are NOT on the checkins page */}
+      {isMember && showDetails && (
         <>
           <div className="text-xs my-2 justify-start w-1/2">
-            {membership?.lastCheckIn
-              ? (
+            {membership?.lastCheckIn &&
               <>
-              Last check-in: {formatDistanceToNow(membership.lastCheckIn)} ago <br />
-              {!isExpired && membership.nextCheckIn && <p>Next check-in {formatNextCheckin()}</p>}
-              {Number(membership?._count?.checkIns) > 0 &&
-                <div className='underline'>
-                  <Link to={`/challenges/v/${challenge.id}/checkins/mine`}>
-                    {memberChallenge?._count?.checkIns} check-ins total
-                  </Link>
-                </div>
-              }
+                Last: {formatDistanceToNow(membership.lastCheckIn)} ago <br />
+                {!challengeIsExpired && membership.nextCheckIn && <p>Next: {formatNextCheckin()}</p>}
+                {linkToCheckins &&
+                  <>
+                    {Number(membership?._count?.checkIns) > 0 &&
+                      <div className='underline'>
+                        <Link to={`/challenges/v/${challenge.id}/checkins/mine`}>
+                          {checkinCount + ' ' + pluralize(checkinCount, 'check-in')}
+                        </Link>
+                      </div>
+                    }
+                    {Number(membership?._count?.checkIns) === 0 &&
+                      <p>No check-ins yet</p>
+                    }
+                  </>
+                }
               </>
-                )
-              : (
-              <p>No check-ins yet</p>
-                )}
+              }
           </div>
-          {!isExpired && !showForm && (
-            <div className="text-xs my-2 justify-end w-1/2">
+
+          {!challengeIsExpired && !showForm && (
+            <div className="text-xs my-2 text-end md:text-start md:w-1/2">
               <Button
-                  onClick={handleCheckIn}
+                  onClick={() => { setShowForm(true) } }
                   disabled={!canCheckInNow()}
                   className='bg-red hover:bg-green-500 text-white rounded-md p-2 justify-center text-xs disabled:bg-gray-400'
                 >

@@ -56,13 +56,18 @@ export default function CheckIns (): JSX.Element {
               </div>
             </CircularProgressbarWithChildren>
           </div>
-          <ChallengeMemberCheckin challenge={challenge} memberChallenge={membership} afterCheckIn={() => { revalidator.revalidate() }} />
-          <div className='flex flex-col items-start justify-center mt-4'>
+          <ChallengeMemberCheckin showDetails={true} challenge={challenge} memberChallenge={membership} afterCheckIn={() => { revalidator.revalidate() }} />
+          <div className='flex flex-col items-start justify-center mt-4 border border-red  w-full'>
             <p className='text-center text-xl text-gray-500 mb-2'>You&apos;ve checked in {checkIns.length} {pluralize(checkIns.length as number, 'time', 'times')} so far.</p>
-            <div className='text-left text-xl text-gray-500'>
+            <div className='text-left text-xl text-gray-500 flex flex-col min-w-sm'>
               {checkIns.map((checkIn: any) => (
-                <div key={checkIn.id}>
-                {new Date(checkIn.createdAt as Date).toLocaleDateString(locale, dateFormat)}
+                <div key={checkIn.id} className='flex flex-items-center border-b border-gray-200 border w-full'>
+                  <div className='w-1/4'>
+                    {new Date(checkIn.createdAt as Date).toLocaleDateString(locale, dateFormat)}
+                  </div>
+                  <div className='ml-2'>
+                    {checkIn.body} foo
+                  </div>
                 </div>
               ))}
             </div>

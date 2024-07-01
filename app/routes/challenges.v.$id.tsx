@@ -197,7 +197,7 @@ export default function ViewChallenge (): JSX.Element {
   }
   if (!isOverview && !isPosts && !isComments) {
     return (
-      <div className='flex flex-col'>
+      <div className='flex flex-col mt-2 md:mt-0'>
         <ChallengeHeader challenge={challenge} size='small' />
         <div className='mb-16'>
         <Outlet />
