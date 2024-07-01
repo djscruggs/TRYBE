@@ -18,7 +18,7 @@ import FormNote from './formNote'
 import axios from 'axios'
 import { useRevalidator } from 'react-router-dom'
 import ShareMenu from './shareMenu'
-import { textToJSX, separateTextAndLinks, formatLinks } from '~/utils/helpers'
+import { textToJSX } from '~/utils/helpers'
 import Liker from './liker'
 import DialogDelete from './dialogDelete'
 

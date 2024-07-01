@@ -1,14 +1,12 @@
 import { requireCurrentUser } from '~/models/auth.server'
 import { type LoaderFunction, json } from '@remix-run/node'
 import { useLoaderData, useRevalidator, useRouteLoaderData } from '@remix-run/react'
-import { useContext } from 'react'
-import { CurrentUserContext } from '~/utils/CurrentUserContext'
-import { fetchCheckIns, loadMemberChallenge } from '~/models/challenge.server'
+import { fetchCheckIns } from '~/models/challenge.server'
 import type { Challenge, MemberChallenge } from '~/utils/types'
-import { userLocale, pluralize } from '~/utils/helpers'
-import { differenceInDays } from 'date-fns'
+import { differenceInDays, format } from 'date-fns'
 import { CircularProgressbarWithChildren, buildStyles } from 'react-circular-progressbar'
 import { ChallengeMemberCheckin } from '~/components/challengeMemberCheckin'
+import CheckinsList from '~/components/checkinsList'
 import 'react-circular-progressbar/dist/styles.css'
 
 export const loader: LoaderFunction = async (args) => {
@@ -21,14 +19,8 @@ export const loader: LoaderFunction = async (args) => {
 export default function CheckIns (): JSX.Element {
   const revalidator = useRevalidator()
   const { checkIns, error } = useLoaderData<typeof loader>()
-  const { membership, challenge } = useRouteLoaderData<typeof useRouteLoaderData>('routes/challenges.v.$id')
-  const { currentUser } = useContext(CurrentUserContext)
-  const locale = userLocale(currentUser)
-  const dateFormat = {
-    month: 'long',
-    day: 'numeric'
-  }
-  const numDays = differenceInDays(challenge.endAt as Date, challenge.startAt as Date)
+  const { membership, challenge } = useRouteLoaderData<typeof useRouteLoaderData>('routes/challenges.v.$id') as { membership: MemberChallenge, challenge: Challenge }
+  const numDays = differenceInDays(challenge.endAt, challenge.startAt)
 
   if (error) {
     return <h1>{error}</h1>
@@ -36,7 +28,8 @@ export default function CheckIns (): JSX.Element {
   if (!membership) {
     return <p>Loading...</p>
   }
-  const progress = (checkIns.length / numDays) * 100
+  const uniqueDays = new Set(checkIns.map(checkIn => format(new Date(checkIn.createdAt), 'yyyy-MM-dd'))).size
+  const progress = (uniqueDays / numDays) * 100
   console.log('progress', progress)
   return (
         <div className='max-w-sm md:max-w-xl lg:max-w-2xl mt-10 flex flex-col items-center md:items-start'>
@@ -57,20 +50,10 @@ export default function CheckIns (): JSX.Element {
             </CircularProgressbarWithChildren>
           </div>
           <ChallengeMemberCheckin showDetails={true} challenge={challenge} memberChallenge={membership} afterCheckIn={() => { revalidator.revalidate() }} />
-          <div className='flex flex-col items-start justify-center mt-4 border border-red  w-full'>
-            <p className='text-center text-xl text-gray-500 mb-2'>You&apos;ve checked in {checkIns.length} {pluralize(checkIns.length as number, 'time', 'times')} so far.</p>
-            <div className='text-left text-xl text-gray-500 flex flex-col min-w-sm'>
-              {checkIns.map((checkIn: any) => (
-                <div key={checkIn.id} className='flex flex-items-center border-b border-gray-200 border w-full'>
-                  <div className='w-1/4'>
-                    {new Date(checkIn.createdAt as Date).toLocaleDateString(locale, dateFormat)}
-                  </div>
-                  <div className='ml-2'>
-                    {checkIn.body} foo
-                  </div>
-                </div>
-              ))}
-            </div>
+          <div className='flex flex-col items-start justify-center mt-4  w-full'>
+
+            <CheckinsList checkIns={checkIns} />
+
           </div>
         </div>
   )

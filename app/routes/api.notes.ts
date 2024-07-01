@@ -67,7 +67,7 @@ export const action: ActionFunction = async (args) => {
       shouldUpdate = true
       // delete existing file if it exists
       if (result.imageMeta?.public_id) {
-        deleteFromCloudinary(result.imageMeta.public_id, 'image')
+        void deleteFromCloudinary(result.imageMeta.public_id, 'image')
       }
       if (image) {
         const imgNoExt = `note-${result.id}-image`

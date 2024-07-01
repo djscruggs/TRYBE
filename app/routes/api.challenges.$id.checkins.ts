@@ -1,11 +1,11 @@
 import { prisma } from '~/models/prisma.server'
 import { requireCurrentUser } from '~/models/auth.server'
 import { loadUser } from '~/models/user.server'
-import { loadChallenge, calculateNextCheckin } from '~/models/challenge.server'
+import { loadChallenge, calculateNextCheckin, updateCheckin } from '~/models/challenge.server'
 import { json, type LoaderFunction, type ActionFunctionArgs } from '@remix-run/node'
 import type { MemberChallenge } from '@prisma/client'
 import { unstable_parseMultipartFormData } from '@remix-run/node'
-import { uploadHandler, saveToCloudinary, deleteFromCloudinary } from '~/utils/uploadFile'
+import { uploadHandler, handleFormUpload } from '~/utils/uploadFile'
 
 export async function action (args: ActionFunctionArgs): Promise<prisma.checkIn> {
   const currentUser = await requireCurrentUser(args)
@@ -51,7 +51,7 @@ export async function action (args: ActionFunctionArgs): Promise<prisma.checkIn>
       }
     })
     // update last check in on subscription
-    const dateUpdate = await prisma.memberChallenge.update({
+    await prisma.memberChallenge.update({
       where: {
         id: membership?.id ?? 0
       },
@@ -60,6 +60,7 @@ export async function action (args: ActionFunctionArgs): Promise<prisma.checkIn>
         nextCheckIn: calculateNextCheckin(challenge)
       }
     })
+    await handleFormUpload({ formData: rawData, dataObj: result, nameSpace: 'checkin', onUpdate: updateCheckin })
     // reload membership
     const reloaded = await prisma.memberChallenge.findFirst({
       where: {

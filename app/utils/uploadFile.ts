@@ -2,6 +2,7 @@ import { promises as fs } from 'fs'
 import { unstable_composeUploadHandlers, unstable_createFileUploadHandler, unstable_createMemoryUploadHandler } from '@remix-run/node'
 import { v2 as cloudinary } from 'cloudinary'
 import type { UploadApiResponse } from 'cloudinary'
+import type { Note, Thread, Post, CheckIn, Challenge } from '@prisma/client'
 
 export async function writeFile (file: any, nameWithoutExtension: string): Promise<string> {
   const directory = `${process.cwd()}/public/uploads`
@@ -68,3 +69,70 @@ export const uploadHandler = unstable_composeUploadHandlers(
   // parse everything else into memory
   unstable_createMemoryUploadHandler()
 )
+
+interface DataObj {
+  id: number
+  imageMeta: UploadApiResponse | null
+  videoMeta: UploadApiResponse | null
+}
+interface FormUploadProps {
+  formData: FormData
+  dataObj: DataObj
+  nameSpace: string // how should we name the file? i.e. note-5.jpeg or thread-2.mp4
+  onUpdate: (dataObj: DataObj) => Promise<DataObj>
+}
+
+export const handleFormUpload = async ({ formData, dataObj, nameSpace, onUpdate }: FormUploadProps): Promise<DataObj> => {
+  console.log('dataObj', dataObj)
+  // check if there is a video/image OR if it should be deleted
+  // check if there is a video/image OR if it should be deleted
+  let image, video
+  let shouldUpdate = false
+  if (formData.get('image')) {
+    image = formData.get('image') as File
+  }
+  try {
+    if (image ?? formData.get('image') === 'delete') {
+      shouldUpdate = true
+      // delete existing file if it exists
+      if (dataObj.imageMeta?.public_id) {
+        await deleteFromCloudinary(String(dataObj.imageMeta.public_id), 'image')
+      }
+      if (image) {
+        const imgNoExt = `${nameSpace}-${dataObj.id}-image`
+        const imgMeta = await saveToCloudinary(image, imgNoExt)
+        dataObj.imageMeta = imgMeta
+      } else {
+        dataObj.imageMeta = null
+      }
+    }
+  } catch (error) {
+    console.error('error uploading image', error)
+  }
+  if (formData.get('video')) {
+    video = formData.get('video') as File
+  }
+  try {
+    if (video ?? formData.get('video') === 'delete') {
+      console.log('video', video)
+      shouldUpdate = true
+      // delete existing file if it exists
+      if (dataObj.videoMeta?.public_id) {
+        await deleteFromCloudinary(String(dataObj.videoMeta.public_id), 'video')
+      }
+      if (video) {
+        const vidNoExt = `${nameSpace}-${dataObj.id}-video`
+        const videoMeta = await saveToCloudinary(video, vidNoExt)
+        dataObj.videoMeta = videoMeta
+      } else {
+        dataObj.videoMeta = null
+      }
+    }
+  } catch (error) {
+    console.error('error uploading video', error)
+  }
+  if (shouldUpdate) {
+    await onUpdate(dataObj)
+  }
+  return dataObj
+}

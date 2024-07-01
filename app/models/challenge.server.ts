@@ -22,6 +22,7 @@ export const updateChallenge = async (challenge: prisma.challengeCreateInput): P
     where: { id },
     data
   })
+  return updatedChallenge as Challenge
 }
 export const loadChallenge = async (challengeId: number, userId?: number): Promise<Challenge | null> => {
   const id = Number(challengeId)
@@ -148,6 +149,13 @@ export function calculateNextCheckin (challenge: Challenge): Date {
   const nextCheckin = addDays(today, toAdd)
   return nextCheckin
 }
+export async function updateCheckin (checkin: CheckIn): Promise<CheckIn> {
+  const { id, ...data } = checkin
+  return await prisma.checkIn.update({
+    where: { id },
+    data
+  }) as unknown as CheckIn
+}
 export const fetchUserChallengesAndMemberships = async (userId: string | number): Promise<ChallengeSummary[]> => {
   const uid = Number(userId)
   const ownedChallenges = await prisma.challenge.findMany({
@@ -269,7 +277,11 @@ export async function fetchCheckIns (userId?: number, challengeId?: number, orde
       createdAt: orderBy
     },
     include: {
-      user: true
+      user: {
+        include: {
+          profile: true
+        }
+      }
     }
   }) as unknown as CheckIn[]
 }

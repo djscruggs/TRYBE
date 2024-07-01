@@ -18,10 +18,11 @@ interface FormCheckinProps {
   afterCheckIn?: (checkIn: CheckIn) => void
   onCancel?: () => void
   challengeId: number
+  saveLabel?: string
 }
 
 export default function FormCheckIn (props: FormCheckinProps): JSX.Element {
-  const { afterCheckIn, onCancel, checkIn, challengeId } = props
+  const { afterCheckIn, onCancel, checkIn, challengeId, saveLabel } = props
   const { currentUser } = useContext(CurrentUserContext)
   if (!challengeId) {
     throw new Error('challengeId is required')
@@ -111,7 +112,7 @@ export default function FormCheckIn (props: FormCheckinProps): JSX.Element {
 
       const result = await axios.post('/api/challenges/' + challengeId + '/checkins', formData)
       clearInputs()
-      toast.success('🎉🎉  Woo hoo! Great job!')
+      toast.success('🎉 Woo hoo! Great job!')
       if (afterCheckIn) {
         afterCheckIn(result.data as CheckIn)
       } else {
@@ -193,10 +194,10 @@ export default function FormCheckIn (props: FormCheckinProps): JSX.Element {
         }
         <Button type="submit" placeholder='Save' className="bg-red disabled:gray-400" disabled={btnDisabled || (showVideoRecorder && !video)}>
           {btnDisabled
-            ? 'Checking In...'
+            ? 'Saving...'
             : videoRecording
               ? 'Recording...'
-              : 'Check In'
+              : saveLabel ?? 'Check In'
           }
         </Button>
 

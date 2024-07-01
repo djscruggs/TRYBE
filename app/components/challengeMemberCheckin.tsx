@@ -1,8 +1,6 @@
-import { formatDistanceToNow, format, differenceInDays, differenceInHours, isPast } from 'date-fns'
+import { formatDistanceToNowStrict, format, differenceInDays, differenceInHours, isPast } from 'date-fns'
 import { useState } from 'react'
 import type { Challenge, MemberChallenge, CheckIn } from '~/utils/types'
-import { toast } from 'react-hot-toast'
-import axios from 'axios'
 import { Link, useLocation } from '@remix-run/react'
 import FormCheckIn from './formCheckin'
 import {
@@ -79,7 +77,7 @@ export function ChallengeMemberCheckin ({ challenge, memberChallenge, showDetail
           <div className="text-xs my-2 justify-start w-1/2">
             {membership?.lastCheckIn &&
               <>
-                Last: {formatDistanceToNow(membership.lastCheckIn)} ago <br />
+                Last: {formatDistanceToNowStrict(membership.lastCheckIn)} ago <br />
                 {!challengeIsExpired && membership.nextCheckIn && <p>Next: {formatNextCheckin()}</p>}
                 {linkToCheckins &&
                   <>

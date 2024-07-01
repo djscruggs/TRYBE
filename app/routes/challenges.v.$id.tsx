@@ -237,7 +237,7 @@ export default function ViewChallenge (): JSX.Element {
                   {loading && <Spinner className="h-4 w-4 ml-1 inline" />}
               </>
             )}
-            {membership && <ChallengeMemberCheckin challenge={challenge} memberChallenge={membership}/>}
+            {membership && <ChallengeMemberCheckin challenge={challenge} memberChallenge={membership} showDetails={true}/>}
             <div className='w-full'>
               <div className='flex flex-row justify-between w-full'>
                   {challenge?._count?.members && challenge?._count?.members > 0
