@@ -99,9 +99,9 @@ export default function FormCheckIn (props: FormCheckinProps): JSX.Element {
       const formData = new FormData()
       formData.append('body', body)
       formData.append('userId', String(currentUser?.id))
-      // if (checkIn?.id) {
-      //   formData.append('id', checkIn.id.toString())
-      // }
+      if (checkIn?.id) {
+        formData.append('checkinId', checkIn.id.toString())
+      }
       formData.append('challengeId', challengeId.toString())
       if (image) {
         formData.append('image', image)
@@ -113,6 +113,7 @@ export default function FormCheckIn (props: FormCheckinProps): JSX.Element {
       const result = await axios.post('/api/challenges/' + challengeId + '/checkins', formData)
       clearInputs()
       toast.success('🎉 Woo hoo! Great job!')
+      console.log(result.data)
       if (afterCheckIn) {
         afterCheckIn(result.data as CheckIn)
       } else {

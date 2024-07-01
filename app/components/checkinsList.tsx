@@ -5,6 +5,7 @@ import { CurrentUserContext } from '~/utils/CurrentUserContext'
 import { Lightbox } from 'react-modal-image'
 import AvatarLoader from './avatarLoader'
 import FormCheckIn from './formCheckin'
+import { type CheckIn } from '~/utils/types'
 export default function CheckinsList ({ checkIns }: { checkIns: CheckIn[] }): JSX.Element {
   return (
     <div className='text-left text-xl text-gray-500 flex flex-col w-full'>
@@ -20,7 +21,8 @@ export function CheckinRow ({ checkIn }: { checkIn: CheckIn }): JSX.Element {
   const { currentUser } = useContext(CurrentUserContext)
   const locale = userLocale(currentUser)
   const [showLightbox, setShowLightbox] = useState(false)
-  const [checkInBody, setCheckInBody] = useState(textToJSX(checkIn.body as string ?? ''))
+  const [checkInBody, setCheckInBody] = useState(textToJSX(checkIn.body! ?? ''))
+  const [checkInObj, setCheckInObj] = useState(checkIn)
 
   // helper function that sets the date to only show the time if it's today
   let formatted
@@ -30,7 +32,12 @@ export function CheckinRow ({ checkIn }: { checkIn: CheckIn }): JSX.Element {
   } else {
     formatted = created.toLocaleDateString(locale, { month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric' })
   }
-
+  const resetOnSave = (data: { checkIn: CheckIn }): void => {
+    console.log('resetOnSave', data.checkIn)
+    setCheckInBody(textToJSX(data.checkIn.body ?? ''))
+    setCheckInObj(data.checkIn)
+    setShowEditForm(false)
+  }
   const [showEditForm, setShowEditForm] = useState(false)
 
   const handlePhotoClick = (event: any): void => {
@@ -49,15 +56,15 @@ export function CheckinRow ({ checkIn }: { checkIn: CheckIn }): JSX.Element {
           </div>
           <div className='ml-2 w-full pl-2'>
           {showEditForm
-            ? <FormCheckIn checkIn={checkIn} challengeId={checkIn.challengeId} onCancel={() => { setShowEditForm(false) }} saveLabel='Save' />
+            ? <FormCheckIn checkIn={checkIn} challengeId={checkIn.challengeId} onCancel={() => { setShowEditForm(false) }} saveLabel='Save' afterCheckIn={resetOnSave}/>
             : (
 
             <>
             {checkInBody}
-            {checkIn.imageMeta &&
-              <img src={checkIn.imageMeta.secure_url} alt='checkin picture' className='mt-4 cursor-pointer max-w-[400px]' onClick={handlePhotoClick}/>}
-            {showLightbox && <Lightbox medium={checkIn.imageMeta.secure_url} large={checkIn.imageMeta.secure_url} alt='checkin photo' onClose={() => { setShowLightbox(false) }}/>}
-            {checkIn.videoMeta?.secure_url && <video className='max-w-[400px]' src={checkIn.videoMeta.secure_url} onClick={(event) => { event?.stopPropagation() }} controls />}
+            {checkInObj.imageMeta &&
+              <img src={checkInObj.imageMeta.secure_url} alt='checkin picture' className='mt-4 cursor-pointer max-w-[400px]' onClick={handlePhotoClick}/>}
+            {showLightbox && <Lightbox medium={checkInObj.imageMeta.secure_url} large={checkInObj.imageMeta.secure_url} alt='checkin photo' onClose={() => { setShowLightbox(false) }}/>}
+            {checkInObj.videoMeta?.secure_url && <video className='max-w-[400px]' src={checkInObj.videoMeta.secure_url} onClick={(event) => { event?.stopPropagation() }} controls />}
             </>
               )}
           </div>

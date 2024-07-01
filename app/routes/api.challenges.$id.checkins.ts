@@ -42,14 +42,26 @@ export async function action (args: ActionFunctionArgs): Promise<prisma.checkIn>
   })
   const canCheckIn = membership ? membership.id : undefined
   if (canCheckIn) {
-    const result = await prisma.checkIn.create({
-      data: {
-        userId: Number(currentUser.id),
-        challengeId: Number(params.id),
-        body,
-        memberChallengeId: membership?.id
-      }
-    })
+    let result
+    if (rawData.get('checkinId')) {
+      result = await prisma.checkIn.update({
+        where: {
+          id: Number(rawData.get('checkinId'))
+        },
+        data: {
+          body
+        }
+      })
+    } else {
+      result = await prisma.checkIn.create({
+        data: {
+          userId: Number(currentUser.id),
+          challengeId: Number(params.id),
+          body,
+          memberChallengeId: membership?.id
+        }
+      })
+    }
     // update last check in on subscription
     await prisma.memberChallenge.update({
       where: {
