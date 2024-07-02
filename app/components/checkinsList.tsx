@@ -15,7 +15,7 @@ import FormComment from '~/components/formComment'
 import CommentsContainer from '~/components/commentsContainer'
 export default function CheckinsList ({ checkIns, likes }: { checkIns: CheckIn[], likes: number[] }): JSX.Element {
   return (
-    <div className='text-left text-xl text-gray-500 flex flex-col w-full'>
+    <div className='text-left flex flex-col w-full'>
     {checkIns.map((checkIn: CheckIn) => (
       <CheckinRow key={checkIn.id} checkIn={checkIn} isLiked={likes.includes(checkIn.id)} />
 
@@ -112,7 +112,9 @@ export function CheckinRow ({ checkIn, isLiked }: { checkIn: CheckIn, isLiked: b
                 {formatted}
               </div>
             )}
+
             {checkInBody ?? <span className='text-xs italic'>Checked in</span>}
+
             {checkInObj.imageMeta?.secure_url &&
               <img src={checkInObj.imageMeta.secure_url} alt='checkin picture' className='mt-4 cursor-pointer max-w-[400px]' onClick={handlePhotoClick}/>}
             {showLightbox && <Lightbox medium={checkInObj.imageMeta?.secure_url} large={checkInObj.imageMeta?.secure_url} alt='checkin photo' onClose={() => { setShowLightbox(false) }}/>}
