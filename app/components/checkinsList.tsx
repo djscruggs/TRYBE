@@ -7,6 +7,9 @@ import AvatarLoader from './avatarLoader'
 import FormCheckIn from './formCheckin'
 import { type CheckIn } from '~/utils/types'
 import Liker from '~/components/liker'
+import DialogDelete from './dialogDelete'
+import axios from 'axios'
+import { toast } from 'react-hot-toast'
 
 export default function CheckinsList ({ checkIns, likes }: { checkIns: CheckIn[], likes: number[] }): JSX.Element {
   return (
@@ -24,8 +27,8 @@ export function CheckinRow ({ checkIn, isLiked }: { checkIn: CheckIn, isLiked: b
   const locale = userLocale(currentUser)
   const [showLightbox, setShowLightbox] = useState(false)
   const [checkInBody, setCheckInBody] = useState(textToJSX(checkIn.body ?? ''))
-  const [checkInObj, setCheckInObj] = useState(checkIn)
-
+  const [checkInObj, setCheckInObj] = useState<CheckIn | null>(checkIn)
+  const [deleteDialog, setDeleteDialog] = useState(false)
   // helper function that sets the date to only show the time if it's today
   let formatted
   const created = new Date(checkIn.createdAt)
@@ -46,7 +49,26 @@ export function CheckinRow ({ checkIn, isLiked }: { checkIn: CheckIn, isLiked: b
     event.stopPropagation()
     setShowLightbox(true)
   }
+
+  const handleDelete = (event: any): void => {
+    event.preventDefault()
+    event.stopPropagation()
+    axios.delete(`/api/checkins/delete/${checkInObj.id}`)
+      .then(() => {
+        toast.success('Check-in deleted')
+      })
+      .catch(error => {
+        toast.error('Error deleting check-in')
+        console.error('Error deleting check-in:', error)
+      }).finally(() => {
+        setDeleteDialog(false)
+        setCheckInObj(null)
+      })
+  }
   const showEditDelete = checkIn.userId === currentUser?.id
+  if (!checkInObj) {
+    return <></>
+  }
   return (
     <>
       <div className='h-fit relative flex flex-items-center border-b w-full p-2 mb-2'>
@@ -77,12 +99,12 @@ export function CheckinRow ({ checkIn, isLiked }: { checkIn: CheckIn, isLiked: b
         // add extra margin at top if there's an image above it
           <div className='text-xs absolute right-4 bottom-0 underline text-right text-red my-2'>
             <span className=' mr-2 cursor-pointer' onClick={() => { setShowEditForm(true) }}>edit</span>
-            <span className='cursor-pointer'>delete</span>
+            <span className='cursor-pointer' onClick={() => { setDeleteDialog(true) }}>delete</span>
+            {deleteDialog && <DialogDelete prompt='Are you sure you want to delete this note?' isOpen={deleteDialog} deleteCallback={(event: any) => { handleDelete(event) }} onCancel={() => { setDeleteDialog(false) }}/>}
           </div>
         }
 
       </div>
-
     </>
   )
 }

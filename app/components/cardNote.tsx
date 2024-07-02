@@ -83,6 +83,8 @@ export default function CardNote (props: CardNoteProps): JSX.Element {
       .catch(error => {
         toast.error('Error deleting note')
         console.error('Error deleting note:', error)
+      }).finally(() => {
+        setDeleteDialog(false)
       })
   }
   const afterSave = (note: Note): void => {

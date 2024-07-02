@@ -285,3 +285,28 @@ export async function fetchCheckIns (userId?: number, challengeId?: number, orde
     }
   }) as unknown as CheckIn[]
 }
+export const loadCheckIn = async (checkInId: number): Promise<CheckIn | null> => {
+  const id = Number(checkInId)
+  return await prisma.checkIn.findUnique({
+    where: { id }
+  }) as CheckIn | null
+}
+export const deleteCheckIn = async (checkInId): Promise<CheckIn> => {
+  const id = Number(checkInId)
+  // check to see if there are any image or video to delete
+  const checkIn = await loadCheckIn(id)
+  if (checkIn?.videoMeta?.public_id || checkIn?.imageMeta?.public_id) {
+    if (checkIn?.videoMeta?.public_id) {
+      await deleteFromCloudinary(checkIn.videoMeta.public_id as string, 'video')
+    }
+    if (checkIn?.imageMeta?.public_id) {
+      await deleteFromCloudinary(checkIn.imageMeta.public_id, 'image')
+    }
+  }
+  const deleted = await prisma.checkIn.delete({
+    where: {
+      id
+    }
+  })
+  return deleted
+}

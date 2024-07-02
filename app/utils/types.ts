@@ -34,10 +34,8 @@ export interface Note {
   id?: number
   userId?: number
   body: string | null
-  image?: string | null
-  imageMeta?: CoudinaryMeta
-  video?: string | null
-  videoMeta?: CoudinaryMeta
+  imageMeta?: CloudinaryMeta
+  videoMeta?: CloudinaryMeta
   challengeId?: number
   challenge?: Challenge
   postId?: number
@@ -215,7 +213,7 @@ export interface LoginForm {
   password: string
   request: Request
 }
-interface CoudinaryMeta {
+export interface CloudinaryMeta {
   url: string
   secure_url: string
   public_id: string
@@ -225,8 +223,8 @@ interface CoudinaryMeta {
 export interface Comment {
   id: number
   body: string
-  imageMeta?: CoudinaryMeta
-  videoMeta?: CoudinaryMeta
+  imageMeta?: CloudinaryMeta
+  videoMeta?: CloudinaryMeta
   userId: number
   challengeId: number
   challenge?: Challenge | ChallengeSummary

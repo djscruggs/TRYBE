@@ -1,6 +1,6 @@
 import { type Note } from '@prisma/client'
 import { prisma } from './prisma.server'
-
+import { deleteFromCloudinary } from '~/utils/uploadFile'
 export const createNote = async (
   note: Pick<Note, 'body' | 'userId' | 'replyToId' | 'challengeId' | 'commentId'>
 ): Promise<Note> => {
@@ -45,6 +45,17 @@ export const loadNote = async (noteId: string | number): Promise<Note | null> =>
 
 export const deleteNote = async (noteId: string | number, userId: string | number): Promise<Note> => {
   const id = Number(noteId)
+  // check if there is video or image
+  const note = await loadNote(id)
+  if (note?.videoMeta?.public_id || note?.imageMeta?.public_id) {
+    if (note?.videoMeta?.public_id) {
+      await deleteFromCloudinary(note.videoMeta.public_id as string, 'video')
+    }
+    if (note?.imageMeta?.public_id) {
+      await deleteFromCloudinary(note.imageMeta.public_id as string, 'image')
+    }
+  }
+
   const uid = Number(userId)
   const deleted = await prisma.note.delete({
     where: {

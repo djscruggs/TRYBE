@@ -54,7 +54,7 @@ export const saveToCloudinary = async (file: any, nameWithoutExtension: string):
 
 type ResourceType = 'image' | 'video'
 export const deleteFromCloudinary = async (publicId: string, type: ResourceType): Promise<void> => {
-  return await cloudinary.uploader.destroy(publicId, { resource_type: type })
+  await cloudinary.uploader.destroy(publicId, { resource_type: type })
 }
 
 function escapeRegExp (string: string): string {
