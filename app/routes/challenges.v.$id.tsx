@@ -157,7 +157,7 @@ export default function ViewChallenge (): JSX.Element {
   const data = useLoaderData<typeof loader>()
   const matches = useMatches()
   const { challenge, hasLiked, membership } = data
-
+  const parsedDescription = textToJSX(challenge.description as string ?? '')
   const likesCount = challenge?._count?.likes ?? 0
   const location = useLocation()
   const isOverview = matches.length === 2
@@ -210,15 +210,22 @@ export default function ViewChallenge (): JSX.Element {
     <div className='flex flex-col'>
       <div className='max-w-sm md:max-w-md lg:max-w-lg relative'>
         <ChallengeHeader challenge={challenge} size={challenge.coverPhotoMeta?.secure_url ? 'large' : 'small'} />
+        <div className='relative mb-4 text-center text-xl font-bold mt-4'>
+          {challenge.name}
+        </div>
+        <div className='relative'>
+          {parsedDescription}
+        </div>
+
         <div className='text-lg py-2 flex items-center justify-center w-full'>
           <div className={`w-fit ${isOverview ? 'border-b-2 border-red' : 'cursor-pointer'}`} onClick={() => { navigate(`/challenges/v/${challenge.id}`) }}>Overview</div>
           <div className={`w-fit mx-8 ${isProgram ? 'border-b-2 border-red' : 'cursor-pointer'}`} onClick={() => { navigate(`/challenges/v/${challenge.id}/program`) }}>Program</div>
           <div className={`w-fit ${isPosts ? 'border-b-2 border-red' : 'cursor-pointer'}`} onClick={() => { navigate(`/challenges/v/${challenge.id}/posts`) }}>Posts</div>
           {/* only show menu here if there is a cover photo */}
           {challenge.coverPhotoMeta &&
-          <div className='absolute right-0'>
-            <MenuChallenge challenge={challenge}/>
-          </div>
+            <div className='absolute right-0'>
+              <MenuChallenge challenge={challenge}/>
+            </div>
           }
         </div>
         {isOverview &&
@@ -270,7 +277,6 @@ export default function ViewChallenge (): JSX.Element {
 }
 
 function ChallengeOverview ({ challenge }: { challenge: Challenge | ChallengeSummary }): JSX.Element {
-  const parsedDescription = textToJSX(challenge.description ?? '')
   const isExpired = isPast(challenge?.endAt)
   const isStarted = isPast(challenge?.startAt)
   const { currentUser } = useContext(CurrentUserContext)
@@ -283,34 +289,18 @@ function ChallengeOverview ({ challenge }: { challenge: Challenge | ChallengeSum
   return (
     <div className='md:px-0 justify-start'>
       {isExpired && <div className='text-red text-center'>This challenge has ended</div>}
-      <div className='relative mb-4'>
-        <div className="font-bold">
-          Name
-        </div>
-        <div>
-          {challenge.name}
-        </div>
-      </div>
-      <div className='relative'>
-        <div className="font-bold">
-          Description
-        </div>
-        <div>
-          {/* <div className='float-right text-red'>Edit</div> */}
-          {parsedDescription}
-        </div>
-      </div>
+
       <h1 className='text-xl py-2'>Timing</h1>
       <div className="mb-2 flex flex-cols">
         <div className="w-1/3">
           <div className="font-bold">
-            {isExpired || isStarted ? 'Started' : 'Start Date'}
+            {isExpired || isStarted ? 'Started' : 'Starts'}
           </div>
           {new Date(challenge.startAt).toLocaleDateString(locale, dateOptions)}
         </div>
         <div className="w-1/3">
           <div className="font-bold">
-            {isExpired ? 'Ended' : 'End Date'}
+            {isExpired ? 'Ended' : 'Ends'}
           </div>
           {new Date(challenge.endAt ?? '').toLocaleDateString(locale, dateOptions)}
         </div>
