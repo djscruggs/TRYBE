@@ -58,13 +58,21 @@ export const action: ActionFunction = async (args: ActionFunctionArgs) => {
     itemId = where.threadId = threadId
     fieldName = 'threadId'
   }
+  if (checkinId) {
+    data.checkIn = { connect: { id: checkinId } }
+    itemId = where.checkinId = checkinId
+    fieldName = 'checkinId'
+  }
+  console.log('data', data)
   // first see if it already exists
   const existingLike = await prisma.like.findFirst({ where })
   if (existingLike) {
+    console.log('existingLike', existingLike)
     void updateLikeCounts(existingLike)
     totalLikes = await getLikeCount(itemId, fieldName)
     return json({ like: existingLike, totalLikes })
   }
+  totalLikes = await getLikeCount(itemId, fieldName)
   const like = await prisma.like.create({ data })
   await updateLikeCounts(like)
   totalLikes = await getLikeCount(itemId, fieldName)

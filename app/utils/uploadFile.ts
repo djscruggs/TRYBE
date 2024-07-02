@@ -3,7 +3,7 @@ import { unstable_composeUploadHandlers, unstable_createFileUploadHandler, unsta
 import { v2 as cloudinary } from 'cloudinary'
 import type { UploadApiResponse } from 'cloudinary'
 import type { Note, Thread, Post, CheckIn, Challenge } from '@prisma/client'
-
+import { Prisma } from '@prisma/client'
 export async function writeFile (file: any, nameWithoutExtension: string): Promise<string> {
   const directory = `${process.cwd()}/public/uploads`
   const fullName = _newFileName(file, nameWithoutExtension)
@@ -54,7 +54,7 @@ export const saveToCloudinary = async (file: any, nameWithoutExtension: string):
 
 type ResourceType = 'image' | 'video'
 export const deleteFromCloudinary = async (publicId: string, type: ResourceType): Promise<void> => {
-  await cloudinary.uploader.destroy(publicId, { resource_type: type })
+  return await cloudinary.uploader.destroy(publicId, { resource_type: type })
 }
 
 function escapeRegExp (string: string): string {
@@ -83,12 +83,10 @@ interface FormUploadProps {
 }
 
 export const handleFormUpload = async ({ formData, dataObj, nameSpace, onUpdate }: FormUploadProps): Promise<DataObj> => {
-  console.log('dataObj', dataObj)
-  // check if there is a video/image OR if it should be deleted
   // check if there is a video/image OR if it should be deleted
   let image, video
   let shouldUpdate = false
-  if (formData.get('image')) {
+  if (formData.get('image') && formData.get('image') !== 'delete') {
     image = formData.get('image') as File
   }
   try {
@@ -96,6 +94,7 @@ export const handleFormUpload = async ({ formData, dataObj, nameSpace, onUpdate 
       shouldUpdate = true
       // delete existing file if it exists
       if (dataObj.imageMeta?.public_id) {
+        console.log('delete image', dataObj.imageMeta.public_id)
         await deleteFromCloudinary(String(dataObj.imageMeta.public_id), 'image')
       }
       if (image) {
@@ -103,18 +102,17 @@ export const handleFormUpload = async ({ formData, dataObj, nameSpace, onUpdate 
         const imgMeta = await saveToCloudinary(image, imgNoExt)
         dataObj.imageMeta = imgMeta
       } else {
-        dataObj.imageMeta = null
+        dataObj.imageMeta = Prisma.DbNull
       }
     }
   } catch (error) {
     console.error('error uploading image', error)
   }
-  if (formData.get('video')) {
+  if (formData.get('video') && formData.get('video') !== 'delete') {
     video = formData.get('video') as File
   }
   try {
     if (video ?? formData.get('video') === 'delete') {
-      console.log('video', video)
       shouldUpdate = true
       // delete existing file if it exists
       if (dataObj.videoMeta?.public_id) {
@@ -125,7 +123,7 @@ export const handleFormUpload = async ({ formData, dataObj, nameSpace, onUpdate 
         const videoMeta = await saveToCloudinary(video, vidNoExt)
         dataObj.videoMeta = videoMeta
       } else {
-        dataObj.videoMeta = null
+        dataObj.videoMeta = Prisma.DbNull
       }
     }
   } catch (error) {

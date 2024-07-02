@@ -109,11 +109,9 @@ export default function FormCheckIn (props: FormCheckinProps): JSX.Element {
       if (video) {
         formData.append('video', video)
       }
-
       const result = await axios.post('/api/challenges/' + challengeId + '/checkins', formData)
       clearInputs()
       toast.success('🎉 Woo hoo! Great job!')
-      console.log(result.data)
       if (afterCheckIn) {
         afterCheckIn(result.data as CheckIn)
       } else {

@@ -183,9 +183,9 @@ export interface CheckIn {
   challengeId: number
   createdAt: Date
   data: JSONObject
-  body?: string
-  imageMeta?: CoudinaryMeta
-  videoMeta?: CoudinaryMeta
+  body: string
+  imageMeta: CoudinaryMeta
+  videoMeta: CoudinaryMeta
   challenge?: Challenge
   user?: User
   memberChallenge?: MemberChallenge
@@ -193,7 +193,7 @@ export interface CheckIn {
     likes: number
   }
   likes?: Like[]
-  likeCount?: number
+  likeCount: number
 }
 
 export interface Profile {

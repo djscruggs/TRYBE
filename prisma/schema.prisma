@@ -246,7 +246,7 @@ model Like {
   thread     Thread?   @relation(fields: [threadId], references: [id], onDelete: Cascade)
   note        Note?      @relation(fields: [noteId], references: [id], onDelete: Cascade)
   post        Post?      @relation(fields: [postId], references: [id], onDelete: Cascade)
-  checkin     CheckIn?   @relation(fields: [checkinId], references: [id], onDelete: Cascade)
+  checkIn     CheckIn?   @relation(fields: [checkinId], references: [id], onDelete: Cascade)
   user        User       @relation(fields: [userId], references: [id])
 
   @@index([userId])

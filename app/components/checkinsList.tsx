@@ -6,6 +6,8 @@ import { Lightbox } from 'react-modal-image'
 import AvatarLoader from './avatarLoader'
 import FormCheckIn from './formCheckin'
 import { type CheckIn } from '~/utils/types'
+import Liker from '~/components/liker'
+
 export default function CheckinsList ({ checkIns }: { checkIns: CheckIn[] }): JSX.Element {
   return (
     <div className='text-left text-xl text-gray-500 flex flex-col w-full'>
@@ -21,7 +23,7 @@ export function CheckinRow ({ checkIn }: { checkIn: CheckIn }): JSX.Element {
   const { currentUser } = useContext(CurrentUserContext)
   const locale = userLocale(currentUser)
   const [showLightbox, setShowLightbox] = useState(false)
-  const [checkInBody, setCheckInBody] = useState(textToJSX(checkIn.body! ?? ''))
+  const [checkInBody, setCheckInBody] = useState(textToJSX(checkIn.body ?? ''))
   const [checkInObj, setCheckInObj] = useState(checkIn)
 
   // helper function that sets the date to only show the time if it's today
@@ -33,7 +35,6 @@ export function CheckinRow ({ checkIn }: { checkIn: CheckIn }): JSX.Element {
     formatted = created.toLocaleDateString(locale, { month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric' })
   }
   const resetOnSave = (data: { checkIn: CheckIn }): void => {
-    console.log('resetOnSave', data.checkIn)
     setCheckInBody(textToJSX(data.checkIn.body ?? ''))
     setCheckInObj(data.checkIn)
     setShowEditForm(false)
@@ -56,22 +57,23 @@ export function CheckinRow ({ checkIn }: { checkIn: CheckIn }): JSX.Element {
           </div>
           <div className='ml-2 w-full pl-2'>
           {showEditForm
-            ? <FormCheckIn checkIn={checkIn} challengeId={checkIn.challengeId} onCancel={() => { setShowEditForm(false) }} saveLabel='Save' afterCheckIn={resetOnSave}/>
+            ? <FormCheckIn checkIn={checkInObj} challengeId={checkInObj.challengeId} onCancel={() => { setShowEditForm(false) }} saveLabel='Save' afterCheckIn={resetOnSave}/>
             : (
 
             <>
             {checkInBody}
-            {checkInObj.imageMeta &&
+            {checkInObj.imageMeta?.secure_url &&
               <img src={checkInObj.imageMeta.secure_url} alt='checkin picture' className='mt-4 cursor-pointer max-w-[400px]' onClick={handlePhotoClick}/>}
-            {showLightbox && <Lightbox medium={checkInObj.imageMeta.secure_url} large={checkInObj.imageMeta.secure_url} alt='checkin photo' onClose={() => { setShowLightbox(false) }}/>}
-            {checkInObj.videoMeta?.secure_url && <video className='max-w-[400px]' src={checkInObj.videoMeta.secure_url} onClick={(event) => { event?.stopPropagation() }} controls />}
+            {showLightbox && <Lightbox medium={checkInObj.imageMeta?.secure_url} large={checkInObj.imageMeta?.secure_url} alt='checkin photo' onClose={() => { setShowLightbox(false) }}/>}
+            {checkInObj.videoMeta?.secure_url && <video className={`${checkInObj.imageMeta?.secure_url ? 'mt-6' : ''} max-w-[400px]`} src={checkInObj.videoMeta.secure_url} onClick={(event) => { event?.stopPropagation() }} controls />}
+            <Liker isLiked={false} itemId={checkInObj.id} itemType='checkIn' count={checkInObj.likeCount} className='mt-2'/>
             </>
               )}
           </div>
-
         </div>
         {showEditDelete && !showEditForm &&
-          <div className='order text-xs absolute right-4 bottom-0 underline text-right text-red my-2'>
+        // add extra margin at top if there's an image above it
+          <div className='text-xs absolute right-4 bottom-0 underline text-right text-red my-2'>
             <span className=' mr-2 cursor-pointer' onClick={() => { setShowEditForm(true) }}>edit</span>
             <span className='cursor-pointer'>delete</span>
           </div>

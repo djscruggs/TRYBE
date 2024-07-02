@@ -213,7 +213,7 @@ export interface Like {
   thread?: Thread | null;
   note?: Note | null;
   post?: Post | null;
-  checkin?: CheckIn | null;
+  checkIn?: CheckIn | null;
   user?: User;
 }
 
