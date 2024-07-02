@@ -150,8 +150,8 @@ export default function CardPost (props: CardPostProps): JSX.Element {
           <div className="grid grid-cols-3 text-center py-2 cursor-pointer w-full">
             <div className="flex justify-center items-center">
               <Link to={`/posts/${post.id}/comments#comments`}>
-              <FaRegComment className="text-grey mr-1 inline" />
-              <span className="text-xs">{post._count?.comments} comments</span>
+                <FaRegComment className="text-grey mr-1 inline" />
+                <span className="text-xs">{post._count?.comments} comments</span>
               </Link>
             </div>
             <div className="flex justify-center items-center cursor-pointer">

@@ -174,4 +174,14 @@ const updateCounts = async (comment: prisma.comment): Promise<void> => {
       data: { commentCount: count }
     })
   }
+  if (comment.checkInId) {
+    const checkInId = Number(comment.checkInId)
+    count = await prisma.comment.count({
+      where: { checkInId }
+    })
+    await prisma.checkIn.update({
+      where: { id: checkInId },
+      data: { commentCount: count }
+    })
+  }
 }

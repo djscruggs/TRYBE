@@ -18,6 +18,7 @@ interface FormCommentProps {
   postId?: number
   replyToId?: number
   threadId?: number
+  checkInId?: number
   afterSave: (comment: Comment) => void
   onCancel?: () => void
   comment?: Comment
@@ -25,11 +26,14 @@ interface FormCommentProps {
 }
 
 export default function FormComment (props: FormCommentProps): JSX.Element {
-  let { comment, challengeId, postId, replyToId, threadId } = props
+  let { comment, challengeId, postId, replyToId, threadId, checkInId } = props
   if (comment) {
     challengeId = comment.challengeId
     postId = comment.postId
+    threadId = comment.threadId
+    checkInId = comment.checkInId
   }
+  console.log(props)
   const { currentUser } = useContext(CurrentUserContext)
   const [body, setBody] = useState(comment ? comment.body : '')
   const [error, setError] = useState('')
@@ -112,6 +116,9 @@ export default function FormComment (props: FormCommentProps): JSX.Element {
       }
       if (comment?.id) {
         formData.set('id', String(comment.id))
+      }
+      if (checkInId) {
+        formData.set('checkInId', String(checkInId))
       }
       // these are blob objects  to upload
       if (image) {

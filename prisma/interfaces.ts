@@ -165,6 +165,8 @@ export interface CheckIn {
   user?: User;
   likes?: Like[];
   likeCount: number;
+  comments?: Comment[];
+  commentCount: number;
 }
 
 export interface Comment {
@@ -179,6 +181,7 @@ export interface Comment {
   challengeId: number | null;
   threadId: number | null;
   replyToId: number | null;
+  checkInId: number | null;
   threadDepth: number;
   likeCount: number;
   replyCount: number;
@@ -186,6 +189,7 @@ export interface Comment {
   thread?: Thread | null;
   post?: Post | null;
   replyTo?: Comment | null;
+  checkIn?: CheckIn | null;
   replies?: Comment[];
   user?: User;
   likes?: Like[];

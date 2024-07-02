@@ -191,7 +191,7 @@ export default function CardNote (props: CardNoteProps): JSX.Element {
       }
     </div>
     }
-    {(note.image && showLightbox) && <Lightbox medium={note.image} large={note.image} alt="note photo" onClose={() => { setShowLightbox(false) }}/>}
+    {(note.imageMeta?.secure_url && showLightbox) && <Lightbox medium={note.imageMeta.secure_url} large={note.imageMeta.secure_url} alt="note photo" onClose={() => { setShowLightbox(false) }}/>}
     </>
   )
 }

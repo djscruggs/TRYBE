@@ -191,6 +191,8 @@ model CheckIn {
   user              User            @relation(fields: [userId], references: [id], onDelete: SetNull)
   likes             Like[]
   likeCount         Int             @default(0)
+  comments          Comment[]
+  commentCount       Int        @default(0)
   @@index([userId, challengeId])
   @@index([userId])
 }
@@ -207,6 +209,7 @@ model Comment {
   challengeId Int?
   threadId    Int?
   replyToId   Int?
+  checkInId   Int?
   threadDepth Int        @default(0)
   likeCount   Int        @default(0)
   replyCount  Int        @default(0)
@@ -215,6 +218,7 @@ model Comment {
   thread     Thread?   @relation(fields: [threadId], references: [id])
   post        Post?      @relation(fields: [postId], references: [id])
   replyTo     Comment?   @relation("ReplyTo", fields: [replyToId], references: [id])
+  checkIn     CheckIn?   @relation(fields: [checkInId], references: [id])
   replies     Comment[]  @relation("ReplyTo")
   user        User       @relation(fields: [userId], references: [id])
   likes       Like[]

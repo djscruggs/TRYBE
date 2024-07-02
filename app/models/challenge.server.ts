@@ -263,7 +263,7 @@ export const unjoinChallenge = async (id: number): Promise<MemberChallenge> => {
     }
   }) as unknown as MemberChallenge
 }
-export async function fetchCheckIns (userId?: number, challengeId?: number, orderBy: 'asc' | 'desc' = 'desc'): Promise<CheckIn[]> {
+export async function fetchCheckIns ({ userId, challengeId, orderBy = 'desc' }: { userId?: number, challengeId?: number, orderBy?: 'asc' | 'desc' }): Promise<CheckIn[]> {
   const where: any = {}
   if (userId) {
     where.userId = userId
@@ -296,7 +296,7 @@ export const deleteCheckIn = async (checkInId): Promise<CheckIn> => {
   // check to see if there are any image or video to delete
   const checkIn = await loadCheckIn(id)
   if (checkIn?.videoMeta?.public_id) {
-    await deleteFromCloudinary(checkIn.videoMeta.public_id as string, 'video')
+    await deleteFromCloudinary(checkIn.videoMeta.public_id, 'video')
   }
   if (checkIn?.imageMeta?.public_id) {
     await deleteFromCloudinary(checkIn.imageMeta.public_id, 'image')

@@ -5,12 +5,14 @@ import { CurrentUserContext } from '~/utils/CurrentUserContext'
 import { Lightbox } from 'react-modal-image'
 import AvatarLoader from './avatarLoader'
 import FormCheckIn from './formCheckin'
-import { type CheckIn } from '~/utils/types'
+import type { CheckIn, Comment } from '~/utils/types'
 import Liker from '~/components/liker'
 import DialogDelete from './dialogDelete'
 import axios from 'axios'
 import { toast } from 'react-hot-toast'
-
+import { FaRegComment } from 'react-icons/fa'
+import FormComment from '~/components/formComment'
+import CommentsContainer from '~/components/commentsContainer'
 export default function CheckinsList ({ checkIns, likes }: { checkIns: CheckIn[], likes: number[] }): JSX.Element {
   return (
     <div className='text-left text-xl text-gray-500 flex flex-col w-full'>
@@ -29,6 +31,10 @@ export function CheckinRow ({ checkIn, isLiked }: { checkIn: CheckIn, isLiked: b
   const [checkInBody, setCheckInBody] = useState(textToJSX(checkIn.body ?? ''))
   const [checkInObj, setCheckInObj] = useState<CheckIn | null>(checkIn)
   const [deleteDialog, setDeleteDialog] = useState(false)
+  const [showCommentForm, setShowCommentForm] = useState(false)
+  const [showComments, setShowComments] = useState(false)
+  const [firstComment, setFirstComment] = useState<Comment | null>(null)
+  const [comments, setComments] = useState<Comment[]>([])
   // helper function that sets the date to only show the time if it's today
   let formatted
   const created = new Date(checkIn.createdAt)
@@ -65,6 +71,19 @@ export function CheckinRow ({ checkIn, isLiked }: { checkIn: CheckIn, isLiked: b
         setCheckInObj(null)
       })
   }
+  const handleComments = (): void => {
+    setShowCommentForm(true)
+    setShowComments(true)
+  }
+  const saveFirstComment = (comment: Comment): void => {
+    if (firstComment) {
+      // push the comment to the top of the list
+      const newComments = [firstComment].concat(comments)
+      setComments(newComments)
+    }
+    setFirstComment(comment)
+    setShowCommentForm(false)
+  }
   const showEditDelete = checkIn.userId === currentUser?.id
   if (!checkInObj) {
     return <></>
@@ -93,14 +112,31 @@ export function CheckinRow ({ checkIn, isLiked }: { checkIn: CheckIn, isLiked: b
                 {formatted}
               </div>
             )}
-            {checkInBody}
+            {checkInBody ?? <span className='text-xs italic'>Checked in</span>}
             {checkInObj.imageMeta?.secure_url &&
               <img src={checkInObj.imageMeta.secure_url} alt='checkin picture' className='mt-4 cursor-pointer max-w-[400px]' onClick={handlePhotoClick}/>}
             {showLightbox && <Lightbox medium={checkInObj.imageMeta?.secure_url} large={checkInObj.imageMeta?.secure_url} alt='checkin photo' onClose={() => { setShowLightbox(false) }}/>}
             {checkInObj.videoMeta?.secure_url && <video className={`${checkInObj.imageMeta?.secure_url ? 'mt-6' : ''} max-w-[400px]`} src={checkInObj.videoMeta.secure_url} onClick={(event) => { event?.stopPropagation() }} controls />}
-            <div className='mt-2'>
-              <Liker isLiked={isLiked} itemId={checkInObj.id} itemType='checkIn' count={checkInObj.likeCount} />
-            </div>
+            {(checkInBody ?? checkInObj.imageMeta?.secure_url ?? checkInObj.videoMeta?.secure_url) &&
+              <>
+              <div className='mt-2 flex items-start'>
+                <span className="text-xs mr-4 cursor-pointer" onClick={handleComments}>
+                  <FaRegComment className="text-grey h-4 w-4 mr-2 inline" />
+                  {checkInObj._count?.comments} comments
+                </span>
+                <Liker isLiked={isLiked} itemId={checkInObj.id} itemType='checkIn' count={checkInObj.likeCount} />
+
+              </div>
+              {showCommentForm &&
+                <div className='text-sm'>
+                  <FormComment afterSave={saveFirstComment} onCancel={() => { setShowCommentForm(false) }} checkInId={checkInObj.id} />
+                </div>
+              }
+              {(firstComment ?? showComments) &&
+                <CommentsContainer firstComment={firstComment} comments={comments} isReply={false} likedCommentIds={[]}/>
+              }
+              </>
+            }
             </>
               )}
           </div>

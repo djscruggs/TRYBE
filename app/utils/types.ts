@@ -228,6 +228,8 @@ export interface Comment {
   post?: Post | PostSummary
   threadId: number
   thread?: Thread | ThreadSummary
+  checkInId: number
+  checkIn?: CheckIn
   likeCount: number
   replyCount: number
   createdAt: Date
