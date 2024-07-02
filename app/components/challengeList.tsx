@@ -13,7 +13,6 @@ interface ChallengeListProps {
   likes: Like[]
 }
 export default function ChallengeList ({ challenges, memberships, isLoading, likes }: ChallengeListProps): JSX.Element {
-  console.log('likes in list', likes)
   function isMember (challenge: ChallengeSummary): boolean {
     return memberships.some((membership: MemberChallenge) => membership.challengeId === challenge.id)
   }

@@ -8,18 +8,18 @@ import FormCheckIn from './formCheckin'
 import { type CheckIn } from '~/utils/types'
 import Liker from '~/components/liker'
 
-export default function CheckinsList ({ checkIns }: { checkIns: CheckIn[] }): JSX.Element {
+export default function CheckinsList ({ checkIns, likes }: { checkIns: CheckIn[], likes: number[] }): JSX.Element {
   return (
     <div className='text-left text-xl text-gray-500 flex flex-col w-full'>
-    {checkIns.map((checkIn: any) => (
-      <CheckinRow key={checkIn.id} checkIn={checkIn} />
+    {checkIns.map((checkIn: CheckIn) => (
+      <CheckinRow key={checkIn.id} checkIn={checkIn} isLiked={likes.includes(checkIn.id)} />
 
     ))}
   </div>
   )
 }
 
-export function CheckinRow ({ checkIn }: { checkIn: CheckIn }): JSX.Element {
+export function CheckinRow ({ checkIn, isLiked }: { checkIn: CheckIn, isLiked: boolean }): JSX.Element {
   const { currentUser } = useContext(CurrentUserContext)
   const locale = userLocale(currentUser)
   const [showLightbox, setShowLightbox] = useState(false)
@@ -66,7 +66,7 @@ export function CheckinRow ({ checkIn }: { checkIn: CheckIn }): JSX.Element {
               <img src={checkInObj.imageMeta.secure_url} alt='checkin picture' className='mt-4 cursor-pointer max-w-[400px]' onClick={handlePhotoClick}/>}
             {showLightbox && <Lightbox medium={checkInObj.imageMeta?.secure_url} large={checkInObj.imageMeta?.secure_url} alt='checkin photo' onClose={() => { setShowLightbox(false) }}/>}
             {checkInObj.videoMeta?.secure_url && <video className={`${checkInObj.imageMeta?.secure_url ? 'mt-6' : ''} max-w-[400px]`} src={checkInObj.videoMeta.secure_url} onClick={(event) => { event?.stopPropagation() }} controls />}
-            <Liker isLiked={false} itemId={checkInObj.id} itemType='checkIn' count={checkInObj.likeCount} className='mt-2'/>
+            <Liker isLiked={isLiked} itemId={checkInObj.id} itemType='checkIn' count={checkInObj.likeCount} className='mt-2'/>
             </>
               )}
           </div>

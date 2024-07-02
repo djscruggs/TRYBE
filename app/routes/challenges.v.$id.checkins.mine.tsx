@@ -8,17 +8,21 @@ import { CircularProgressbarWithChildren, buildStyles } from 'react-circular-pro
 import { ChallengeMemberCheckin } from '~/components/challengeMemberCheckin'
 import CheckinsList from '~/components/checkinsList'
 import 'react-circular-progressbar/dist/styles.css'
-
+import { fetchUserLikes } from '~/models/like.server'
 export const loader: LoaderFunction = async (args) => {
   const currentUser = await requireCurrentUser(args)
   const userId = Number(args.params.userId ?? currentUser?.id)
   const challengeId = Number(args.params.id)
   const checkIns = await fetchCheckIns(userId, challengeId) as { error?: string }
-  return json({ checkIns })
+  const rawLikes = await fetchUserLikes(userId) || []
+  const likes = rawLikes
+    .map((like) => like.checkinId)
+    .filter((id) => id !== undefined && id !== null)
+  return json({ checkIns, likes })
 }
 export default function CheckIns (): JSX.Element {
   const revalidator = useRevalidator()
-  const { checkIns, error } = useLoaderData<typeof loader>()
+  const { checkIns, error, likes } = useLoaderData<typeof loader>()
   const { membership, challenge } = useRouteLoaderData<typeof useRouteLoaderData>('routes/challenges.v.$id') as { membership: MemberChallenge, challenge: Challenge }
   const numDays = differenceInDays(challenge.endAt, challenge.startAt)
   if (error) {
@@ -50,7 +54,7 @@ export default function CheckIns (): JSX.Element {
           <ChallengeMemberCheckin showDetails={true} challenge={challenge} memberChallenge={membership} afterCheckIn={() => { revalidator.revalidate() }} />
           <div className='flex flex-col items-start justify-center mt-4  w-full'>
 
-            <CheckinsList checkIns={checkIns} />
+            <CheckinsList checkIns={checkIns} likes={likes} />
 
           </div>
         </div>
