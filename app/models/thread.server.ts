@@ -1,5 +1,6 @@
 import { type Thread } from '@prisma/client'
 import { prisma } from './prisma.server'
+import { deleteFromCloudinary } from '~/utils/uploadFile'
 
 export const createThread = async (
   thread: Pick<Thread, 'body' | 'userId' | 'replyToId' | 'challengeId' | 'commentId'>
@@ -48,6 +49,13 @@ export const loadThread = async (threadId: string | number): Promise<Thread | nu
 export const deleteThread = async (threadId: string | number, userId: string | number): Promise<Thread> => {
   const id = Number(threadId)
   const uid = Number(userId)
+  const thread = await loadThread(id)
+  if (thread?.imageMeta?.public_id) {
+    await deleteFromCloudinary(thread.imageMeta.public_id as string, 'image')
+  }
+  if (thread?.videoMeta?.public_id) {
+    await deleteFromCloudinary(thread.videoMeta.public_id as string, 'video')
+  }
   const deleted = await prisma.thread.delete({
     where: {
       id,

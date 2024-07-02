@@ -1,6 +1,6 @@
 import { type Post } from '@prisma/client'
 import { prisma } from './prisma.server'
-
+import { deleteFromCloudinary } from '~/utils/uploadFile'
 export const createPost = async (
   post: Pick<Post, 'title' | 'body' | 'userId'>
 ) => {
@@ -62,6 +62,14 @@ export const loadUserPosts = async (userId: string | number): Promise<Post[]> =>
 export const deletePost = async (postId: number, userId: number): Promise<Post> => {
   const id = Number(postId)
   const uid = Number(userId)
+  const post = await loadPost(id)
+  if (post?.videoMeta?.public_id) {
+    await deleteFromCloudinary(post.videoMeta.public_id as string, 'video')
+  }
+  if (post?.imageMeta?.public_id) {
+    await deleteFromCloudinary(post.imageMeta.public_id as string, 'image')
+  }
+
   return await prisma.post.delete({
     where: {
       id,

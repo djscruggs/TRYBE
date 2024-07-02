@@ -1,5 +1,5 @@
 import { prisma } from './prisma.server'
-
+import { deleteFromCloudinary } from '~/utils/uploadFile'
 interface FetchCommentsParams {
   challengeId?: number
   postId?: number
@@ -117,6 +117,13 @@ export const loadComment = async (commentId: string | number, userId?: string | 
 
 export const deleteComment = async (commentId: string | number): Promise<prisma.comment> => {
   const id = Number(commentId)
+  const comment = await loadComment(id)
+  if (comment?.imageMeta?.public_id) {
+    await deleteFromCloudinary(comment.imageMeta.public_id as string, 'image')
+  }
+  if (comment?.videoMeta?.public_id) {
+    await deleteFromCloudinary(comment.videoMeta.public_id as string, 'video')
+  }
   const deleted = await prisma.comment.delete({
     where: {
       id
