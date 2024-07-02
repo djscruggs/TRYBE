@@ -42,8 +42,10 @@ export default function FormPost (props: FormPostProps): JSX.Element {
   const [showVideoRecorder, setShowVideoRecorder] = useState(false)
   const [errors, setErrors] = useState<Errors>({})
   const [saving, setSaving] = useState(false)
-  const [image, setImage] = useState<File | null>(null)
-  const [video, setVideo] = useState<File | null>(null)
+  const [image, setImage] = useState<File | null | 'delete'>(null)
+  const [imageUrl, setImageUrl] = useState<string | null>(post?.imageMeta?.secure_url ?? null)
+  const [video, setVideo] = useState<File | null | 'delete'>(null)
+  const [videoUrl, setVideoUrl] = useState<string | null>(post?.videoMeta?.secure_url ?? null)
   const navigate = useNavigate()
   const imageRef = useRef<HTMLInputElement>(null)
   const [videoUploadOnly, setVideoUploadOnly] = useState(false)
@@ -86,7 +88,8 @@ export default function FormPost (props: FormPostProps): JSX.Element {
   const handleImage = (event: React.ChangeEvent<HTMLInputElement>): void => {
     const params = {
       event,
-      setFile: setImage
+      setFile: setImage,
+      setFileURL: setImageUrl
     }
     handleFileUpload(params)
   }
@@ -127,36 +130,14 @@ export default function FormPost (props: FormPostProps): JSX.Element {
     }
     return true
   }
-  const correctImageUrl = (): string => {
-    // if image (file object) is set that means user attached a new image instead of existing url in db
-    if (image) {
-      return URL.createObjectURL(image)
-    }
-    if (formData.image && formData.image !== 'delete') {
-      return formData.image
-    }
-    return ''
+
+  const deleteImage = (): void => {
+    setImage('delete')
+    setImageUrl(null)
   }
-  const deleteCorrectImage = (): void => {
-    if (image) {
-      setImage(null)
-    }
-    if (formData.image) {
-      setFormData(prevFormData => ({
-        ...prevFormData,
-        image: 'delete'
-      }))
-    }
-  }
-  const deleteCorrectVideo = (): void => {
-    if (video) {
-      setVideo(null)
-    } else if (formData.video) {
-      setFormData(prevFormData => ({
-        ...prevFormData,
-        video: 'delete'
-      }))
-    }
+  const deleteVideo = (): void => {
+    setVideo('delete')
+    setVideoUrl(null)
   }
   async function handleSubmit (event: React.FormEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault()
@@ -222,8 +203,8 @@ export default function FormPost (props: FormPostProps): JSX.Element {
     }
   }
   const renderVideo = useMemo(() => (
-    <VideoPreview video={formData.video ? formData.video : video} onClear={deleteCorrectVideo} />
-  ), [video, formData.video])
+    <VideoPreview video={videoUrl ?? video} onClear={deleteVideo} />
+  ), [video, videoUrl])
   return (
 
     <div className='w-full'>
@@ -253,13 +234,13 @@ export default function FormPost (props: FormPostProps): JSX.Element {
         <VideoChooser recorderShowing={showVideoRecorder} showRecorder={videoChooserCallbackShow} hideRecorder={videoChooserCallbackHide} />
         <MdOutlineAddPhotoAlternate onClick={imageDialog} className='text-2xl cursor-pointer float-right' />
 
-        {correctImageUrl() &&
+        {imageUrl &&
           <div className="relative w-fit">
-            <img src={correctImageUrl()} alt="image thumbnail" className='h-24 mb-2' />
-            <TiDeleteOutline onClick={deleteCorrectImage} className='text-lg bg-white rounded-full text-red cursor-pointer absolute top-1 right-1' />
+            <img src={imageUrl} alt="image thumbnail" className='h-24 mb-2' />
+            <TiDeleteOutline onClick={deleteImage} className='text-lg bg-white rounded-full text-red cursor-pointer absolute top-1 right-1' />
           </div>
         }
-        {(video ?? formData.video) && !showVideoRecorder &&
+        {(video ?? videoUrl) && !showVideoRecorder &&
           renderVideo
         }
         {showVideoRecorder &&

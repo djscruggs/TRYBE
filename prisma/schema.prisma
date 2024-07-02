@@ -53,9 +53,7 @@ model Note {
   replyToId   Int?
   challengeId Int?
   commentId   Int?
-  image       String?
   isShare     Boolean    @default(false)
-  video       String?
   postId      Int?
   likeCount   Int        @default(0)
   replyCount  Int        @default(0)
@@ -81,10 +79,8 @@ model Thread {
   challengeId Int?
   challenge   Challenge? @relation(fields: [challengeId], references: [id])
   user        User       @relation(fields: [userId], references: [id])
-  image       String?
   imageMeta   Json?
   videoMeta   Json?
-  video       String?
   likeCount   Int        @default(0)
   likes       Like[]
   commentCount  Int        @default(0)
@@ -109,8 +105,6 @@ model Post {
   userId             Int
   challengeId        Int?
   embed              String?
-  image              String?
-  video              String?
   public             Boolean    @default(false)
   commentCount       Int        @default(0)
   likeCount          Int        @default(0)

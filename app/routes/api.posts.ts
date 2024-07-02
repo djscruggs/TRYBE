@@ -5,7 +5,7 @@ import { loadChallenge } from '~/models/challenge.server'
 import { requireCurrentUser } from '~/models/auth.server'
 import { json, type LoaderFunction, type ActionFunction } from '@remix-run/node'
 import { unstable_parseMultipartFormData } from '@remix-run/node'
-import { uploadHandler, saveToCloudinary, deleteFromCloudinary } from '~/utils/uploadFile'
+import { uploadHandler, handleFormUpload } from '~/utils/uploadFile'
 import { mailPost } from '~/utils/mailer'
 import getUserLocale from 'get-user-locale'
 import { format, isPast, isEqual } from 'date-fns'
@@ -59,52 +59,7 @@ export const action: ActionFunction = async (args) => {
     console.error('error creating post', error)
   }
   // check if there is a video/image OR if it should be deleted
-  let image, video
-  if (rawData.get('image') === 'delete') {
-    result.image = null
-  } else if (rawData.get('image')) {
-    image = rawData.get('image') as File
-  }
-  if (rawData.get('video') === 'delete') {
-    result.video = null
-  } else if (rawData.get('video')) {
-    video = rawData.get('video') as File
-  }
-  try {
-    if (image ?? rawData.get('image') === 'delete') {
-      // delete existing file if it exists
-      if (result.imageMeta?.public_id) {
-        await deleteFromCloudinary(result.imageMeta.public_id, 'image')
-        result.imageMeta = null
-      }
-      if (image) {
-        const imgNoExt = `post-${result.id}-image`
-        const imgMeta = await saveToCloudinary(image, imgNoExt)
-        result.image = imgMeta.secure_url
-        result.imageMeta = imgMeta
-      }
-    }
-  } catch (error) {
-    console.error('error uploading image', error)
-  }
-  try {
-    if (video ?? rawData.get('video') === 'delete') {
-      // delete existing file if it exists
-      if (result.videoMeta?.public_id) {
-        await deleteFromCloudinary(result.videoMeta.public_id, 'video')
-      }
-      if (video) {
-        const vidNoExt = `post-${result.id}-video`
-        const videoMeta = await saveToCloudinary(video, vidNoExt)
-        result.video = videoMeta.secure_url
-        result.videoMeta = videoMeta
-      } else {
-        result.videoMeta = null
-      }
-    }
-  } catch (error) {
-    console.error('error uploading video', error)
-  }
+  await handleFormUpload({ formData: rawData, dataObj: result, nameSpace: 'post', onUpdate: updatePost })
   let updated = {}
   try {
     updated = await updatePost(result)

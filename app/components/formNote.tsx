@@ -47,11 +47,11 @@ export default function FormNote (props: FormNoteProps): JSX.Element {
   const navigate = useNavigate()
   const imageRef = useRef<HTMLInputElement>(null)
   const [image, setImage] = useState<File | string | null>(null)
-  const [imageUrl, setImageUrl] = useState<string | null>(note?.image ? note.image : null)
+  const [imageUrl, setImageUrl] = useState<string | null>(note?.imageMeta?.secure_url ?? null)
   const [videoUploadOnly, setVideoUploadOnly] = useState(false)
 
   const [video, setVideo] = useState<File | string | null>(null)
-  const [videoUrl, setVideoUrl] = useState<string | null>(note?.video ? note.video : null)
+  const [videoUrl, setVideoUrl] = useState<string | null>(note?.videoMeta?.secure_url ?? null)
   const imageDialog = (): void => {
     if (imageRef.current) {
       imageRef.current.click()

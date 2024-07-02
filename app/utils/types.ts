@@ -62,10 +62,8 @@ export interface Thread {
   user?: User | CurrentUser
   title: string | null
   body: string | null
-  image: string | null
-  imageMeta: CoudinaryMeta
-  video: string | null
-  videoMeta: CoudinaryMeta
+  imageMeta: CloudinaryMeta
+  videoMeta: CloudinaryMeta
   challengeId: number
   challenge?: Challenge
   likeCount?: number
@@ -85,10 +83,8 @@ export interface Post {
   userId?: number
   title?: string | null
   body?: string | null
-  image?: string | null
-  imageMeta?: CoudinaryMeta
-  video?: string | null
-  videoMeta?: CoudinaryMeta
+  imageMeta?: CloudinaryMeta
+  videoMeta?: CloudinaryMeta
   embed?: string | null
   public?: boolean
   challengeId?: number | null
@@ -182,8 +178,8 @@ export interface CheckIn {
   createdAt: Date
   data: JSONObject
   body: string
-  imageMeta: CoudinaryMeta
-  videoMeta: CoudinaryMeta
+  imageMeta: CloudinaryMeta
+  videoMeta: CloudinaryMeta
   challenge?: Challenge
   user?: User
   memberChallenge?: MemberChallenge

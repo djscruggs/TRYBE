@@ -42,11 +42,11 @@ export default function FormThread (props: FormThreadProps): JSX.Element {
   const navigate = useNavigate()
   const imageRef = useRef<HTMLInputElement>(null)
   const [image, setImage] = useState<File | string | null>(null)
-  const [imageUrl, setImageUrl] = useState<string | null>(thread?.image ? thread.image : null)
+  const [imageUrl, setImageUrl] = useState<string | null>(thread?.imageMeta?.secure_url ?? null)
   const [videoUploadOnly, setVideoUploadOnly] = useState(false)
 
   const [video, setVideo] = useState<File | string | null>(null)
-  const [videoUrl, setVideoUrl] = useState<string | null>(thread?.video ? thread.video : null)
+  const [videoUrl, setVideoUrl] = useState<string | null>(thread?.videoMeta?.secure_url ?? null)
   const imageDialog = (): void => {
     if (imageRef.current) {
       imageRef.current.click()

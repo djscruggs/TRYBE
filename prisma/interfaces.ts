@@ -44,9 +44,7 @@ export interface Note {
   replyToId: number | null;
   challengeId: number | null;
   commentId: number | null;
-  image: string | null;
   isShare: boolean;
-  video: string | null;
   postId: number | null;
   likeCount: number;
   replyCount: number;
@@ -70,10 +68,8 @@ export interface Thread {
   challengeId: number | null;
   challenge?: Challenge | null;
   user?: User;
-  image: string | null;
   imageMeta: JsonValue | null;
   videoMeta: JsonValue | null;
-  video: string | null;
   likeCount: number;
   likes?: Like[];
   commentCount: number;
@@ -93,8 +89,6 @@ export interface Post {
   userId: number;
   challengeId: number | null;
   embed: string | null;
-  image: string | null;
-  video: string | null;
   public: boolean;
   commentCount: number;
   likeCount: number;
