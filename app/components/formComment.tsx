@@ -33,7 +33,7 @@ export default function FormComment (props: FormCommentProps): JSX.Element {
     threadId = comment.threadId
     checkInId = comment.checkInId
   }
-  console.log(props)
+
   const { currentUser } = useContext(CurrentUserContext)
   const [body, setBody] = useState(comment ? comment.body : '')
   const [error, setError] = useState('')

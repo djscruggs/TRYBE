@@ -15,14 +15,12 @@ export const loader: LoaderFunction = async (args) => {
   const challengeId = Number(args.params.id)
   const checkIns = await fetchCheckIns({ userId, challengeId }) as { error?: string }
   const rawLikes = await fetchUserLikes(userId) || []
-  console.log('in mine')
   const likes = rawLikes
     .map((like) => like.checkinId)
     .filter((id) => id !== undefined && id !== null)
   return json({ checkIns, likes })
 }
 export default function MyCheckIns (): JSX.Element {
-  console.log('in mine')
   const revalidator = useRevalidator()
   const { checkIns, error, likes } = useLoaderData<typeof loader>()
   const { membership, challenge } = useRouteLoaderData<typeof useRouteLoaderData>('routes/challenges.v.$id') as { membership: MemberChallenge, challenge: Challenge }

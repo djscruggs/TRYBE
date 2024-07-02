@@ -47,7 +47,6 @@ export default function ViewPostComments (): JSX.Element {
   const currentUser = useContext(CurrentUserContext)
   const navigate = useNavigate()
   const params = useParams()
-  console.log('comments', comments)
   return (
     <div className='max-w-[400px] md:max-w-lg mt-10'>
       {currentUser &&

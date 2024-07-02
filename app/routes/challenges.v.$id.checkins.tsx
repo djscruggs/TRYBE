@@ -14,7 +14,6 @@ export const loader: LoaderFunction = async (args) => {
   const challengeId = Number(args.params.id)
   const checkIns = await fetchCheckIns({ challengeId }) as { error?: string }
   const rawLikes = await fetchUserLikes(userId) || []
-  console.log('in parent')
   const likes = rawLikes
     .map((like) => like.checkinId)
     .filter((id) => id !== undefined && id !== null)

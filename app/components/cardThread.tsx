@@ -85,7 +85,6 @@ export default function CardThread (props: CardThreadProps): JSX.Element {
   if (revalidator.state === 'loading') {
     return <Spinner className="h-4 w-4" />
   }
-  console.log('thread', thread)
   return (
     <>
     {editing
