@@ -46,7 +46,7 @@ export function CheckinRow ({ checkIn, isLiked }: { checkIn: CheckIn, isLiked: b
     event.stopPropagation()
     setShowLightbox(true)
   }
-  const showEditDelete = checkIn.user.id === currentUser?.id
+  const showEditDelete = checkIn.userId === currentUser?.id
   return (
     <>
       <div className='h-fit relative flex flex-items-center border-b w-full p-2 mb-2'>
@@ -66,7 +66,9 @@ export function CheckinRow ({ checkIn, isLiked }: { checkIn: CheckIn, isLiked: b
               <img src={checkInObj.imageMeta.secure_url} alt='checkin picture' className='mt-4 cursor-pointer max-w-[400px]' onClick={handlePhotoClick}/>}
             {showLightbox && <Lightbox medium={checkInObj.imageMeta?.secure_url} large={checkInObj.imageMeta?.secure_url} alt='checkin photo' onClose={() => { setShowLightbox(false) }}/>}
             {checkInObj.videoMeta?.secure_url && <video className={`${checkInObj.imageMeta?.secure_url ? 'mt-6' : ''} max-w-[400px]`} src={checkInObj.videoMeta.secure_url} onClick={(event) => { event?.stopPropagation() }} controls />}
-            <Liker isLiked={isLiked} itemId={checkInObj.id} itemType='checkIn' count={checkInObj.likeCount} className='mt-2'/>
+            <div className='mt-2'>
+              <Liker isLiked={isLiked} itemId={checkInObj.id} itemType='checkIn' count={checkInObj.likeCount} />
+            </div>
             </>
               )}
           </div>

@@ -835,6 +835,10 @@ video {
   float: right;
 }
 
+.float-left {
+  float: left;
+}
+
 .m-0 {
   margin: 0px;
 }
@@ -1450,6 +1454,10 @@ video {
 
 .w-\[60px\] {
   width: 60px;
+}
+
+.w-\[100px\] {
+  width: 100px;
 }
 
 .min-w-36 {
