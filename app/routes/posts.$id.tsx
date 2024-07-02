@@ -55,7 +55,6 @@ export default function ViewPost (): JSX.Element {
   if (!post) {
     return <p>Loading...</p>
   }
-  console.log('post', post)
   return (
     <>
     {post.challenge && <ChallengeHeader size='small' challenge={post.challenge} />}

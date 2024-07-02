@@ -94,7 +94,6 @@ export const handleFormUpload = async ({ formData, dataObj, nameSpace, onUpdate 
       shouldUpdate = true
       // delete existing file if it exists
       if (dataObj.imageMeta?.public_id) {
-        console.log('delete image', dataObj.imageMeta.public_id)
         await deleteFromCloudinary(String(dataObj.imageMeta.public_id), 'image')
       }
       if (image) {

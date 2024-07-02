@@ -19,7 +19,6 @@ export const loader: LoaderFunction = async ({ request, params }) => {
 export default function ViewChallengeComments (): JSX.Element {
   const revalidator = useRevalidator()
   const handleFormSubmit = (): void => {
-    console.log('revalidating')
     setShowForm(false)
     revalidator.revalidate()
   }
