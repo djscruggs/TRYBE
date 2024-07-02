@@ -1460,6 +1460,18 @@ video {
   width: 100px;
 }
 
+.w-\[70px\] {
+  width: 70px;
+}
+
+.w-\[80px\] {
+  width: 80px;
+}
+
+.w-\[50px\] {
+  width: 50px;
+}
+
 .min-w-36 {
   min-width: 9rem;
 }
@@ -1522,6 +1534,18 @@ video {
 
 .min-w-\[60px\] {
   min-width: 60px;
+}
+
+.min-w-\[70px\] {
+  min-width: 70px;
+}
+
+.min-w-\[80px\] {
+  min-width: 80px;
+}
+
+.min-w-\[50px\] {
+  min-width: 50px;
 }
 
 .max-w-2xl {

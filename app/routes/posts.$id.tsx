@@ -55,14 +55,14 @@ export default function ViewPost (): JSX.Element {
   if (!post) {
     return <p>Loading...</p>
   }
-
+  console.log('post', post)
   return (
     <>
     {post.challenge && <ChallengeHeader size='small' challenge={post.challenge} />}
     <div className='max-w-[400px] md:max-w-lg mt-10'>
       <CardPost post={_post} hasLiked={Boolean(hasLiked)} fullPost={true} />
     </div>
-
+    <Outlet context={{ post }} />
     </>
   )
 }

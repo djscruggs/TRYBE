@@ -79,12 +79,11 @@ export const createComment = async (comment: prisma.commentCreateInput): Promise
   }
 }
 export const updateComment = async (comment: prisma.commentCreateInput): Promise<prisma.comment> => {
-  const id = Number(comment.id)
-  delete comment.id
+  const { id, ...data } = comment
   try {
     const newComment = await prisma.comment.update({
       where: { id },
-      data: comment
+      data
     })
     // update counts of replies
     void updateCounts(newComment)

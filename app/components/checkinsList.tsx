@@ -1,5 +1,5 @@
 import { userLocale, textToJSX } from '~/utils/helpers'
-import { isToday } from 'date-fns'
+import { isToday, formatDistanceToNow } from 'date-fns'
 import { useContext, useState } from 'react'
 import { CurrentUserContext } from '~/utils/CurrentUserContext'
 import { Lightbox } from 'react-modal-image'
@@ -73,9 +73,9 @@ export function CheckinRow ({ checkIn, isLiked }: { checkIn: CheckIn, isLiked: b
     <>
       <div className='h-fit relative flex flex-items-center border-b w-full p-2 mb-2'>
         <div className='w-full h-full flex flex-row mb-4'>
-          <div className='w-[60px] min-w-[60px] text-xs'>
+          <div className='w-[50px] min-w-[50px] text-xs'>
             <AvatarLoader object={checkIn} /><br />
-            {formatted}
+
           </div>
           <div className='ml-2 w-full pl-2'>
           {showEditForm
@@ -83,6 +83,16 @@ export function CheckinRow ({ checkIn, isLiked }: { checkIn: CheckIn, isLiked: b
             : (
 
             <>
+            {checkIn.userId !== currentUser?.id && (
+              <div className='text-xs mb-2'>
+                {checkIn.user?.profile?.firstName} {checkIn.user?.profile?.lastName} - <span>{formatDistanceToNow(new Date(checkIn.createdAt), { addSuffix: true })}</span>
+              </div>
+            )}
+            {checkIn.userId === currentUser?.id && (
+              <div className='text-xs mb-2'>
+                {formatted}
+              </div>
+            )}
             {checkInBody}
             {checkInObj.imageMeta?.secure_url &&
               <img src={checkInObj.imageMeta.secure_url} alt='checkin picture' className='mt-4 cursor-pointer max-w-[400px]' onClick={handlePhotoClick}/>}

@@ -3,7 +3,7 @@ import type { prisma } from '~/models/prisma.server'
 import { requireCurrentUser } from '~/models/auth.server'
 import { json, type LoaderFunction, type ActionFunction } from '@remix-run/node'
 import { unstable_parseMultipartFormData } from '@remix-run/node'
-import { uploadHandler, saveToCloudinary, deleteFromCloudinary } from '~/utils/uploadFile'
+import { uploadHandler, handleFormUpload } from '~/utils/uploadFile'
 export const action: ActionFunction = async (args) => {
   const currentUser = await requireCurrentUser(args)
   const { request } = args
@@ -55,51 +55,7 @@ export const action: ActionFunction = async (args) => {
   }
 
   const result = data.id ? await updateComment(data) : await createComment(data)
-  // check if there is a video/image OR if it should be deleted
-  let image, video
-  if (rawData.get('image') === 'delete') {
-    result.imageMeta = null
-  } else if (rawData.get('image')) {
-    image = rawData.get('image') as File
-  }
-  if (formData.video === 'delete') {
-    result.videoMeta = null
-  } else if (formData.video) {
-    video = rawData.get('video') as File
-  }
-  try {
-    if (image ?? rawData.get('image') === 'delete') {
-      // delete existing file if it exists
-      if (result.imageMeta?.public_id) {
-        await deleteFromCloudinary(result.imageMeta.public_id as string, 'image')
-        result.imageMeta = null
-      }
-      if (image) {
-        const imgNoExt = `comment-${result.id}-image`
-        const imgMeta = await saveToCloudinary(image, imgNoExt)
-        result.imageMeta = imgMeta
-      }
-    }
-  } catch (error) {
-    console.error('error uploading image', error)
-  }
-  try {
-    if (video ?? rawData.get('video') === 'delete') {
-      // delete existing file if it exists
-      if (result.videoMeta?.public_id) {
-        await deleteFromCloudinary(result.videoMeta.public_id as string, 'video')
-      }
-      if (video) {
-        const vidNoExt = `comment-${result.id}-video`
-        const videoMeta = await saveToCloudinary(video, vidNoExt)
-        result.videoMeta = videoMeta
-      } else {
-        result.videoMeta = null
-      }
-    }
-  } catch (error) {
-    console.error('error uploading video', error)
-  }
+  await handleFormUpload({ formData: rawData, dataObj: result, nameSpace: 'comment', onUpdate: updateComment })
 
   const updated = await updateComment(result)
   // refresh the comment to include user info attached

@@ -28,9 +28,10 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
   return { commentsData: comments, postId, likedCommentIds }
 }
 export default function ViewPostComments (): JSX.Element {
-  const [showForm, setShowForm] = useState(false)
   const { commentsData, postId, likedCommentIds } = useLoaderData<{ commentsData: Comment[], postId: number, likedCommentIds: number[] }>()
   const [comments, setComments] = useState<Comment[]>(commentsData as unknown as Comment[])
+  const [showForm, setShowForm] = useState(commentsData.length === 0)
+
   // first comment holds the comment posted by the user
   // it's intiially null, but if they save a commennt it shows at the top
   const [firstComment, setFirstComment] = useState<Comment | null>(null)
@@ -46,6 +47,7 @@ export default function ViewPostComments (): JSX.Element {
   const currentUser = useContext(CurrentUserContext)
   const navigate = useNavigate()
   const params = useParams()
+  console.log('comments', comments)
   return (
     <div className='max-w-[400px] md:max-w-lg mt-10'>
       {currentUser &&
@@ -59,7 +61,7 @@ export default function ViewPostComments (): JSX.Element {
               </div>
             )
           : (
-              <button onClick={() => { setShowForm(true) }} className="mt-2 text-sm underline ml-2">Add a comment</button>
+              <button onClick={() => { setShowForm(true) }} className="mt-2 text-sm underline ml-2 text-red">Add a comment</button>
             )}
       </div>
     }
