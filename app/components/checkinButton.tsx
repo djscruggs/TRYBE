@@ -15,8 +15,9 @@ interface ChallengeMemberCheckinProps {
   memberChallenge: MemberChallenge | null
   showDetails?: boolean
   afterCheckIn?: (checkIn: CheckIn) => void
+  size?: 'sm' | 'md' | 'lg'
 }
-export function CheckInButton ({ challenge, memberChallenge, showDetails, afterCheckIn }: ChallengeMemberCheckinProps): JSX.Element {
+export function CheckInButton ({ challenge, memberChallenge, showDetails, afterCheckIn, size }: ChallengeMemberCheckinProps): JSX.Element {
   if (!challenge?.id) {
     throw new Error('Challenge object with id is required')
   }
@@ -31,13 +32,12 @@ export function CheckInButton ({ challenge, memberChallenge, showDetails, afterC
   return (
     <>
       <div>
-        <Button
+        <button
             onClick={() => { setShowForm(true) } }
-            size='sm'
-            className='bg-red hover:bg-green-500 text-white rounded-full p-2 justify-center text-xs disabled:bg-gray-400'
+            className='w-40 bg-red hover:bg-green-500 text-white font-bold rounded-full p-2 justify-center text-sm disabled:bg-gray-400'
           >
             Check In
-        </Button>
+        </button>
       </div>
       {showForm &&
         <DialogCheckIn challengeId={challenge.id} onCancel={() => { setShowForm(false) }} afterCheckIn={handleAfterCheckIn} isOpen={showForm} />

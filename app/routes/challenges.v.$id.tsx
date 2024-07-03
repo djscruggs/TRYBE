@@ -209,7 +209,7 @@ export default function ViewChallenge (): JSX.Element {
     setLoading(false)
     setShowConfirm(false)
   }
-  if (!isOverview && !isPosts && !isComments) {
+  if (!isOverview && !isPosts && !isComments && !isProgram) {
     return (
       <div className='flex flex-col mt-2 md:mt-0'>
         <ChallengeHeader challenge={challenge} size='small' />
@@ -248,15 +248,7 @@ export default function ViewChallenge (): JSX.Element {
             <ChallengeOverview challenge={challenge} />
           </div>
         }
-        {(membership || challenge.userId === currentUser?.id) &&
-            <div className='flex items-center justify-center py-4'>
-              <CheckInButton
-                challenge={challenge}
-                memberChallenge={membership}
-                afterCheckIn={(checkIn: CheckIn) => { navigate(`/challenges/v/${challenge.id}/checkins/mine`) }}
-                showDetails={false}/>
-            </div>
-         }
+
       </div>
       {isOverview &&
           <div className="max-w-sm md:max-w-md lg:max-w-lg text-center">
@@ -306,6 +298,21 @@ export default function ViewChallenge (): JSX.Element {
       }
 
       <Outlet />
+      <div className='flex justify-between mt-6 mb-20 max-w-sm md:max-w-md lg:max-w-lg'>
+        <button
+            className='w-40 bg-red hover:bg-green-500 text-white font-bold rounded-full p-2 justify-center text-sm disabled:bg-gray-400'
+            onClick={() => { navigate(`/challenges/v/${challenge.id}/checkins/mine`) }}
+          >
+          View Progress
+        </button>
+        <CheckInButton
+          size='lg'
+          challenge={challenge}
+          memberChallenge={membership}
+          afterCheckIn={(checkIn: CheckIn) => { navigate(`/challenges/v/${challenge.id}/checkins/mine`) }}
+          showDetails={false}/>
+
+      </div>
   </div>
   )
 }
