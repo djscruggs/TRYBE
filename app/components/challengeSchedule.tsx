@@ -51,9 +51,11 @@ export default function ChallengeSchedule ({ challenge, posts, isSchedule = fals
   const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
   return (
     <div className={`max-w-sm  ${isSchedule ? 'md:max-w-xl lg:max-w-2xl' : 'md:max-w-md lg:max-w-lg'}`}>
-      <div className="w-full mt-4">
-        {new Date(challenge.startAt).toLocaleDateString(locale, dateOptions)} to {new Date(challenge.endAt).toLocaleDateString(locale, dateOptions)}
-      </div>
+      {isSchedule &&
+        <div className="w-full mt-4">
+          {new Date(challenge.startAt).toLocaleDateString(locale, dateOptions)} to {new Date(challenge.endAt).toLocaleDateString(locale, dateOptions)}
+        </div>
+      }
       {isSchedule && unscheduled.length > 0 && currentUser?.id === challenge.userId &&
         <div className='border border-red p-2 my-2 rounded-md'>
           <BsExclamationCircleFill className='h-4 w-4  text-red inline-block mr-2 -mt-1' />
