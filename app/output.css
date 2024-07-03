@@ -835,10 +835,6 @@ video {
   float: right;
 }
 
-.float-left {
-  float: left;
-}
-
 .m-0 {
   margin: 0px;
 }
@@ -1232,6 +1228,11 @@ video {
   height: 74px;
 }
 
+.h-fit {
+  height: -moz-fit-content;
+  height: fit-content;
+}
+
 .h-full {
   height: 100%;
 }
@@ -1243,11 +1244,6 @@ video {
 
 .h-screen {
   height: 100vh;
-}
-
-.h-fit {
-  height: -moz-fit-content;
-  height: fit-content;
 }
 
 .max-h-60 {
@@ -1418,6 +1414,10 @@ video {
   width: 40px;
 }
 
+.w-\[50px\] {
+  width: 50px;
+}
+
 .w-\[58px\] {
   width: 58px;
 }
@@ -1446,30 +1446,6 @@ video {
 
 .w-screen {
   width: 100vw;
-}
-
-.w-\[800px\] {
-  width: 800px;
-}
-
-.w-\[60px\] {
-  width: 60px;
-}
-
-.w-\[100px\] {
-  width: 100px;
-}
-
-.w-\[70px\] {
-  width: 70px;
-}
-
-.w-\[80px\] {
-  width: 80px;
-}
-
-.w-\[50px\] {
-  width: 50px;
 }
 
 .min-w-36 {
@@ -1512,6 +1488,10 @@ video {
   min-width: 48px;
 }
 
+.min-w-\[50px\] {
+  min-width: 50px;
+}
+
 .min-w-\[600px\] {
   min-width: 600px;
 }
@@ -1530,22 +1510,6 @@ video {
 
 .min-w-full {
   min-width: 100%;
-}
-
-.min-w-\[60px\] {
-  min-width: 60px;
-}
-
-.min-w-\[70px\] {
-  min-width: 70px;
-}
-
-.min-w-\[80px\] {
-  min-width: 80px;
-}
-
-.min-w-\[50px\] {
-  min-width: 50px;
 }
 
 .max-w-2xl {
@@ -1624,32 +1588,8 @@ video {
   max-width: 36rem;
 }
 
-.max-w-\[100px\] {
-  max-width: 100px;
-}
-
-.max-w-\[120px\] {
-  max-width: 120px;
-}
-
-.max-w-\[140px\] {
-  max-width: 140px;
-}
-
-.max-w-\[80px\] {
-  max-width: 80px;
-}
-
-.max-w-\[60px\] {
-  max-width: 60px;
-}
-
 .flex-none {
   flex: none;
-}
-
-.flex-1 {
-  flex: 1 1 0%;
 }
 
 .flex-shrink-0 {
@@ -6530,12 +6470,12 @@ video {
     margin-left: 1rem;
   }
 
-  .md\:mt-28 {
-    margin-top: 7rem;
-  }
-
   .md\:mt-0 {
     margin-top: 0px;
+  }
+
+  .md\:mt-28 {
+    margin-top: 7rem;
   }
 
   .md\:block {
@@ -6566,6 +6506,10 @@ video {
     width: 8.333333%;
   }
 
+  .md\:w-1\/2 {
+    width: 50%;
+  }
+
   .md\:w-2\/3 {
     width: 66.666667%;
   }
@@ -6591,10 +6535,6 @@ video {
     width: max-content;
   }
 
-  .md\:w-1\/2 {
-    width: 50%;
-  }
-
   .md\:min-w-\[60\%\] {
     min-width: 60%;
   }
@@ -6613,11 +6553,6 @@ video {
 
   .md\:min-w-\[83\.333333\%\] {
     min-width: 83.333333%;
-  }
-
-  .md\:min-w-fit {
-    min-width: -moz-fit-content;
-    min-width: fit-content;
   }
 
   .md\:max-w-\[60\%\] {
@@ -6706,10 +6641,6 @@ video {
 
   .md\:text-start {
     text-align: start;
-  }
-
-  .md\:text-end {
-    text-align: end;
   }
 
   .md\:text-5xl {
