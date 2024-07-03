@@ -51,9 +51,8 @@ export default function MenuChallenge (props: MenuChallengeProps): JSX.Element {
       <>
         <Menu placement={placement}>
           <MenuHandler>
-            <Button className='bg-red p-1 md:p-2 rounded-full focus-visible:outline-none'>
-              <GiHamburgerMenu className='h-6 w-6 md:hidden'/>
-              <span className='hidden md:block'>Menu</span>
+            <Button className='bg-red p-1 rounded-md focus-visible:outline-none'>
+              <GiHamburgerMenu className='h-5 w-5'/>
             </Button>
           </MenuHandler>
           <MenuList>
