@@ -5,7 +5,7 @@ import Logo from './logo'
 import MenuChallenge from './menuChallenge'
 
 export default function ChallengeHeader ({ challenge, size }: { challenge: Challenge | ChallengeSummary, size: 'small' | 'large' }): JSX.Element {
-  const imgSize = size === 'small' ? 60 : 400
+  const imgSize = size === 'small' ? 60 : 500
   const [imgWidth, imgHeight] = resizeImageToFit(Number(challenge.coverPhotoMeta?.width), Number(challenge.coverPhotoMeta?.height), imgSize)
   return (
     <>
