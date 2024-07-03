@@ -358,7 +358,7 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
               </div>
             </div>
             <div className="mt-8 flex justify-left">
-              <Button type="submit" onClick={handleSubmit} placeholder='Save' className="bg-red hover:bg-green-500">Save Challenge</Button>
+              <Button type="submit" onClick={handleSubmit} placeholder='Save' className="bg-red hover:bg-green-500 rounded-full">Save Challenge</Button>
               <button onClick={handleCancel} className="underline ml-4 4 hover:text-red">cancel</button>
             </div>
 

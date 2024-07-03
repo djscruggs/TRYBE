@@ -97,18 +97,18 @@ export function ChallengeMemberCheckin ({ challenge, memberChallenge, showDetail
               }
           </div>
 
-          {!challengeIsExpired && !showForm && (
+        </>
+      )}
+      {!challengeIsExpired && !showForm && (
             <div className="text-xs my-2 text-end md:text-start md:w-1/2">
               <Button
                   onClick={() => { setShowForm(true) } }
                   disabled={!canCheckInNow()}
-                  className='bg-red hover:bg-green-500 text-white rounded-md p-2 justify-center text-xs disabled:bg-gray-400'
+                  className='bg-red hover:bg-green-500 text-white rounded-full p-2 justify-center text-xs disabled:bg-gray-400'
                 >
                   {canCheckInNow() ? 'Check In Now' : 'Checked In'}
-                </Button>
+              </Button>
             </div>
-          )}
-        </>
       )}
     </div>
     {showForm &&
@@ -137,5 +137,16 @@ function DialogCheckIn ({ challengeId, onCancel, afterCheckIn, isOpen }: Checkin
           <FormCheckIn challengeId={challengeId} onCancel={onCancel} afterCheckIn={afterCheckIn} />
         </DialogBody>
       </Dialog>
+  )
+}
+
+export function CheckInButton ({ challengeId, onCancel, afterCheckIn }: CheckInButtonProps): JSX.Element {
+  return (
+    <Button
+      onClick={() => { setShowForm(true) } }
+      className='bg-red hover:bg-green-500 text-white rounded-full p-2 justify-center text-xs disabled:bg-gray-400'
+    >
+      Check In
+    </Button>
   )
 }

@@ -7,14 +7,14 @@ import {
 } from '@material-tailwind/react'
 
 interface DeleteDialogProps {
-  isOpen: boolean
-  deleteCallback: (event: any) => void
-  onCancel?: (event: any) => void
   prompt: string
+  isOpen: boolean
+  onConfirm: (event: any) => void
+  onCancel?: (event: any) => void
 }
 
-export default function DialogDelete (props: DeleteDialogProps): JSX.Element {
-  const { isOpen, deleteCallback, prompt, onCancel } = props
+export default function DialogConfirm (props: DeleteDialogProps): JSX.Element {
+  const { prompt, isOpen, onConfirm, onCancel } = props
   const [open, setOpen] = useState(isOpen)
   const handleOpen = (event: any): void => {
     event.preventDefault()
@@ -36,7 +36,7 @@ export default function DialogDelete (props: DeleteDialogProps): JSX.Element {
           >
             <span>Cancel</span>
           </Button>
-          <Button className="bg-red" onClick={deleteCallback}>
+          <Button className="bg-red" onClick={onConfirm}>
             <span>Confirm</span>
           </Button>
         </DialogFooter>

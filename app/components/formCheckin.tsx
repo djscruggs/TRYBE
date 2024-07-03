@@ -150,7 +150,7 @@ export default function FormCheckIn (props: FormCheckinProps): JSX.Element {
     <VideoPreview video={video} onClear={deleteVideo} />
   ), [video, videoUrl])
   return (
-    <div className='w-full mb-8'>
+    <div className='w-full'>
       <Form method="post" onSubmit={handleSubmit} onKeyDown={handleKeyDown}>
       <FormField
           name='note'

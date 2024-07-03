@@ -21,9 +21,11 @@ import { isPast } from 'date-fns'
 import getUserLocale from 'get-user-locale'
 import Liker from '~/components/liker'
 import ShareMenu from '~/components/shareMenu'
+import DialogConfirm from '~/components/dialogConfirm'
 import MenuChallenge from '~/components/menuChallenge'
 import ChallengeHeader from '~/components/challengeHeader'
 import { ChallengeMemberCheckin } from '~/components/challengeMemberCheckin'
+import { CheckInButton } from '~/components/checkinButton'
 
 interface ViewChallengeData {
   challenge: ChallengeSummary
@@ -160,6 +162,7 @@ export default function ViewChallenge (): JSX.Element {
   const parsedDescription = textToJSX(challenge.description as string ?? '')
   const likesCount = challenge?._count?.likes ?? 0
   const location = useLocation()
+  const [showConfirm, setShowConfirm] = useState(false)
   const isOverview = matches.length === 2
   const isProgram = location.pathname.includes('program')
   const isPosts = location.pathname.includes('posts')
@@ -183,8 +186,14 @@ export default function ViewChallenge (): JSX.Element {
     return <p>Loading...</p>
   }
 
-  const toggleJoin = async (event: any): Promise<void> => {
-    event.preventDefault()
+  const confirmJoinUnjoin = async (): Promise<void> => {
+    if (isMember) {
+      setShowConfirm(true)
+    } else {
+      await toggleJoin()
+    }
+  }
+  const toggleJoin = async (): Promise<void> => {
     if (!challenge?.id) {
       throw new Error('cannot join without an id')
     }
@@ -192,8 +201,13 @@ export default function ViewChallenge (): JSX.Element {
 
     const url = `/api/challenges/join-unjoin/${challenge.id as string | number}`
     const response = await axios.post(url)
-    setIsMember(response.data.result === 'joined')
+    if (response.data.result === 'joined') {
+      setIsMember(true)
+    } else {
+      setIsMember(false)
+    }
     setLoading(false)
+    setShowConfirm(false)
   }
   if (!isOverview && !isPosts && !isComments) {
     return (
@@ -228,23 +242,43 @@ export default function ViewChallenge (): JSX.Element {
             </div>
           }
         </div>
+
         {isOverview &&
-          <ChallengeOverview challenge={challenge} />
+          <div className='mt-4'>
+            <ChallengeOverview challenge={challenge} />
+          </div>
         }
+        {(membership || challenge.userId === currentUser?.id) &&
+            <div className='flex items-center justify-center py-4'>
+              <CheckInButton
+                challenge={challenge}
+                memberChallenge={membership}
+                afterCheckIn={(checkIn: CheckIn) => { navigate(`/challenges/v/${challenge.id}/checkins/mine`) }}
+                showDetails={false}/>
+            </div>
+         }
       </div>
       {isOverview &&
-          <div className="max-w-sm md:max-w-md lg:max-w-lg">
+          <div className="max-w-sm md:max-w-md lg:max-w-lg text-center">
             {challenge?.userId !== currentUser?.id && !isExpired && (
               <>
                 <Button
-                    onClick={toggleJoin}
-                    className=' bg-red hover:bg-green-500 text-white rounded-md p-2 text-xs'>
+                    onClick={confirmJoinUnjoin}
+                    loading={loading}
+                    className='mt-4 bg-red hover:bg-green-500 text-white rounded-full p-2 text-xs'>
                       {isMember ? 'Leave Challenge' : 'Join this Challenge'}
                   </Button>
-                  {loading && <Spinner className="h-4 w-4 ml-1 inline" />}
+                  {showConfirm && (
+                    <DialogConfirm
+                      isOpen={showConfirm}
+                      onConfirm={toggleJoin}
+                      onCancel={() => { setShowConfirm(false) }}
+                      prompt='Are you sure you want to leave this challenge? All your check-ins will be lost.'
+                    />
+                  )}
               </>
             )}
-            {membership && <ChallengeMemberCheckin challenge={challenge} memberChallenge={membership} showDetails={true}/>}
+
             <div className='w-full'>
               <div className='flex flex-row justify-between w-full'>
                   {challenge?._count?.members && challenge?._count?.members > 0
@@ -260,17 +294,17 @@ export default function ViewChallenge (): JSX.Element {
                       No members yet
                   </div>
                       )}
-                  <div className='relative flex justify-end'>
+                  {/* <div className='relative flex justify-end'>
                     <div className='mr-2 inline'><Liker isLiked={Boolean(hasLiked)} itemId={Number(challenge?.id)} itemType='challenge' count={Number(likesCount)}/></div>
                     <ShareMenu copyUrl={getFullUrl()} itemType='challenge' itemId={challenge?.id}/>
-                  </div>
+                  </div> */}
               </div>
             </div>
-
-              <Outlet />
+            <Outlet />
 
           </div>
       }
+
       <Outlet />
   </div>
   )
@@ -290,7 +324,6 @@ function ChallengeOverview ({ challenge }: { challenge: Challenge | ChallengeSum
     <div className='md:px-0 justify-start'>
       {isExpired && <div className='text-red text-center'>This challenge has ended</div>}
 
-      <h1 className='text-xl py-2'>Timing</h1>
       <div className="mb-2 flex flex-cols">
         <div className="w-1/3">
           <div className="font-bold">

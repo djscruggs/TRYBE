@@ -187,7 +187,7 @@ model CheckIn {
   challengeId       Int
   memberChallengeId Int
   challenge         Challenge       @relation(fields: [challengeId], references: [id], onDelete: Cascade)
-  memberChallenge   MemberChallenge @relation(fields: [memberChallengeId], references: [id])
+  memberChallenge   MemberChallenge @relation(fields: [memberChallengeId], references: [id], onDelete: Cascade)
   user              User            @relation(fields: [userId], references: [id], onDelete: SetNull)
   likes             Like[]
   likeCount         Int             @default(0)
