@@ -41,6 +41,6 @@ export default function Schedule (): JSX.Element {
   const { posts } = useLoaderData<typeof loader>() as ChallengeScheduleData
 
   return (
-    <ChallengeSchedule challenge={challenge} posts={posts} isSchedule={true} />
+    <ChallengeSchedule challenge={challenge} posts={posts} key={challenge.id} isSchedule={true} />
   )
 }

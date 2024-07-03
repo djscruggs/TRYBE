@@ -1,7 +1,7 @@
 import { prisma } from '~/models/prisma.server'
 import { requireCurrentUser } from '~/models/auth.server'
 import { loadUser } from '~/models/user.server'
-import { loadChallenge, calculateNextCheckin, updateCheckin } from '~/models/challenge.server'
+import { joinChallenge, loadChallenge, calculateNextCheckin, updateCheckin } from '~/models/challenge.server'
 import { json, type LoaderFunction, type ActionFunctionArgs } from '@remix-run/node'
 import type { MemberChallenge } from '@prisma/client'
 import { unstable_parseMultipartFormData } from '@remix-run/node'
@@ -27,9 +27,8 @@ export async function action (args: ActionFunctionArgs): Promise<prisma.checkIn>
     })
   }
   // allow user who created the challenge to check in even if not a member
-  const user = await loadUser(currentUser.id)
   const body = rawData.get('body') as string ?? ''
-  const membership = await prisma.memberChallenge.findFirst({
+  let membership = await prisma.memberChallenge.findFirst({
     where: {
       userId: Number(currentUser.id),
       challengeId: Number(params.id)
@@ -40,7 +39,12 @@ export async function action (args: ActionFunctionArgs): Promise<prisma.checkIn>
       }
     }
   })
-  const canCheckIn = membership ? membership.id : undefined
+  let canCheckIn = !!membership
+  if (challenge.userId === currentUser.id) {
+    // if it's the creator of the challenge, create a membership on the fly
+    membership = await joinChallenge(currentUser.id, Number(challenge.id))
+    canCheckIn = true
+  }
   if (canCheckIn) {
     let result
     if (rawData.get('checkinId')) {

@@ -4,7 +4,7 @@ import {
   Button
 } from '@material-tailwind/react'
 import { GiShinyApple } from 'react-icons/gi'
-import { FaRegComment, FaRegCalendarAlt, FaUserFriends, FaRegHeart } from 'react-icons/fa'
+import { FaRegComment, FaRegCalendarAlt, FaUserFriends } from 'react-icons/fa'
 import { type ChallengeSummary } from '~/utils/types'
 import { colorToClassName, textColorFromContainer, getIconOptionsForColor, buttonColorFromContainer, resizeImageToFit } from '~/utils/helpers'
 import { CurrentUserContext } from '~/utils/CurrentUserContext'

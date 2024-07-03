@@ -1,12 +1,12 @@
 import { requireCurrentUser } from '~/models/auth.server'
 import { type LoaderFunction, json } from '@remix-run/node'
-import { useLoaderData, useRevalidator, useRouteLoaderData } from '@remix-run/react'
+import { useLoaderData, useRouteLoaderData } from '@remix-run/react'
 import { fetchCheckIns } from '~/models/challenge.server'
-import type { Challenge, MemberChallenge } from '~/utils/types'
+import type { Challenge, MemberChallenge, CurrentUser } from '~/utils/types'
 import { differenceInDays, format } from 'date-fns'
 import { CircularProgressbarWithChildren, buildStyles } from 'react-circular-progressbar'
-import { ChallengeMemberCheckin } from '~/components/challengeMemberCheckin'
-import CheckinsList from '~/components/checkinsList'
+import { useContext } from 'react'
+import { CurrentUserContext } from '~/utils/CurrentUserContext'
 import 'react-circular-progressbar/dist/styles.css'
 import { fetchUserLikes } from '~/models/like.server'
 export const loader: LoaderFunction = async (args) => {
@@ -21,17 +21,18 @@ export const loader: LoaderFunction = async (args) => {
   return json({ checkIns, likes })
 }
 export default function MyCheckIns (): JSX.Element {
-  const revalidator = useRevalidator()
-  const { checkIns, error, likes } = useLoaderData<typeof loader>()
+  const { checkIns, error } = useLoaderData<typeof loader>()
   const { membership, challenge } = useRouteLoaderData<typeof useRouteLoaderData>('routes/challenges.v.$id') as { membership: MemberChallenge, challenge: Challenge }
   const numDays = differenceInDays(challenge.endAt, challenge.startAt)
+  const { currentUser } = useContext(CurrentUserContext)
   if (error) {
     return <h1>{error}</h1>
   }
-  if (!membership) {
-    return <p>Loading...</p>
+  if (!membership && challenge.userId !== currentUser?.id) {
+    return <p>Boo...</p>
   }
-  const uniqueDays = new Set(checkIns.map(checkIn => format(new Date(checkIn.createdAt), 'yyyy-MM-dd'))).size
+  const typedCheckIns = checkIns as Array<{ createdAt: string }>
+  const uniqueDays = new Set(typedCheckIns.map(checkIn => format(new Date(checkIn.createdAt), 'yyyy-MM-dd'))).size
   const progress = (uniqueDays / numDays) * 100
   return (
         <div className='max-w-[200px] flex items-center justify-center'>
