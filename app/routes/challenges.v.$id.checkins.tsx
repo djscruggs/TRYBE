@@ -3,8 +3,10 @@ import { type LoaderFunction, json } from '@remix-run/node'
 import { useLoaderData, useRevalidator, useRouteLoaderData, Outlet } from '@remix-run/react'
 import { fetchCheckIns } from '~/models/challenge.server'
 import type { Challenge, MemberChallenge } from '~/utils/types'
-import { differenceInDays, format } from 'date-fns'
 import { ChallengeMemberCheckin } from '~/components/challengeMemberCheckin'
+import { useContext } from 'react'
+import { CurrentUserContext } from '~/utils/CurrentUserContext'
+
 import CheckinsList from '~/components/checkinsList'
 import 'react-circular-progressbar/dist/styles.css'
 import { fetchUserLikes } from '~/models/like.server'
@@ -21,12 +23,13 @@ export const loader: LoaderFunction = async (args) => {
 }
 export default function CheckIns (): JSX.Element {
   const revalidator = useRevalidator()
+  const { currentUser } = useContext(CurrentUserContext)
   const { checkIns, error, likes } = useLoaderData<typeof loader>()
   const { membership, challenge } = useRouteLoaderData<typeof useRouteLoaderData>('routes/challenges.v.$id') as { membership: MemberChallenge, challenge: Challenge }
   if (error) {
     return <h1>{error}</h1>
   }
-  if (!membership) {
+  if (!membership && currentUser?.id !== challenge.userId) {
     return <p>Loading...</p>
   }
   return (
