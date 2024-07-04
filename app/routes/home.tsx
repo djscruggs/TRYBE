@@ -138,7 +138,7 @@ export default function Home (): JSX.Element {
   }
   return (
           <div className='flex-cols cols-1 justify-center max-w-xl'>
-            <div className='w-full flex items-center max-w-2xl px-2 mt-8 mb-4'>
+            <div className='w-full flex items-center max-w-2xl px-2 mt-10 mb-4'>
             <div className='flex items-center justify-center max-w-xl'>
                   <div className="flex-grow-0 justify-self-start">
                      <UserAvatar size={isMobile ? 'md' : 'xxl'} />
