@@ -111,8 +111,8 @@ export interface Challenge {
   name: string | null | undefined
   description: string | null | undefined
   mission: string | null | undefined
-  startAt: Date
-  endAt: Date
+  startAt: Date | null | undefined
+  endAt: Date | null | undefined
   frequency: 'DAILY' | 'WEEKDAYS' | 'ALTERNATING' | 'WEEKLY' | 'CUSTOM' | undefined
   coverPhotoMeta: Record<string, string> | null
   icon: string | null | undefined
@@ -137,7 +137,7 @@ export interface ChallengeSummary extends Challenge {
     likes: number
     comments: number
   }
-  isMember: boolean
+  isMember?: boolean
   members?: Array<{
     userId: number
   }>
