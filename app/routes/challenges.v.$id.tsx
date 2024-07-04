@@ -1,6 +1,7 @@
 import { loadChallengeSummary } from '~/models/challenge.server'
 import { loadPostSummary } from '~/models/post.server'
 import { loadThreadSummary } from '~/models/thread.server'
+import { userHasLiked } from '~/models/like.server'
 import { Outlet, useLoaderData, useNavigate, useLocation, useMatches } from '@remix-run/react'
 import { useContext, useState } from 'react'
 import { requireCurrentUser } from '~/models/auth.server'
@@ -14,31 +15,21 @@ import {
 } from '~/utils/helpers'
 import { type DateTimeFormatOptions } from 'intl'
 import { CurrentUserContext } from '~/utils/CurrentUserContext'
-import { Spinner, Button } from '@material-tailwind/react'
+import { Button } from '@material-tailwind/react'
 import { LiaUserFriendsSolid } from 'react-icons/lia'
 import { prisma } from '~/models/prisma.server'
 import { isPast } from 'date-fns'
 import getUserLocale from 'get-user-locale'
-import Liker from '~/components/liker'
-import ShareMenu from '~/components/shareMenu'
 import DialogConfirm from '~/components/dialogConfirm'
 import MenuChallenge from '~/components/menuChallenge'
 import ChallengeHeader from '~/components/challengeHeader'
-import { ChallengeMemberCheckin } from '~/components/challengeMemberCheckin'
 import { CheckInButton } from '~/components/checkinButton'
 
 interface ViewChallengeData {
   challenge: ChallengeSummary
-  latestPost: PostSummary | null
-  latestThread: ThreadSummary | null
   hasLiked?: boolean
-  hasLikedPost?: boolean
-  hasLikedThread?: boolean
   membership?: MemberChallenge | null | undefined
-  checkInsCount?: number
-  isMember?: boolean
-  loadingError?: string | null
-  locale?: string
+
 }
 interface ChallengeSummaryWithCounts extends ChallengeSummary {
   _count: {
@@ -48,23 +39,19 @@ interface ChallengeSummaryWithCounts extends ChallengeSummary {
   }
 }
 
-export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
+export const loader: LoaderFunction = async (args: LoaderFunctionArgs): Promise<ViewChallengeData> => {
   const currentUser = await requireCurrentUser(args)
   const { params } = args
   if (!params.id) {
     return null
   }
-  const result: ChallengeSummaryWithCounts | undefined = await loadChallengeSummary(params.id)
-  if (!result) {
+  const challenge: ChallengeSummaryWithCounts | undefined = await loadChallengeSummary(params.id)
+  if (!challenge) {
     const error = { loadingError: 'Challenge not found' }
     return error
   }
-  // load memberships, likes & checkins for current user if it exists
-  let likes = 0
-  let checkInsCount = 0
   let membership
   if (currentUser) {
-    const challengeId = params.id ? Number(params.id) : undefined
     membership = await prisma.memberChallenge.findFirst({
       where: {
         userId: Number(currentUser.id),
@@ -76,91 +63,15 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
         }
       }
     }) as MemberChallenge | null
-    // has the user liked this challenge?
-    likes = await prisma.like.count({
-      where: {
-        challengeId,
-        userId: Number(currentUser.id)
-      }
-    })
-    // how many times has the user checked in for this challenge?
-    if (membership) {
-      checkInsCount = await prisma.checkIn.count({
-        where: {
-          challengeId,
-          userId: Number(currentUser.id)
-        }
-      })
-    }
   }
-  // load most recent post
-  let latestPost = null
-  let hasLikedPost = 0
-  const _post = await prisma.post.findFirst({
-    where: {
-      challengeId: Number(params.id),
-      published: true,
-      OR: [
-        { publishAt: { lte: new Date() } },
-        { publishAt: null }
-      ]
-    },
-    include: {
-      user: {
-        include: {
-          profile: true
-        }
-      }
-    },
-    orderBy: {
-      createdAt: 'desc'
-    }
-  })
-  if (_post) {
-    latestPost = await loadPostSummary(_post.id) as unknown as PostSummary
-    hasLikedPost = await prisma.like.count({
-      where: {
-        postId: Number(_post.id),
-        userId: Number(currentUser?.id)
-      }
-    })
-  }
-  let latestThread = null
-  let hasLikedThread = 0
-  const _thread = await prisma.thread.findFirst({
-    where: {
-      challengeId: Number(params.id)
-    },
-    include: {
-      user: {
-        include: {
-          profile: true
-        }
-      }
-    },
-    orderBy: {
-      createdAt: 'desc'
-    }
-  })
-  if (_thread) {
-    latestThread = await loadThreadSummary(_thread.id) as unknown as ThreadSummary
-    hasLikedThread = await prisma.like.count({
-      where: {
-        threadId: Number(_thread.id),
-        userId: Number(currentUser?.id)
-      }
-    })
-  }
-  const locale = getUserLocale()
-  const data: ViewChallengeData = { challenge: result, membership, hasLiked: Boolean(likes), hasLikedPost: Boolean(hasLikedPost), hasLikedThread: Boolean(hasLikedThread), checkInsCount, locale, latestPost, latestThread }
-  return data
+
+  return { challenge, membership }
 }
 export default function ViewChallenge (): JSX.Element {
   const data = useLoaderData<typeof loader>()
   const matches = useMatches()
-  const { challenge, hasLiked, membership } = data
+  const { challenge, membership } = data
   const parsedDescription = textToJSX(challenge.description as string ?? '')
-  const likesCount = challenge?._count?.likes ?? 0
   const location = useLocation()
   const [showConfirm, setShowConfirm] = useState(false)
   const isOverview = matches.length === 2
@@ -172,9 +83,6 @@ export default function ViewChallenge (): JSX.Element {
   const navigate = useNavigate()
   const [loading, setLoading] = useState<boolean>(false)
   const [isMember, setIsMember] = useState(Boolean(membership?.id))
-  const getFullUrl = (): string => {
-    return `${window.location.origin}/challenges/v/${challenge?.id}`
-  }
 
   if (!data) {
     return <p>No data.</p>

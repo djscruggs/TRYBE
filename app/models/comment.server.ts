@@ -20,8 +20,8 @@ function generateIncludeObject (levels: number): any {
 }
 
 export const fetchComments = async (params: FetchCommentsParams): Promise<prisma.comment[]> => {
-  const { challengeId, postId, threadId } = params
-  if (!challengeId && !postId && !threadId) {
+  const { challengeId, postId, threadId, checkInId } = params
+  if (!challengeId && !postId && !threadId && !checkInId) {
     throw new Error('challengeId or postId must be provided')
   }
   const includes = generateIncludeObject(5)
@@ -32,7 +32,8 @@ export const fetchComments = async (params: FetchCommentsParams): Promise<prisma
         OR: [
           { challengeId: challengeId ? Number(challengeId) : undefined },
           { postId: postId ? Number(postId) : undefined },
-          { threadId: threadId ? Number(threadId) : undefined }
+          { threadId: threadId ? Number(threadId) : undefined },
+          { checkInId: checkInId ? Number(checkInId) : undefined }
         ]
       }
     },

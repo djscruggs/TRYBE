@@ -1,6 +1,7 @@
 import { prisma } from './prisma.server'
 
 interface HasLikedParams {
+  userId: number
   postId?: number
   commentId?: number
   threadId?: number
@@ -8,10 +9,11 @@ interface HasLikedParams {
   checkinId?: number
 }
 export async function userHasLiked (params: HasLikedParams): Promise<number> {
-  const { postId, commentId, threadId, challengeId, checkinId } = params
+  const { userId, postId, commentId, threadId, challengeId, checkinId } = params
   const result = await prisma.like.aggregate({
     _count: { id: true },
     where: {
+      userId,
       OR: [
         { challengeId: challengeId ? Number(challengeId) : undefined },
         { postId: postId ? Number(postId) : undefined },
