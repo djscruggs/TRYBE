@@ -3,7 +3,7 @@ import { type LoaderFunction, json } from '@remix-run/node'
 import { useLoaderData, useNavigate, useParams, useFetcher } from '@remix-run/react'
 import { fetchChallengeSummaries, fetchUserChallengesAndMemberships } from '~/models/challenge.server'
 import { fetchMemberChallenges } from '~/models/user.server'
-import { fetchUserLikes } from '~/models/like.server'
+import { likesByType } from '~/models/like.server'
 import { CurrentUserContext } from '~/utils/CurrentUserContext'
 import { useContext, useEffect, useState } from 'react'
 import ChallengeList from '~/components/challengeList'
@@ -25,11 +25,9 @@ export const loader: LoaderFunction = async (args) => {
     const error = { loadingError: 'Unable to load challenges' }
     return json(error)
   }
-  const memberships = await fetchMemberChallenges(uid) || []
-  const rawLikes = await fetchUserLikes(uid) || []
-  const likes = rawLikes
-    .map((like) => like.challengeId)
-    .filter((id) => id !== undefined && id !== null)
+  const memberships = await fetchMemberChallenges(uid) || [] as number[]
+  const rawLikes = await likesByType({ userId: uid }) || { challenge: [] as number[] }
+  const likes = rawLikes.challenge
   return json({ challenges, memberships, error: null, likes })
 }
 

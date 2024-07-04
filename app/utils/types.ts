@@ -170,6 +170,13 @@ export interface Like {
   checkIn?: CheckIn
   createdAt: Date
 }
+export interface GroupedLikes {
+  post: number[]
+  comment: number[]
+  thread: number[]
+  challenge: number[]
+  checkin: number[]
+}
 
 export interface CheckIn {
   id: number

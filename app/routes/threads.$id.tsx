@@ -5,7 +5,7 @@ import { useState } from 'react'
 import { requireCurrentUser } from '~/models/auth.server'
 import type { ObjectData, ThreadSummary, Comment } from '~/utils/types'
 import { json, type LoaderFunction, type LoaderFunctionArgs } from '@remix-run/node'
-import { userHasLiked, commentIdsLikedByUser } from '~/models/like.server'
+import { userHasLiked, likesByType } from '~/models/like.server'
 import FormComment from '~/components/formComment'
 import CardThread from '~/components/cardThread'
 import CommentsContainer from '~/components/commentsContainer'
@@ -32,15 +32,15 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs): Promise<
   }
   // load memberships & likes for current user if it exists
   let hasLiked = false
+  let likes = { thread: [] as number[], comment: [] as number[] }
   if (currentUser) {
     // has the user liked this thread?
-    const threadlikeCount = await userHasLiked({ threadId: thread.id })
-    hasLiked = threadlikeCount > 0
+    likes = await likesByType({ userId: currentUser.id }) || { thread: [], comment: [] }
+    hasLiked = likes.thread.includes(Number(thread.id))
   }
   // get comments
   const comments = await fetchComments({ threadId: thread.id })
-  const commentIds = recursivelyCollectCommentIds(comments)
-  const likedCommentIds: number[] = currentUser ? await commentIdsLikedByUser({ commentIds, userId: currentUser.id }) : []
+  const likedCommentIds = likes.comment
   const data: ThreadData = { thread: thread as unknown as ThreadSummary, hasLiked, comments, likedCommentIds }
   return data
 }
@@ -50,7 +50,7 @@ export default function ViewThread (): JSX.Element {
   if (location.pathname.includes('edit') || location.pathname.includes('quote')) {
     return <Outlet />
   }
-  const data: ThreadData | ErrorData = useLoaderData()
+  const data = useLoaderData<typeof loader>()
   if (!data) {
     return <p>No data.</p>
   }
