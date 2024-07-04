@@ -1,5 +1,6 @@
 import { CurrentUserContext } from '~/utils/CurrentUserContext'
 import { requireCurrentUser } from '~/models/auth.server'
+import { likesByType } from '~/models/like.server'
 import { useContext, useState, useEffect } from 'react'
 import UserAvatar from '~/components/useravatar'
 import FormNote from '~/components/formNote'
@@ -12,8 +13,9 @@ import CardChallenge from '~/components/cardChallenge'
 import CardNote from '~/components/cardNote'
 
 interface FeedLoaderData {
-  challenges: Array<Partial<ChallengeSummary>>
-  notes: Array<Partial<NoteSummary>>
+  challenges: ChallengeSummary[]
+  notes: NoteSummary[]
+  likes: Record<string, number[]>
 };
 export const loader: LoaderFunction = async (args): Promise<FeedLoaderData> => {
   const currentUser = await requireCurrentUser(args)
@@ -121,7 +123,8 @@ export const loader: LoaderFunction = async (args): Promise<FeedLoaderData> => {
     ..._memberships.map(membership => membership.challengeId),
     ...challenges.filter(challenge => challenge.userId === currentUser?.id).map(challenge => challenge.id)
   ]
-  return { challenges, notes, memberships }
+  const likes = await likesByType({ userId: currentUser?.id ?? 0 })
+  return { challenges, notes, memberships, likes }
 }
 interface FeedItem {
   id?: string
@@ -130,14 +133,14 @@ interface FeedItem {
 }
 
 export default function Home (): JSX.Element {
-  const data = useLoaderData<FeedLoaderData>()
-  const { challenges, memberships } = data
-  const [notes, setNotes] = useState<NoteSummary[]>(data.notes)
+  const data = useLoaderData<typeof loader>()
+  const { challenges, memberships, likes } = data
+  const [notes, setNotes] = useState<NoteSummary[]>(data.notes as unknown as NoteSummary[])
   const [feedItems, setFeedItems] = useState<FeedItem[]>([])
   useEffect(() => {
     const combinedArray = [...challenges, ...notes].map(item => ({
       ...item
-    })).sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
+    })).sort((a, b) => new Date(b.updatedAt as Date).getTime() - new Date(a.updatedAt as Date).getTime())
     setFeedItems(combinedArray)
   }, [challenges, notes])
   const { currentUser } = useContext(CurrentUserContext)
@@ -172,7 +175,7 @@ export default function Home (): JSX.Element {
             {feedItems.map(item => {
               if ('mission' in item) {
                 return (<div className="pl-0 mt-4 w-full max-w-lg" key={`challenge-${item.id}`}>
-                          <CardChallenge challenge={item as unknown as ChallengeSummary} isMember={memberships.includes(item.id)} />
+                          <CardChallenge challenge={item as unknown as ChallengeSummary} isMember={memberships.includes(item.id)} isLiked={likes.challenge.includes(item.id)}/>
                         </div>)
               } else {
                 return (<div className=" pl-0 mt-4 w-full max-w-lg" key={`note-${item.id}`}>

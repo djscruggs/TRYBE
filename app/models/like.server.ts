@@ -55,3 +55,41 @@ export async function commentIdsLikedByUser (params: CommentsLikedByUserParams):
   const likes = await commentsLikedByUser(params)
   return likes.map(like => like.commentId)
 }
+
+interface LikesByTypeParams {
+  userId: number
+}
+
+export async function likesByType (params: LikesByTypeParams): Promise<prisma.Like> {
+  const { userId } = params
+
+  const likes = await prisma.like.findMany({
+    where: {
+      userId
+    },
+    select: {
+      postId: true,
+      commentId: true,
+      threadId: true,
+      challengeId: true,
+      checkinId: true
+    }
+  })
+
+  const groupedLikes: Record<string, number[]> = {
+    post: [],
+    comment: [],
+    thread: [],
+    challenge: [],
+    checkin: []
+  }
+  likes.forEach(like => {
+    if (like.postId) groupedLikes.post.push(like.postId)
+    if (like.commentId) groupedLikes.comment.push(like.commentId)
+    if (like.threadId) groupedLikes.thread.push(like.threadId)
+    if (like.challengeId) groupedLikes.challenge.push(like.challengeId)
+    if (like.checkinId) groupedLikes.checkin.push(like.checkinId)
+  })
+
+  return groupedLikes
+}
