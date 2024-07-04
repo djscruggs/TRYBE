@@ -9,16 +9,14 @@ import { CurrentUserContext } from '~/utils/CurrentUserContext'
 
 import CheckinsList from '~/components/checkinsList'
 import 'react-circular-progressbar/dist/styles.css'
-import { fetchUserLikes } from '~/models/like.server'
+import { likesByType } from '~/models/like.server'
 export const loader: LoaderFunction = async (args) => {
   const currentUser = await requireCurrentUser(args)
   const userId = Number(args.params.userId ?? currentUser?.id)
   const challengeId = Number(args.params.id)
   const checkIns = await fetchCheckIns({ challengeId }) as { error?: string }
-  const rawLikes = await fetchUserLikes(userId) || []
-  const likes = rawLikes
-    .map((like) => like.checkinId)
-    .filter((id) => id !== undefined && id !== null)
+  const rawLikes = await likesByType({ userId }) || { comment: [] as number[] }
+  const likes = rawLikes.comment
   return json({ checkIns, likes })
 }
 export default function CheckIns (): JSX.Element {

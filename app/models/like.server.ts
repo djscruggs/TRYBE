@@ -1,4 +1,5 @@
 import { prisma } from './prisma.server'
+import { type GroupedLikes } from '~/utils/types'
 
 interface HasLikedParams {
   userId: number
@@ -42,25 +43,11 @@ export async function commentsLikedByUser (params: CommentsLikedByUserParams): P
   })
   return totalCommentsLiked
 }
-export async function fetchUserLikes (userId: number): Promise<prisma.Like[]> {
-  const likes = await prisma.like.findMany({
-    where: {
-      userId
-    }
-  })
-  return likes
-}
-export async function commentIdsLikedByUser (params: CommentsLikedByUserParams): Promise<number[]> {
-  if (!params.commentIds.length || !params.userId) return []
-  const likes = await commentsLikedByUser(params)
-  return likes.map(like => like.commentId)
-}
 
 interface LikesByTypeParams {
   userId: number
 }
-
-export async function likesByType (params: LikesByTypeParams): Promise<prisma.Like> {
+export async function likesByType (params: LikesByTypeParams): Promise<GroupedLikes> {
   const { userId } = params
 
   const likes = await prisma.like.findMany({
@@ -76,7 +63,7 @@ export async function likesByType (params: LikesByTypeParams): Promise<prisma.Li
     }
   })
 
-  const groupedLikes: Record<string, number[]> = {
+  const groupedLikes: GroupedLikes = {
     post: [],
     comment: [],
     thread: [],

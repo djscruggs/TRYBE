@@ -2,8 +2,8 @@ import React, { useContext, useState } from 'react'
 import { useParams, useLoaderData, json } from '@remix-run/react'
 import { CurrentUserContext } from '~/utils/CurrentUserContext'
 import { type LoaderFunction } from '@remix-run/server-runtime'
-import { fetchComments, recursivelyCollectCommentIds } from '~/models/comment.server'
-import { commentIdsLikedByUser } from '~/models/like.server'
+import { fetchComments } from '~/models/comment.server'
+import { likesByType } from '~/models/like.server'
 import FormComment from '~/components/formComment'
 import CommentsContainer from '~/components/commentsContainer'
 import { useRevalidator } from 'react-router-dom'
@@ -13,8 +13,8 @@ import { requireCurrentUser } from '~/models/auth.server'
 export const loader: LoaderFunction = async (args) => {
   const currentUser: CurrentUser | null = await requireCurrentUser(args)
   const comments = await fetchComments({ challengeId: Number(args.params.id) })
-  const commentIds = recursivelyCollectCommentIds(comments)
-  const likedCommentIds: number[] = currentUser?.id ? await commentIdsLikedByUser({ commentIds, userId: currentUser.id }) : []
+  const likes = currentUser?.id ? await likesByType({ userId: currentUser.id }) : { comment: [] as number[] }
+  const likedCommentIds = likes.comment
   if (!comments) {
     const error = { loadingError: 'Challenge not found' }
     return json(error)

@@ -7,8 +7,8 @@ import type { Comment, CurrentUser } from '~/utils/types'
 import CommentsContainer from '~/components/commentsContainer'
 import FormComment from '~/components/formComment'
 import { CurrentUserContext } from '~/utils/CurrentUserContext'
-import { fetchComments, recursivelyCollectCommentIds } from '~/models/comment.server'
-import { commentIdsLikedByUser } from '~/models/like.server'
+import { fetchComments } from '~/models/comment.server'
+import { likesByType } from '~/models/like.server'
 import { type LoaderFunctionArgs } from '@remix-run/node'
 import { requireCurrentUser } from '~/models/auth.server'
 
@@ -22,9 +22,8 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
     return json(error)
   }
   const comments: Comment[] = result
-  const commentIds = recursivelyCollectCommentIds(comments)
-  const likedCommentIds: number[] = currentUser?.id ? await commentIdsLikedByUser({ commentIds, userId: currentUser.id }) : []
-
+  const likes = currentUser?.id ? await likesByType({ userId: currentUser.id }) : { comment: [] }
+  const likedCommentIds = likes.comment
   return { commentsData: comments, postId, likedCommentIds }
 }
 export default function ViewPostComments (): JSX.Element {

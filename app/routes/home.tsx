@@ -98,16 +98,6 @@ export const loader: LoaderFunction = async (args): Promise<FeedLoaderData> => {
 
     }
   })
-  // const posts = await prisma.post.findMany({
-  //   where: {
-  //     published: true
-  //   },
-  //   include: {
-  //     user: {
-  //       include: { profile: true }
-  //     }
-  //   }
-  // })
   const _memberships = await prisma.memberChallenge.findMany({
     where: {
       userId: currentUser ? Number(currentUser.id) : 0
