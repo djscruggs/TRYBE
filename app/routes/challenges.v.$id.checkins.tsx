@@ -27,7 +27,6 @@ export default function CheckIns (): JSX.Element {
   const { currentUser } = useContext(CurrentUserContext)
   const { checkIns, error, likes, comments } = useLoaderData<typeof loader>()
   const { membership, challenge } = useRouteLoaderData<typeof useRouteLoaderData>('routes/challenges.v.$id') as { membership: MemberChallenge, challenge: Challenge }
-  const isPersonal = location.pathname.includes('mine') // flag to turn off comments on personal checkins
   if (error) {
     return <h1>{error}</h1>
   }
@@ -39,7 +38,7 @@ export default function CheckIns (): JSX.Element {
         <Outlet />
         <ChallengeMemberCheckin showDetails={true} challenge={challenge} memberChallenge={membership} afterCheckIn={() => { revalidator.revalidate() }} />
         <div className='flex flex-col items-start justify-center mt-4  w-full'>
-          <CheckinsList checkIns={checkIns} likes={likes} allowComments={!isPersonal} comments={comments}/>
+          <CheckinsList checkIns={checkIns} likes={likes} allowComments={true} comments={comments}/>
         </div>
     </div>
   )
