@@ -4,6 +4,7 @@ interface FetchCommentsParams {
   challengeId?: number
   postId?: number
   threadId?: number
+  checkInId?: number
 }
 function generateIncludeObject (levels: number): any {
   if (levels <= 0) {
@@ -17,6 +18,34 @@ function generateIncludeObject (levels: number): any {
     },
     replies: { include: generateIncludeObject(levels - 1) }
   }
+}
+
+export const fetchChallengeCheckinComments = async (challengeId: number): Promise<prisma.comment[]> => {
+  // first get checkins for challenge
+  const checkIns = await prisma.checkIn.findMany({
+    select: { id: true },
+    where: { challengeId }
+  })
+  const checkInIds = checkIns.map(checkIn => checkIn.id)
+  const includes = generateIncludeObject(5)
+  const comments = await prisma.comment.findMany({
+    where: { checkInId: { in: checkInIds } },
+    orderBy: {
+      createdAt: 'desc'
+    },
+    include: includes
+  })
+  // Reformat comments as a hash keyed off checkInId
+  const commentsByCheckInId: Record<number, prisma.comment[]> = {}
+  comments.forEach(comment => {
+    const checkInId = comment.checkInId!
+    if (!commentsByCheckInId[checkInId]) {
+      commentsByCheckInId[checkInId] = []
+    }
+    commentsByCheckInId[checkInId].push(comment)
+  })
+
+  return commentsByCheckInId
 }
 
 export const fetchComments = async (params: FetchCommentsParams): Promise<prisma.comment[]> => {

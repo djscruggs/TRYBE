@@ -13,36 +13,57 @@ import { toast } from 'react-hot-toast'
 import { FaRegComment } from 'react-icons/fa'
 import FormComment from '~/components/formComment'
 import CommentsContainer from '~/components/commentsContainer'
-export default function CheckinsList ({ checkIns, likes }: { checkIns: CheckIn[], likes: number[] }): JSX.Element {
+export default function CheckinsList ({ checkIns, likes, comments, allowComments }: { checkIns: CheckIn[], likes: number[], comments: Record<number, Comment[]>, allowComments: boolean }): JSX.Element {
+  let previousDate: string | null = null
   return (
     <div className='text-left flex flex-col w-full'>
-    {checkIns.map((checkIn: CheckIn) => (
-      <CheckinRow key={checkIn.id} checkIn={checkIn} isLiked={likes.includes(checkIn.id)} />
+    {checkIns.map((checkIn: CheckIn, index: number) => {
+      const currentDate = new Date(checkIn.createdAt).toLocaleDateString()
+      const isNewDay = previousDate !== currentDate
+      previousDate = currentDate
 
-    ))}
+      return (
+        <>
+          {isNewDay &&
+          <div className="border-t border-red text-right text-xs italic">{currentDate}</div>
+          }
+          <div key={checkIn.id} className={`${isNewDay ? '-mt-5' : ''}`}>
+            <CheckinRow checkIn={checkIn} isLiked={likes.includes(checkIn.id)} comments={comments[checkIn.id]} allowComments={allowComments}/>
+          </div>
+        </>
+      )
+    })}
   </div>
   )
 }
 
-export function CheckinRow ({ checkIn, isLiked }: { checkIn: CheckIn, isLiked: boolean }): JSX.Element {
+interface CheckinRowProps {
+  checkIn: CheckIn
+  isLiked: boolean
+  comments: Comment[]
+  allowComments: boolean
+}
+export function CheckinRow (props: CheckinRowProps): JSX.Element {
   const { currentUser } = useContext(CurrentUserContext)
   const locale = userLocale(currentUser)
+  const { allowComments, isLiked } = props
   const [showLightbox, setShowLightbox] = useState(false)
-  const [checkInBody, setCheckInBody] = useState(textToJSX(checkIn.body ?? ''))
-  const [checkInObj, setCheckInObj] = useState<CheckIn | null>(checkIn)
+  const [checkInBody, setCheckInBody] = useState(textToJSX(props.checkIn.body ?? ''))
+  const [checkInObj, setCheckInObj] = useState<CheckIn | null>(props.checkIn)
   const [deleteDialog, setDeleteDialog] = useState(false)
   const [showCommentForm, setShowCommentForm] = useState(false)
-  const [showComments, setShowComments] = useState(false)
+  const [showComments, setShowComments] = useState(props.comments !== undefined)
   const [firstComment, setFirstComment] = useState<Comment | null>(null)
-  const [comments, setComments] = useState<Comment[]>([])
+  const [comments, setComments] = useState<Comment[]>(props.comments ?? [])
   // helper function that sets the date to only show the time if it's today
   let formatted
-  const created = new Date(checkIn.createdAt)
-  if (isToday(created)) {
-    formatted = created.toLocaleTimeString(locale, { hour: 'numeric', minute: 'numeric' })
-  } else {
-    formatted = created.toLocaleDateString(locale, { month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric' })
-  }
+  const created = new Date(props.checkIn.createdAt)
+  // if (isToday(created)) {
+  //   formatted = created.toLocaleTimeString(locale, { hour: 'numeric', minute: 'numeric' })
+  // } else {
+  //   formatted = created.toLocaleDateString(locale, { month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric' })
+  // }
+  formatted = created.toLocaleTimeString(locale, { hour: 'numeric', minute: 'numeric' })
   const resetOnSave = (data: { checkIn: CheckIn }): void => {
     setCheckInBody(textToJSX(data.checkIn.body ?? ''))
     setCheckInObj(data.checkIn)
@@ -84,42 +105,36 @@ export function CheckinRow ({ checkIn, isLiked }: { checkIn: CheckIn, isLiked: b
     setFirstComment(comment)
     setShowCommentForm(false)
   }
-  const showEditDelete = checkIn.userId === currentUser?.id
+  const showEditDelete = props.checkIn.userId === currentUser?.id
   if (!checkInObj) {
     return <></>
   }
   return (
     <>
-      <div className='h-fit relative flex flex-items-center border-b w-full p-2 mb-2'>
+      <div className='h-fit relative flex flex-items-center w-full p-2 mb-2'>
         <div className='w-full h-full flex flex-row mb-4'>
           <div className='w-[50px] min-w-[50px] text-xs'>
-            <AvatarLoader object={checkIn} /><br />
+            <AvatarLoader object={checkInObj} /><br />
 
           </div>
-          <div className='ml-2 w-full pl-2'>
+          <div className='ml-0 w-full'>
           {showEditForm
             ? <FormCheckIn checkIn={checkInObj} challengeId={checkInObj.challengeId} onCancel={() => { setShowEditForm(false) }} saveLabel='Save' afterCheckIn={resetOnSave}/>
             : (
 
             <>
-            {checkIn.userId !== currentUser?.id && (
               <div className='text-xs mb-2'>
-                {checkIn.user?.profile?.firstName} {checkIn.user?.profile?.lastName} - <span>{formatDistanceToNow(new Date(checkIn.createdAt), { addSuffix: true })}</span>
+                <span className='font-bold'>{checkInObj.user?.profile?.firstName} {checkInObj.user?.profile?.lastName}</span> <span className='text-xs'>{formatted}</span>
               </div>
-            )}
-            {checkIn.userId === currentUser?.id && (
-              <div className='text-xs mb-2'>
-                {formatted}
-              </div>
-            )}
 
-            {checkInBody ?? <span className='text-xs italic'>Checked in</span>}
+            {checkInBody ?? <span className='text-sm italic'>Checked in</span>}
 
             {checkInObj.imageMeta?.secure_url &&
               <img src={checkInObj.imageMeta.secure_url} alt='checkin picture' className='mt-4 cursor-pointer max-w-[400px]' onClick={handlePhotoClick}/>}
             {showLightbox && <Lightbox medium={checkInObj.imageMeta?.secure_url} large={checkInObj.imageMeta?.secure_url} alt='checkin photo' onClose={() => { setShowLightbox(false) }}/>}
             {checkInObj.videoMeta?.secure_url && <video className={`${checkInObj.imageMeta?.secure_url ? 'mt-6' : ''} max-w-[400px]`} src={checkInObj.videoMeta.secure_url} onClick={(event) => { event?.stopPropagation() }} controls />}
-            {(checkInBody ?? checkInObj.imageMeta?.secure_url ?? checkInObj.videoMeta?.secure_url) &&
+            {/* {(checkInBody ?? checkInObj.imageMeta?.secure_url ?? checkInObj.videoMeta?.secure_url) && */}
+            {allowComments &&
               <>
               <div className='mt-2 flex items-start'>
                 <span className="text-xs mr-4 cursor-pointer" onClick={handleComments}>
