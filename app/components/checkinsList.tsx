@@ -25,7 +25,7 @@ export default function CheckinsList ({ checkIns, likes, comments, allowComments
       return (
         <>
           {isNewDay &&
-          <div className="border-t border-red text-right text-xs italic">{currentDate}</div>
+          <div className="border-t border-red text-right text-xs italic pr-1">{currentDate}</div>
           }
           <div key={checkIn.id} className={`${isNewDay ? '-mt-5' : ''}`}>
             <CheckinRow checkIn={checkIn} isLiked={likes.includes(checkIn.id)} comments={comments[checkIn.id]} allowComments={allowComments}/>
@@ -134,12 +134,12 @@ export function CheckinRow (props: CheckinRowProps): JSX.Element {
             {showLightbox && <Lightbox medium={checkInObj.imageMeta?.secure_url} large={checkInObj.imageMeta?.secure_url} alt='checkin photo' onClose={() => { setShowLightbox(false) }}/>}
             {checkInObj.videoMeta?.secure_url && <video className={`${checkInObj.imageMeta?.secure_url ? 'mt-6' : ''} max-w-[400px]`} src={checkInObj.videoMeta.secure_url} onClick={(event) => { event?.stopPropagation() }} controls />}
             {/* {(checkInBody ?? checkInObj.imageMeta?.secure_url ?? checkInObj.videoMeta?.secure_url) && */}
-            {allowComments &&
+            {(allowComments || comments.length > 0) &&
               <>
               <div className='mt-2 flex items-start'>
                 <span className="text-xs mr-4 cursor-pointer" onClick={handleComments}>
                   <FaRegComment className="text-grey h-4 w-4 mr-2 inline" />
-                  {checkInObj._count?.comments} comments
+                  {checkInObj.commentCount} comments
                 </span>
                 <Liker isLiked={isLiked} itemId={checkInObj.id} itemType='checkIn' count={checkInObj.likeCount} />
 

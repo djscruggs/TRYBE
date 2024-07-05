@@ -195,6 +195,7 @@ export interface CheckIn {
   }
   likes?: Like[]
   likeCount: number
+  commentCount: number
 }
 
 export interface Profile {
