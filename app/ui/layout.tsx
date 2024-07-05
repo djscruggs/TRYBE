@@ -20,7 +20,7 @@ import {
   ChatBubbleLeftEllipsisIcon
 } from '@heroicons/react/24/outline'
 import { AnimatePresence, motion } from 'framer-motion'
-import type { RootLoaderData } from '~/root'
+import { FaChevronCircleLeft } from 'react-icons/fa'
 export default function Layout (): JSX.Element {
   const hasLoaded = useHasLoaded()
   if (!hasLoaded) {
@@ -49,10 +49,13 @@ export const FullLayout = (): JSX.Element => {
   const navigate = useNavigate()
   const navigation = useNavigation()
   const [newOpen, setNewOpen] = useState(false)
+
   // hack to remove padding on welcome screen mobile
   // hide nav if on index, login or register
   const [showNav, setShowNav] = useState(true)
   const isWelcome = location.pathname === '/'
+  console.log(location)
+  const isInterior = location.pathname.includes('/v/')
 
   useEffect(() => {
     if (['/', '/register', '/login', '/signup', '/signin'].includes(location.pathname)) {
@@ -150,6 +153,7 @@ export const FullLayout = (): JSX.Element => {
         </div>
         {/* mobile layout */}
         <div className="md:hidden max-w-screen flex flex-col min-h-screen max-h-screen min-w-screen p-0" onClick={hideMenu}>
+
                 {showNav &&
                 <>
                 {/*
@@ -165,6 +169,14 @@ export const FullLayout = (): JSX.Element => {
                 }
 
                 <div className={`flex flex-col items-center justify-center  ${isWelcome ? 'p-0' : ' px-2'}`}>
+                    {isInterior && showNav &&
+                        <div className='flex items-center justify-center w-full my-2'>
+                          <FaChevronCircleLeft
+                            className='w-6 h-6 text-grey cursor-pointer'
+                            onClick={() => { navigate(-1) }}
+                          />
+                        </div>
+                    }
                     <Outlet />
                     {/* <AnimatePresence mode='wait' initial={false}>
                         <motion.main
@@ -178,7 +190,7 @@ export const FullLayout = (): JSX.Element => {
                         </motion.main>
                     </AnimatePresence> */}
                 </div>
-                {showNav &&
+                {showNav && !isInterior &&
                   <div className={`${wrapperVisible ? 'opacity-100' : 'opacity-30'} transition-opacity duration-500 fixed bottom-0 left-0 right-0 max-w-screen flex items-center w-full justify-between m-0 p-0 px-2 py-1 bg-gray-50 border-2 border-slate-200 z-10`}>
                       <Link to="/" className='w-8 h-8 ml-6 flex justify-center items-center'>
                         <HomeIcon className='cursor-pointer w-8 h-8' />
