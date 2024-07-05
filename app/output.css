@@ -1101,6 +1101,18 @@ video {
   margin-top: 3.5rem;
 }
 
+.-mt-2 {
+  margin-top: -0.5rem;
+}
+
+.-mt-4 {
+  margin-top: -1rem;
+}
+
+.-mt-5 {
+  margin-top: -1.25rem;
+}
+
 .box-border {
   box-sizing: border-box;
 }
@@ -2105,6 +2117,10 @@ video {
 
 .border-t-2 {
   border-top-width: 2px;
+}
+
+.border-t-4 {
+  border-top-width: 4px;
 }
 
 .border-amber-500 {

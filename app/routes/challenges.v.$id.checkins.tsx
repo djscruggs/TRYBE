@@ -2,6 +2,7 @@ import { requireCurrentUser } from '~/models/auth.server'
 import { type LoaderFunction, json } from '@remix-run/node'
 import { useLoaderData, useRevalidator, useRouteLoaderData, Outlet } from '@remix-run/react'
 import { fetchCheckIns } from '~/models/challenge.server'
+import { fetchChallengeCheckinComments } from '~/models/comment.server'
 import type { Challenge, MemberChallenge } from '~/utils/types'
 import { ChallengeMemberCheckin } from '~/components/challengeMemberCheckin'
 import { useContext } from 'react'
@@ -17,13 +18,16 @@ export const loader: LoaderFunction = async (args) => {
   const checkIns = await fetchCheckIns({ challengeId }) as { error?: string }
   const rawLikes = await likesByType({ userId }) || { comment: [] as number[] }
   const likes = rawLikes.comment
-  return json({ checkIns, likes })
+  const comments = await fetchChallengeCheckinComments(challengeId)
+
+  return json({ checkIns, likes, comments })
 }
 export default function CheckIns (): JSX.Element {
   const revalidator = useRevalidator()
   const { currentUser } = useContext(CurrentUserContext)
-  const { checkIns, error, likes } = useLoaderData<typeof loader>()
+  const { checkIns, error, likes, comments } = useLoaderData<typeof loader>()
   const { membership, challenge } = useRouteLoaderData<typeof useRouteLoaderData>('routes/challenges.v.$id') as { membership: MemberChallenge, challenge: Challenge }
+  const isPersonal = location.pathname.includes('mine') // flag to turn off comments on personal checkins
   if (error) {
     return <h1>{error}</h1>
   }
@@ -35,7 +39,7 @@ export default function CheckIns (): JSX.Element {
         <Outlet />
         <ChallengeMemberCheckin showDetails={true} challenge={challenge} memberChallenge={membership} afterCheckIn={() => { revalidator.revalidate() }} />
         <div className='flex flex-col items-start justify-center mt-4  w-full'>
-          <CheckinsList checkIns={checkIns} likes={likes} />
+          <CheckinsList checkIns={checkIns} likes={likes} allowComments={!isPersonal} comments={comments}/>
         </div>
     </div>
   )
