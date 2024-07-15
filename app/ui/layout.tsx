@@ -53,8 +53,6 @@ export const FullLayout = (): JSX.Element => {
   // hack to remove padding on welcome screen mobile
   // hide nav if on index, login or register
   const [showNav, setShowNav] = useState(true)
-  const isWelcome = location.pathname === '/'
-  console.log(location)
   const isInterior = location.pathname.includes('/v/')
   const isWelcome = location.pathname.includes('/challenges/')
   useEffect(() => {
