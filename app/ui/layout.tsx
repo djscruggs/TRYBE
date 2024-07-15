@@ -56,7 +56,7 @@ export const FullLayout = (): JSX.Element => {
   const isWelcome = location.pathname === '/'
   console.log(location)
   const isInterior = location.pathname.includes('/v/')
-
+  const isWelcome = location.pathname.includes('/challenges/')
   useEffect(() => {
     if (['/', '/register', '/login', '/signup', '/signin'].includes(location.pathname)) {
       setShowNav(false)
