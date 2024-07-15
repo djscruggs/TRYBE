@@ -21,7 +21,7 @@ export const WelcomePage = (): JSX.Element => {
                       <h1 className='text-4xl md:text-5xl font-bold '><span className='bg-yellow z-10 rounded-br-lg'>MEET YOUR TRYBE.</span></h1>
 
                     </div>
-                    <div className='flex w-full max-w[240px] mb-4 mt-10 md:mt-28 justify-center md:pl-8 md:justify-start items-center'>
+                    <div className='flex w-full max-w[240px] mb-4 mt-4 md:mt-28 justify-center md:pl-8 md:justify-start items-center'>
                       <CardSignup maxWidth='300px'/>
                     </div>
                     <div className='overflow-hidden justify-center items-center md:hidden bg-yellow'>
@@ -34,7 +34,7 @@ export const WelcomePage = (): JSX.Element => {
                 </div>
               </div>
 
-              <div className='bg-red min-h-[50px] w-full justify-center fixed bottom-0'>
+              <div className='hidden md:block bg-red min-h-[50px] w-full justify-center fixed bottom-0'>
                 <div className='text-white text-md text-center w-full'>
                   <div className='flex w-screen flex-row justify-center items-center pt-1 pb-2 text-xs md:text-sm'>
                     <a href='https://www.notion.so/jointhetrybe/About-TRYBE-ed415205d1a5411f96807cf9e04ee0f6?pvs=4' className='mx-2 text-white underline' >About Us</a>

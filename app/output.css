@@ -3011,6 +3011,11 @@ video {
   padding-bottom: 1rem;
 }
 
+.px-20 {
+  padding-left: 5rem;
+  padding-right: 5rem;
+}
+
 .\!pr-7 {
   padding-right: 1.75rem !important;
 }
@@ -6496,6 +6501,10 @@ video {
 
   .md\:mt-28 {
     margin-top: 7rem;
+  }
+
+  .md\:mt-10 {
+    margin-top: 2.5rem;
   }
 
   .md\:block {
