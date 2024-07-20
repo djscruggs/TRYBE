@@ -3011,11 +3011,6 @@ video {
   padding-bottom: 1rem;
 }
 
-.px-20 {
-  padding-left: 5rem;
-  padding-right: 5rem;
-}
-
 .\!pr-7 {
   padding-right: 1.75rem !important;
 }
@@ -6503,10 +6498,6 @@ video {
     margin-top: 7rem;
   }
 
-  .md\:mt-10 {
-    margin-top: 2.5rem;
-  }
-
   .md\:block {
     display: block;
   }
@@ -6664,16 +6655,12 @@ video {
     padding-right: 0.5rem;
   }
 
-  .md\:pl-10 {
-    padding-left: 2.5rem;
+  .md\:pl-4 {
+    padding-left: 1rem;
   }
 
   .md\:pl-8 {
     padding-left: 2rem;
-  }
-
-  .md\:pl-4 {
-    padding-left: 1rem;
   }
 
   .md\:text-start {

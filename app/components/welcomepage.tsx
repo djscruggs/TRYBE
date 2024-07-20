@@ -24,7 +24,7 @@ export const WelcomePage = (): JSX.Element => {
                     <div className='flex w-full max-w[240px] mb-4 mt-4 md:mt-28 justify-center md:pl-8 md:justify-start items-center'>
                       <CardSignup maxWidth='300px'/>
                     </div>
-                    <div className='overflow-hidden justify-center items-center md:hidden bg-yellow'>
+                    <div className='hidden overflow-hidden justify-center items-center md:block bg-yellow'>
                         <img src="/images/welcome/hero.webp" alt="Landing Graphic" className='max-w[340px]' />
                       </div>
                   </div>
