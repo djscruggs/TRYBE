@@ -223,7 +223,7 @@ export default function FormChallenge ({ challenge }: { challenge: ChallengeInpu
 
   return (
       <>
-        <div className='w-full flex justify-center md:justify-start border'>
+        <div className='w-full flex justify-center md:justify-start'>
           <Form method="post" ref={challengeForm} encType="multipart/form-data" onSubmit={handleSubmit}>
             {/* this is here so tailwind generates the correct classes, should be moveed to tailwind.config.js file */}
 
@@ -422,7 +422,7 @@ const Preview = ({ data }: { data: any }): JSX.Element => {
       {data.coverPhotoMeta &&
         <img src={data.coverPhotoMeta?.secure_url} alt="cover photo" className="max-w-full max-h-60" />
       }
-      <CardChallenge challenge={data} />
+      <CardChallenge challenge={data} isPreview={true} />
     </>
   )
 }
