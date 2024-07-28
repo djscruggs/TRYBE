@@ -116,7 +116,7 @@ export interface Challenge {
   frequency: 'DAILY' | 'WEEKDAYS' | 'ALTERNATING' | 'WEEKLY' | 'CUSTOM' | undefined
   coverPhotoMeta: Record<string, string> | null
   icon: string | null | undefined
-  colo?: string | null | undefined
+  color?: string | null | undefined
   reminders: boolean
   syncCalendar: boolean
   publishAt: Date
@@ -124,7 +124,7 @@ export interface Challenge {
   public: boolean
   userId: number
   likeCount: number
-  _count: CountType
+  _count?: CountType
 }
 interface CountType {
   members?: number

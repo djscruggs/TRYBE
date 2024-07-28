@@ -15,12 +15,12 @@ export function Colors (): JSX.Element {
         <div className='bg-gradient-to-b from-yellow to-white'>gradient</div>
         <div className='text-orange-500 bg-orange-500 border-orange-500'>orange</div>
         <div className='bg-gradient-to-b from-orange-500 to-white'>gradient</div>
-        <div className='text-red bg-red border-red'>red</div>
+        <div className='text-red bg-red/04 border-red'>red</div>
         <div className='bg-gradient-to-b from-red to-white'>gradient</div>
         <div className='text-green-500 bg-green-500 border-green-500 ring-green-500'>green</div>
         <div className='bg-gradient-to-b from-green-500 to-white ring-green-500'>gradient</div>
         <div className='text-grey bg-grey border-grey ring-grey'>grey</div>
-        <div className='bg-salmon text-salmon ring-salmon'>salmon</div>
+        <div className='bg-salmon text-salmon ring-salmon border-salmon'>salmon</div>
         <div className='bg-gradient-to-b from-salmon to-white'>gradient</div>
         <div className='bg-gradient-to-b from-grey to-white'>gradient</div>
         <div className='max-w-[300px] bg-gradient-to-b from-grey to-white'>max width 300</div>

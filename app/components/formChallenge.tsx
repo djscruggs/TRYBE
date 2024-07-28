@@ -6,7 +6,7 @@ import React, {
 } from 'react'
 import { Form, useNavigate } from '@remix-run/react'
 import type { ObjectData, Challenge, ChallengeSummary } from '~/utils/types'
-import { Button, Select, Option, Radio } from '@material-tailwind/react'
+import { Button, Select, Option, Radio, Menu, MenuHandler, MenuItem, MenuList } from '@material-tailwind/react'
 import { FormField } from '~/components/formField'
 import DatePicker from 'react-datepicker'
 import { addDays, endOfMonth, isFirstDayOfMonth } from 'date-fns'
@@ -15,6 +15,8 @@ import axios from 'axios'
 import { colorToClassName, getIconOptionsForColor, handleFileUpload } from '~/utils/helpers'
 import { useRevalidator } from 'react-router-dom'
 import { CurrentUserContext } from '~/utils/CurrentUserContext'
+import CardChallenge from '~/components/cardChallenge'
+import { HiOutlineQuestionMarkCircle } from 'react-icons/hi'
 
 interface Errors {
   name?: string
@@ -23,19 +25,34 @@ interface Errors {
   endAt?: string
   coverPhoto?: string
 }
-
-export default function FormChallenge (props: ObjectData): JSX.Element {
+const iconFiles = [
+  'YogaLight.png',
+  'YogaDark.png',
+  'WorkoutDark.png',
+  'SelfCareHeart.png',
+  'RunnerPink.png',
+  'MuscleBrain.png',
+  'MeditatorMedium.png',
+  'MeditatorLight.png',
+  'MeditatorDark.png',
+  'JournalPink.png',
+  'JournalDark.png',
+  'EnvironmentMedium.png'
+]
+interface ChallengeInputs extends Challenge {
+  deleteImage: boolean
+}
+export default function FormChallenge ({ challenge }: { challenge: ChallengeInputs }): JSX.Element {
   const frequencies = ['DAILY', 'WEEKDAYS', 'WEEKLY']
   const navigate = useNavigate()
   const challengeForm = useRef(null)
   const revalidator = useRevalidator()
   const [errors, setErrors] = useState<Errors>()
   // make a copy so it doesn't affect parent renders
-  const challenge = props.challenge ? props.challenge : {}
   if (challenge?._count) {
     delete challenge._count
   }
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<Partial<ChallengeInputs>>({
     deleteImage: false,
     ...(typeof challenge === 'object' && challenge !== null ? challenge : {})
   })
@@ -85,6 +102,12 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
       frequency: value
     }))
   }
+  function handleIconChange (value: string): void {
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      icon: value
+    }))
+  }
   const colorOptions = [
     'red',
     'orange',
@@ -102,13 +125,6 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
     }))
   }
 
-  const iconOptions: Record<string, JSX.Element> = getIconOptionsForColor(formData?.color)
-  const handleIconChange = (value: string): void => {
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      icon: value
-    }))
-  }
   function handleCancel (event: React.FormEvent): void {
     event.preventDefault()
     navigate(-1)
@@ -131,8 +147,8 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
     event.preventDefault()
     // validation
     const validation: Errors = {}
-    if (formData.name.trim() === '') { validation.name = 'Name is required' }
-    if (formData.description.trim() === '') { validation.description = 'Description is required' }
+    if (formData.name?.trim() === '') { validation.name = 'Name is required' }
+    if (formData.description?.trim() === '') { validation.description = 'Description is required' }
     if (!formData.startAt) { validation.startAt = 'Start date is required' }
     if (!formData.endAt) { validation.endAt = 'End date is required' }
     if (Object.keys(validation).length > 0) {
@@ -143,7 +159,7 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
     for (const key in formData) {
       if (key === 'id' || key === 'coverPhotoMeta') continue
       if (Object.prototype.hasOwnProperty.call(formData, key)) {
-        const value = formData[key]
+        const value = formData[key as keyof typeof formData]
         if (typeof value === 'string') {
           toSubmit.append(key, value)
         } else if (value instanceof Blob) {
@@ -207,11 +223,11 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
 
   return (
       <>
-        <div className='w-full flex justify-center md:justify-start'>
+        <div className='w-full flex justify-center md:justify-start border'>
           <Form method="post" ref={challengeForm} encType="multipart/form-data" onSubmit={handleSubmit}>
             {/* this is here so tailwind generates the correct classes, should be moveed to tailwind.config.js file */}
 
-            <div className="w-full max-w-[600px] md:max-w-[800px] px-2 grid grid-cols-1 md:grid-cols-2  ">
+            <div className="w-full max-w-[600px] md:max-w-[1200px] px-2 grid grid-cols-1 md:grid-cols-3  ">
               <div className="col-span-2 w-full lg:col-span-1">
                 <div className="relative mb-2 max-w-[400px]">
                   <FormField
@@ -232,7 +248,7 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
                       name='public'
                       value='true'
                       label='Anyone'
-                      checked={formData.public === true}
+                      checked={formData.public}
                       onChange={handleChange}
                       crossOrigin={undefined}
                     />
@@ -243,7 +259,7 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
                       name='public'
                       value='false'
                       label='Invite only'
-                      checked={formData.public === false}
+                      checked={!formData.public}
                       onChange={handleChange}
                       crossOrigin={undefined}
                     />
@@ -316,17 +332,41 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
                 </div>
               </div>
               <div className="max-w-[400px] sm:col-span-2 md:ml-4 lg:col-span-1">
-              <div className="max-w-[400px] relative flex flex-wrap">
+                <div className="max-w-[400px] relative flex flex-wrap">
                   <label className='w-full block mb-2 text-left'>Color</label>
                   {colorOptions.map((option, index) => (
                     <div key={index} onClick={() => { handleColorChange(option) }} className={`w-10 h-10 cursor-pointer rounded-full bg-${colorToClassName(option, 'red')} mr-2 mb-2 ${formData.color === option ? 'outline outline-2 outline-offset-2 outline-darkgrey' : ''}`}></div>
                   ))}
                 </div>
-                <div className="mt-4 max-w-[400px] relative flex flex-wrap">
-                  <label className='w-full block mb-2 text-left'>Icon</label>
-                  {Object.keys(iconOptions).map((key, index) => (
-                    <div key={key} onClick={() => { handleIconChange(key) }} className={`w-12 h-12 cursor-pointer rounded-full mr-3 mb-2 ${formData.icon === key ? 'outline outline-2 outline-offset-2 outline-darkgrey' : ''}`}>{iconOptions[key]}</div>
-                  ))}
+                <div className="mt-4 max-w-[400px]">
+                  <Menu>
+                    <MenuHandler className="flex justify-center items-center">
+                      <div className="flex items-center justify-center gap-2 cursor-pointer">
+
+                          <>
+                          <div className="flex flex-col items-center justify-center">
+                          {formData?.icon
+                            ? (
+                              <img src={`/images/icons/${formData.icon}`} width="130" className="cursor-pointer" />
+                              )
+                            : (
+                          <HiOutlineQuestionMarkCircle className="w-24 h-24 text-grey" />
+                              )}
+                          <Button className="mt-4">Select Icon</Button>
+                          </div>
+
+                          </>
+
+                      </div>
+                    </MenuHandler>
+                    <MenuList className="justify-start items-start">
+                    {iconFiles.map((img) => (
+                      <MenuItem key={img} >
+                      <img src={`/images/icons/${img}`} width="130" onClick={() => { handleIconChange(img) }} className={`cursor-pointer ${formData.icon === img ? ' outline outline-2  outline-darkgrey rounded-md' : ''}`} />
+                      </MenuItem>
+                    ))}
+                  </MenuList>
+                </Menu>
                 </div>
                 <div className='w-full mt-4'>
                   <div className={`max-w-md mb-2 h-60 rounded-md flex items-center justify-center ${imageURL ? '' : 'bg-blue-gray-50'}`}>
@@ -356,6 +396,13 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
                 </div>
 
               </div>
+              <div className="max-w-[400px] sm:col-span-2 md:ml-4 lg:col-span-1">
+                <div className="relative max-w-[400px]">
+                  <label>Preview</label>
+                  <Preview data={formData}/>
+
+                </div>
+              </div>
             </div>
             <div className="mt-8 flex justify-left">
               <Button type="submit" onClick={handleSubmit} placeholder='Save' className="bg-red hover:bg-green-500 rounded-full">Save Challenge</Button>
@@ -365,6 +412,18 @@ export default function FormChallenge (props: ObjectData): JSX.Element {
           </Form>
         </div>
       </>
+  )
+}
+
+const Preview = ({ data }: { data: any }): JSX.Element => {
+  console.log(data)
+  return (
+    <>
+      {data.coverPhotoMeta &&
+        <img src={data.coverPhotoMeta?.secure_url} alt="cover photo" className="max-w-full max-h-60" />
+      }
+      <CardChallenge challenge={data} />
+    </>
   )
 }
 

@@ -1,18 +1,16 @@
 import { useContext } from 'react'
 import {
-  Card,
-  Button
+  Card
 } from '@material-tailwind/react'
-import { GiShinyApple } from 'react-icons/gi'
 import { FaRegComment, FaRegCalendarAlt, FaUserFriends } from 'react-icons/fa'
 import { type ChallengeSummary } from '~/utils/types'
-import { colorToClassName, textColorFromContainer, getIconOptionsForColor, buttonColorFromContainer, resizeImageToFit } from '~/utils/helpers'
+import { colorToClassName, resizeImageToFit } from '~/utils/helpers'
 import { CurrentUserContext } from '~/utils/CurrentUserContext'
 import { Link, useNavigate } from '@remix-run/react'
 import { differenceInCalendarDays, isPast } from 'date-fns'
 import ShareMenu from './shareMenu'
 import Liker from './liker'
-
+import { HiOutlineQuestionMarkCircle } from 'react-icons/hi2'
 interface CardChallengeProps {
   challenge: ChallengeSummary
   isShare?: boolean
@@ -27,11 +25,10 @@ export default function CardChallenge ({ challenge, isShare, isMember, isLiked }
     isMember = challenge?.members?.some(member => member.userId === currentUser?.id)
   }
   const navigate = useNavigate()
-  const textColor = textColorFromContainer(challenge.color ?? '', 'white')
-  const bgColor = colorToClassName(challenge.color ?? '', 'red')
-  const buttonColor = buttonColorFromContainer(bgColor, 'white')
-  const buttonTextColor = textColorFromContainer(buttonColor, 'red')
-  const isExpired = isPast(challenge.endAt)
+  const bgColor = colorToClassName(challenge?.color ?? '', 'red')
+  const memberCount = challenge?._count?.members ?? 0
+  const isExpired = isPast(challenge.endAt ?? new Date('1970-01-01'))
+  const challengeLength = differenceInCalendarDays(challenge.endAt ?? new Date('1970-01-01'), challenge.startAt ?? new Date('1970-01-01'))
   const goToChallenge = (event: any): void => {
     event.stopPropagation()
     const url = `/challenges/v/${challenge.id}`
@@ -48,53 +45,68 @@ export default function CardChallenge ({ challenge, isShare, isMember, isLiked }
       return ''
     }
     const daysUntilStart = differenceInCalendarDays(challenge.startAt, new Date())
+    const formatOptions = {
+      month: 'short' as 'short',
+      day: 'numeric' as 'numeric'
+    }
+    const startFormatted = new Date(challenge.startAt).toLocaleDateString(currentUser?.locale ?? 'en-US', formatOptions)
     if (daysUntilStart > 0) {
       if (daysUntilStart === 1) {
-        return '1 day'
+        return 'Starts tomorrow'
       }
-      return `${daysUntilStart} days`
+      return `Starts ${startFormatted}`
     } else {
       if (isExpired) {
         return 'Ended'
       }
-      return 'Started'
+
+      return 'Started ' + new Date(challenge.startAt).toLocaleDateString(currentUser?.locale ?? 'en-US', formatOptions)
     }
   }
   const getFullUrl = (): string => {
     return `${window.location.origin}/challenges/v/${challenge.id}`
   }
-  const iconOptions: Record<string, JSX.Element> = getIconOptionsForColor(bgColor)
   return (
     <div className="mt-2 drop-shadow-none mr-2 w-full cursor-pointer">
 
       <div className="drop-shadow-none">
-        <div className={'rounded-md p-1 bg-white'}>
-          <Card onClick={goToChallenge} className={`md:col-span-2 bg-${bgColor} p-2 py-4 border-1 drop-shadow-lg border-gray rounded-md`}>
-          <div className={`font-bold mb-4 text-center text-${textColor}`}>
+        <div className={'rounded-md p-1 bg-white relative'}>
+          <Card onClick={goToChallenge} className={`md:col-span-2 bg-${bgColor}/02 p-2 py-4  drop-shadow-lg border border-${bgColor} rounded-md`}>
+          {challengeLength > 0 &&
+            <div className="relative">
+              <div className="absolute right-0 -mt-[28px] text-center capitalize p-1 rounded-md drop-shadow-xl w-[90px] bg-teal text-xs text-white">{challengeLength} days</div>
+            </div>
+          }
+          <div className={'font-bold mb-1 text-start text-black'}>
             {challenge.name}
-
           </div>
-            <div className="grid grid-cols-3 gap-4">
-              <div className="flex flex-col justify-center items-center col-span-1">
-                <div className={`bg-transparent border-2 border-${textColor} text-${textColor} rounded-full w-16 h-16 flex items-center justify-center `}>
-                 {challenge.icon ? iconOptions[challenge.icon] : <GiShinyApple className={`text-${textColor} h-8 w-8`} />}
+            <div className="w-full flex">
+              <div className="w-3/5 border-0">
+                <div className="text-gray-400 mb-4">
+                {challenge.description}
                 </div>
-                {!isShare && challenge._count &&
-                <div className="flex justify-center items-center mt-2">
-                  <FaRegCalendarAlt className={`text-${textColor} h-4 w-4 mr-1`} />
-                  <span className={`text-${textColor} text-xs pr-4`}>{howLongToStart()}</span>
-                  <FaUserFriends className={`text-${textColor} h-4 w-4`} />
-                  <span className={`text-${textColor} text-xs pl-2`}>{challenge._count.members}</span>
-                </div>
+                {!isShare &&
+                  <div className="flex flex-col justify-center items-center col-span-1 border absolute bottom-1">
+                    <div className="flex justify-center items-center mt-2">
+                      <FaUserFriends className='h-4 w-4 text-grey' />
+                      <span className='text-xs pl-2 text-grey'>{memberCount} joined</span>
+                      <FaRegCalendarAlt className='h-4 w-4 ml-2 text-grey' />
+                      <span className='text-xs pl-1 text-grey'>{howLongToStart()}</span>
+                      <span className='text-xs pl-1 text-grey'><ShareMenu copyUrl={getFullUrl()} itemType='challenge' itemId={Number(challenge.id)}/></span>
+                    </div>
+
+                  </div>
                 }
               </div>
-              <div className="flex flex-col items-center col-span-2">
-
-                {challenge.coverPhotoMeta?.secure_url && <img src={challenge.coverPhotoMeta?.secure_url} alt={`${challenge?.name} cover photo`} width={imgWidth} height={imgHeight} className={`max-w-full max-h-[${imgHeight}px]`} />}
-                {isExpired && <div className='text-red mt-4'>Challenge has ended</div>}
-                {!isExpired && <Button onClick={goToChallenge} className={`bg-${buttonColor} text-${buttonTextColor} p-3 py-2 rounded-full mt-3`}>{isMember ? 'Check In' : 'Sign up!'}</Button>}
+              <div className="w-2/5 border-0 flex justify-center -mt-4">
+                {challenge.icon
+                  ? <img src={`/images/icons/${challenge.icon}`} alt="icon" width="130" />
+                  : <HiOutlineQuestionMarkCircle className="w-24 h-24 text-grey" />
+                }
               </div>
+
             </div>
+
           </Card>
         </div>
         {/* <span className="text-xs text-gray-500">2 hours ago</span> */}
