@@ -16,9 +16,10 @@ interface CardChallengeProps {
   isShare?: boolean
   isMember?: boolean
   isLiked?: boolean
+  isPreview?: boolean
 }
 
-export default function CardChallenge ({ challenge, isShare, isMember, isLiked }: CardChallengeProps): JSX.Element {
+export default function CardChallenge ({ challenge, isShare, isMember, isLiked, isPreview }: CardChallengeProps): JSX.Element {
   const { currentUser } = useContext(CurrentUserContext)
   // in some chases isMember is undefined but a members array is included; check to see if the currentUser is in the members array
   if (isMember === undefined) {
@@ -31,6 +32,9 @@ export default function CardChallenge ({ challenge, isShare, isMember, isLiked }
   const challengeLength = differenceInCalendarDays(challenge.endAt ?? new Date('1970-01-01'), challenge.startAt ?? new Date('1970-01-01'))
   const goToChallenge = (event: any): void => {
     event.stopPropagation()
+    if (isPreview) {
+      return
+    }
     const url = `/challenges/v/${challenge.id}`
     if (currentUser) {
       navigate(url)
@@ -38,6 +42,10 @@ export default function CardChallenge ({ challenge, isShare, isMember, isLiked }
       localStorage.setItem('redirect', url)
       navigate('/signup')
     }
+  }
+  let shortDescription = ''
+  if (challenge?.description) {
+    shortDescription = challenge.description.length > 120 ? challenge.description.substring(0, 117) + '...' : challenge.description
   }
   const [imgWidth, imgHeight] = resizeImageToFit(challenge.coverPhotoMeta?.width as number, challenge.coverPhotoMeta?.height as number, 300)
   const howLongToStart = (): string => {
@@ -69,7 +77,7 @@ export default function CardChallenge ({ challenge, isShare, isMember, isLiked }
   return (
     <div className="mt-2 drop-shadow-none mr-2 w-full cursor-pointer">
 
-      <div className="drop-shadow-none">
+      <div className="drop-shadow-none ">
         <div className={'rounded-md p-1 bg-white relative'}>
           <Card onClick={goToChallenge} className={`md:col-span-2 bg-${bgColor}/02 p-2 py-4  drop-shadow-lg border border-${bgColor} rounded-md`}>
           {challengeLength > 0 &&
@@ -80,38 +88,41 @@ export default function CardChallenge ({ challenge, isShare, isMember, isLiked }
           <div className={'font-bold mb-1 text-start text-black'}>
             {challenge.name}
           </div>
-            <div className="w-full flex">
-              <div className="w-3/5 border-0">
-                <div className="text-gray-400 mb-4">
-                {challenge.description}
-                </div>
-                {!isShare &&
-                  <div className="flex flex-col justify-center items-center col-span-1 border absolute bottom-1">
-                    <div className="flex justify-center items-center mt-2">
-                      <FaUserFriends className='h-4 w-4 text-grey' />
-                      <span className='text-xs pl-2 text-grey'>{memberCount} joined</span>
-                      <FaRegCalendarAlt className='h-4 w-4 ml-2 text-grey' />
-                      <span className='text-xs pl-1 text-grey'>{howLongToStart()}</span>
-                      <span className='text-xs pl-1 text-grey'><ShareMenu copyUrl={getFullUrl()} itemType='challenge' itemId={Number(challenge.id)}/></span>
-                    </div>
-
-                  </div>
-                }
-              </div>
-              <div className="w-2/5 border-0 flex justify-center -mt-4">
-                {challenge.icon
-                  ? <img src={`/images/icons/${challenge.icon}`} alt="icon" width="130" />
-                  : <HiOutlineQuestionMarkCircle className="w-24 h-24 text-grey" />
-                }
+          <div className="w-full flex">
+            <div className="w-3/5 border-0  h-24 max-h-24 mb-2">
+              <div className="text-gray-400 mb-2 text-ellipsis ">
+              {shortDescription}
               </div>
 
             </div>
+            <div className="w-2/5 border-0 flex justify-center -mt-4">
+              {challenge.icon
+                ? <img src={`/images/icons/${challenge.icon}`} alt="icon" width="130" />
+                : <HiOutlineQuestionMarkCircle className="w-24 h-24 text-grey" />
+              }
+            </div>
+
+          </div>
+          {!isShare &&
+              <div className="absolute flex flex-col justify-center w-full bottom-1">
+                <div className="flex justify-start items-center mt-2">
+                  <FaUserFriends className='h-4 w-4 text-grey' />
+                  <span className='text-xs pl-2 text-grey'>{memberCount} joined</span>
+                  <FaRegCalendarAlt className='h-4 w-4 ml-2 text-grey' />
+                  <span className='text-xs pl-1 text-grey'>{howLongToStart()}</span>
+                  <div className='text-xs pl-1 text-grey'>
+                    <ShareMenu copyUrl={getFullUrl()} itemType='challenge' itemId={Number(challenge.id)} isPreview={isPreview}/>
+                  </div>
+                </div>
+
+              </div>
+            }
 
           </Card>
         </div>
         {/* <span className="text-xs text-gray-500">2 hours ago</span> */}
       </div>
-      {!isShare && challenge.public &&
+      {!isPreview && !isShare && challenge.public &&
       <>
         <div className="grid grid-cols-3 text-center py-2 cursor-pointer">
           <div className="flex justify-center items-center">
