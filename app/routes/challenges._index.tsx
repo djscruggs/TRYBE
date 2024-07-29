@@ -66,13 +66,13 @@ export default function ChallengesIndex (): JSX.Element {
             {currentUser && <Button placeholder='Create a Challenge' size="sm" onClick={() => { navigate('./new') }} className="bg-red mb-4 mt-4">Create a Challenge</Button>}
 
             <div className="w-full">
-              <div className='text-lg py-2 flex items-center justify-center w-full'>
+              <div className='text-lg py-2 flex items-center justify-center w-full relative'>
                   <div className={`w-fit ${isActive ? 'border-b-2 border-red' : 'cursor-pointer'}`} onClick={() => { setStatus('active') }}>Active</div>
-                  <div className={`w-fit mx-4 ${isUpcoming ? 'border-b-2 border-red' : 'cursor-pointer'}`} onClick={() => { setStatus('upcoming') }}>Upcoming</div>
-                  <div className={`w-fit mr-4 ${isMine ? 'border-b-2 border-red' : 'cursor-pointer'}`} onClick={() => { setStatus('mine') }}>My Challenges</div>
-                  <div className={`w-fit ${isArchived ? 'border-b-2 border-red' : 'cursor-pointer'}`} onClick={() => { setStatus('archived') }}>Archived</div>
-              </div>
+                  <div className={`w-fit mx-8 ${isUpcoming ? 'border-b-2 border-red' : 'cursor-pointer'}`} onClick={() => { setStatus('upcoming') }}>Upcoming</div>
+                  <div className={`w-fit mr-8 ${isMine ? 'border-b-2 border-red' : 'cursor-pointer'}`} onClick={() => { setStatus('mine') }}>Hosting</div>
+                  <div className={`absolute right-2 text-xs text-gray-500 underline cursor-pointer ${isArchived ? 'text-red' : ''}`} onClick={() => { setStatus('archived') }}>Archived</div>
 
+              </div>
               <div className="flex flex-col items-center max-w-lg w-full">
                 {fetcher.state === 'idle' && challenges.length === 0 &&
                   <div className="text-center mt-10">No {status !== 'mine' ? status : ''} challenges found</div>
