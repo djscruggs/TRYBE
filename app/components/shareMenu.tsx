@@ -44,17 +44,17 @@ export default function ShareMenu (props: ShareMenuProps): JSX.Element {
     }
   }, [showMenu])
   return (
-    <>
-    <div className="flex items-center">
-      <SlShareAlt className="cursor-pointer text-grey text-sm mr-1 inline" onClick={handleShareMenu}/>
-      <span className="cursor-pointer text-xs inline" onClick={handleShareMenu}>Share</span>
-    </div>
-    {showMenu &&
-      <div className='cursor-pointer min-w-36 absolute right-0 bottom-8 bg-white border border-gray rounded-md flex flex-col text-left' >
-        <p className='text-black hover:bg-gray-100 p-1' onClick={shareOnTimeline}>Share on Timeline</p>
-        <p className='text-black hover:bg-gray-100 p-1' onClick={async () => { await copyToClipboard(copyUrl) }}>Copy Link</p>
+    <div className='relative'>
+      <div className="flex items-center">
+        <SlShareAlt className="cursor-pointer text-grey text-sm mr-1 inline" onClick={handleShareMenu}/>
+        <span className="cursor-pointer text-xs inline" onClick={handleShareMenu}>Share</span>
       </div>
-    }
-    </>
+      {showMenu &&
+        <div className='cursor-pointer w-32 absolute left-0 bottom-8 bg-white border border-gray rounded-md flex flex-col text-left' >
+          <p className='text-black text-sm hover:bg-gray-100 p-1' onClick={shareOnTimeline}>Share on Timeline</p>
+          <p className='text-black text-sm hover:bg-gray-100 p-1' onClick={async () => { await copyToClipboard(copyUrl) }}>Copy Link</p>
+        </div>
+      }
+    </div>
   )
 }

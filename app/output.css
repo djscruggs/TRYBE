@@ -807,6 +807,14 @@ video {
   bottom: 0.125rem;
 }
 
+.right-20 {
+  right: 5rem;
+}
+
+.right-10 {
+  right: 2.5rem;
+}
+
 .z-10 {
   z-index: 10;
 }
@@ -1123,6 +1131,10 @@ video {
 
 .-mt-4 {
   margin-top: -1rem;
+}
+
+.ml-24 {
+  margin-left: 6rem;
 }
 
 .box-border {
@@ -1579,6 +1591,10 @@ video {
 
 .w-4\/5 {
   width: 80%;
+}
+
+.w-32 {
+  width: 8rem;
 }
 
 .min-w-36 {
