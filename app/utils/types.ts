@@ -113,7 +113,7 @@ export interface Challenge {
   mission: string | null | undefined
   startAt: Date | null | undefined
   endAt: Date | null | undefined
-  frequency: 'DAILY' | 'WEEKDAYS' | 'ALTERNATING' | 'WEEKLY' | 'CUSTOM' | undefined
+  frequency: 'DAILY' | 'WEEKDAYS' | 'ALTERNATING' | 'WEEKLY' | 'CUSTOM'
   coverPhotoMeta: Record<string, string> | null
   icon: string | null | undefined
   color?: string | null | undefined
