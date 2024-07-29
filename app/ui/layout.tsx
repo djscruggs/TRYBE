@@ -49,7 +49,14 @@ export const FullLayout = (): JSX.Element => {
   const navigate = useNavigate()
   const navigation = useNavigation()
   const [newOpen, setNewOpen] = useState(false)
-
+  if (currentUser) {
+    const redirectTo = localStorage.getItem('redirectTo') ?? ''
+    if (redirectTo) {
+      console.log('current user exists, redireting to', redirectTo)
+      localStorage.removeItem('redirectTo')
+      navigate(redirectTo)
+    }
+  }
   // hack to remove padding on welcome screen mobile
   // hide nav if on index, login or register
   const [showNav, setShowNav] = useState(true)
@@ -91,6 +98,7 @@ export const FullLayout = (): JSX.Element => {
       clearTimeout(scrollTimeout)
     }
   }, [])
+
   return (
       <>
         <div className='hidden md:block w-screen'>

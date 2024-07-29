@@ -21,34 +21,41 @@ export const loader: LoaderFunction = async (args) => {
 export default function MyCheckIns (): JSX.Element {
   const { checkIns, error } = useLoaderData<typeof loader>()
   const { membership, challenge } = useRouteLoaderData<typeof useRouteLoaderData>('routes/challenges.v.$id') as { membership: MemberChallenge, challenge: Challenge }
-  const numDays = differenceInDays(challenge.endAt, challenge.startAt)
   const { currentUser } = useContext(CurrentUserContext)
   if (error) {
     return <h1>{error}</h1>
   }
   if (!membership && challenge.userId !== currentUser?.id) {
-    return <p>Boo...</p>
+    return <></>
   }
+
+  return (
+        <div className='max-w-[200px] flex items-center justify-center'>
+            <ChallengeMemberProgressChart challenge={challenge} checkIns={checkIns} />
+        </div>
+
+  )
+}
+
+export function ChallengeMemberProgressChart ({ challenge, checkIns }: { challenge: Challenge, checkIns: Array<{ createdAt: string }> }): JSX.Element {
+  const numDays = (challenge?.endAt && challenge.startAt) ? differenceInDays(challenge.endAt, challenge.startAt) : 0
   const typedCheckIns = checkIns as Array<{ createdAt: string }>
   const uniqueDays = new Set(typedCheckIns.map(checkIn => format(new Date(checkIn.createdAt), 'yyyy-MM-dd'))).size
   const progress = (uniqueDays / numDays) * 100
   return (
-        <div className='max-w-[200px] flex items-center justify-center'>
-            <CircularProgressbarWithChildren
-              value={progress}
-              maxValue={numDays}
+    <CircularProgressbarWithChildren
+      value={progress}
+      maxValue={numDays}
 
-              strokeWidth={5}
-              styles={buildStyles({
-                textColor: 'red',
-                pathColor: 'red'
-              })}
-            >
-              <div className='text-center text-5xl text-red'>{checkIns.length} / {numDays}
-              <div className='text-center text-xl text-gray-500'>Days</div>
-              </div>
-            </CircularProgressbarWithChildren>
-        </div>
-
+      strokeWidth={5}
+      styles={buildStyles({
+        textColor: 'red',
+        pathColor: 'red'
+      })}
+    >
+      <div className='text-center text-5xl text-red'>{checkIns.length} / {numDays}
+      <div className='text-center text-xl text-gray-500'>Days</div>
+      </div>
+    </CircularProgressbarWithChildren>
   )
 }

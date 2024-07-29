@@ -1,9 +1,8 @@
 import { prisma } from './prisma.server'
 import { createUser, getUserByClerkId } from './user.server'
-import { type RegisterForm, type LoginForm } from '~/utils/types'
+import { type RegisterForm, type LoginForm, type CurrentUser } from '~/utils/types'
 import { type LoaderFunctionArgs } from '@remix-run/node'
 import bcrypt from 'bcryptjs'
-import type { CurrentUser } from '~/utils/types'
 import { redirect, json, createCookieSessionStorage } from '@remix-run/node'
 import { getAuth } from '@clerk/remix/ssr.server'
 import { URL } from 'url'
@@ -89,6 +88,7 @@ export async function requireCurrentUser (args: LoaderFunctionArgs): Promise<Cur
       const url = new URL(request.url)
       const redirectPath = new URL(request.url).pathname
       const urlWithoutPath = `${url.protocol}//${url.host}${url.search}${url.hash}`
+      console.log('redirectpath', redirectPath)
       const newUrl = new URL(urlWithoutPath)
       newUrl.searchParams.set('redirectTo', redirectPath)
       // eslint-disable-next-line @typescript-eslint/no-throw-literal

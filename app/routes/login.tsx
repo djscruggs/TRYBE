@@ -80,7 +80,7 @@ export default function Login (): JSX.Element {
           </Button>
         </Form>
         <div className="relative">
-          Don't have an account? <Link to="/register" state={{ animate: false }} className="underline text-blue">Register</Link>
+        Don&#39;t have an account? <Link to="/register" state={{ animate: false }} className="underline text-blue">Register</Link>
         </div>
       </div>
   )
