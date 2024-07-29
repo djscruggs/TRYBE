@@ -24,7 +24,7 @@ export function ChallengeMemberCheckin ({ challenge, memberChallenge, showDetail
   const [checkinCount, setCheckinCount] = useState<number>(memberChallenge?._count?.checkIns ?? 0)
   const [showForm, setShowForm] = useState<boolean>(false)
   const [membership, setMembership] = useState(memberChallenge)
-  const challengeIsExpired = isPast(challenge?.endAt)
+  const challengeIsExpired = challenge?.endAt ? isPast(challenge?.endAt) : false
   const location = useLocation()
   const linkToCheckins = !location.pathname.includes('checkins/mine')
   const formatNextCheckin = (): string => {

@@ -19,7 +19,7 @@ interface CardChallengeProps {
   isPreview?: boolean
 }
 
-export default function CardChallenge ({ challenge, isShare, isMember, isLiked, isPreview }: CardChallengeProps): JSX.Element {
+export default function CardChallenge ({ challenge, isShare, isMember, isPreview }: CardChallengeProps): JSX.Element {
   const { currentUser } = useContext(CurrentUserContext)
   // in some chases isMember is undefined but a members array is included; check to see if the currentUser is in the members array
   if (isMember === undefined) {
@@ -103,7 +103,7 @@ export default function CardChallenge ({ challenge, isShare, isMember, isLiked, 
             </div>
 
           </div>
-          {!isShare &&
+
               <div className="absolute flex flex-col justify-center w-full bottom-1">
                 <div className="flex justify-start items-center mt-2">
                   <FaUserFriends className='h-4 w-4 text-grey' />
@@ -111,35 +111,18 @@ export default function CardChallenge ({ challenge, isShare, isMember, isLiked, 
                   <FaRegCalendarAlt className='h-4 w-4 ml-2 text-grey' />
                   <span className='text-xs pl-1 text-grey'>{howLongToStart()}</span>
                   <div className='text-xs pl-1 text-grey'>
+                  {!isShare &&
                     <ShareMenu copyUrl={getFullUrl()} itemType='challenge' itemId={Number(challenge.id)} isPreview={isPreview}/>
+                  }
                   </div>
                 </div>
 
               </div>
-            }
 
           </Card>
         </div>
-        {/* <span className="text-xs text-gray-500">2 hours ago</span> */}
       </div>
-      {!isPreview && !isShare && challenge.public &&
-      <>
-        <div className="grid grid-cols-3 text-center py-2 cursor-pointer">
-          <div className="flex justify-center items-center">
-          <Link to={`/challenges/v/${challenge.id}/comments#comments`}>
-            <FaRegComment className="text-grey mr-1 inline" />
-            { challenge._count?.comments && <span className="text-xs">{challenge._count?.comments} comments</span>}
-            </Link>
-          </div>
-          <div className="flex justify-center items-center cursor-pointer">
-            <Liker isLiked={Boolean(isLiked)} itemId={Number(challenge.id)} itemType='challenge' count={challenge.likeCount}/>
-          </div>
-          <div className="flex justify-center items-center cursor-pointer">
-            <ShareMenu copyUrl={getFullUrl()} itemType='challenge' itemId={Number(challenge.id)}/>
-          </div>
-        </div>
-      </>
-      }
+
     </div>
   )
 }

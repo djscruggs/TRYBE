@@ -26,8 +26,8 @@ export default function ChallengeList ({ challenges, memberships, isLoading, lik
 
               : challenges?.length > 0 &&
               challenges.map((challenge: ChallengeSummary) => (
-                <div key={challenge.id} className="w-full">
-                  <CardChallenge challenge={challenge} isMember={isMember(challenge)} isLiked={likes.includes(Number(challenge.id))} />
+                <div key={challenge.id} className="w-full mb-4">
+                  <CardChallenge challenge={challenge} isMember={isMember(challenge)} />
                  </div>
               ))
             }

@@ -7,8 +7,9 @@ import {
   ScrollRestoration,
   useRouteError,
   isRouteErrorResponse,
-  useLoaderData
-  , useRevalidator
+  useLoaderData,
+  useSearchParams,
+  useRevalidator
 } from '@remix-run/react'
 import { withEmotionCache } from '@emotion/react'
 import { useEffect, useState } from 'react'
@@ -113,6 +114,16 @@ function App (): JSX.Element {
   useEffect(() => {
     revalidator.revalidate()
   }, [clerkUser.user])
+  const searchParams = useSearchParams()
+  if (!user && typeof window !== 'undefined') {
+    const redirectTo = searchParams[0].get('redirectTo')
+
+    if (redirectTo && !localStorage.getItem('redirectTo')) {
+      localStorage.setItem('redirectTo', redirectTo)
+      console.log('root rediret is ', redirectTo)
+    }
+  }
+
   return (
     <Document>
         <Toaster position='top-center' />
