@@ -5,14 +5,14 @@ import React, {
   type ChangeEvent
 } from 'react'
 import { Form, useNavigate } from '@remix-run/react'
-import type { ObjectData, Challenge, ChallengeSummary } from '~/utils/types'
+import type { Challenge } from '~/utils/types'
 import { Button, Select, Option, Radio, Menu, MenuHandler, MenuItem, MenuList } from '@material-tailwind/react'
 import { FormField } from '~/components/formField'
 import DatePicker from 'react-datepicker'
 import { addDays, endOfMonth, isFirstDayOfMonth } from 'date-fns'
 import { toast } from 'react-hot-toast'
 import axios from 'axios'
-import { colorToClassName, getIconOptionsForColor, handleFileUpload } from '~/utils/helpers'
+import { colorToClassName, handleFileUpload } from '~/utils/helpers'
 import { useRevalidator } from 'react-router-dom'
 import { CurrentUserContext } from '~/utils/CurrentUserContext'
 import CardChallenge from '~/components/cardChallenge'
@@ -43,7 +43,7 @@ interface ChallengeInputs extends Challenge {
   deleteImage: boolean
 }
 export default function FormChallenge ({ challenge }: { challenge: ChallengeInputs }): JSX.Element {
-  const frequencies = ['DAILY', 'WEEKDAYS', 'WEEKLY']
+  const frequencies: Array<Challenge['frequency']> = ['DAILY', 'WEEKDAYS', 'WEEKLY']
   const navigate = useNavigate()
   const challengeForm = useRef(null)
   const revalidator = useRevalidator()
@@ -96,7 +96,7 @@ export default function FormChallenge ({ challenge }: { challenge: ChallengeInpu
       [name]: value
     }))
   }
-  function handleSelect (value: string | undefined): void {
+  function handleSelect (value: Challenge['frequency']): void {
     setFormData((prevFormData) => ({
       ...prevFormData,
       frequency: value
@@ -215,7 +215,7 @@ export default function FormChallenge ({ challenge }: { challenge: ChallengeInpu
   const removeImage = (): void => {
     setImage(null)
     setImageURL(null)
-    setFormData((prevFormData: ObjectData) => ({
+    setFormData((prevFormData: Partial<ChallengeInputs>) => ({
       ...prevFormData,
       deleteImage: true
     }))
@@ -273,7 +273,7 @@ export default function FormChallenge ({ challenge }: { challenge: ChallengeInpu
                     value={formData.frequency}
                     onChange={handleSelect}
                     >
-                    {frequencies.map((frequency: string, index: number) => (
+                    {frequencies.map((frequency: Challenge['frequency'], index: number) => (
                         <Option key={index} value={frequency}>{frequency.charAt(0).toUpperCase() + frequency.slice(1).toLowerCase()}</Option>
                     ))
                     }
@@ -345,7 +345,7 @@ export default function FormChallenge ({ challenge }: { challenge: ChallengeInpu
 
                           <>
                           <div className="flex flex-col items-center justify-center">
-                          {formData?.icon
+                          {formData?.icon && formData?.icon.includes('png')
                             ? (
                               <img src={`/images/icons/${formData.icon}`} width="130" className="cursor-pointer" />
                               )
