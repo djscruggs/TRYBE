@@ -359,7 +359,7 @@ export default function FormChallenge ({ challenge }: { challenge: ChallengeInpu
 
                       </div>
                     </MenuHandler>
-                    <MenuList className="justify-start items-start">
+                    <MenuList className="justify-start items-start grid grid-cols-3">
                     {iconFiles.map((img) => (
                       <MenuItem key={img} >
                       <img src={`/images/icons/${img}`} width="130" onClick={() => { handleIconChange(img) }} className={`cursor-pointer ${formData.icon === img ? ' outline outline-2  outline-darkgrey rounded-md' : ''}`} />
