@@ -8,12 +8,14 @@ export default function ChallengesIndex (): JSX.Element {
   const location = useLocation()
   const { status } = useParams()
   const { currentUser } = useContext(CurrentUserContext)
+  const routeExceptions = ['/new', '/v/']
+  const isRouteException = routeExceptions.some(fragment => location.pathname.includes(fragment))
   useEffect(() => {
-    if (!status && location.pathname !== '/challenges/new') {
+    if (!status && !isRouteException) {
       navigate('/challenges/active')
     }
   }, [location.pathname])
-  if (location.pathname === '/challenges/new') {
+  if (isRouteException) {
     return <Outlet />
   }
   return (

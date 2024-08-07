@@ -74,7 +74,7 @@ export default function ViewChallenge (): JSX.Element {
   const parsedDescription = textToJSX(challenge.description as string ?? '')
   const location = useLocation()
   const [showConfirm, setShowConfirm] = useState(false)
-  const isOverview = matches.length === 2
+  const isOverview = matches.length === 3 // matches[0] is root, matches[1] is the challenges, matches[2] is challenges/v/$idtab
   const isProgram = location.pathname.includes('program')
   const isPosts = location.pathname.includes('posts')
   const isComments = location.pathname.includes('comments')

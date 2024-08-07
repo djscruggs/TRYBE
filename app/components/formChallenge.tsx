@@ -416,7 +416,6 @@ export default function FormChallenge ({ challenge }: { challenge: ChallengeInpu
 }
 
 const Preview = ({ data }: { data: any }): JSX.Element => {
-  console.log(data)
   return (
     <>
       {data.coverPhotoMeta &&
