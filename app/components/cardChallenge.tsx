@@ -51,7 +51,7 @@ export default function CardChallenge ({ challenge, isShare, isMember, isPreview
   }
   let shortDescription = ''
   if (challenge?.description) {
-    shortDescription = challenge.description.length > 120 ? challenge.description.substring(0, 117) + '...' : challenge.description
+    shortDescription = challenge.description.length > 80 ? challenge.description.substring(0, 77) + '...' : challenge.description
   }
   const [imgWidth, imgHeight] = resizeImageToFit(challenge.coverPhotoMeta?.width as number, challenge.coverPhotoMeta?.height as number, 300)
   const howLongToStart = (): string => {
