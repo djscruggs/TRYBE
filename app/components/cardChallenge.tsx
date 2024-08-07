@@ -84,11 +84,11 @@ export default function CardChallenge ({ challenge, isShare, isMember, isPreview
     <div className="mt-2 drop-shadow-none mr-2 w-full cursor-pointer">
 
       <div className="drop-shadow-none ">
-        <div className={'rounded-md p-1 bg-white relative'}>
-          <Card onClick={goToChallenge} className={`md:col-span-2 bg-${bgColor}/02 p-2 py-4  drop-shadow-lg border border-${bgColor} rounded-md`}>
+        <div className={'p-1 bg-white relative'}>
+          <Card onClick={goToChallenge} className={`md:col-span-2 bg-${bgColor} bg-opacity-02 p-2 pt-5 pl-5 pb-6 pr-2 drop-shadow-lg border border-${bgColor} border-2 rounded-xl`}>
           {challengeLength !== '' &&
             <div className="relative">
-              <div className="absolute right-0 -mt-[28px] text-center capitalize p-1 rounded-md drop-shadow-xl w-[90px] bg-teal text-xs text-white">{challengeLength}</div>
+              <div className="absolute right-2 -mt-[32px] text-center capitalize p-1 rounded-md drop-shadow-xl w-[90px] bg-teal text-xs text-white">{challengeLength}</div>
             </div>
           }
           <div className={'font-bold mb-1 text-start text-black'}>
@@ -110,7 +110,7 @@ export default function CardChallenge ({ challenge, isShare, isMember, isPreview
 
           </div>
 
-              <div className="absolute flex flex-col justify-center w-full bottom-1">
+              <div className="absolute flex flex-col justify-center w-full bottom-4">
                 <div className="flex justify-start items-center mt-2">
                   <FaUserFriends className='h-4 w-4 text-grey' />
                   <span className='text-xs pl-2 text-grey'>{memberCount} joined</span>
