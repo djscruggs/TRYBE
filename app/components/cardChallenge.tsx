@@ -2,14 +2,13 @@ import { useContext } from 'react'
 import {
   Card
 } from '@material-tailwind/react'
-import { FaRegComment, FaRegCalendarAlt, FaUserFriends } from 'react-icons/fa'
+import { FaRegCalendarAlt, FaUserFriends } from 'react-icons/fa'
 import { type ChallengeSummary } from '~/utils/types'
 import { colorToClassName, resizeImageToFit } from '~/utils/helpers'
 import { CurrentUserContext } from '~/utils/CurrentUserContext'
-import { Link, useNavigate } from '@remix-run/react'
-import { differenceInCalendarDays, isPast } from 'date-fns'
+import { useNavigate } from '@remix-run/react'
+import { differenceInCalendarDays, differenceInWeeks, differenceInBusinessDays, isPast } from 'date-fns'
 import ShareMenu from './shareMenu'
-import Liker from './liker'
 import { HiOutlineQuestionMarkCircle } from 'react-icons/hi2'
 interface CardChallengeProps {
   challenge: ChallengeSummary
@@ -29,7 +28,14 @@ export default function CardChallenge ({ challenge, isShare, isMember, isPreview
   const bgColor = colorToClassName(challenge?.color ?? '', 'red')
   const memberCount = challenge?._count?.members ?? 0
   const isExpired = isPast(challenge.endAt ?? new Date('1970-01-01'))
-  const challengeLength = differenceInCalendarDays(challenge.endAt ?? new Date('1970-01-01'), challenge.startAt ?? new Date('1970-01-01'))
+  let challengeLength = ''
+  if (challenge.frequency === 'WEEKLY') {
+    challengeLength = differenceInWeeks(challenge.endAt ?? new Date('1970-01-01'), challenge.startAt ?? new Date('1970-01-01')) + ' weeks'
+  } else if (challenge.frequency === 'DAILY') {
+    challengeLength = differenceInCalendarDays(challenge.endAt ?? new Date('1970-01-01'), challenge.startAt ?? new Date('1970-01-01')) + ' days'
+  } else {
+    challengeLength = differenceInBusinessDays(challenge.endAt ?? new Date('1970-01-01'), challenge.startAt ?? new Date('1970-01-01')) + ' days'
+  }
   const goToChallenge = (event: any): void => {
     event.stopPropagation()
     if (isPreview) {
@@ -80,9 +86,9 @@ export default function CardChallenge ({ challenge, isShare, isMember, isPreview
       <div className="drop-shadow-none ">
         <div className={'rounded-md p-1 bg-white relative'}>
           <Card onClick={goToChallenge} className={`md:col-span-2 bg-${bgColor}/02 p-2 py-4  drop-shadow-lg border border-${bgColor} rounded-md`}>
-          {challengeLength > 0 &&
+          {challengeLength !== '' &&
             <div className="relative">
-              <div className="absolute right-0 -mt-[28px] text-center capitalize p-1 rounded-md drop-shadow-xl w-[90px] bg-teal text-xs text-white">{challengeLength} days</div>
+              <div className="absolute right-0 -mt-[28px] text-center capitalize p-1 rounded-md drop-shadow-xl w-[90px] bg-teal text-xs text-white">{challengeLength}</div>
             </div>
           }
           <div className={'font-bold mb-1 text-start text-black'}>
