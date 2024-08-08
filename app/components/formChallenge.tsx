@@ -16,8 +16,8 @@ import { colorToClassName, handleFileUpload } from '~/utils/helpers'
 import { useRevalidator } from 'react-router-dom'
 import { CurrentUserContext } from '~/utils/CurrentUserContext'
 import CardChallenge from '~/components/cardChallenge'
-import { HiOutlineQuestionMarkCircle } from 'react-icons/hi'
 
+import ChallengeIcon, { iconFiles } from '~/components/challengeIcon'
 interface Errors {
   name?: string
   description?: string
@@ -25,20 +25,7 @@ interface Errors {
   endAt?: string
   coverPhoto?: string
 }
-const iconFiles = [
-  'YogaLight.png',
-  'YogaDark.png',
-  'WorkoutDark.png',
-  'SelfCareHeart.png',
-  'RunnerPink.png',
-  'MuscleBrain.png',
-  'MeditatorMedium.png',
-  'MeditatorLight.png',
-  'MeditatorDark.png',
-  'JournalPink.png',
-  'JournalDark.png',
-  'EnvironmentMedium.png'
-]
+
 interface ChallengeInputs extends Challenge {
   deleteImage: boolean
 }
@@ -345,13 +332,7 @@ export default function FormChallenge ({ challenge }: { challenge: ChallengeInpu
 
                           <>
                           <div className="flex flex-col items-center justify-center">
-                          {formData?.icon && formData?.icon.includes('png')
-                            ? (
-                              <img src={`/images/icons/${formData.icon}`} width="130" className="cursor-pointer" />
-                              )
-                            : (
-                          <HiOutlineQuestionMarkCircle className="w-24 h-24 text-grey" />
-                              )}
+                          <ChallengeIcon icon={formData.icon as string | undefined} />
                           <Button className="mt-4">Select Icon</Button>
                           </div>
 
