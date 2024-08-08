@@ -9,7 +9,7 @@ import { CurrentUserContext } from '~/utils/CurrentUserContext'
 import { useNavigate } from '@remix-run/react'
 import { differenceInCalendarDays, differenceInWeeks, differenceInBusinessDays, isPast } from 'date-fns'
 import ShareMenu from './shareMenu'
-import { HiOutlineQuestionMarkCircle } from 'react-icons/hi2'
+import ChallengeIcon from './challengeIcon'
 interface CardChallengeProps {
   challenge: ChallengeSummary
   isShare?: boolean
@@ -101,11 +101,8 @@ export default function CardChallenge ({ challenge, isShare, isMember, isPreview
               </div>
 
             </div>
-            <div className="w-2/5 border-0 flex justify-center -mt-4">
-              {challenge.icon
-                ? <img src={`/images/icons/${challenge.icon}`} alt="icon" width="130" />
-                : <HiOutlineQuestionMarkCircle className="w-24 h-24 text-grey" />
-              }
+            <div className="w-2/5 border-0 flex items-center justify-center -mt-4">
+              <ChallengeIcon icon={challenge.icon as string | undefined} />
             </div>
 
           </div>
