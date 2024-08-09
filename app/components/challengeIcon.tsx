@@ -26,7 +26,7 @@ const ChallengeIcon = ({ icon }: ChallengeIconProps): JSX.Element => {
     <>
     {icon && icon.includes('png')
       ? (
-        <img src={`/images/icons/${icon}`} width={width} className="cursor-pointer" />
+        <img src={`/images/icons/resized/${icon}?v=${Date.now()}`} width={width} className="cursor-pointer object-contain" />
         )
       : (
       <HiOutlineQuestionMarkCircle className="w-24 h-24 text-grey" />
