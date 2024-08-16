@@ -131,7 +131,7 @@ export default function ViewChallenge (): JSX.Element {
   return (
     <div className='flex flex-col'>
       <div className='max-w-sm md:max-w-md lg:max-w-lg relative'>
-        <ChallengeHeader challenge={challenge} size={challenge.coverPhotoMeta?.secure_url ? 'large' : 'small'} />
+        <ChallengeHeader challenge={challenge} size='small' />
         <div className='relative mb-4 text-center text-xl font-bold mt-4'>
           {challenge.name}
         </div>
@@ -144,11 +144,6 @@ export default function ViewChallenge (): JSX.Element {
           <div className={`w-fit mx-8 ${isProgram ? 'border-b-2 border-red' : 'cursor-pointer'}`} onClick={() => { navigate(`/challenges/v/${challenge.id}/program`) }}>Program</div>
           <div className={`w-fit ${isPosts ? 'border-b-2 border-red' : 'cursor-pointer'}`} onClick={() => { navigate(`/challenges/v/${challenge.id}/posts`) }}>Posts</div>
           {/* only show menu here if there is a cover photo */}
-          {challenge.coverPhotoMeta &&
-            <div className='absolute right-0'>
-              <MenuChallenge challenge={challenge}/>
-            </div>
-          }
         </div>
 
         {isOverview &&
@@ -165,7 +160,7 @@ export default function ViewChallenge (): JSX.Element {
                 <Button
                     onClick={confirmJoinUnjoin}
                     loading={loading}
-                    className='mt-4 bg-red hover:bg-green-500 text-white rounded-full p-2 text-xs'>
+                    className='mt-4 bg-red hover:bg-green-500 text-white rounded-full p-2 w-40 text-xs'>
                       {isMember ? 'Leave Challenge' : 'Join this Challenge'}
                   </Button>
                   {showConfirm && (

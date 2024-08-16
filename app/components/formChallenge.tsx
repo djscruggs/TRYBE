@@ -21,6 +21,7 @@ import ChallengeIcon, { iconFiles } from '~/components/challengeIcon'
 interface Errors {
   name?: string
   description?: string
+  icon?: string
   startAt?: string
   endAt?: string
   coverPhoto?: string
@@ -35,6 +36,7 @@ export default function FormChallenge ({ challenge }: { challenge: ChallengeInpu
   const challengeForm = useRef(null)
   const revalidator = useRevalidator()
   const [errors, setErrors] = useState<Errors>()
+  const [image, setImage] = useState<File | null>(null)
   // make a copy so it doesn't affect parent renders
   if (challenge?._count) {
     delete challenge._count
@@ -138,6 +140,7 @@ export default function FormChallenge ({ challenge }: { challenge: ChallengeInpu
     if (formData.description?.trim() === '') { validation.description = 'Description is required' }
     if (!formData.startAt) { validation.startAt = 'Start date is required' }
     if (!formData.endAt) { validation.endAt = 'End date is required' }
+    if (!formData.icon) { validation.icon = 'Icon is required' }
     if (Object.keys(validation).length > 0) {
       setErrors(validation)
       return
@@ -187,26 +190,6 @@ export default function FormChallenge ({ challenge }: { challenge: ChallengeInpu
       navigate(`/challenges/v/${response.data.id}`, { replace: true })
     }
   }
-  const [image, setImage] = useState<File | null>(null)
-  const [imageURL, setImageURL] = useState<string | null>(formData.coverPhotoMeta?.secure_url ? String(formData.coverPhotoMeta.secure_url) : null)
-
-  const handleCoverPhoto = (event: ChangeEvent<HTMLInputElement>): void => {
-    const params = {
-      event,
-      setFile: setImage,
-      setFileURL: setImageURL
-    }
-    // set coverPhoto to null when photo added after a delete
-    handleFileUpload(params)
-  }
-  const removeImage = (): void => {
-    setImage(null)
-    setImageURL(null)
-    setFormData((prevFormData: Partial<ChallengeInputs>) => ({
-      ...prevFormData,
-      deleteImage: true
-    }))
-  }
 
   return (
       <>
@@ -214,7 +197,7 @@ export default function FormChallenge ({ challenge }: { challenge: ChallengeInpu
           <Form method="post" ref={challengeForm} encType="multipart/form-data" onSubmit={handleSubmit}>
             {/* this is here so tailwind generates the correct classes, should be moveed to tailwind.config.js file */}
 
-            <div className="w-full max-w-[600px] md:max-w-[1200px] px-2 grid grid-cols-1 md:grid-cols-3  ">
+            <div className="w-full max-w-[600px] md:max-w-[1200px] px-2 grid grid-cols-1 md:grid-cols-2  ">
               <div className="col-span-2 w-full lg:col-span-1">
                 <div className="relative mb-2 max-w-[400px]">
                   <FormField
@@ -317,8 +300,15 @@ export default function FormChallenge ({ challenge }: { challenge: ChallengeInpu
                     label="Description"
                   />
                 </div>
+                {/* <div className='w-full mt-4'>
+                  <CoverPhotoHandler formData={formData} setFormData={setFormData} image={image} setImage={setImage} />
+                </div> */}
               </div>
               <div className="max-w-[400px] sm:col-span-2 md:ml-4 lg:col-span-1">
+                <div className='mb-4'>
+                <label>Preview</label>
+                <Preview data={formData}/>
+                </div>
                 <div className="max-w-[400px] relative flex flex-wrap">
                   <label className='w-full block mb-2 text-left'>Color</label>
                   {colorOptions.map((option, index) => (
@@ -326,6 +316,11 @@ export default function FormChallenge ({ challenge }: { challenge: ChallengeInpu
                   ))}
                 </div>
                 <div className="mt-4 max-w-[400px]">
+                  {errors?.icon && (
+                      <div className="text-xs font-semibold text-left tracking-wide text-red w-full mb-4">
+                        {errors?.icon}
+                      </div>
+                  )}
                   <Menu>
                     <MenuHandler className="flex justify-center items-center">
                       <div className="flex items-center justify-center gap-2 cursor-pointer">
@@ -343,47 +338,15 @@ export default function FormChallenge ({ challenge }: { challenge: ChallengeInpu
                     <MenuList className="justify-start items-start grid grid-cols-3">
                     {Object.entries(iconFiles).map(([img, width]) => (
                       <MenuItem key={img}>
-                        <img src={`/images/icons/${img}`} width={width} onClick={() => { handleIconChange(img) }} className={`cursor-pointer ${formData.icon === img ? ' outline outline-2  outline-darkgrey rounded-md' : ''}`} />
+                        <img src={`/images/icons/${img}`} width={Math.round(width * 0.6)} onClick={() => { handleIconChange(img) }} className={`cursor-pointer ${formData.icon === img ? ' outline outline-2  outline-darkgrey rounded-md' : ''}`} />
                       </MenuItem>
                     ))}
                   </MenuList>
                 </Menu>
                 </div>
-                <div className='w-full mt-4'>
-                  <div className={`max-w-md mb-2 h-60 rounded-md flex items-center justify-center ${imageURL ? '' : 'bg-blue-gray-50'}`}>
-                    {imageURL &&
-                      <>
-                      <img src={imageURL} alt="cover photo" className="max-w-full max-h-60" />
-                      </>
-                    }
-                    {!imageURL &&
-                      <div className="flex flex-col items-center justify-end">
-                        <p className="text-2xl text-blue-gray-500 text-center">Upload a cover photo</p>
-                        <div className='mt-10 ml-36'>
-                          <ImageInput imageURL={imageURL} onChange={handleCoverPhoto} />
-                        </div>
-                      </div>
-                    }
-                  </div>
-                  <div className='px-[28%] justify-center items-center'>
-                    {imageURL &&
-                      <>
-                        <ImageInput imageURL={imageURL} onChange={handleCoverPhoto} />
-                        <div onClick={removeImage} className='underline ml-[130px] -mt-8 cursor-pointer'>remove</div>
-                      </>
-                    }
-
-                  </div>
-                </div>
 
               </div>
-              <div className="max-w-[400px] sm:col-span-2 md:ml-4 lg:col-span-1">
-                <div className="relative max-w-[400px]">
-                  <label>Preview</label>
-                  <Preview data={formData}/>
 
-                </div>
-              </div>
             </div>
             <div className="mt-8 flex justify-left">
               <Button type="submit" onClick={handleSubmit} placeholder='Save' className="bg-red hover:bg-green-500 rounded-full">Save Challenge</Button>
@@ -399,9 +362,6 @@ export default function FormChallenge ({ challenge }: { challenge: ChallengeInpu
 const Preview = ({ data }: { data: any }): JSX.Element => {
   return (
     <>
-      {data.coverPhotoMeta &&
-        <img src={data.coverPhotoMeta?.secure_url} alt="cover photo" className="max-w-full max-h-60" />
-      }
       <CardChallenge challenge={data} isPreview={true} />
     </>
   )
@@ -428,5 +388,55 @@ const ImageInput = (props: imageInputProps): JSX.Element => {
                   file:cursor-pointer file:bg-red
                   hover:file:bg-green-500`}
     />
+  )
+}
+
+const CoverPhotoHandler = ({ formData, setFormData, image, setImage }: { formData: Partial<ChallengeInputs>, setFormData: (formData: Partial<ChallengeInputs>) => void, image: File | null, setImage: (image: File | null) => void }): JSX.Element => {
+  const [imageURL, setImageURL] = useState<string | null>(formData.coverPhotoMeta?.secure_url ? String(formData.coverPhotoMeta.secure_url) : null)
+
+  const handleCoverPhoto = (event: ChangeEvent<HTMLInputElement>): void => {
+    const params = {
+      event,
+      setFile: setImage,
+      setFileURL: setImageURL
+    }
+    // set coverPhoto to null when photo added after a delete
+    handleFileUpload(params)
+  }
+  const removeImage = (): void => {
+    setImage(null)
+    setImageURL(null)
+    setFormData((prevFormData: Partial<ChallengeInputs>): Partial<ChallengeInputs> => ({
+      ...prevFormData,
+      deleteImage: true
+    }))
+  }
+  return (
+    <>
+      <div className={`max-w-md mb-2 h-60 rounded-md flex items-center justify-center ${imageURL ? '' : 'bg-blue-gray-50'}`}>
+        {imageURL &&
+          <>
+          <img src={imageURL} alt="cover photo" className="max-w-full max-h-60" />
+          </>
+        }
+        {!imageURL &&
+          <div className="flex flex-col items-center justify-end">
+            <p className="text-2xl text-blue-gray-500 text-center">Upload a cover photo</p>
+            <div className='mt-10 ml-36'>
+              <ImageInput imageURL={imageURL} onChange={handleCoverPhoto} />
+            </div>
+          </div>
+        }
+      </div>
+      <div className='px-[28%] justify-center items-center'>
+        {imageURL &&
+          <>
+            <ImageInput imageURL={imageURL} onChange={handleCoverPhoto} />
+            <div onClick={removeImage} className='underline ml-[130px] -mt-8 cursor-pointer'>remove</div>
+          </>
+}
+
+      </div>
+    </>
   )
 }
