@@ -29,6 +29,7 @@ module.exports = {
     ],
     "rules": {
         "@typescript-eslint/strict-boolean-expressions": 0,
+        "no-console": "warn",
         "@typescript-eslint/no-unsafe-assignment": 0,
         "@typescript-eslint/no-misused-promises": 0,
          // suppress errors for missing 'import React' in files

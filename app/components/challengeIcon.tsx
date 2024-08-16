@@ -1,5 +1,4 @@
 import { HiOutlineQuestionMarkCircle } from 'react-icons/hi'
-
 export const iconFiles: Record<string, number> = {
   'YogaLight.png': 150,
   'YogaDark.png': 150,
@@ -16,11 +15,15 @@ export const iconFiles: Record<string, number> = {
 }
 interface ChallengeIconProps {
   icon?: string
+  size?: string
 }
-const ChallengeIcon = ({ icon }: ChallengeIconProps): JSX.Element => {
+const ChallengeIcon = ({ icon, size }: ChallengeIconProps): JSX.Element => {
   let width = 150
   if (icon && iconFiles[icon]) {
     width = iconFiles[icon]
+  }
+  if (size === 'small') {
+    width = Math.floor(width * 0.4)
   }
   return (
     <>

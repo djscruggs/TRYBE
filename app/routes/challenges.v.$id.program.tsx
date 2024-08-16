@@ -1,5 +1,7 @@
-import { useLoaderData, useRouteLoaderData, useNavigate, Link } from '@remix-run/react'
+import { useLoaderData, useRouteLoaderData, Link } from '@remix-run/react'
+import { useContext } from 'react'
 import { requireCurrentUser } from '~/models/auth.server'
+import { CurrentUserContext } from '~/utils/CurrentUserContext'
 import { type Post } from '@prisma/client'
 import { type LoaderFunction, type LoaderFunctionArgs } from '@remix-run/node'
 import { prisma } from '~/models/prisma.server'
@@ -33,8 +35,19 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs): Promise<
 export default function Program (): JSX.Element {
   const { challenge } = useRouteLoaderData<typeof useRouteLoaderData>('routes/challenges.v.$id') as { challenge: Challenge }
   const { posts } = useLoaderData<typeof loader>() as ChallengeScheduleData
-
+  const { currentUser } = useContext(CurrentUserContext)
   return (
-    <ChallengeSchedule challenge={challenge} posts={posts} key={challenge.id} isSchedule={false} />
+    <>
+    {0 > 1 &&
+    <>
+        foo
+        {challenge.userId === currentUser?.id
+          ? <div>You have not scheduled content. <Link to={`/challenges/v/${challenge.id}/schedule`}>Edit schedule.</Link></div>
+          : <div>Schedule has not been published yet. </div>
+        }
+      </>
+      }
+      <ChallengeSchedule challenge={challenge} posts={posts} key={challenge.id} isSchedule={false} />
+    </>
   )
 }

@@ -1,7 +1,7 @@
 import { resizeImageToFit } from '~/utils/helpers'
 import { type Challenge, type ChallengeSummary } from '~/utils/types'
 import { Link } from '@remix-run/react'
-import Logo from './logo'
+import ChallengeIcon from './challengeIcon'
 import MenuChallenge from './menuChallenge'
 
 export default function ChallengeHeader ({ challenge, size }: { challenge: Challenge | ChallengeSummary, size: 'small' | 'large' }): JSX.Element {
@@ -20,17 +20,8 @@ export default function ChallengeHeader ({ challenge, size }: { challenge: Chall
       : (
       <div className='flex flex-row justify-start items-center w-full relative'>
         <Link to={`/challenges/v/${challenge.id}`}>
-          {challenge.coverPhotoMeta?.secure_url
-            ? <img
-              src={challenge.coverPhotoMeta?.secure_url}
-              alt={`${challenge?.name} cover photo`}
-              width={imgWidth}
-              height={imgHeight}
-              className={`max-w-[${imgWidth}px] max-h-[${imgHeight}px] rounded-md`}
-            />
-            : <Logo size='40px' backgroundColor='yellow'/>
-          }
-          </Link>
+          <ChallengeIcon icon={challenge.icon as string | undefined} size={size} />
+        </Link>
         <div className='text-2xl pl-2'>{challenge.name}</div>
         <div className='ml-4'>
           <MenuChallenge challenge={challenge} />
