@@ -22,7 +22,7 @@ export default function CheckinsList ({ checkIns, likes, comments, allowComments
       previousDate = currentDate
 
       return (
-        <div key={checkIn.id} className='relative'>
+        <div key={checkIn.id} className={`relative ${!isNewDay ? 'border-t pt-2' : ''}`}>
           {isNewDay &&
             <div className='border-t border-teal'>
               <div className="absolute right-0 text-center capitalize p-1 -mt-3.5 rounded-md drop-shadow-xl w-[90px] bg-teal text-xs text-white">{currentDate}</div>
@@ -43,6 +43,7 @@ interface CheckinRowProps {
   isLiked: boolean
   comments: Comment[]
   allowComments: boolean
+  onDelete: (checkIn: CheckIn) => void
 }
 export function CheckinRow (props: CheckinRowProps): JSX.Element {
   const { currentUser } = useContext(CurrentUserContext)
