@@ -1,14 +1,10 @@
-import { formatDistanceToNowStrict, format, differenceInDays, differenceInHours, isPast } from 'date-fns'
 import { useState } from 'react'
 import type { Challenge, MemberChallenge, CheckIn } from '~/utils/types'
-import { Link, useLocation } from '@remix-run/react'
 import FormCheckIn from './formCheckin'
 import {
-  Button,
   Dialog,
   DialogBody
 } from '@material-tailwind/react'
-import { pluralize } from '~/utils/helpers'
 
 interface ChallengeMemberCheckinProps {
   challenge: Challenge

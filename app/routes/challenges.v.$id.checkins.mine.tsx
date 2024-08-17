@@ -30,9 +30,11 @@ export default function MyCheckIns (): JSX.Element {
   }
 
   return (
+    <div className='w-full flex items-center justify-center'>
         <div className='max-w-[200px] flex items-center justify-center'>
             <ChallengeMemberProgressChart challenge={challenge} checkIns={checkIns} />
         </div>
+    </div>
 
   )
 }
