@@ -152,12 +152,13 @@ export default function FormCheckIn (props: FormCheckinProps): JSX.Element {
   return (
     <div className='w-full'>
       <Form method="post" onSubmit={handleSubmit} onKeyDown={handleKeyDown}>
-      <FormField
+        <FormField
           name='note'
           autoResize={true}
           placeholder={'Add a note (optional)'}
           type='textarea'
           rows={2}
+          cols={50}
           value={body}
           onKeyDown={handleKeyDown}
           onChange={(ev) => {
@@ -167,10 +168,8 @@ export default function FormCheckIn (props: FormCheckinProps): JSX.Element {
           error={error}
           />
         <input type="file" name="image" hidden ref={imageRef} onChange={handleImage} accept="image/*"/>
-
         <VideoChooser recorderShowing={showVideoRecorder} showRecorder={videoChooserCallbackShow} hideRecorder={videoChooserCallbackHide} />
         <MdOutlineAddPhotoAlternate onClick={imageDialog} className='text-2xl cursor-pointer float-right' />
-
         {imageUrl &&
           <div className="relative w-fit">
             <img src={imageUrl} alt="image thumbnail" className='h-24 mb-2' />
@@ -199,11 +198,8 @@ export default function FormCheckIn (props: FormCheckinProps): JSX.Element {
               : saveLabel ?? 'Check In'
           }
         </Button>
-
-          <button onClick={handleCancel} className="mt-2 text-sm underline ml-2 hover:text-red">cancel</button>
-
+        <button onClick={handleCancel} className="mt-2 text-sm underline ml-2 hover:text-red">cancel</button>
       </Form>
-
     </div>
   )
 }
