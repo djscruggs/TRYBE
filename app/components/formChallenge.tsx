@@ -300,6 +300,12 @@ export default function FormChallenge ({ challenge }: { challenge: ChallengeInpu
                     label="Description"
                   />
                 </div>
+                <div className="max-w-[400px] relative flex flex-wrap">
+                  <label className='w-full block mb-2 text-left'>Color</label>
+                  {colorOptions.map((option, index) => (
+                    <div key={index} onClick={() => { handleColorChange(option) }} className={`w-10 h-10 cursor-pointer rounded-full bg-${colorToClassName(option, 'red')} mr-2 mb-2 ${formData.color === option ? 'outline outline-2 outline-offset-2 outline-darkgrey' : ''}`}></div>
+                  ))}
+                </div>
                 {/* <div className='w-full mt-4'>
                   <CoverPhotoHandler formData={formData} setFormData={setFormData} image={image} setImage={setImage} />
                 </div> */}
@@ -309,12 +315,7 @@ export default function FormChallenge ({ challenge }: { challenge: ChallengeInpu
                 <label>Preview</label>
                 <Preview data={formData}/>
                 </div>
-                <div className="max-w-[400px] relative flex flex-wrap">
-                  <label className='w-full block mb-2 text-left'>Color</label>
-                  {colorOptions.map((option, index) => (
-                    <div key={index} onClick={() => { handleColorChange(option) }} className={`w-10 h-10 cursor-pointer rounded-full bg-${colorToClassName(option, 'red')} mr-2 mb-2 ${formData.color === option ? 'outline outline-2 outline-offset-2 outline-darkgrey' : ''}`}></div>
-                  ))}
-                </div>
+
                 <div className="mt-4 max-w-[400px]">
                   {errors?.icon && (
                       <div className="text-xs font-semibold text-left tracking-wide text-red w-full mb-4">

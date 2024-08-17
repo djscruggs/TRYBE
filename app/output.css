@@ -1282,6 +1282,10 @@ video {
   max-height: 100vh;
 }
 
+.max-h-\[200px\] {
+  max-height: 200px;
+}
+
 .max-h-\[32px\] {
   max-height: 32px;
 }

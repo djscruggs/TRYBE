@@ -13,6 +13,7 @@ import { toast } from 'react-hot-toast'
 import { FaRegComment } from 'react-icons/fa'
 import FormComment from '~/components/formComment'
 import CommentsContainer from '~/components/commentsContainer'
+import ChatDrawer from '~/components/chatDrawer'
 export default function CheckinsList ({ checkIns, likes, comments, allowComments }: { checkIns: CheckIn[], likes: number[], comments: Record<number, Comment[]>, allowComments: boolean }): JSX.Element {
   let previousDate: string | null = null
   return (
@@ -23,14 +24,15 @@ export default function CheckinsList ({ checkIns, likes, comments, allowComments
       previousDate = currentDate
 
       return (
-        <>
+        <div key={checkIn.id}>
           {isNewDay &&
           <div className="border-t border-red text-right text-xs italic pr-1">{currentDate}</div>
           }
-          <div key={checkIn.id} className={`${isNewDay ? '-mt-5' : ''}`}>
+          <div className={`${isNewDay ? '-mt-5' : ''}`}>
             <CheckinRow checkIn={checkIn} isLiked={likes.includes(checkIn.id)} comments={comments[checkIn.id]} allowComments={allowComments}/>
+
           </div>
-        </>
+        </div>
       )
     })}
   </div>
@@ -52,7 +54,7 @@ export function CheckinRow (props: CheckinRowProps): JSX.Element {
   const [checkInObj, setCheckInObj] = useState<CheckIn | null>(props.checkIn)
   const [deleteDialog, setDeleteDialog] = useState(false)
   const [showCommentForm, setShowCommentForm] = useState(false)
-  const [showComments, setShowComments] = useState(props.comments !== undefined)
+  const [showComments, setShowComments] = useState(false)
   const [firstComment, setFirstComment] = useState<Comment | null>(null)
   const [comments, setComments] = useState<Comment[]>(props.comments ?? [])
   // helper function that sets the date to only show the time if it's today
@@ -77,22 +79,27 @@ export function CheckinRow (props: CheckinRowProps): JSX.Element {
     setShowLightbox(true)
   }
 
-  const handleDelete = (event: any): void => {
+  const handleDelete = async (event: any): Promise<void> => {
     event.preventDefault()
     event.stopPropagation()
-    axios.delete(`/api/checkins/delete/${checkInObj.id}`)
-      .then(() => {
-        toast.success('Check-in deleted')
-      })
-      .catch(error => {
-        toast.error('Error deleting check-in')
-        console.error('Error deleting check-in:', error)
-      }).finally(() => {
-        setDeleteDialog(false)
-        setCheckInObj(null)
-      })
+    try {
+      await axios.delete(`/api/checkins/delete/${checkInObj.id}`)
+      toast.success('Check-in deleted')
+    } catch (error) {
+      toast.error('Error deleting check-in')
+    } finally {
+      setDeleteDialog(false)
+      setCheckInObj(null)
+    }
+  }
+  const hideComments = (): void => {
+    console.log('closeDrawer in list')
+    setShowComments(false)
+    setShowCommentForm(false)
+    setFirstComment(null)
   }
   const handleComments = (): void => {
+    console.log('handleComments')
     setShowCommentForm(true)
     setShowComments(true)
   }
@@ -113,27 +120,20 @@ export function CheckinRow (props: CheckinRowProps): JSX.Element {
     <>
       <div className='h-fit relative flex flex-items-center w-full p-2 mb-2'>
         <div className='w-full h-full flex flex-row mb-4'>
-          <div className='w-[50px] min-w-[50px] text-xs'>
-            <AvatarLoader object={checkInObj} /><br />
-
-          </div>
-          <div className='ml-0 w-full'>
+          <div className='ml-0'>
           {showEditForm
-            ? <FormCheckIn checkIn={checkInObj} challengeId={checkInObj.challengeId} onCancel={() => { setShowEditForm(false) }} saveLabel='Save' afterCheckIn={resetOnSave}/>
+            ? <>
+              <div className='w-full h-full flex flex-row mb-4'>
+              <CheckInAvatar checkIn={checkInObj} />
+              <FormCheckIn checkIn={checkInObj} challengeId={checkInObj.challengeId} onCancel={() => { setShowEditForm(false) }} saveLabel='Save' afterCheckIn={resetOnSave}/>
+              </div>
+              </>
+
             : (
 
             <>
-              <div className='text-xs mb-2'>
-                <span className='font-bold'>{checkInObj.user?.profile?.firstName} {checkInObj.user?.profile?.lastName}</span> <span className='text-xs'>{formatted}</span>
-              </div>
 
-            {checkInBody ?? <span className='text-sm italic'>Checked in</span>}
-
-            {checkInObj.imageMeta?.secure_url &&
-              <img src={checkInObj.imageMeta.secure_url} alt='checkin picture' className='mt-4 cursor-pointer max-w-[400px]' onClick={handlePhotoClick}/>}
-            {showLightbox && <Lightbox medium={checkInObj.imageMeta?.secure_url} large={checkInObj.imageMeta?.secure_url} alt='checkin photo' onClose={() => { setShowLightbox(false) }}/>}
-            {checkInObj.videoMeta?.secure_url && <video className={`${checkInObj.imageMeta?.secure_url ? 'mt-6' : ''} max-w-[400px]`} src={checkInObj.videoMeta.secure_url} onClick={(event) => { event?.stopPropagation() }} controls />}
-            {/* {(checkInBody ?? checkInObj.imageMeta?.secure_url ?? checkInObj.videoMeta?.secure_url) && */}
+            <CheckInContent checkIn={checkInObj} timestamp={formatted}/>
             {(allowComments || comments.length > 0) &&
               <>
               <div className='mt-2 flex items-start'>
@@ -144,14 +144,18 @@ export function CheckinRow (props: CheckinRowProps): JSX.Element {
                 <Liker isLiked={isLiked} itemId={checkInObj.id} itemType='checkIn' count={checkInObj.likeCount} />
 
               </div>
-              {showCommentForm &&
-                <div className='text-sm'>
-                  <FormComment afterSave={saveFirstComment} onCancel={() => { setShowCommentForm(false) }} checkInId={checkInObj.id} />
-                </div>
-              }
-              {(firstComment ?? showComments) &&
-                <CommentsContainer firstComment={firstComment} comments={comments} isReply={false} likedCommentIds={[]}/>
-              }
+
+                <ChatDrawer
+                  isOpen={showComments}
+                  placement='right'
+                  onClose={hideComments}
+                  size={500}
+                >
+
+                      <CheckInContent checkIn={checkInObj} timestamp={formatted} />
+
+                </ChatDrawer>
+
               </>
             }
             </>
@@ -169,5 +173,53 @@ export function CheckinRow (props: CheckinRowProps): JSX.Element {
 
       </div>
     </>
+  )
+}
+interface CheckInProps {
+  checkIn: CheckIn
+  timestamp: string
+}
+const CheckInContent = ({ checkIn, timestamp }: CheckInProps): JSX.Element => {
+  const [showLightbox, setShowLightbox] = useState(false)
+  const handlePhotoClick = (event: any): void => {
+    event.preventDefault()
+    event.stopPropagation()
+    setShowLightbox(true)
+  }
+  return (
+    <div className='w-full'>
+      <div className='w-full h-full flex flex-row mb-4'>
+        <CheckInAvatar checkIn={checkIn} />
+        <div className='ml-0'>
+          <div className='text-xs mb-2'>
+            <span className='font-bold'>{checkIn.user?.profile?.firstName} {checkIn.user?.profile?.lastName}</span> <span className='text-xs'>{timestamp}</span>
+          </div>
+          {checkIn.body ??
+            <span className='text-sm italic'>Checked in</span>
+          }
+          {checkIn.imageMeta?.secure_url &&
+            <img src={checkIn.imageMeta.secure_url} alt='checkin picture' className='mt-4 cursor-pointer max-h-[200px]' onClick={handlePhotoClick}/>
+          }
+          {showLightbox &&
+            <Lightbox medium={checkIn.imageMeta?.secure_url} large={checkIn.imageMeta?.secure_url} alt='checkin photo' onClose={() => { setShowLightbox(false) }}/>
+          }
+          {checkIn.videoMeta?.secure_url &&
+            <video className={`${checkIn.imageMeta?.secure_url ? 'mt-6' : ''} max-w-[400px]`} src={checkIn.videoMeta.secure_url} onClick={(event) => { event?.stopPropagation() }} controls />
+          }
+        </div>
+      </div>
+
+    </div>
+  )
+}
+interface CheckInAvatarProps {
+  checkIn: CheckIn
+}
+
+const CheckInAvatar = ({ checkIn }: CheckInAvatarProps): JSX.Element => {
+  return (
+    <div className='w-[50px] min-w-[50px] text-xs'>
+      <AvatarLoader object={checkIn} /><br />
+    </div>
   )
 }
