@@ -11,8 +11,6 @@ import DialogDelete from './dialogDelete'
 import axios from 'axios'
 import { toast } from 'react-hot-toast'
 import { FaRegComment } from 'react-icons/fa'
-import FormComment from '~/components/formComment'
-import CommentsContainer from '~/components/commentsContainer'
 import ChatDrawer from '~/components/chatDrawer'
 export default function CheckinsList ({ checkIns, likes, comments, allowComments }: { checkIns: CheckIn[], likes: number[], comments: Record<number, Comment[]>, allowComments: boolean }): JSX.Element {
   let previousDate: string | null = null
@@ -24,13 +22,14 @@ export default function CheckinsList ({ checkIns, likes, comments, allowComments
       previousDate = currentDate
 
       return (
-        <div key={checkIn.id}>
+        <div key={checkIn.id} className='relative'>
           {isNewDay &&
-          <div className="border-t border-red text-right text-xs italic pr-1">{currentDate}</div>
+            <div className='border-t border-teal'>
+              <div className="absolute right-0 text-center capitalize p-1 -mt-3.5 rounded-md drop-shadow-xl w-[90px] bg-teal text-xs text-white">{currentDate}</div>
+            </div>
           }
-          <div className={`${isNewDay ? '-mt-5' : ''}`}>
+          <div className={`${isNewDay ? 'mt-2' : ''}`}>
             <CheckinRow checkIn={checkIn} isLiked={likes.includes(checkIn.id)} comments={comments[checkIn.id]} allowComments={allowComments}/>
-
           </div>
         </div>
       )
@@ -49,9 +48,7 @@ export function CheckinRow (props: CheckinRowProps): JSX.Element {
   const { currentUser } = useContext(CurrentUserContext)
   const locale = userLocale(currentUser)
   const { allowComments, isLiked } = props
-  const [showLightbox, setShowLightbox] = useState(false)
-  const [checkInBody, setCheckInBody] = useState(textToJSX(props.checkIn.body ?? ''))
-  const [checkInObj, setCheckInObj] = useState<CheckIn | null>(props.checkIn)
+  const [checkInObj, setCheckInObj] = useState<CheckIn>(props.checkIn)
   const [deleteDialog, setDeleteDialog] = useState(false)
   const [showCommentForm, setShowCommentForm] = useState(false)
   const [showComments, setShowComments] = useState(false)
@@ -67,17 +64,10 @@ export function CheckinRow (props: CheckinRowProps): JSX.Element {
   // }
   formatted = created.toLocaleTimeString(locale, { hour: 'numeric', minute: 'numeric' })
   const resetOnSave = (data: { checkIn: CheckIn }): void => {
-    setCheckInBody(textToJSX(data.checkIn.body ?? ''))
     setCheckInObj(data.checkIn)
     setShowEditForm(false)
   }
   const [showEditForm, setShowEditForm] = useState(false)
-
-  const handlePhotoClick = (event: any): void => {
-    event.preventDefault()
-    event.stopPropagation()
-    setShowLightbox(true)
-  }
 
   const handleDelete = async (event: any): Promise<void> => {
     event.preventDefault()
@@ -93,13 +83,11 @@ export function CheckinRow (props: CheckinRowProps): JSX.Element {
     }
   }
   const hideComments = (): void => {
-    console.log('closeDrawer in list')
     setShowComments(false)
     setShowCommentForm(false)
     setFirstComment(null)
   }
   const handleComments = (): void => {
-    console.log('handleComments')
     setShowCommentForm(true)
     setShowComments(true)
   }
@@ -112,7 +100,7 @@ export function CheckinRow (props: CheckinRowProps): JSX.Element {
     setFirstComment(comment)
     setShowCommentForm(false)
   }
-  const showEditDelete = props.checkIn.userId === currentUser?.id
+  const allowEdit = props.checkIn.userId === currentUser?.id
   if (!checkInObj) {
     return <></>
   }
@@ -121,55 +109,51 @@ export function CheckinRow (props: CheckinRowProps): JSX.Element {
       <div className='h-fit relative flex flex-items-center w-full p-2 mb-2'>
         <div className='w-full h-full flex flex-row mb-4'>
           <div className='ml-0'>
-          {showEditForm
-            ? <>
-              <div className='w-full h-full flex flex-row mb-4'>
-              <CheckInAvatar checkIn={checkInObj} />
-              <FormCheckIn checkIn={checkInObj} challengeId={checkInObj.challengeId} onCancel={() => { setShowEditForm(false) }} saveLabel='Save' afterCheckIn={resetOnSave}/>
-              </div>
-              </>
+            {showEditForm
+              ? <div className='w-full h-full flex flex-row mb-4'>
+                  <CheckInAvatar checkIn={checkInObj} />
+                  <FormCheckIn checkIn={checkInObj} challengeId={checkInObj.challengeId} onCancel={() => { setShowEditForm(false) }} saveLabel='Save' afterCheckIn={resetOnSave}/>
+                </div>
+              : (
 
-            : (
+                <>
+                {allowEdit && !showEditForm &&
+                  <div className='text-xs absolute right-16 top-0 underline text-right text-red my-2'>
+                    <span className=' mr-2 cursor-pointer' onClick={() => { setShowEditForm(true) }}>edit</span>
+                    <span className='cursor-pointer' onClick={() => { setDeleteDialog(true) }}>delete</span>
+                    {deleteDialog && <DialogDelete prompt='Are you sure you want to delete this note?' isOpen={deleteDialog} deleteCallback={(event: any) => { handleDelete(event) }} onCancel={() => { setDeleteDialog(false) }}/>}
+                  </div>
+                }
+                <CheckInContent checkIn={checkInObj} timestamp={formatted}/>
+                {(allowComments || comments.length > 0) &&
+                  <>
+                  <div className='mt-2 flex items-start ml-12'>
+                    <span className="text-xs mr-4 cursor-pointer" onClick={handleComments}>
+                      <FaRegComment className="text-grey h-4 w-4 mr-2 inline" />
+                      {checkInObj.commentCount} comments
+                    </span>
+                    <Liker isLiked={isLiked} itemId={checkInObj.id} itemType='checkIn' count={checkInObj.likeCount} />
 
-            <>
+                  </div>
 
-            <CheckInContent checkIn={checkInObj} timestamp={formatted}/>
-            {(allowComments || comments.length > 0) &&
-              <>
-              <div className='mt-2 flex items-start'>
-                <span className="text-xs mr-4 cursor-pointer" onClick={handleComments}>
-                  <FaRegComment className="text-grey h-4 w-4 mr-2 inline" />
-                  {checkInObj.commentCount} comments
-                </span>
-                <Liker isLiked={isLiked} itemId={checkInObj.id} itemType='checkIn' count={checkInObj.likeCount} />
+                    <ChatDrawer
+                      isOpen={showComments}
+                      placement='right'
+                      onClose={hideComments}
+                      size={500}
+                    >
 
-              </div>
+                          <CheckInContent checkIn={checkInObj} timestamp={formatted} />
 
-                <ChatDrawer
-                  isOpen={showComments}
-                  placement='right'
-                  onClose={hideComments}
-                  size={500}
-                >
+                    </ChatDrawer>
 
-                      <CheckInContent checkIn={checkInObj} timestamp={formatted} />
-
-                </ChatDrawer>
-
-              </>
+                  </>
+                }
+                </>
+                )
             }
-            </>
-              )}
           </div>
         </div>
-        {showEditDelete && !showEditForm &&
-        // add extra margin at top if there's an image above it
-          <div className='text-xs absolute right-4 bottom-0 underline text-right text-red my-2'>
-            <span className=' mr-2 cursor-pointer' onClick={() => { setShowEditForm(true) }}>edit</span>
-            <span className='cursor-pointer' onClick={() => { setDeleteDialog(true) }}>delete</span>
-            {deleteDialog && <DialogDelete prompt='Are you sure you want to delete this note?' isOpen={deleteDialog} deleteCallback={(event: any) => { handleDelete(event) }} onCancel={() => { setDeleteDialog(false) }}/>}
-          </div>
-        }
 
       </div>
     </>
