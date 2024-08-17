@@ -11,12 +11,17 @@ import DialogDelete from './dialogDelete'
 import axios from 'axios'
 import { toast } from 'react-hot-toast'
 import { FaRegComment } from 'react-icons/fa'
-import ChatDrawer from '~/components/chatDrawer'
+import CommentDrawer from '~/components/commentDrawer'
 export default function CheckinsList ({ checkIns, likes, comments, allowComments }: { checkIns: CheckIn[], likes: number[], comments: Record<number, Comment[]>, allowComments: boolean }): JSX.Element {
+  const [checkInsArr, setCheckInsArr] = useState(checkIns)
+  const handleDelete = (deletedCheckIn: CheckIn): void => {
+    setCheckInsArr(checkInsArr.filter(checkIn => checkIn.id !== deletedCheckIn.id))
+  }
   let previousDate: string | null = null
+
   return (
     <div className='text-left flex flex-col w-full'>
-    {checkIns.map((checkIn: CheckIn, index: number) => {
+    {checkInsArr.map((checkIn: CheckIn, index: number) => {
       const currentDate = new Date(checkIn.createdAt).toLocaleDateString()
       const isNewDay = previousDate !== currentDate
       previousDate = currentDate
@@ -29,7 +34,7 @@ export default function CheckinsList ({ checkIns, likes, comments, allowComments
             </div>
           }
           <div className={`${isNewDay ? 'mt-2' : ''}`}>
-            <CheckinRow checkIn={checkIn} isLiked={likes.includes(checkIn.id)} comments={comments[checkIn.id]} allowComments={allowComments}/>
+            <CheckinRow checkIn={checkIn} isLiked={likes.includes(checkIn.id)} comments={comments[checkIn.id]} allowComments={allowComments} onDelete={handleDelete}/>
           </div>
         </div>
       )
@@ -48,24 +53,17 @@ interface CheckinRowProps {
 export function CheckinRow (props: CheckinRowProps): JSX.Element {
   const { currentUser } = useContext(CurrentUserContext)
   const locale = userLocale(currentUser)
-  const { allowComments, isLiked } = props
+  const { allowComments, isLiked, onDelete } = props
   const [checkInObj, setCheckInObj] = useState<CheckIn>(props.checkIn)
+  const [deleted, setDeleted] = useState(false)
   const [deleteDialog, setDeleteDialog] = useState(false)
-  const [showCommentForm, setShowCommentForm] = useState(false)
   const [showComments, setShowComments] = useState(false)
   const [firstComment, setFirstComment] = useState<Comment | null>(null)
   const [comments, setComments] = useState<Comment[]>(props.comments ?? [])
-  // helper function that sets the date to only show the time if it's today
-  let formatted
   const created = new Date(props.checkIn.createdAt)
-  // if (isToday(created)) {
-  //   formatted = created.toLocaleTimeString(locale, { hour: 'numeric', minute: 'numeric' })
-  // } else {
-  //   formatted = created.toLocaleDateString(locale, { month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric' })
-  // }
-  formatted = created.toLocaleTimeString(locale, { hour: 'numeric', minute: 'numeric' })
-  const resetOnSave = (data: { checkIn: CheckIn }): void => {
-    setCheckInObj(data.checkIn)
+  const formatted = created.toLocaleTimeString(locale, { hour: 'numeric', minute: 'numeric' })
+  const resetOnSave = (checkIn: CheckIn): void => {
+    setCheckInObj(checkIn)
     setShowEditForm(false)
   }
   const [showEditForm, setShowEditForm] = useState(false)
@@ -80,16 +78,17 @@ export function CheckinRow (props: CheckinRowProps): JSX.Element {
       toast.error('Error deleting check-in')
     } finally {
       setDeleteDialog(false)
-      setCheckInObj(null)
+      if (onDelete) {
+        onDelete(checkInObj)
+      }
+      setDeleted(true)
     }
   }
   const hideComments = (): void => {
     setShowComments(false)
-    setShowCommentForm(false)
     setFirstComment(null)
   }
   const handleComments = (): void => {
-    setShowCommentForm(true)
     setShowComments(true)
   }
   const saveFirstComment = (comment: Comment): void => {
@@ -102,7 +101,7 @@ export function CheckinRow (props: CheckinRowProps): JSX.Element {
     setShowCommentForm(false)
   }
   const allowEdit = props.checkIn.userId === currentUser?.id
-  if (!checkInObj) {
+  if (deleted) {
     return <></>
   }
   return (
@@ -122,7 +121,9 @@ export function CheckinRow (props: CheckinRowProps): JSX.Element {
                   <div className='text-xs absolute right-16 top-0 underline text-right text-red my-2'>
                     <span className=' mr-2 cursor-pointer' onClick={() => { setShowEditForm(true) }}>edit</span>
                     <span className='cursor-pointer' onClick={() => { setDeleteDialog(true) }}>delete</span>
-                    {deleteDialog && <DialogDelete prompt='Are you sure you want to delete this note?' isOpen={deleteDialog} deleteCallback={(event: any) => { handleDelete(event) }} onCancel={() => { setDeleteDialog(false) }}/>}
+                    {deleteDialog &&
+                      <DialogDelete prompt='Are you sure you want to delete this note?' isOpen={deleteDialog} deleteCallback={handleDelete} onCancel={() => { setDeleteDialog(false) }}/>
+                    }
                   </div>
                 }
                 <CheckInContent checkIn={checkInObj} timestamp={formatted}/>
@@ -137,16 +138,14 @@ export function CheckinRow (props: CheckinRowProps): JSX.Element {
 
                   </div>
 
-                    <ChatDrawer
+                    <CommentDrawer
                       isOpen={showComments}
                       placement='right'
                       onClose={hideComments}
                       size={500}
                     >
-
-                          <CheckInContent checkIn={checkInObj} timestamp={formatted} />
-
-                    </ChatDrawer>
+                      <CheckInContent checkIn={checkInObj} timestamp={formatted} />
+                    </CommentDrawer>
 
                   </>
                 }

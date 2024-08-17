@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Drawer } from '@material-tailwind/react'
 
-interface ChatDrawerProps {
+interface CommentDrawerProps {
   isOpen: boolean
   placement: 'left' | 'right' | 'top' | 'bottom'
   onClose: () => void
@@ -9,7 +9,7 @@ interface ChatDrawerProps {
   children: React.ReactNode
 }
 
-export default function ChatDrawer (props: ChatDrawerProps): JSX.Element {
+export default function CommentDrawer (props: CommentDrawerProps): JSX.Element {
   const { isOpen, placement, onClose, size, children } = props
   const [open, setOpen] = useState(false)
   const closeDrawer = (): void => {
