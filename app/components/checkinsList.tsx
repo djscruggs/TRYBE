@@ -11,7 +11,7 @@ import DialogDelete from './dialogDelete'
 import axios from 'axios'
 import { toast } from 'react-hot-toast'
 import { FaRegComment } from 'react-icons/fa'
-import CommentDrawer from '~/components/commentDrawer'
+import ChatDrawer from '~/components/chatDrawer'
 export default function CheckinsList ({ checkIns, likes, comments, allowComments }: { checkIns: CheckIn[], likes: number[], comments: Record<number, Comment[]>, allowComments: boolean }): JSX.Element {
   const [checkInsArr, setCheckInsArr] = useState(checkIns)
   const handleDelete = (deletedCheckIn: CheckIn): void => {
@@ -137,7 +137,7 @@ export function CheckinRow (props: CheckinRowProps): JSX.Element {
                     <Liker isLiked={isLiked} itemId={checkInObj.id} itemType='checkIn' count={checkInObj.likeCount} />
 
                     </div>
-                    <CommentDrawer
+                    <ChatDrawer
                       isOpen={showComments}
                       placement='right'
                       onClose={hideComments}
@@ -146,7 +146,7 @@ export function CheckinRow (props: CheckinRowProps): JSX.Element {
                       checkInId={checkInObj.id}
                     >
                       <CheckInContent checkIn={checkInObj} timestamp={formatted} />
-                    </CommentDrawer>
+                    </ChatDrawer>
                   </>
                 }
                 </>

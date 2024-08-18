@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Drawer } from '@material-tailwind/react'
-import CommentsContainer from './commentsContainer'
+import ChatContainer from './chatContainer'
 import type { Comment } from '~/utils/types'
 import FormChat from './formChat'
 import axios from 'axios'
@@ -71,16 +71,18 @@ export default function CommentDrawer (props: CommentDrawerProps): JSX.Element {
             />
           </svg>
         </div>
-        <div className="mb-6 pt-4 flex items-center justify-between bg-gray-100">
+        <div className="pt-4 pb-2 flex items-center justify-between bg-gray-100">
 
-          <div className='p-4'>
+          <div className='p-2'>
             {children}
           </div>
 
         </div>
-        <div className='p-4 overflow-y-auto'>
-          <CommentsContainer comments={comments} isReply={false} allowReplies={false} firstComment={firstComment} likedCommentIds={likedCommentIds} />
-          <FormChat afterSave={afterSave} checkInId={props.checkInId} postId={props.postId} challengeId={props.challengeId} replyToId={props.replyToId} threadId={props.threadId} />
+        <div className='overflow-y-auto'>
+          <ChatContainer comments={comments} firstComment={firstComment} likedCommentIds={likedCommentIds} />
+          <div className='pr-2'>
+            <FormChat afterSave={afterSave} checkInId={props.checkInId} postId={props.postId} challengeId={props.challengeId} replyToId={props.replyToId} threadId={props.threadId} />
+          </div>
         </div>
 
       </Drawer>
