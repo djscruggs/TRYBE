@@ -43,7 +43,7 @@ export default function AvatarLoader ({ object, marginClass = '', clickable = fa
 
   return (
       <div className="w-12 h-12 rounded-full bg-gray-500 flex items-center justify-center flex-shrink-0 flex-grow-0 mr-2">
-        {loading || !profile.fullName
+        {loading || !profile?.fullName
           ? ''
           : <span className="text-white">{initials}</span>
         }
