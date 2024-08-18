@@ -136,8 +136,7 @@ export function CheckinRow (props: CheckinRowProps): JSX.Element {
                     </span>
                     <Liker isLiked={isLiked} itemId={checkInObj.id} itemType='checkIn' count={checkInObj.likeCount} />
 
-                  </div>
-
+                    </div>
                     <CommentDrawer
                       isOpen={showComments}
                       placement='right'
@@ -148,7 +147,6 @@ export function CheckinRow (props: CheckinRowProps): JSX.Element {
                     >
                       <CheckInContent checkIn={checkInObj} timestamp={formatted} />
                     </CommentDrawer>
-
                   </>
                 }
                 </>

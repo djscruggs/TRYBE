@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Drawer } from '@material-tailwind/react'
 import CommentsContainer from './commentsContainer'
 import type { Comment } from '~/utils/types'
-import FormComment from './formComment'
+import FormChat from './formChat'
 import axios from 'axios'
 interface CommentDrawerProps {
   isOpen: boolean
@@ -52,7 +52,9 @@ export default function CommentDrawer (props: CommentDrawerProps): JSX.Element {
     }
   }, [open])
   return (
-      <Drawer open={open} placement={placement} onClose={closeDrawer} className="p-0 shadow-lg" size={size} overlay={false}>
+
+      <Drawer open={open} placement={placement} onClose={closeDrawer} className="p-0 shadow-lg overflow-y-scroll border-l-2 border-red" size={size} overlay={false}>
+
         <div className="absolute top-2 right-2 cursor-pointer " onClick={closeDrawer}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -70,15 +72,18 @@ export default function CommentDrawer (props: CommentDrawerProps): JSX.Element {
           </svg>
         </div>
         <div className="mb-6 pt-4 flex items-center justify-between bg-gray-100">
+
           <div className='p-4'>
             {children}
           </div>
 
         </div>
-        <div className='p-4'>
+        <div className='p-4 overflow-y-auto'>
           <CommentsContainer comments={comments} isReply={false} allowReplies={false} firstComment={firstComment} likedCommentIds={likedCommentIds} />
-          <FormComment afterSave={afterSave} checkInId={props.checkInId} postId={props.postId} challengeId={props.challengeId} replyToId={props.replyToId} threadId={props.threadId} />
+          <FormChat afterSave={afterSave} checkInId={props.checkInId} postId={props.postId} challengeId={props.challengeId} replyToId={props.replyToId} threadId={props.threadId} />
         </div>
+
       </Drawer>
+
   )
 }

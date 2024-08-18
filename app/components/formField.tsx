@@ -17,6 +17,7 @@ interface FormFieldProps {
   autoResize?: boolean
   rows?: number
   cols?: number
+  disabled?: boolean
 }
 
 export function FormField ({
@@ -33,7 +34,8 @@ export function FormField ({
   autoFocus = false,
   autoResize = false,
   cols = 30,
-  rows = 10
+  rows = 10,
+  disabled = false
 
 }: FormFieldProps): JSX.Element {
   const [errorText, setErrorText] = useState(error)
@@ -70,7 +72,7 @@ export function FormField ({
             id={name}
             name={name}
             placeholder={placeholder}
-            className={`w-full p-2 rounded-sm my-1 border ${(errorText.length > 0) ? ' border-red' : ''}`}
+            className={`w-full p-2 rounded-sm my-1 border ${(errorText.length > 0) ? ' border-red' : ''} ${disabled ? 'bg-gray-50' : ''}`}
             cols={cols}
             rows={rows}
             value={value}
@@ -80,6 +82,7 @@ export function FormField ({
             autoFocus = {autoFocus}
             maxLength={65535}
             ref={textRef}
+            disabled={disabled}
           >
           {value}
         </textarea>
