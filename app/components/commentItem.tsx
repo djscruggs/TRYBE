@@ -36,7 +36,6 @@ export default function CommentItem (props: CommentsProps): JSX.Element {
   const { currentUser } = useContext(CurrentUserContext)
 
   useEffect(() => {
-    console.log('props.likedCommentIds in CommentItem', props.likedCommentIds)
     setIsLiked(props.likedCommentIds?.includes(comment?.id ?? 0))
   }, [props.likedCommentIds])
   const handleEdit = (): void => {
@@ -53,7 +52,7 @@ export default function CommentItem (props: CommentsProps): JSX.Element {
       const formData = new FormData()
       formData.append('id', comment.id.toString())
       formData.append('intent', 'delete')
-      const response = await axios.post('/api/comments', formData)
+      await axios.post('/api/comments', formData)
       toast.success('Comment deleted')
       setComment(null)
     } catch (error) {

@@ -15,7 +15,6 @@ export default function CommentsContainer (props: CommentsProps): JSX.Element {
   const [likedCommentIds, setLikedCommentIds] = useState<number[]>([])
   const allowReplies = typeof props.allowReplies === 'undefined' ? true : props.allowReplies
   useEffect(() => {
-    console.log('props.likedCommentIds', props.likedCommentIds)
     setLikedCommentIds(props.likedCommentIds)
   }, [props.likedCommentIds])
   return (
