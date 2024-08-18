@@ -69,7 +69,7 @@ export default function ViewPostComments (): JSX.Element {
         <Button onClick={() => { navigate('/signup') }} className="bg-red p-2 mt-2">Sign Up</Button>
       </div>
     }
-    <CommentsContainer firstComment={firstComment} comments={comments} isReply={false} likedCommentIds={likedCommentIds}/>
+    <CommentsContainer firstComment={firstComment} allowReplies={true} comments={comments} isReply={false} likedCommentIds={likedCommentIds}/>
   </div>
 
   )

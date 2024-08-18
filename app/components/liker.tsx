@@ -1,6 +1,6 @@
 import { TbHeartFilled } from 'react-icons/tb'
 import { Spinner } from '@material-tailwind/react'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import axios from 'axios'
 import { toast } from 'react-hot-toast'
 
@@ -17,6 +17,9 @@ export default function Liker (props: LikerProps): JSX.Element {
   const [isLiked, setIsLiked] = useState(props.isLiked)
   const [count, setCount] = useState(props.count)
   const [loading, setLoading] = useState(false)
+  useEffect(() => {
+    setIsLiked(props.isLiked)
+  }, [props.isLiked])
   const handleLike = async (): Promise<void> => {
     const formData = new FormData()
     if (itemType === 'comment') {

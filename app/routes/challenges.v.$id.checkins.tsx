@@ -26,6 +26,7 @@ export default function CheckIns (): JSX.Element {
   const revalidator = useRevalidator()
   const { currentUser } = useContext(CurrentUserContext)
   const { checkIns, error, likes, comments } = useLoaderData<typeof loader>()
+
   const { membership, challenge } = useRouteLoaderData<typeof useRouteLoaderData>('routes/challenges.v.$id') as { membership: MemberChallenge, challenge: Challenge }
   if (error) {
     return <h1>{error}</h1>
