@@ -25,7 +25,7 @@ interface FormCommentProps {
 }
 
 export default function FormComment (props: FormCommentProps): JSX.Element {
-  let { comment, challengeId, postId, replyToId, threadId, checkInId } = props
+  let { comment, challengeId, postId, replyToId, threadId, checkInId, onCancel } = props
   if (comment) {
     challengeId = comment.challengeId
     postId = comment.postId
@@ -159,7 +159,7 @@ export default function FormComment (props: FormCommentProps): JSX.Element {
       <Form method="post" onSubmit={handleSubmit}>
       <FormField
           name='comment'
-          placeholder={props.prompt ?? 'Enter comment'}
+          placeholder={props.prompt ?? 'Reply...'}
           type='textarea'
           rows={2}
           required={true}
@@ -191,6 +191,9 @@ export default function FormComment (props: FormCommentProps): JSX.Element {
         }
         <div className='flex items-end justify-end'>
           <div className='w-fit flex items-center justify-end'>
+            {comment?.id && onCancel &&
+              <div className='underline text-red mr-2 cursor-pointer' onClick={onCancel}>cancel</div>
+            }
             <VideoChooser recorderShowing={showVideoRecorder} showRecorder={videoChooserCallbackShow} hideRecorder={videoChooserCallbackHide} />
             <MdOutlineAddPhotoAlternate onClick={imageDialog} className='text-2xl cursor-pointer mr-2' />
             {submitting
