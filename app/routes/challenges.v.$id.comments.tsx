@@ -49,7 +49,7 @@ export default function ViewChallengeComments (): JSX.Element {
         </div>
       }
       <div className="max-w-sm">
-        <CommentsContainer comments={comments} isReply={false} likedCommentIds={likedCommentIds} />
+        <CommentsContainer comments={comments} isReply={false} allowReplies={true} likedCommentIds={likedCommentIds} />
 
       </div>
 

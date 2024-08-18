@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react'
+import React, { useState, useContext, useEffect } from 'react'
 import FormComment from './formComment'
 import { Avatar, Spinner } from '@material-tailwind/react'
 import { CurrentUserContext } from '~/utils/CurrentUserContext'
@@ -18,22 +18,27 @@ import { Lightbox } from 'react-modal-image'
 import DialogDelete from './dialogDelete'
 interface CommentsProps {
   comment: Comment | null
-  isReply: boolean
+  isReply: boolean | undefined
   likedCommentIds: number[]
+  allowReplies: boolean
 }
 
 export default function CommentItem (props: CommentsProps): JSX.Element {
   const [comment, setComment] = useState<Comment | null>(props.comment ?? null)
   const [replies, setReplies] = useState<Comment[]>(comment?.replies ?? [])
-  const { likedCommentIds } = props
   const [firstReply, setFirstReply] = useState<Comment | null>(null)
-  const [isLiked, setIsLiked] = useState(likedCommentIds?.includes(comment?.id ?? 0))
+  const [isLiked, setIsLiked] = useState(props?.likedCommentIds?.includes(comment?.id ?? 0))
   const [showLightbox, setShowLightbox] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [showForm, setShowForm] = useState(false)
   const [replying, setReplying] = useState(false)
   const [deleteDialog, setDeleteDialog] = useState(false)
   const { currentUser } = useContext(CurrentUserContext)
+
+  useEffect(() => {
+    console.log('props.likedCommentIds in CommentItem', props.likedCommentIds)
+    setIsLiked(props.likedCommentIds?.includes(comment?.id ?? 0))
+  }, [props.likedCommentIds])
   const handleEdit = (): void => {
     if (!comment || deleting) return
     setShowForm(true)
@@ -79,8 +84,11 @@ export default function CommentItem (props: CommentsProps): JSX.Element {
 
     setReplying(false)
   }
-  const allowReplies = (): boolean => {
-    return Boolean(currentUser?.id && comment && comment.threadDepth < 5)
+  const canReply = (): boolean => {
+    if (typeof props.allowReplies === 'undefined') {
+      return Boolean(currentUser?.id && comment && (comment?.threadDepth ?? 0) < 5)
+    }
+    return props.allowReplies
   }
   if (!comment) return <></>
   return (
@@ -133,7 +141,7 @@ export default function CommentItem (props: CommentsProps): JSX.Element {
                 {!replying &&
                   <>
                     <Liker isLiked={isLiked} itemId={comment.id} itemType='comment' count={comment.likeCount}/>
-                    {allowReplies() &&
+                    {canReply() &&
                       <div className='ml-2'>
                         <FaRegComment className='h-4 w-4 text-grey cursor-pointer' onClick={() => { setReplying(true) }}/>
                       </div>
@@ -150,7 +158,7 @@ export default function CommentItem (props: CommentsProps): JSX.Element {
         {/* comment contains replies, so create a new container for those */}
         {replies && replies.length > 0 &&
           <div className='pl-4'>
-            <CommentsContainer firstComment={firstReply} likedCommentIds={likedCommentIds} comments={replies} isReply={true} />
+            <CommentsContainer firstComment={firstReply} likedCommentIds={props.likedCommentIds} comments={replies} isReply={true} allowReplies={canReply()} />
           </div>
         }
       </>

@@ -21,7 +21,7 @@ export default function CheckinsList ({ checkIns, likes, comments, allowComments
 
   return (
     <div className='text-left flex flex-col w-full'>
-    {checkInsArr.map((checkIn: CheckIn, index: number) => {
+    {checkInsArr.map((checkIn: CheckIn) => {
       const currentDate = new Date(checkIn.createdAt).toLocaleDateString()
       const isNewDay = previousDate !== currentDate
       previousDate = currentDate
@@ -29,8 +29,8 @@ export default function CheckinsList ({ checkIns, likes, comments, allowComments
       return (
         <div key={checkIn.id} className={`relative ${!isNewDay ? 'border-t pt-2' : ''}`}>
           {isNewDay &&
-            <div className='border-t border-teal'>
-              <div className="absolute right-0 text-center capitalize p-1 -mt-3.5 rounded-md drop-shadow-xl w-[90px] bg-teal text-xs text-white">{currentDate}</div>
+            <div className='border-t border-teal flex items-center justify-center'>
+              <div className="text-center p-1 -mt-3.5 rounded-md drop-shadow-xl w-[90px] bg-teal text-xs text-white">{currentDate}</div>
             </div>
           }
           <div className={`${isNewDay ? 'mt-2' : ''}`}>
@@ -142,7 +142,9 @@ export function CheckinRow (props: CheckinRowProps): JSX.Element {
                       isOpen={showComments}
                       placement='right'
                       onClose={hideComments}
+                      comments={comments}
                       size={500}
+                      checkInId={checkInObj.id}
                     >
                       <CheckInContent checkIn={checkInObj} timestamp={formatted} />
                     </CommentDrawer>

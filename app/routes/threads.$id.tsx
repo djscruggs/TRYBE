@@ -78,7 +78,7 @@ export default function ViewThread (): JSX.Element {
     </div>
     {data.comments && data.comments.length > 0 &&
     <div className='max-w-[400px] md:max-w-md lg:max-w-lg'>
-      <CommentsContainer comments={comments} likedCommentIds={likedCommentIds} isReply={false} />
+      <CommentsContainer comments={comments} likedCommentIds={likedCommentIds} allowReplies={true} isReply={false} />
     </div>
     }
     </>
