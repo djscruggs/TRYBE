@@ -12,7 +12,7 @@ import {
 } from '~/utils/helpers'
 import { type DateTimeFormatOptions } from 'intl'
 import { CurrentUserContext } from '~/utils/CurrentUserContext'
-import { Button } from '@material-tailwind/react'
+import { Spinner } from '@material-tailwind/react'
 import { LiaUserFriendsSolid } from 'react-icons/lia'
 import { prisma } from '~/models/prisma.server'
 import { isPast } from 'date-fns'
@@ -154,12 +154,13 @@ export default function ViewChallenge (): JSX.Element {
           <div className="max-w-sm md:max-w-md lg:max-w-lg text-center">
             {challenge?.userId !== currentUser?.id && !isExpired && (
               <>
-                <button
+                  <button
                     onClick={confirmJoinUnjoin}
-                    loading={loading}
                     className='mt-4 bg-grey hover:bg-green-500 text-white rounded-full p-1 px-2 cursor-pointer text-xs'>
-                      {isMember ? 'Leave Challenge' : 'Join this Challenge'}
+                      { isMember ? 'Leave Challenge' : 'Join this Challenge' }
+                      { loading && <Spinner className='w-4 h-4 inline ml-2' /> }
                   </button>
+
                   {showConfirm && (
                     <DialogConfirm
                       isOpen={showConfirm}
