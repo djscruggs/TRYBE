@@ -12,7 +12,6 @@ import { useLoaderData } from '@remix-run/react'
 
 export const loader: LoaderFunction = async (args): Promise<ChallengeWithHost | null | { loadingError: string }> => {
   const { params } = args
-  console.log(params)
   if (!params.id) {
     return null
   }
