@@ -1,5 +1,5 @@
 import { prisma } from './prisma.server'
-import type { Challenge, ChallengeSummary, MemberChallenge, CheckIn } from '~/utils/types'
+import type { Challenge, ChallengeSummary, MemberChallenge, CheckIn, ChallengeWithHost } from '~/utils/types'
 import { addDays, isFriday, isSaturday } from 'date-fns'
 import { deleteFromCloudinary } from '~/utils/uploadFile'
 
@@ -33,6 +33,21 @@ export const loadChallenge = async (challengeId: number, userId?: number): Promi
   return await prisma.challenge.findUnique({
     where
   })
+}
+export const loadChallengeWithHost = async (challengeId: number): Promise<ChallengeWithHost | null> => {
+  const id = Number(challengeId)
+  const where: any = { id }
+  const challenge = await prisma.challenge.findUnique({
+    where,
+    include: {
+      user: {
+        include: {
+          profile: true
+        }
+      }
+    }
+  })
+  return challenge as ChallengeWithHost | null
 }
 export const loadChallengeSummary = async (challengeId: string | number): Promise<ChallengeSummary> => {
   const id = Number(challengeId)

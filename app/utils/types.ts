@@ -13,7 +13,7 @@ export interface JSONArray extends Array<JSONValue> { }
 export interface User {
   id?: number | string
   email: string
-  profile?: Profile
+  profile: Profile | null
   memberChallenges?: MemberChallenge[]
   challenges?: Challenge[] | ChallengeSummary[]
   notes?: Note[]
@@ -126,6 +126,10 @@ export interface Challenge {
   likeCount: number
   _count?: CountType
 }
+export interface ChallengeWithHost extends Challenge {
+  user: User
+}
+
 interface CountType {
   members?: number
   likes?: number
@@ -199,13 +203,13 @@ export interface CheckIn {
 }
 
 export interface Profile {
-  id: number | string
-  firstName: string
-  lastName: string
-  userId: number | string
-  profileImage: string
+  id: number
+  userId: number
+  firstName: string | null
+  lastName: string | null
+  profileImage: string | null
 }
-// app/utils/types.ts
+
 export interface RegisterForm {
   email: string
   password?: string
