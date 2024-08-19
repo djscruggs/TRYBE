@@ -38,14 +38,13 @@ export default function Program (): JSX.Element {
   const { currentUser } = useContext(CurrentUserContext)
   return (
     <>
-    {0 > 1 &&
-    <>
-        foo
-        {challenge.userId === currentUser?.id
-          ? <div>You have not scheduled content. <Link to={`/challenges/v/${challenge.id}/schedule`}>Edit schedule.</Link></div>
-          : <div>Schedule has not been published yet. </div>
-        }
-      </>
+      {posts.length === 0 &&
+        <>
+          {challenge.userId === currentUser?.id
+            ? <div>You have not scheduled content. <Link to={`/challenges/v/${challenge.id}/schedule`}>Edit schedule.</Link></div>
+            : <div>Schedule has not been published yet. </div>
+          }
+        </>
       }
       <ChallengeSchedule challenge={challenge} posts={posts} key={challenge.id} isSchedule={false} />
     </>
