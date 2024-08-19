@@ -25,7 +25,8 @@ interface PostMailerProps {
   }
 }
 const TEMPLATES = {
-  POST: 'd-139902a1da0942a5bd08308598092164'
+  POST: 'd-139902a1da0942a5bd08308598092164',
+  CONTACT_HOST: 'd-149674868c814ae795698747d3c71a65'
 }
 
 export async function mailPost (props: PostMailerProps): Promise<any> {
@@ -47,4 +48,35 @@ export async function mailPost (props: PostMailerProps): Promise<any> {
   }
   const result = await sgMail.send(msg)
   return result
+}
+export interface HostMailerProps {
+  to: string
+  replyTo?: string
+  dynamic_template_data: {
+    member_name: string
+    body: string
+    challenge_name: string
+    subject: string
+  }
+}
+
+export async function contactHost (props: HostMailerProps): Promise<any> {
+  if (!process.env.SENDGRID_API_KEY) {
+    throw new Error('SENDGRID_API_KEY must be set in environment to use this hook')
+  }
+  if (!process.env.SENDGRID_FROM_EMAIL) {
+    throw new Error('SENDGRID_FROM_EMAIL must be set in environment to use this hook')
+  }
+  sgMail.setApiKey(process.env.SENDGRID_API_KEY)
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  const { to, dynamic_template_data, replyTo } = props
+  const msg = {
+    from: process.env.SENDGRID_FROM_EMAIL,
+    replyTo,
+    to,
+    templateId: TEMPLATES.CONTACT_HOST,
+    dynamic_template_data
+  }
+  const result = await sgMail.send(msg)
+  return result[0]
 }

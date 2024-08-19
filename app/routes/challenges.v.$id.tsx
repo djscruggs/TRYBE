@@ -134,12 +134,12 @@ export default function ViewChallenge (): JSX.Element {
         <div className='relative'>
           {parsedDescription}
         </div>
-
+        <button className='cursor-pointer bg-grey hover:bg-green-500 float-right text-white text-xs p-1 px-2 rounded-full' onClick={() => { navigate(`/challenges/v/${challenge.id}/contact`) }}>Contact Host</button>
         <div className='text-lg py-2 flex items-center justify-center w-full gap-4'>
           <div className={`w-fit ${isOverview ? 'border-b-2 border-red' : 'cursor-pointer'}`} onClick={() => { navigate(`/challenges/v/${challenge.id}`) }}>Overview</div>
           <div className={`w-fit ${isProgram ? 'border-b-2 border-red' : 'cursor-pointer'}`} onClick={() => { navigate(`/challenges/v/${challenge.id}/program`) }}>Program</div>
           <div className={`w-fit ${isPosts ? 'border-b-2 border-red' : 'cursor-pointer'}`} onClick={() => { navigate(`/challenges/v/${challenge.id}/posts`) }}>Posts</div>
-          <div className={`w-fit ${isContact ? 'border-b-2 border-red' : 'cursor-pointer'}`} onClick={() => { navigate(`/challenges/v/${challenge.id}/contact`) }}>Contact Host</div>
+
           {/* only show menu here if there is a cover photo */}
         </div>
 
@@ -154,12 +154,12 @@ export default function ViewChallenge (): JSX.Element {
           <div className="max-w-sm md:max-w-md lg:max-w-lg text-center">
             {challenge?.userId !== currentUser?.id && !isExpired && (
               <>
-                <Button
+                <button
                     onClick={confirmJoinUnjoin}
                     loading={loading}
-                    className='mt-4 bg-red hover:bg-green-500 text-white rounded-full p-2 w-40 text-xs'>
+                    className='mt-4 bg-grey hover:bg-green-500 text-white rounded-full p-1 px-2 cursor-pointer text-xs'>
                       {isMember ? 'Leave Challenge' : 'Join this Challenge'}
-                  </Button>
+                  </button>
                   {showConfirm && (
                     <DialogConfirm
                       isOpen={showConfirm}

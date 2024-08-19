@@ -207,6 +207,7 @@ export interface Profile {
   userId: number
   firstName: string | null
   lastName: string | null
+  fullName: string | null
   profileImage: string | null
 }
 

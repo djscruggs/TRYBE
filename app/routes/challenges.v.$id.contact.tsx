@@ -22,9 +22,9 @@ export const loader: LoaderFunction = async (args): Promise<ChallengeWithHost | 
   }
   return challenge
 }
+
 export default function Contact (): JSX.Element {
   const challenge = useLoaderData<typeof loader>()
-  const { currentUser } = useContext(CurrentUserContext)
   const navigate = useNavigate()
   const [subject, setSubject] = useState(`Question about ${challenge.name}`)
   const [body, setBody] = useState('')
@@ -33,8 +33,13 @@ export default function Contact (): JSX.Element {
     event.preventDefault()
     try {
       setBtnDisabled(true)
-      const response = await axios.post('/api/contact', { subject, body, currentUser })
-      if (response.data.success) {
+      const data = {
+        subject,
+        body,
+        challengeId: challenge.id
+      }
+      const response = await axios.post('/api/contact', data)
+      if ([200, 202].includes(Number(response.data.statusCode))) {
         toast.success('Message sent successfully!')
         setSubject('')
         setBody('')
@@ -52,6 +57,7 @@ export default function Contact (): JSX.Element {
   }
   return (
     <div className='mt-4  w-96'>
+      <div className='text-lg text-center my-4'>Send a message to {challenge.user.profile.fullName}</div>
       <form onSubmit={handleSubmit}>
         <div className='mb-2'>
           <label htmlFor="subject">Subject</label>
@@ -68,7 +74,7 @@ export default function Contact (): JSX.Element {
           />
         </div>
         <div className='mb-2'>
-          <label htmlFor="body">Body</label>
+          <label htmlFor="body">Message</label>
           <FormField
             name='body'
             autoResize={true}
