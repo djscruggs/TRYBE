@@ -4,12 +4,12 @@ import axios from 'axios'
 import { FormField } from './formField'
 import type { Comment } from '~/utils/types'
 import { toast } from 'react-hot-toast'
-import { Spinner, Avatar } from '@material-tailwind/react'
+import { Spinner } from '@material-tailwind/react'
+import { MdImage, MdSend } from 'react-icons/md'
 import { CurrentUserContext } from '~/utils/CurrentUserContext'
 import VideoRecorder from './videoRecorder'
 import VideoChooser from './videoChooser'
 import { handleFileUpload } from '~/utils/helpers'
-import { MdOutlineAddPhotoAlternate, MdSend } from 'react-icons/md'
 import { TiDeleteOutline } from 'react-icons/ti'
 import VideoPreview from './videoPreview'
 interface FormCommentProps {
@@ -94,8 +94,8 @@ export default function FormComment (props: FormCommentProps): JSX.Element {
     <VideoPreview video={videoUrl ?? video} onClear={deleteVideo} />
   ), [video, videoUrl])
   async function handleSubmit (): Promise<void> {
-    if (body.length < 10) {
-      setError('Comment must be at least 10 characters long')
+    if (!body) {
+      return
     }
     setSubmitting(true)
     try {
@@ -149,13 +149,7 @@ export default function FormComment (props: FormCommentProps): JSX.Element {
     }
   }
   return (
-    <div className='w-full flex'>
-      <div className='w-md pt-1'>
-      {currentUser?.profile &&
-        <Avatar src={currentUser.profile.profileImage} className='mr-2' size='sm'/>
-      }
-      </div>
-      <div className='w-full ml-4'>
+    <div className='w-full'>
       <Form method="post" onSubmit={handleSubmit}>
       <FormField
           name='comment'
@@ -189,23 +183,23 @@ export default function FormComment (props: FormCommentProps): JSX.Element {
             <VideoRecorder uploadOnly={videoUploadOnly} onStart={() => { setRecording(true) }} onStop={() => { setRecording(false) }} onSave={setVideo} onFinish={() => { setShowVideoRecorder(false) }} />
           </div>
         }
-        <div className='flex items-end justify-end'>
+        <div className='flex items-end justify-end -mt-3 rounded-md p-1'>
           <div className='w-fit flex items-center justify-end'>
             {comment?.id && onCancel &&
               <div className='underline text-red mr-2 cursor-pointer' onClick={onCancel}>cancel</div>
             }
-            <VideoChooser recorderShowing={showVideoRecorder} showRecorder={videoChooserCallbackShow} hideRecorder={videoChooserCallbackHide} />
-            <MdOutlineAddPhotoAlternate onClick={imageDialog} className='text-2xl cursor-pointer mr-2' />
+            <span className='mr-2'><VideoChooser recorderShowing={showVideoRecorder} showRecorder={videoChooserCallbackShow} hideRecorder={videoChooserCallbackHide} /></span>
+            <MdImage onClick={imageDialog} className='text-2xl cursor-pointer mr-2' />
             {submitting
               ? <Spinner />
-              : <MdSend onClick={handleSubmit} className='text-3xl cursor-pointer text-white  bg-green-500 hover:bg-red rounded-md p-1' />
+              : <MdSend onClick={handleSubmit} className='text-2xl cursor-pointer' />
 
             }
           </div>
         </div>
 
       </Form>
-      </div>
+
     </div>
   )
 }

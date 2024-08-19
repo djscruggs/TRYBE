@@ -18,7 +18,7 @@ interface CommentDrawerProps {
   checkInId?: number
 }
 
-export default function CommentDrawer (props: CommentDrawerProps): JSX.Element {
+export default function ChatDrawer (props: CommentDrawerProps): JSX.Element {
   const { isOpen, placement, onClose, size, children } = props
   const [comments, setComments] = useState<Comment[]>(props.comments ?? [])
   const [open, setOpen] = useState(false)
@@ -53,7 +53,7 @@ export default function CommentDrawer (props: CommentDrawerProps): JSX.Element {
   }, [open])
   return (
 
-      <Drawer open={open} placement={placement} onClose={closeDrawer} className="p-0 shadow-lg overflow-y-scroll border-l-2 border-red" size={size} overlay={false}>
+      <Drawer open={open} placement={placement} onClose={closeDrawer} className="p-0 resize-x shadow-lg overflow-y-scroll border-l-2 border-red" size={size} overlay={false}>
 
         <div className="absolute top-2 right-2 cursor-pointer " onClick={closeDrawer}>
           <svg
@@ -72,15 +72,13 @@ export default function CommentDrawer (props: CommentDrawerProps): JSX.Element {
           </svg>
         </div>
         <div className="pt-4 pb-2 flex items-center justify-between bg-gray-100">
-
           <div className='p-2'>
             {children}
           </div>
-
         </div>
         <div className='overflow-y-auto'>
           <ChatContainer comments={comments} firstComment={firstComment} likedCommentIds={likedCommentIds} />
-          <div className='pr-2'>
+          <div className='px-2'>
             <FormChat afterSave={afterSave} checkInId={props.checkInId} postId={props.postId} challengeId={props.challengeId} replyToId={props.replyToId} threadId={props.threadId} />
           </div>
         </div>

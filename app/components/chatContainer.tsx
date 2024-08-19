@@ -15,7 +15,7 @@ export default function ChatContainer (props: CommentsProps): JSX.Element {
     setLikedCommentIds(props.likedCommentIds)
   }, [props.likedCommentIds])
   return (
-    <div className='max-w-sm md:max-w-lg' id='comments'>
+    <div className='w-full' id='comments'>
       {firstComment &&
         <ChatItem key={`comment-${firstComment.id}`} comment={firstComment} likedCommentIds={likedCommentIds} />
       }
