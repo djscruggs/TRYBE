@@ -73,13 +73,13 @@ export default function ChatItem (props: CommentsProps): JSX.Element {
         )
       : (
       <>
-        <div className="w-full p-1 hover:bg-gray-100 pr-2 pt-2">
-          <div className={'relative  break-all'}>
+        <div className="w-full p-1 hover:bg-gray-100 pr-2 pt-2 pl-2">
+          <div className='relative break-all'>
             {comment.user?.id === currentUser?.id &&
-              <div className="text-xs text-gray-500 w-sm flex text-right justify-end absolute top-2 right-2">
+              <div className="text-xs text-gray-500 w-sm flex text-right justify-end absolute top-0 right-2">
                 <span className='underline cursor-pointer mr-1 hover:text-red' onClick={handleEdit}>edit</span>
                 {deleting ? <Spinner className='h-4 w-4' /> : <span className='underline cursor-pointer mr-1 hover:text-red' onClick={() => { setDeleteDialog(true) }}>delete</span>}
-                {deleteDialog && <DialogDelete prompt='Are you sure you want to delete this comment?' isOpen={deleteDialog} deleteCallback={(event: any) => { handleDelete(event).catch(err => { console.error(err) }) }} onCancel={cancelDialog}/>}
+                {deleteDialog && <DialogDelete prompt='Are you sure you want to delete?' isOpen={deleteDialog} deleteCallback={(event: any) => { handleDelete(event).catch(err => { console.error(err) }) }} onCancel={cancelDialog}/>}
               </div>
 
             }
