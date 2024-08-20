@@ -1,16 +1,16 @@
 import { HiOutlineQuestionMarkCircle } from 'react-icons/hi'
 export const iconFiles: Record<string, number> = {
-  'artist-brown.png': 150,
-  'environment-brown.png': 150,
-  'journal-black.png': 150,
-  'journal-pink.png': 150,
-  'meditate-black.png': 150,
-  'meditate-brown.png': 150,
-  'meditate-white.png': 150,
-  'runner-pink.png': 150,
-  'weights-black.png': 150,
-  'yoga-black.png': 150,
-  'yoga-white.png': 150
+  'People-05.png': 150,
+  'People-06.png': 150,
+  'People-07.png': 150,
+  'People-08.png': 150,
+  'People-09.png': 150,
+  'People-10.png': 150,
+  'People-11.png': 150,
+  'People-12.png': 150,
+  'People-13.png': 150,
+  'People-14.png': 150,
+  'People-15.png': 150
 }
 interface ChallengeIconProps {
   icon?: string
