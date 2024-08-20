@@ -134,7 +134,7 @@ export default function ViewChallenge (): JSX.Element {
         <div className='relative'>
           {parsedDescription}
         </div>
-        <button className='cursor-pointer bg-grey hover:bg-green-500 float-right text-white text-xs p-1 px-2 rounded-full' onClick={() => { navigate(`/challenges/v/${challenge.id}/contact`) }}>Contact Host</button>
+        <button className='cursor-pointer  bg-green-500 hover:bg-red float-right text-white text-xs p-1 px-2 rounded-full' onClick={() => { navigate(`/challenges/v/${challenge.id}/contact`) }}>Contact Host</button>
         <div className='text-lg py-2 flex items-center justify-center w-full gap-4'>
           <div className={`w-fit ${isOverview ? 'border-b-2 border-red' : 'cursor-pointer'}`} onClick={() => { navigate(`/challenges/v/${challenge.id}`) }}>Overview</div>
           <div className={`w-fit ${isProgram ? 'border-b-2 border-red' : 'cursor-pointer'}`} onClick={() => { navigate(`/challenges/v/${challenge.id}/program`) }}>Program</div>
@@ -156,7 +156,7 @@ export default function ViewChallenge (): JSX.Element {
               <>
                   <button
                     onClick={confirmJoinUnjoin}
-                    className='mt-4 bg-grey hover:bg-green-500 text-white rounded-full p-1 px-2 cursor-pointer text-xs'>
+                    className='mt-4  bg-red hover:bg-green-500 text-white rounded-full p-1 px-2 cursor-pointer text-xs'>
                       { isMember ? 'Leave Challenge' : 'Join this Challenge' }
                       { loading && <Spinner className='w-4 h-4 inline ml-2' /> }
                   </button>
