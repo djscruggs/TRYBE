@@ -145,7 +145,7 @@ export function CheckinRow (props: CheckinRowProps): JSX.Element {
                 <CheckInContent checkIn={checkInObj} timestamp={formatted}/>
                 {(allowComments || comments.length > 0) &&
                   <>
-                  <div className='mt-2 flex items-start ml-12 relative w-full'>
+                  <div className='mt-2 flex items-start ml-12 relative w-[180px]'>
                     <span className="text-xs mr-4 cursor-pointer" onClick={handleComments}>
                       <FaRegComment className="text-grey h-4 w-4 mr-2 inline" />
                       {checkInObj.commentCount} comments
@@ -169,7 +169,7 @@ export function CheckinRow (props: CheckinRowProps): JSX.Element {
                               )}
                           </div>
                           {deleteDialog &&
-                            <DialogDelete prompt='Are you sure you want to delete this note?' isOpen={deleteDialog} deleteCallback={handleDelete} onCancel={() => { setDeleteDialog(false) }}/>
+                            <DialogDelete prompt='Are you sure you want to delete this check-in?' isOpen={deleteDialog} deleteCallback={handleDelete} onCancel={() => { setDeleteDialog(false) }}/>
                           }
                       </div>
                     }
