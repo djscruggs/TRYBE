@@ -128,9 +128,6 @@ export default function ViewChallenge (): JSX.Element {
     <div className='flex flex-col'>
       <div className='max-w-sm md:max-w-md lg:max-w-lg relative'>
         <ChallengeHeader challenge={challenge} size='small' />
-        <div className='relative mb-4 text-center text-xl font-bold mt-4'>
-          {challenge.name}
-        </div>
         <div className='relative'>
           {parsedDescription}
         </div>
