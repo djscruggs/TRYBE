@@ -30,9 +30,10 @@ export const loadChallenge = async (challengeId: number, userId?: number): Promi
   if (userId) {
     where.userId = userId
   }
-  return await prisma.challenge.findUnique({
+  const challenge = await prisma.challenge.findUnique({
     where
   })
+  return challenge as Challenge | null
 }
 export const loadChallengeWithHost = async (challengeId: number): Promise<ChallengeWithHost | null> => {
   const id = Number(challengeId)
