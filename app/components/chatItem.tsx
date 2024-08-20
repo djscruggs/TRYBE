@@ -108,8 +108,8 @@ export default function ChatItem (props: CommentsProps): JSX.Element {
                   </video>
                 </div>
               }
-              <div className='float-right -mt-2 relative'>
-              {comment.user?.id === currentUser?.id &&
+              <div className='float-right -mt-2 relative mr-1'>
+                {comment.user?.id === currentUser?.id &&
                   <div className="text-xs text-gray-500 w-sm flex text-right justify-end absolute -top-1 right-8">
                       <div className="relative">
                           <button onClick={toggleMenu} className="p-1 rounded-full hover:bg-gray-200">
@@ -128,7 +128,7 @@ export default function ChatItem (props: CommentsProps): JSX.Element {
                       </div>
                       {deleteDialog && <DialogDelete prompt='Are you sure you want to delete?' isOpen={deleteDialog} deleteCallback={(event: any) => { handleDelete(event).catch(err => { console.error(err) }) }} onCancel={cancelDialog}/>}
                   </div>
-              }
+                }
                 <Liker isLiked={isLiked} itemId={comment.id} itemType='comment' count={comment.likeCount}/>
               </div>
             </div>
