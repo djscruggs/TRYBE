@@ -1,17 +1,16 @@
 import { HiOutlineQuestionMarkCircle } from 'react-icons/hi'
 export const iconFiles: Record<string, number> = {
-  'YogaLight.png': 150,
-  'YogaDark.png': 150,
-  'WorkoutDark.png': 150,
-  'SelfCareHeart.png': 150,
-  'RunnerPink.png': 150,
-  'MuscleBrain.png': 150,
-  'MeditatorMedium.png': 150,
-  'MeditatorLight.png': 150,
-  'MeditatorDark.png': 150,
-  'JournalPink.png': 150,
-  'JournalDark.png': 150,
-  'EnvironmentMedium.png': 150
+  'artist-brown.png': 150,
+  'environment-brown.png': 150,
+  'journal-black.png': 150,
+  'journal-pink.png': 150,
+  'meditate-black.png': 150,
+  'meditate-brown.png': 150,
+  'meditate-white.png': 150,
+  'runner-pink.png': 150,
+  'weights-black.png': 150,
+  'yoga-black.png': 150,
+  'yoga-white.png': 150
 }
 interface ChallengeIconProps {
   icon?: string
@@ -29,7 +28,7 @@ const ChallengeIcon = ({ icon, size }: ChallengeIconProps): JSX.Element => {
     <>
     {icon && icon.includes('png')
       ? (
-        <img src={`/images/icons/resized/${icon}?v=${Date.now()}`} width={width} className="cursor-pointer object-contain" />
+        <img src={`/images/icons/${icon}?v=${Date.now()}`} width={width} className="cursor-pointer object-contain" />
         )
       : (
       <HiOutlineQuestionMarkCircle className="w-24 h-24 text-grey" />

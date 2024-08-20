@@ -1,6 +1,8 @@
 import { userLocale, textToJSX } from '~/utils/helpers'
 import { isToday, formatDistanceToNow } from 'date-fns'
-import { useContext, useState } from 'react'
+import { HiDotsHorizontal } from 'react-icons/hi'
+import { Spinner } from '@material-tailwind/react'
+import { useContext, useState, useRef, useEffect } from 'react'
 import { CurrentUserContext } from '~/utils/CurrentUserContext'
 import { Lightbox } from 'react-modal-image'
 import AvatarLoader from './avatarLoader'
@@ -67,8 +69,10 @@ export function CheckinRow (props: CheckinRowProps): JSX.Element {
     setShowEditForm(false)
   }
   const [showEditForm, setShowEditForm] = useState(false)
+  const [deleting, setDeleting] = useState(false)
 
   const handleDelete = async (event: any): Promise<void> => {
+    setDeleting(true)
     event.preventDefault()
     event.stopPropagation()
     try {
@@ -77,6 +81,7 @@ export function CheckinRow (props: CheckinRowProps): JSX.Element {
     } catch (error) {
       toast.error('Error deleting check-in')
     } finally {
+      setDeleting(false)
       setDeleteDialog(false)
       if (onDelete) {
         onDelete(checkInObj)
@@ -104,6 +109,25 @@ export function CheckinRow (props: CheckinRowProps): JSX.Element {
   if (deleted) {
     return <></>
   }
+  const [menuOpen, setMenuOpen] = useState(false)
+
+  const toggleMenu = (event: any): void => {
+    event.preventDefault()
+    event.stopPropagation()
+    setMenuOpen(!menuOpen)
+  }
+  const menuRef = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setMenuOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [menuRef])
   return (
     <>
       <div className='h-fit relative flex flex-items-center w-full p-2 mb-2'>
@@ -117,25 +141,38 @@ export function CheckinRow (props: CheckinRowProps): JSX.Element {
               : (
 
                 <>
-                {allowEdit && !showEditForm &&
-                  <div className='text-xs absolute right-16 top-0 underline text-right text-red my-2'>
-                    <span className=' mr-2 cursor-pointer' onClick={() => { setShowEditForm(true) }}>edit</span>
-                    <span className='cursor-pointer' onClick={() => { setDeleteDialog(true) }}>delete</span>
-                    {deleteDialog &&
-                      <DialogDelete prompt='Are you sure you want to delete this note?' isOpen={deleteDialog} deleteCallback={handleDelete} onCancel={() => { setDeleteDialog(false) }}/>
-                    }
-                  </div>
-                }
+
                 <CheckInContent checkIn={checkInObj} timestamp={formatted}/>
                 {(allowComments || comments.length > 0) &&
                   <>
-                  <div className='mt-2 flex items-start ml-12'>
+                  <div className='mt-2 flex items-start ml-12 relative w-full'>
                     <span className="text-xs mr-4 cursor-pointer" onClick={handleComments}>
                       <FaRegComment className="text-grey h-4 w-4 mr-2 inline" />
                       {checkInObj.commentCount} comments
                     </span>
                     <Liker isLiked={isLiked} itemId={checkInObj.id} itemType='checkIn' count={checkInObj.likeCount} />
-
+                    {allowEdit && !showEditForm &&
+                      <div className="text-xs text-gray-500 w-sm flex text-right justify-end absolute -top-1 right-4">
+                          <div className="relative" ref={menuRef}>
+                              <button onClick={toggleMenu} className="p-1 rounded-full hover:bg-gray-200">
+                                  <HiDotsHorizontal className='h-4 w-4' />
+                              </button>
+                              {menuOpen && (
+                                  <div className="absolute right-0 z-10 mt-2 w-20 bg-white border border-gray-200 rounded shadow-lg">
+                                      <ul className='flex flex-col'>
+                                          <li className="px-4 py-2 w-full text-left hover:bg-gray-100 cursor-pointer" onClick={() => { setShowEditForm(true) }}>Edit</li>
+                                          <li className="px-4 py-2 w-full text-left hover:bg-gray-100 cursor-pointer" onClick={() => { setDeleteDialog(true) }}>
+                                              {deleting ? <Spinner className='h-4 w-4' /> : 'Delete'}
+                                          </li>
+                                      </ul>
+                                  </div>
+                              )}
+                          </div>
+                          {deleteDialog &&
+                            <DialogDelete prompt='Are you sure you want to delete this note?' isOpen={deleteDialog} deleteCallback={handleDelete} onCancel={() => { setDeleteDialog(false) }}/>
+                          }
+                      </div>
+                    }
                     </div>
                     <ChatDrawer
                       isOpen={showComments}
