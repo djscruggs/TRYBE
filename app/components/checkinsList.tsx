@@ -215,8 +215,9 @@ const CheckInContent = ({ checkIn, timestamp }: CheckInProps): JSX.Element => {
           <div className='text-xs mb-2'>
             <span className='font-bold'>{checkIn.user?.profile?.firstName} {checkIn.user?.profile?.lastName}</span> <span className='text-xs'>{timestamp}</span>
           </div>
-          {checkIn.body ??
-            <span className='text-sm italic'>Checked in</span>
+          {checkIn.body?.length > 0
+            ? checkIn.body
+            : <span className='text-sm italic'>Checked in</span>
           }
           {checkIn.imageMeta?.secure_url &&
             <img src={checkIn.imageMeta.secure_url} alt='checkin picture' className='mt-4 cursor-pointer max-h-[200px]' onClick={handlePhotoClick}/>
