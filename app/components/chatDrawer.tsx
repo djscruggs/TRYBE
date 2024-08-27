@@ -53,7 +53,7 @@ export default function ChatDrawer (props: CommentDrawerProps): JSX.Element {
   }, [open])
   return (
 
-      <Drawer open={open} placement={placement} onClose={closeDrawer} className="p-0 resize-x shadow-lg overflow-y-scroll border-l-2 border-red" size={size} overlay={false}>
+      <Drawer open={open} placement={placement} onClose={closeDrawer} className="p-0 resize-x shadow-lg overflow-y-scroll" size={size} overlay={false}>
 
         <div className="absolute top-2 right-2 cursor-pointer " onClick={closeDrawer}>
           <svg
