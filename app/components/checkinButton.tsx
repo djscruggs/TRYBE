@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import type { Challenge, MemberChallenge, CheckIn } from '~/utils/types'
 import FormCheckIn from './formCheckin'
+import { isPast } from 'date-fns'
 import {
   Dialog,
   DialogBody
@@ -17,6 +18,7 @@ export function CheckInButton ({ challenge, memberChallenge, showDetails, afterC
   if (!challenge?.id) {
     throw new Error('Challenge object with id is required')
   }
+  const isExpired = isPast(challenge?.endAt)
   const [showForm, setShowForm] = useState<boolean>(false)
   const handleAfterCheckIn = (checkIn: CheckIn): void => {
     setShowForm(false)
@@ -31,8 +33,9 @@ export function CheckInButton ({ challenge, memberChallenge, showDetails, afterC
         <button
             onClick={() => { setShowForm(true) } }
             className='w-40 bg-red hover:bg-green-500 text-white font-bold rounded-full p-2 justify-center text-sm disabled:bg-gray-400'
+            disabled={isExpired}
           >
-            Check In
+            {isExpired ? 'Challenge Ended' : 'Check In'}
         </button>
       </div>
       {showForm &&
