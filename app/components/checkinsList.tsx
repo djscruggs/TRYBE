@@ -136,7 +136,7 @@ export function CheckinRow (props: CheckinRowProps): JSX.Element {
                 <CheckInContent checkIn={checkInObj} timestamp={formatted}/>
                 {(allowComments || comments.length > 0) &&
                   <>
-                  <div className='mt-2 flex items-start ml-12 relative w-[180px]'>
+                  <div className='mt-2 flex items-start ml-14 relative w-[180px]'>
                     <span className="text-xs mr-4 cursor-pointer" onClick={handleComments}>
                       <FaRegComment className="text-grey h-4 w-4 mr-2 inline" />
                       {checkInObj.commentCount} comments
@@ -202,7 +202,7 @@ const CheckInContent = ({ checkIn, timestamp }: CheckInProps): JSX.Element => {
     <div className='w-full'>
       <div className='w-full h-full flex flex-row mb-4'>
         <CheckInAvatar checkIn={checkIn} />
-        <div className='ml-0'>
+        <div className='ml-1'>
           <div className='text-xs mb-2'>
             <span className='font-bold'>{checkIn.user?.profile?.firstName} {checkIn.user?.profile?.lastName}</span> <span className='text-xs'>{timestamp}</span>
           </div>
@@ -232,7 +232,7 @@ interface CheckInAvatarProps {
 const CheckInAvatar = ({ checkIn }: CheckInAvatarProps): JSX.Element => {
   return (
     <div className='w-[50px] min-w-[50px] text-xs'>
-      <AvatarLoader object={checkIn} /><br />
+    <AvatarLoader object={checkIn} /><br />
     </div>
   )
 }
