@@ -96,15 +96,6 @@ export function CheckinRow (props: CheckinRowProps): JSX.Element {
   const handleComments = (): void => {
     setShowComments(true)
   }
-  const saveFirstComment = (comment: Comment): void => {
-    if (firstComment) {
-      // push the comment to the top of the list
-      const newComments = [firstComment].concat(comments)
-      setComments(newComments)
-    }
-    setFirstComment(comment)
-    setShowCommentForm(false)
-  }
   const allowEdit = props.checkIn.userId === currentUser?.id
   if (deleted) {
     return <></>
