@@ -55,7 +55,7 @@ export function ChallengeMemberProgressChart ({ challenge, checkIns }: { challen
         pathColor: 'red'
       })}
     >
-      <div className='text-center text-5xl text-red'>{checkIns.length} / {numDays}
+      <div className='text-center text-5xl text-red'>{uniqueDays} / {numDays}
       <div className='text-center text-xl text-gray-500'>Days</div>
       </div>
     </CircularProgressbarWithChildren>
