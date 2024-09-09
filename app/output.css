@@ -992,6 +992,10 @@ video {
   margin-left: 3rem;
 }
 
+.ml-14 {
+  margin-left: 3.5rem;
+}
+
 .ml-2 {
   margin-left: 0.5rem;
 }
@@ -1018,6 +1022,10 @@ video {
 
 .ml-6 {
   margin-left: 1.5rem;
+}
+
+.ml-8 {
+  margin-left: 2rem;
 }
 
 .ml-\[130px\] {
@@ -1110,10 +1118,6 @@ video {
 
 .mt-px {
   margin-top: 1px;
-}
-
-.ml-14 {
-  margin-left: 3.5rem;
 }
 
 .box-border {
@@ -6628,6 +6632,10 @@ video {
 
   .md\:pl-8 {
     padding-left: 2rem;
+  }
+
+  .md\:pt-10 {
+    padding-top: 2.5rem;
   }
 
   .md\:text-5xl {

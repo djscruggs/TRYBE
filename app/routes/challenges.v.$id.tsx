@@ -73,7 +73,6 @@ export default function ViewChallenge (): JSX.Element {
   const isProgram = location.pathname.includes('program')
   const isPosts = location.pathname.includes('posts')
   const isComments = location.pathname.includes('comments')
-  const isContact = location.pathname.includes('contact')
   const isExpired = isPast(challenge.endAt as Date)
   const { currentUser } = useContext(CurrentUserContext)
   const navigate = useNavigate()
@@ -135,7 +134,7 @@ export default function ViewChallenge (): JSX.Element {
         <div className='text-lg py-2 flex items-center justify-center w-full gap-4'>
           <div className={`w-fit ${isOverview ? 'border-b-2 border-red' : 'cursor-pointer'}`} onClick={() => { navigate(`/challenges/v/${challenge.id}`) }}>Overview</div>
           <div className={`w-fit ${isProgram ? 'border-b-2 border-red' : 'cursor-pointer'}`} onClick={() => { navigate(`/challenges/v/${challenge.id}/program`) }}>Program</div>
-          <div className={`w-fit ${isPosts ? 'border-b-2 border-red' : 'cursor-pointer'}`} onClick={() => { navigate(`/challenges/v/${challenge.id}/posts`) }}>Posts</div>
+          <div className={`w-fit ${isPosts ? 'border-b-2 border-red' : 'cursor-pointer'}`} onClick={() => { navigate(`/challenges/v/${challenge.id}/chat`) }}>Chat</div>
 
           {/* only show menu here if there is a cover photo */}
         </div>
