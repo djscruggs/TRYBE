@@ -900,6 +900,11 @@ video {
   margin-bottom: 1.5rem;
 }
 
+.my-20 {
+  margin-top: 5rem;
+  margin-bottom: 5rem;
+}
+
 .-ml-1 {
   margin-left: -0.25rem;
 }
@@ -1358,6 +1363,10 @@ video {
   min-height: 100vh;
 }
 
+.min-h-96 {
+  min-height: 24rem;
+}
+
 .w-0 {
   width: 0px;
 }
@@ -1506,6 +1515,10 @@ video {
 
 .w-screen {
   width: 100vw;
+}
+
+.w-2\/3 {
+  width: 66.666667%;
 }
 
 .min-w-36 {
@@ -6473,6 +6486,10 @@ video {
     margin-top: 7rem;
   }
 
+  .md\:mt-10 {
+    margin-top: 2.5rem;
+  }
+
   .md\:block {
     display: block;
   }
@@ -6646,6 +6663,12 @@ video {
   .md\:text-sm {
     font-size: 0.875rem;
     line-height: 1.25rem;
+  }
+
+  .md\:shadow-md {
+    --tw-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --tw-shadow-colored: 0 4px 6px -1px var(--tw-shadow-color), 0 2px 4px -2px var(--tw-shadow-color);
+    box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
   }
 }
 

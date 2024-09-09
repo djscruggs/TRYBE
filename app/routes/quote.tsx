@@ -37,7 +37,7 @@ export default function Quote (): JSX.Element {
     navigate('/home')
   }
   useEffect(() => {
-    const timer = setTimeout(goHome, 5000)
+    const timer = setTimeout(goHome, 3000)
     return (): void => {
       clearTimeout(timer)
     }
@@ -52,9 +52,9 @@ export default function Quote (): JSX.Element {
         </h1>
         <p className='text-lg text-gray-700'>You’ve tackled <span className='font-bold'>{userChallengeCount}</span> Challenges</p>
       </div>
-      <div className='flex flex-col items-center justify-center bg-white p-6 rounded-lg shadow-md max-w-md'>
-        <div className='text-center mb-4'>
-          <span role='img' aria-label='party popper' className='text-4xl'>🎉</span>
+      <div className='flex flex-col items-center justify-center bg-white p-6 rounded-lg md:shadow-md mx-4 w-full md:w-2/3 min-h-96'>
+        <div className='text-center md:mt-10 mb-4'>
+          <span role='img' aria-label='party popper' className='text-4xl'><img src='/images/icons/Celebrate.png' width='100' height='100' alt='party popper' /></span>
         </div>
         <p className='text-center text-lg italic mb-2'>{quote.quote}</p>
         <p className='text-center text-sm text-gray-500'>{quote.author}</p>
@@ -62,7 +62,6 @@ export default function Quote (): JSX.Element {
       <p className='md:hidden text-center text-sm text-gray-500 mt-4 cursor-pointer' onClick={goHome}>Tap to Skip</p>
       <button className='hidden md:block mt-4 bg-red hover:bg-green-500 text-white font-bold py-2 px-4 rounded' onClick={goHome}>
         Home
-
       </button>
       {navigating && <span className='mt-4'><Spinner /></span>}
     </div>
