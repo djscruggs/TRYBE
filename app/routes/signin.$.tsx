@@ -9,7 +9,7 @@ import {
 import { getAuth } from '@clerk/remix/ssr.server'
 
 export default function SignInPage (): JSX.Element {
-  const redirectTo = localStorage.getItem('redirectTo') ?? ''
+  const redirectTo = localStorage.getItem('redirectTo') ?? '/quote'
   return (
     <div className="justify-center items-center flex flex-col gap-y-4 w-screen h-screen relative">
       <SignIn

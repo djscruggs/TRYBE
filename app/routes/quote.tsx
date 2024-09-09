@@ -1,0 +1,70 @@
+import { useContext, useEffect, useState } from 'react'
+import { useLoaderData, useNavigate } from '@remix-run/react'
+import { CurrentUserContext } from '~/utils/CurrentUserContext'
+import getRandomQuote from '~/utils/quotes'
+import { type LoaderFunction, type LoaderFunctionArgs } from '@remix-run/node'
+import { prisma } from '~/models/prisma.server'
+import { requireCurrentUser } from '~/models/auth.server'
+import { Spinner } from '@material-tailwind/react'
+interface LoaderData {
+  userChallengeCount: number
+  userCount: number
+}
+export const loader: LoaderFunction = async (args: LoaderFunctionArgs): Promise<LoaderData> => {
+  const user = await requireCurrentUser(args)
+  const memberships = await prisma.memberChallenge.findMany({
+    where: {
+      userId: user?.id
+    }
+  })
+  const userChallengeCount = memberships.length
+  const userCount = await prisma.user.count()
+
+  return {
+    userChallengeCount,
+    userCount
+  }
+}
+
+export default function Quote (): JSX.Element {
+  const { currentUser } = useContext(CurrentUserContext)
+  const { userChallengeCount, userCount } = useLoaderData<LoaderData>()
+  const quote = getRandomQuote()
+  const navigate = useNavigate()
+  const [navigating, setNavigating] = useState(false)
+  const goHome = (): void => {
+    setNavigating(true)
+    navigate('/home')
+  }
+  useEffect(() => {
+    const timer = setTimeout(goHome, 5000)
+    return (): void => {
+      clearTimeout(timer)
+    }
+  }, [])
+
+  return (
+    <div className='flex flex-col items-center justify-center h-screen max-w-xl  md:justify-start md:pt-10'>
+      <div className='text-center mb-4'>
+        <p className='text-sm text-gray-500'>{userCount} TRYBE Challengers To Date</p>
+        <h1 className='text-3xl font-bold'>
+          {currentUser?.profile?.fullName ? `Hello, ${currentUser?.profile?.fullName}!` : 'Hello!'}
+        </h1>
+        <p className='text-lg text-gray-700'>You’ve tackled <span className='font-bold'>{userChallengeCount}</span> Challenges</p>
+      </div>
+      <div className='flex flex-col items-center justify-center bg-white p-6 rounded-lg shadow-md max-w-md'>
+        <div className='text-center mb-4'>
+          <span role='img' aria-label='party popper' className='text-4xl'>🎉</span>
+        </div>
+        <p className='text-center text-lg italic mb-2'>{quote.quote}</p>
+        <p className='text-center text-sm text-gray-500'>{quote.author}</p>
+      </div>
+      <p className='md:hidden text-center text-sm text-gray-500 mt-4 cursor-pointer' onClick={goHome}>Tap to Skip</p>
+      <button className='hidden md:block mt-4 bg-red hover:bg-green-500 text-white font-bold py-2 px-4 rounded' onClick={goHome}>
+        Home
+
+      </button>
+      {navigating && <span className='mt-4'><Spinner /></span>}
+    </div>
+  )
+}

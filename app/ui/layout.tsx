@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { SignedIn, SignedOut, UserButton } from '@clerk/remix'
 import useHasLoaded from '~/utils/useHasLoaded'
-import { useLocation, Outlet, useNavigate, Link, useNavigation, useLoaderData } from '@remix-run/react'
+import { useLocation, Outlet, useNavigate, Link, useNavigation } from '@remix-run/react'
 
 import NavLinks from './navlinks'
 import { Spinner } from '@material-tailwind/react'
@@ -110,11 +110,13 @@ export const FullLayout = (): JSX.Element => {
               <div className="hidden md:flex flex-col justify-start items-start mr-8">
                 <div className="flex items-center mb-4 mt-10">
                   <div className="flex h-full flex-col px-3 py-4 md:px-2">
+                    {showNav &&
                     <div className="flex grow flex-row justify-between space-x-2 md:flex-col md:space-x-0 md:space-y-2 h-full">
                         <div className='fixed'>
                           <NavLinks />
                         </div>
                     </div>
+                    }
                   </div>
                 </div>
               </div>

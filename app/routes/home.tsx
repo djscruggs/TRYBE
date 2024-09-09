@@ -11,6 +11,7 @@ import { type LoaderFunction } from '@remix-run/node'
 import { prisma } from '~/models/prisma.server'
 import CardChallenge from '~/components/cardChallenge'
 import CardNote from '~/components/cardNote'
+import getRandomQuote from '~/utils/quotes'
 
 interface FeedLoaderData {
   challenges: ChallengeSummary[]
@@ -136,12 +137,14 @@ export default function Home (): JSX.Element {
   if (!currentUser || !feedItems) {
     return <p>Loading...</p>
   }
+
   return (
+
           <div className='flex-cols cols-1 justify-center max-w-xl mb-16'>
             <div className='w-full flex items-center max-w-2xl px-2 mt-10 '>
             <div className='flex items-center justify-center max-w-xl'>
-                  <div className="flex-grow-0 justify-self-start">
-                     <UserAvatar size={isMobile ? 'md' : 'xxl'} />
+                  <div className="flex-grow-0 justify-self-start mb-2">
+                     <UserAvatar size={isMobile ? 'md' : 'xl'} />
                   </div>
                   {currentUser?.profile &&
                   <div className={`ml-4 flex-grow text-${isMobile ? 'l' : '4xl'}`}>

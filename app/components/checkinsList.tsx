@@ -1,5 +1,4 @@
-import { userLocale, textToJSX } from '~/utils/helpers'
-import { isToday, formatDistanceToNow } from 'date-fns'
+import { userLocale } from '~/utils/helpers'
 import { HiDotsHorizontal } from 'react-icons/hi'
 import { Spinner } from '@material-tailwind/react'
 import { useContext, useState, useRef, useEffect } from 'react'
@@ -14,34 +13,51 @@ import axios from 'axios'
 import { toast } from 'react-hot-toast'
 import { FaRegComment } from 'react-icons/fa'
 import ChatDrawer from '~/components/chatDrawer'
+
 export default function CheckinsList ({ checkIns, likes, comments, allowComments }: { checkIns: CheckIn[], likes: number[], comments: Record<number, Comment[]>, allowComments: boolean }): JSX.Element {
   const [checkInsArr, setCheckInsArr] = useState(checkIns)
   const handleDelete = (deletedCheckIn: CheckIn): void => {
     setCheckInsArr(checkInsArr.filter(checkIn => checkIn.id !== deletedCheckIn.id))
   }
-  let previousDate: string | null = null
+
+  // Group check-ins by day
+  const checkInsByDay = checkInsArr.reduce<Record<string, CheckIn[]>>((acc, checkIn) => {
+    const date = new Date(checkIn.createdAt).toLocaleDateString()
+    if (!acc[date]) {
+      acc[date] = []
+    }
+    acc[date].push(checkIn)
+    return acc
+  }, {})
 
   return (
     <div className='text-left flex flex-col w-full'>
-    {checkInsArr.map((checkIn: CheckIn) => {
-      const currentDate = new Date(checkIn.createdAt).toLocaleDateString()
-      const isNewDay = previousDate !== currentDate
-      previousDate = currentDate
+      {Object.entries(checkInsByDay).map(([date, checkIns]) => {
+        // Filter out empty check-ins and count unique users for the day
+        const emptyCheckIns = checkIns.filter(checkIn => !checkIn.body?.length)
+        const uniqueUsers = new Set(emptyCheckIns.map(checkIn => checkIn.userId)).size
 
-      return (
-        <div key={checkIn.id} className={`relative ${!isNewDay ? 'border-t pt-2' : ''}`}>
-          {isNewDay &&
+        return (
+          <div key={date}>
             <div className='border-t border-teal flex items-center justify-center'>
-              <div className="text-center p-1 -mt-3.5 rounded-md drop-shadow-xl w-[90px] bg-teal text-xs text-white">{currentDate}</div>
+              <div className="text-center p-1 -mt-3.5 rounded-md drop-shadow-xl w-[90px] bg-teal text-xs text-white">{date}</div>
             </div>
-          }
-          <div className={`${isNewDay ? 'mt-2' : ''}`}>
-            <CheckinRow checkIn={checkIn} isLiked={likes.includes(checkIn.id)} comments={comments[checkIn.id]} allowComments={allowComments} onDelete={handleDelete}/>
+            {uniqueUsers > 0 && <CollapsedCheckins count={uniqueUsers} />}
+            {checkIns.map((checkIn: CheckIn, index: number) => {
+              if (!checkIn.body?.length) return null // Skip empty check-ins
+
+              return (
+                <div key={checkIn.id} className={`relative pt-2 ${index === 0 ? '' : 'border-t'}`}>
+                  <div className='mt-2'>
+                    <CheckinRow checkIn={checkIn} isLiked={likes.includes(checkIn.id)} comments={comments[checkIn.id]} allowComments={allowComments} onDelete={handleDelete}/>
+                  </div>
+                </div>
+              )
+            })}
           </div>
-        </div>
-      )
-    })}
-  </div>
+        )
+      })}
+    </div>
   )
 }
 
@@ -137,13 +153,17 @@ export function CheckinRow (props: CheckinRowProps): JSX.Element {
                 {(allowComments || comments.length > 0) &&
                   <>
                   <div className='mt-2 flex items-start ml-14 relative w-[180px]'>
-                    <span className="text-xs mr-4 cursor-pointer" onClick={handleComments}>
-                      <FaRegComment className="text-grey h-4 w-4 mr-2 inline" />
-                      {checkInObj.commentCount} comments
-                    </span>
+                    {/* only allow comments if there is a note on the checkin */}
+                    {checkInObj.body?.length || checkInObj.imageMeta?.secure_url || checkInObj.videoMeta?.secure_url &&
+                      <span className="text-xs mr-4 cursor-pointer" onClick={handleComments}>
+                        <FaRegComment className="text-grey h-4 w-4 mr-2 inline" />
+                        {checkInObj.commentCount} comments
+                      </span>
+                    }
                     <Liker isLiked={isLiked} itemId={checkInObj.id} itemType='checkIn' count={checkInObj.likeCount} />
                     {allowEdit && !showEditForm &&
-                      <div className="text-xs text-gray-500 w-sm flex text-right justify-end absolute -top-1 right-4">
+                      // change the position of the menu based on the length of the checkin body
+                      <div className={`text-xs text-gray-500 w-sm flex absolute -top-1 ${checkInObj.body?.length > 0 ? 'justify-end right-4' : 'ml-8'} `}>
                           <div className="relative" ref={menuRef}>
                               <button onClick={toggleMenu} className="p-1 rounded-full hover:bg-gray-200">
                                   <HiDotsHorizontal className='h-4 w-4' />
@@ -233,6 +253,17 @@ const CheckInAvatar = ({ checkIn }: CheckInAvatarProps): JSX.Element => {
   return (
     <div className='w-[50px] min-w-[50px] text-xs'>
     <AvatarLoader object={checkIn} /><br />
+    </div>
+  )
+}
+interface CollapsedCheckinsProps {
+  count: number
+}
+
+const CollapsedCheckins = ({ count }: CollapsedCheckinsProps): JSX.Element => {
+  return (
+    <div className='text-center p-2 bg-gray-100 rounded-md mb-4'>
+      <span className='text-sm text-gray-700'>{count} members checked in</span>
     </div>
   )
 }
