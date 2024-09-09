@@ -24,7 +24,7 @@ export default function ChallengesIndex (): JSX.Element {
         <h1 className="text-3xl font-bold mb-4 w-full ml-2 md:ml-0">
               Challenges
         </h1>
-        <p className='ml-2 md:ml-0'>View your current challenges, browse upcoming challenges, or start your own!</p>
+        <p className='ml-2 md:ml-0 text-gray-500'>View your current challenges, browse upcoming challenges, or start your own!</p>
           {currentUser && <Button placeholder='Create a Challenge' size="sm" onClick={() => { navigate('./new') }} className="bg-red mb-4 mt-4">Create a Challenge</Button>}
           <Outlet />
       </div>
