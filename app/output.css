@@ -6490,6 +6490,10 @@ video {
     margin-top: 2.5rem;
   }
 
+  .md\:ml-0 {
+    margin-left: 0px;
+  }
+
   .md\:block {
     display: block;
   }
