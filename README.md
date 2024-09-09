@@ -4,7 +4,7 @@
 
 [TRYBE Website](https://www.jointhetrybe.com/) - explains what this is all about.
 
-[Super-early alpha site](https://trybe-icy-smoke-8833.fly.dev/) - updated frequently, expect bugs
+[Alpha site](https://app.jointhetrybe.com/) - updated frequently
 
 ![Trybe](https://github.com/djscruggs/TRYBE/assets/41671/f8a3e71e-535d-4364-becb-20fb839adf8c)
 
