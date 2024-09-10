@@ -6,7 +6,8 @@ import { type LoaderFunction, type LoaderFunctionArgs } from '@remix-run/node'
 import { prisma } from '~/models/prisma.server'
 import CardPost from '~/components/cardPost'
 import CheckinsList from '~/components/checkinsList'
-
+import ChatDrawer from '~/components/chatDrawer'
+import { TbRuler } from 'react-icons/tb'
 interface ChallengeChatData {
   posts: Post[] | null
   checkIns: CheckIn[]
@@ -124,7 +125,8 @@ export default function ViewChallengeChat (): JSX.Element {
           <h2>{date}</h2>
           {posts.map(post => (
             <div key={`post-${post.id}`} className='max-w-sm md:max-w-md lg:max-w-lg mb-6'>
-              <CardPost post={post} hideMeta={true} fullPost={false}/>
+              <CardPost post={post} hideMeta={false} fullPost={false}/>
+
             </div>
           ))}
           <CheckinsList checkIns={checkIns.nonEmpty} likes={data.likedCheckInIds} allowComments={true} />

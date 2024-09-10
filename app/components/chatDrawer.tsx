@@ -11,7 +11,7 @@ interface CommentDrawerProps {
   placement: 'left' | 'right' | 'top' | 'bottom'
   onClose: () => void
   size: number
-  comments: Comment[] | null
+  comments?: Comment[]
   children: React.ReactNode
   challengeId?: number
   postId?: number
@@ -25,7 +25,7 @@ export default function ChatDrawer (props: CommentDrawerProps): JSX.Element {
   const { type, id } = getIdAndType(props)
   const { isOpen, placement, onClose, size, children } = props
   const bottomRef = useRef<HTMLDivElement>(null)
-  const [comments, setComments] = useState<Comment[] | null>(null)
+  const [comments, setComments] = useState<Comment[] | null>(props.comments ?? null)
   const [open, setOpen] = useState(false)
   const [firstComment, setFirstComment] = useState<Comment | null>(null)
   const [refresh, setRefresh] = useState(false)
@@ -73,7 +73,6 @@ export default function ChatDrawer (props: CommentDrawerProps): JSX.Element {
   return (
 
       <Drawer open={open} placement={placement} onClose={closeDrawer} className="p-0 resize-x shadow-lg overflow-y-scroll" size={size} overlay={false}>
-
         <div className="absolute top-2 right-2 cursor-pointer " onClick={closeDrawer}>
           <svg
             xmlns="http://www.w3.org/2000/svg"

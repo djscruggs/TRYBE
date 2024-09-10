@@ -99,11 +99,9 @@ export interface Post {
   live?: boolean // computed field @see prisma.server
 }
 export interface PostSummary extends Post {
-  _count: {
-    likes: number
-    comments: number
-  }
-
+  likeCount: number
+  commentCount: number
+  _count?: CountType
 }
 
 export interface Challenge {
