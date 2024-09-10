@@ -14,7 +14,7 @@ interface ChallengeChatData {
 }
 
 export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
-  await requireCurrentUser(args)
+  const user = await requireCurrentUser(args)
   const { params } = args
   if (!params.id) {
     return null
@@ -91,13 +91,23 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
       groupedData[date].checkIns.empty.push(checkIn)
     }
   })
+  // fetch liked check-in ids
+  const likedCheckIns = await prisma.like.findMany({
+    where: {
+      userId: user?.id,
+      checkinId: { not: null }
+    },
+    select: {
+      checkinId: true
+    }
+  })
+  const likedCheckInIds = likedCheckIns.map(like => like.checkinId)
 
-  const data: ChallengeChatData = { posts, checkIns, groupedData }
+  const data: ChallengeChatData = { posts, checkIns, groupedData, likedCheckInIds }
   return data
 }
 export default function ViewChallengeChat (): JSX.Element {
   const data = useLoaderData<typeof loader>()
-  console.log(data)
   const bottomRef = useRef<HTMLDivElement>(null)
   if (!data) {
     return <p>No data.</p>
@@ -117,13 +127,11 @@ export default function ViewChallengeChat (): JSX.Element {
               <CardPost post={post} hideMeta={true} fullPost={false}/>
             </div>
           ))}
-          <CheckinsList checkIns={checkIns.nonEmpty} likes={[]} comments={{}} allowComments={true} />
+          <CheckinsList checkIns={checkIns.nonEmpty} likes={data.likedCheckInIds} allowComments={true} />
           {/* Render empty check-ins if needed */}
         </div>
       ))}
-      <div className='mb-16'>
-        <Outlet />
-      </div>
+
     </>
   )
 }

@@ -19,6 +19,7 @@ export default function CheckinsList ({ checkIns, likes, comments, allowComments
   const handleDelete = (deletedCheckIn: CheckIn): void => {
     setCheckInsArr(checkInsArr.filter(checkIn => checkIn.id !== deletedCheckIn.id))
   }
+  const _comments = comments ?? {}
 
   // Group check-ins by day
   const checkInsByDay = checkInsArr.reduce<Record<string, CheckIn[]>>((acc, checkIn) => {
@@ -49,7 +50,7 @@ export default function CheckinsList ({ checkIns, likes, comments, allowComments
               return (
                 <div key={checkIn.id} className={`relative pt-2 ${index === 0 ? '' : 'border-t'}`}>
                   <div className='mt-2'>
-                    <CheckinRow checkIn={checkIn} isLiked={likes.includes(checkIn.id)} comments={comments[checkIn.id]} allowComments={allowComments} onDelete={handleDelete}/>
+                    <CheckinRow checkIn={checkIn} isLiked={likes.includes(checkIn.id)} comments={_comments[checkIn.id]} allowComments={allowComments} onDelete={handleDelete}/>
                   </div>
                 </div>
               )
@@ -64,7 +65,7 @@ export default function CheckinsList ({ checkIns, likes, comments, allowComments
 interface CheckinRowProps {
   checkIn: CheckIn
   isLiked: boolean
-  comments: Comment[]
+  comments?: Comment[]
   allowComments: boolean
   onDelete: (checkIn: CheckIn) => void
 }
@@ -154,7 +155,7 @@ export function CheckinRow (props: CheckinRowProps): JSX.Element {
                   <>
                   <div className='mt-2 flex items-start ml-14 relative w-[180px]'>
                     {/* only allow comments if there is a note on the checkin */}
-                    {checkInObj.body?.length || checkInObj.imageMeta?.secure_url || checkInObj.videoMeta?.secure_url &&
+                    {(checkInObj.body?.length || checkInObj.imageMeta?.secure_url || checkInObj.videoMeta?.secure_url) &&
                       <span className="text-xs mr-4 cursor-pointer" onClick={handleComments}>
                         <FaRegComment className="text-grey h-4 w-4 mr-2 inline" />
                         {checkInObj.commentCount} comments
