@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { Drawer } from '@material-tailwind/react'
 import ChatContainer from './chatContainer'
 import type { Comment } from '~/utils/types'
@@ -24,9 +24,11 @@ export default function ChatDrawer (props: CommentDrawerProps): JSX.Element {
   // Determine the type based on which ID is set
   const { type, id } = getIdAndType(props)
   const { isOpen, placement, onClose, size, children } = props
+  const bottomRef = useRef<HTMLDivElement>(null)
   const [comments, setComments] = useState<Comment[] | null>(null)
   const [open, setOpen] = useState(false)
   const [firstComment, setFirstComment] = useState<Comment | null>(null)
+  const [refresh, setRefresh] = useState(false)
   const closeDrawer = (): void => {
     setOpen(false)
     onClose()
@@ -36,6 +38,7 @@ export default function ChatDrawer (props: CommentDrawerProps): JSX.Element {
       setComments([firstComment, ...(comments ?? [])])
     }
     setFirstComment(comment)
+    setRefresh(true)
   }
   const [likedCommentIds, setLikedCommentIds] = useState<number[]>([])
   const fetchComments = async (): Promise<void> => {
@@ -59,6 +62,13 @@ export default function ChatDrawer (props: CommentDrawerProps): JSX.Element {
       })
     }
   }, [isOpen])
+  // scroll to bottom of the page when the data changes
+  useEffect(() => {
+    if (isOpen || refresh) {
+      bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
+      setRefresh(false)
+    }
+  }, [comments, isOpen, refresh])
 
   return (
 
@@ -87,7 +97,7 @@ export default function ChatDrawer (props: CommentDrawerProps): JSX.Element {
         </div>
         <div className='overflow-y-auto'>
           <ChatContainer comments={comments ?? []} firstComment={firstComment} likedCommentIds={likedCommentIds} />
-          <div className='px-2'>
+          <div className='px-2' ref={bottomRef}>
             <FormChat afterSave={afterSave} checkInId={props.checkInId} postId={props.postId} challengeId={props.challengeId} replyToId={props.replyToId} threadId={props.threadId} />
           </div>
         </div>
