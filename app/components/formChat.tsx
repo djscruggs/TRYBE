@@ -114,11 +114,11 @@ export default function FormComment (props: FormCommentProps): JSX.Element {
       if (postId) {
         formData.set('postId', String(postId))
       }
-      if (comment?.id) {
-        formData.set('id', String(comment.id))
-      }
       if (checkInId) {
         formData.set('checkInId', String(checkInId))
+      }
+      if (comment?.id) {
+        formData.set('id', String(comment.id))
       }
       // these are blob objects  to upload
       if (image) {

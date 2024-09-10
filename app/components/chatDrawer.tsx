@@ -2,14 +2,16 @@ import React, { useState, useEffect } from 'react'
 import { Drawer } from '@material-tailwind/react'
 import ChatContainer from './chatContainer'
 import type { Comment } from '~/utils/types'
+import { toast } from 'react-hot-toast'
 import FormChat from './formChat'
+import { getIdAndType } from '~/utils/helpers'
 import axios from 'axios'
 interface CommentDrawerProps {
   isOpen: boolean
   placement: 'left' | 'right' | 'top' | 'bottom'
   onClose: () => void
   size: number
-  comments: Comment[]
+  comments: Comment[] | null
   children: React.ReactNode
   challengeId?: number
   postId?: number
@@ -19,8 +21,10 @@ interface CommentDrawerProps {
 }
 
 export default function ChatDrawer (props: CommentDrawerProps): JSX.Element {
+  // Determine the type based on which ID is set
+  const { type, id } = getIdAndType(props)
   const { isOpen, placement, onClose, size, children } = props
-  const [comments, setComments] = useState<Comment[]>(props.comments ?? [])
+  const [comments, setComments] = useState<Comment[] | null>(null)
   const [open, setOpen] = useState(false)
   const [firstComment, setFirstComment] = useState<Comment | null>(null)
   const closeDrawer = (): void => {
@@ -29,28 +33,33 @@ export default function ChatDrawer (props: CommentDrawerProps): JSX.Element {
   }
   const afterSave = (comment: Comment): void => {
     if (firstComment) {
-      setComments([firstComment, ...comments])
+      setComments([firstComment, ...(comments ?? [])])
     }
     setFirstComment(comment)
   }
   const [likedCommentIds, setLikedCommentIds] = useState<number[]>([])
+  const fetchComments = async (): Promise<void> => {
+    const { data } = await axios.get<Comment[]>(`/api/comments/${type}/${id}`)
+    setComments(data)
+  }
+  const fetchLikedCommentIds = async (): Promise<void> => {
+    const { data } = await axios.get<number[]>(`/api/likes/${type}/${id}/comments`)
+    setLikedCommentIds(data)
+  }
   useEffect(() => {
     setOpen(isOpen)
     if (!isOpen) {
       onClose()
-    }
-  }, [isOpen])
-  useEffect(() => {
-    const fetchLikedComments = async () => {
-      const { data } = await axios.get<number[]>(`/api/comments/checkin/${props.checkInId}/likes`)
-      setLikedCommentIds(data)
-    }
-    if (open) {
-      fetchLikedComments().catch(error => {
-        console.error('Failed to fetch liked comments:', error)
+    } else {
+      fetchComments().catch(error => {
+        toast.error('Failed to fetch chat:' + String(error))
+      })
+      fetchLikedCommentIds().catch(error => {
+        toast.error('Failed to fetch liked comments:' + String(error))
       })
     }
-  }, [open])
+  }, [isOpen])
+
   return (
 
       <Drawer open={open} placement={placement} onClose={closeDrawer} className="p-0 resize-x shadow-lg overflow-y-scroll" size={size} overlay={false}>
@@ -77,7 +86,7 @@ export default function ChatDrawer (props: CommentDrawerProps): JSX.Element {
           </div>
         </div>
         <div className='overflow-y-auto'>
-          <ChatContainer comments={comments} firstComment={firstComment} likedCommentIds={likedCommentIds} />
+          <ChatContainer comments={comments ?? []} firstComment={firstComment} likedCommentIds={likedCommentIds} />
           <div className='px-2'>
             <FormChat afterSave={afterSave} checkInId={props.checkInId} postId={props.postId} challengeId={props.challengeId} replyToId={props.replyToId} threadId={props.threadId} />
           </div>
