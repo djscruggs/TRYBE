@@ -14,7 +14,6 @@ export default function ChatContainer (props: CommentsProps): JSX.Element {
   useEffect(() => {
     setLikedCommentIds(props.likedCommentIds)
   }, [props.likedCommentIds])
-  console.log(comments)
   const uniqueComments = (): Comment[] => {
     const unique = Array.from(new Set(comments.map(comment => comment.id)))
       .map(id => comments.find(comment => comment.id === id))
