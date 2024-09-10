@@ -19,7 +19,7 @@ import { FaRegComment } from 'react-icons/fa'
 import Liker from './liker'
 import DialogDelete from './dialogDelete'
 import { format } from 'date-fns'
-
+import ChatDrawer from '~/components/chatDrawer'
 interface CardPostProps {
   post: PostSummary | null
   isShare?: boolean
@@ -37,6 +37,8 @@ export default function CardPost (props: CardPostProps): JSX.Element {
   const { hasLiked, fullPost, isShare, hideMeta, revalidator } = props
   const dateTimeFormat = currentUser?.dateTimeFormat ? currentUser.dateTimeFormat : 'M-dd-yyyy @ h:mm a'
   const [post, setPost] = useState(props.post)
+  const [showComments, setShowComments] = useState(false)
+  const [hideComments, setHideComments] = useState(false)
   if (!post) return <></>
   const [showLightbox, setShowLightbox] = useState(false)
   const [editing, setEditing] = useState(false)
@@ -45,10 +47,13 @@ export default function CardPost (props: CardPostProps): JSX.Element {
   const isOwnRoute = location.pathname === `/posts/${post.id}`
   const navigate = useNavigate()
   const [deleteDialog, setDeleteDialog] = useState(false)
+
   const goToPost = (): void => {
     if (isOwnRoute) return
     navigate(`/posts/${post.id}`)
   }
+  console.log('isShare', isShare)
+  console.log('hideMeta', hideMeta)
   const handlePhotoClick = (event: any): void => {
     event.preventDefault()
     event.stopPropagation()
@@ -85,9 +90,7 @@ export default function CardPost (props: CardPostProps): JSX.Element {
         console.error('Error deleting post:', error)
       })
   }
-  const maxLength = 300
-  const shortBody = fullPost ? post.body : post.body?.slice(0, maxLength) + '...'
-  const isTruncated = (shortBody?.length && post?.body?.length) ? shortBody.length < post.body.length : false
+
   const afterSave = (post: PostSummary): void => {
     setPost(post)
     setEditing(false)
@@ -103,7 +106,7 @@ export default function CardPost (props: CardPostProps): JSX.Element {
 
       </>
       : <div className={'mt-2 w-full border-0  drop-shadow-none mr-2'}>
-      <div className={`drop-shadow-none ${!isOwnRoute ? 'cursor-pointer' : ''}`} onClick={goToPost}>
+      <div className={`drop-shadow-none ${!isOwnRoute ? 'cursor-pointer' : ''}`} >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Card className={'md:col-span-2 p-2 border-1 drop-shadow-lg  border border-gray rounded-md relative'}>
             {!post.published &&
@@ -119,26 +122,14 @@ export default function CardPost (props: CardPostProps): JSX.Element {
                 <div className='h-6'> </div>
               </>
             }
-            <div className="flex items-start">
-              <AvatarLoader object={post} marginClass='mr-4'/>
-              <div className="flex flex-col w-full h-full">
-              <div className='font-bold my-2'>{post.title}</div>
-              {shortBody && textToJSX(shortBody)}
-
-              {isTruncated && <span className='text-xs underline text-blue cursor-pointer mr-1 text-right italic' onClick={goToPost}> more</span>}
-              <div className='mt-4'>
-              {post.videoMeta?.secure_url && <video className="recorded" src={post.videoMeta.secure_url} onClick={(event) => { event?.stopPropagation() }} controls />}
-
-              {post.imageMeta?.secure_url && <img src={post.imageMeta.secure_url} alt="post picture" className="mt-4 cursor-pointer max-w-[200px]" onClick={handlePhotoClick} />}
-              </div>
-              {currentUser?.id === post.userId && !isShare && isOwnRoute &&
+            <PostContent post={post} fullPost={fullPost ?? false}>
+            {currentUser?.id === post.userId && !isShare && isOwnRoute &&
                 <div className="mt-2 text-xs text-gray-500 w-full text-right">
                     <span className='underline cursor-pointer mr-1' onClick={handleEdit}>edit</span>
                     <span className='underline cursor-pointer mr-1' onClick={handleDeleteDialog}>delete</span>
                 </div>
               }
-              </div>
-            </div>
+            </PostContent>
             {deleteDialog && <DialogDelete prompt='Are you sure you want to delete this note?' isOpen={deleteDialog} deleteCallback={(event: any) => { handleDelete(event) }} onCancel={cancelDialog}/>}
           </Card>
         </div>
@@ -148,11 +139,11 @@ export default function CardPost (props: CardPostProps): JSX.Element {
         <>
           <hr />
           <div className="grid grid-cols-3 text-center py-2 cursor-pointer w-full">
-            <div className="flex justify-center items-center">
-              <Link to={`/posts/${post.id}/comments#comments`}>
+            <div className="flex justify-center items-center" onClick={() => { setShowComments(true) }}>
+
                 <FaRegComment className="text-grey mr-1 inline" />
-                <span className="text-xs">{post._count?.comments} comments</span>
-              </Link>
+                <span className="text-xs">{post.commentCount} comments</span>
+
             </div>
             <div className="flex justify-center items-center cursor-pointer">
 
@@ -164,11 +155,56 @@ export default function CardPost (props: CardPostProps): JSX.Element {
             </div>
             }
           </div>
+
         </>
       }
     </div>
     }
-    {(post.image && showLightbox) && <Lightbox medium={post.image} large={post.image} alt="post photo" onClose={() => { setShowLightbox(false) }}/>}
+    {(post.imageMeta?.secure_url && showLightbox) && <Lightbox medium={post.imageMeta.secure_url} large={post.imageMeta.secure_url} alt="post photo" onClose={() => { setShowLightbox(false) }}/>}
+      <ChatDrawer
+        isOpen={showComments}
+        placement='right'
+        onClose={() => { setShowComments(false) }}
+        size={500}
+        postId={post.id}
+      >
+        <PostContent post={post} fullPost={fullPost ?? false} />
+      </ChatDrawer>
+
     </>
   )
+}
+
+const PostContent = (props: { post: PostSummary, fullPost: boolean, children?: React.ReactNode }): JSX.Element => {
+  const { post, fullPost, children } = props
+
+  const maxLength = 300
+  const shortBody = fullPost ? post.body : post.body?.slice(0, maxLength) + '...'
+  const isTruncated = (shortBody?.length && post?.body?.length) ? shortBody.length < post.body.length : false
+  const [showFullBody, setShowFullBody] = useState(fullPost)
+
+  return <div className="flex items-start">
+              <AvatarLoader object={post} marginClass='mr-4'/>
+              <div className="flex flex-col w-full h-full">
+              <div className='font-bold my-2'>{post.title}</div>
+              <div>
+                {textToJSX(showFullBody ? post.body ?? '' : shortBody ?? '')}
+              </div>
+              {isTruncated && (
+                <span
+                  className='text-xs underline text-blue cursor-pointer mr-1 text-right italic'
+                  onClick={() => { setShowFullBody(!showFullBody) }}
+                >
+                  {showFullBody ? 'less' : 'more'}
+                </span>
+              )}
+
+              <div className='mt-4'>
+              {post.videoMeta?.secure_url && <video className="recorded" src={post.videoMeta.secure_url} onClick={(event) => { event?.stopPropagation() }} controls />}
+
+              {post.imageMeta?.secure_url && <img src={post.imageMeta.secure_url} alt="post picture" className="mt-4 cursor-pointer max-w-[200px]" onClick={handlePhotoClick} />}
+              </div>
+              {children}
+              </div>
+            </div>
 }

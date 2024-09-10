@@ -14,7 +14,14 @@ import { toast } from 'react-hot-toast'
 import { FaRegComment } from 'react-icons/fa'
 import ChatDrawer from '~/components/chatDrawer'
 
-export default function CheckinsList ({ checkIns, likes, comments, allowComments }: { checkIns: CheckIn[], likes: number[], comments: Record<number, Comment[]>, allowComments: boolean }): JSX.Element {
+interface CheckinsListProps {
+  checkIns: CheckIn[]
+  likes: number[]
+  comments?: Record<number, Comment[]>
+  allowComments: boolean
+}
+
+export default function CheckinsList ({ checkIns, likes, comments, allowComments }: CheckinsListProps): JSX.Element {
   const [checkInsArr, setCheckInsArr] = useState(checkIns)
   const handleDelete = (deletedCheckIn: CheckIn): void => {
     setCheckInsArr(checkInsArr.filter(checkIn => checkIn.id !== deletedCheckIn.id))
@@ -165,24 +172,24 @@ export function CheckinRow (props: CheckinRowProps): JSX.Element {
                     {allowEdit && !showEditForm &&
                       // change the position of the menu based on the length of the checkin body
                       <div className={`text-xs text-gray-500 w-sm flex absolute -top-1 ${checkInObj.body?.length > 0 ? 'justify-end right-4' : 'ml-8'} `}>
-                          <div className="relative" ref={menuRef}>
-                              <button onClick={toggleMenu} className="p-1 rounded-full hover:bg-gray-200">
-                                  <HiDotsHorizontal className='h-4 w-4' />
-                              </button>
-                              {menuOpen && (
-                                  <div className="absolute right-0 z-10 mt-2 w-20 bg-white border border-gray-200 rounded shadow-lg">
-                                      <ul className='flex flex-col'>
-                                          <li className="px-4 py-2 w-full text-left hover:bg-gray-100 cursor-pointer" onClick={() => { setShowEditForm(true) }}>Edit</li>
-                                          <li className="px-4 py-2 w-full text-left hover:bg-gray-100 cursor-pointer" onClick={() => { setDeleteDialog(true) }}>
-                                              {deleting ? <Spinner className='h-4 w-4' /> : 'Delete'}
-                                          </li>
-                                      </ul>
-                                  </div>
-                              )}
-                          </div>
-                          {deleteDialog &&
-                            <DialogDelete prompt='Are you sure you want to delete this check-in?' isOpen={deleteDialog} deleteCallback={handleDelete} onCancel={() => { setDeleteDialog(false) }}/>
-                          }
+                        <div className="relative" ref={menuRef}>
+                          <button onClick={toggleMenu} className="p-1 rounded-full hover:bg-gray-200">
+                              <HiDotsHorizontal className='h-4 w-4' />
+                          </button>
+                          {menuOpen && (
+                              <div className="absolute right-0 z-10 mt-2 w-20 bg-white border border-gray-200 rounded shadow-lg">
+                                  <ul className='flex flex-col'>
+                                      <li className="px-4 py-2 w-full text-left hover:bg-gray-100 cursor-pointer" onClick={() => { setShowEditForm(true) }}>Edit</li>
+                                      <li className="px-4 py-2 w-full text-left hover:bg-gray-100 cursor-pointer" onClick={() => { setDeleteDialog(true) }}>
+                                          {deleting ? <Spinner className='h-4 w-4' /> : 'Delete'}
+                                      </li>
+                                  </ul>
+                              </div>
+                          )}
+                        </div>
+                        {deleteDialog &&
+                          <DialogDelete prompt='Are you sure you want to delete this check-in?' isOpen={deleteDialog} deleteCallback={handleDelete} onCancel={() => { setDeleteDialog(false) }}/>
+                        }
                       </div>
                     }
                     </div>
