@@ -12,25 +12,20 @@ import VideoChooser from './videoChooser'
 import { handleFileUpload } from '~/utils/helpers'
 import { TiDeleteOutline } from 'react-icons/ti'
 import VideoPreview from './videoPreview'
-interface FormCommentProps {
-  challengeId?: number
-  postId?: number
-  replyToId?: number
-  threadId?: number
-  checkInId?: number
+interface FormChatProps {
+  type?: 'post' | 'challenge' | 'reply' | 'thread' | 'checkIn' | 'comment'
+  objectId?: number
   afterSave: (comment: Comment) => void
   onCancel?: () => void
   comment?: Comment
   prompt?: string
 }
 
-export default function FormComment (props: FormCommentProps): JSX.Element {
-  let { comment, challengeId, postId, replyToId, threadId, checkInId, onCancel } = props
+export default function FormChat (props: FormChatProps): JSX.Element {
+  let { comment, type, id, onCancel } = props
   if (comment) {
-    challengeId = comment.challengeId
-    postId = comment.postId
-    threadId = comment.threadId
-    checkInId = comment.checkInId
+    type = comment.type
+    id = comment.id
   }
 
   const { currentUser } = useContext(CurrentUserContext)
@@ -102,25 +97,26 @@ export default function FormComment (props: FormCommentProps): JSX.Element {
       const formData = new FormData()
       formData.set('body', body)
 
-      if (replyToId) {
-        formData.set('replyToId', String(replyToId))
+      // Set the appropriate ID based on the type
+      switch (type) {
+        case 'post':
+          formData.set('postId', String(props.objectId))
+          break
+        case 'challenge':
+          formData.set('challengeId', String(props.objectId))
+          break
+        case 'checkIn':
+          formData.set('checkInId', String(props.objectId))
+          break
+          // Add other cases as needed
+        default:
+          break
       }
-      if (threadId) {
-        formData.set('threadId', String(threadId))
-      }
-      if (challengeId) {
-        formData.set('challengeId', String(challengeId))
-      }
-      if (postId) {
-        formData.set('postId', String(postId))
-      }
-      if (checkInId) {
-        formData.set('checkInId', String(checkInId))
-      }
+
       if (comment?.id) {
         formData.set('id', String(comment.id))
       }
-      // these are blob objects  to upload
+      // these are blob objects to upload
       if (image) {
         formData.set('image', image)
       }
