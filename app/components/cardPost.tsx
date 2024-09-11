@@ -52,8 +52,6 @@ export default function CardPost (props: CardPostProps): JSX.Element {
     if (isOwnRoute) return
     navigate(`/posts/${post.id}`)
   }
-  console.log('isShare', isShare)
-  console.log('hideMeta', hideMeta)
   const handlePhotoClick = (event: any): void => {
     event.preventDefault()
     event.stopPropagation()
@@ -122,7 +120,7 @@ export default function CardPost (props: CardPostProps): JSX.Element {
                 <div className='h-6'> </div>
               </>
             }
-            <PostContent post={post} fullPost={fullPost ?? false}>
+            <PostContent post={post} fullPost={fullPost ?? false} handlePhotoClick={handlePhotoClick}>
             {currentUser?.id === post.userId && !isShare && isOwnRoute &&
                 <div className="mt-2 text-xs text-gray-500 w-full text-right">
                     <span className='underline cursor-pointer mr-1' onClick={handleEdit}>edit</span>
@@ -160,51 +158,53 @@ export default function CardPost (props: CardPostProps): JSX.Element {
       }
     </div>
     }
-    {(post.imageMeta?.secure_url && showLightbox) && <Lightbox medium={post.imageMeta.secure_url} large={post.imageMeta.secure_url} alt="post photo" onClose={() => { setShowLightbox(false) }}/>}
       <ChatDrawer
         isOpen={showComments}
         placement='right'
         onClose={() => { setShowComments(false) }}
         size={500}
-        postId={post.id}
+        id={post.id ?? 0}
+        type='post'
       >
-        <PostContent post={post} fullPost={fullPost ?? false} />
+        <PostContent post={post} fullPost={fullPost ?? false} handlePhotoClick={handlePhotoClick} />
       </ChatDrawer>
 
     </>
   )
 }
 
-const PostContent = (props: { post: PostSummary, fullPost: boolean, children?: React.ReactNode }): JSX.Element => {
-  const { post, fullPost, children } = props
+const PostContent = (props: { post: PostSummary, fullPost: boolean, children?: React.ReactNode, handlePhotoClick: (event: any) => void }): JSX.Element => {
+  const { post, fullPost, children, handlePhotoClick } = props
 
   const maxLength = 300
   const shortBody = fullPost ? post.body : post.body?.slice(0, maxLength) + '...'
   const isTruncated = (shortBody?.length && post?.body?.length) ? shortBody.length < post.body.length : false
   const [showFullBody, setShowFullBody] = useState(fullPost)
 
-  return <div className="flex items-start">
-              <AvatarLoader object={post} marginClass='mr-4'/>
-              <div className="flex flex-col w-full h-full">
-              <div className='font-bold my-2'>{post.title}</div>
-              <div>
-                {textToJSX(showFullBody ? post.body ?? '' : shortBody ?? '')}
-              </div>
-              {isTruncated && (
-                <span
-                  className='text-xs underline text-blue cursor-pointer mr-1 text-right italic'
-                  onClick={() => { setShowFullBody(!showFullBody) }}
-                >
-                  {showFullBody ? 'less' : 'more'}
-                </span>
-              )}
+  return (
+    <div className="flex items-start">
+      <AvatarLoader object={post} marginClass='mr-4'/>
+      <div className="flex flex-col w-full h-full">
+      <div className='font-bold my-2'>{post.title}</div>
+      <div>
+        {textToJSX(showFullBody ? post.body ?? '' : shortBody ?? '')}
+      </div>
+      {isTruncated && (
+        <span
+          className='text-xs underline text-blue cursor-pointer mr-1 text-right italic'
+          onClick={() => { setShowFullBody(!showFullBody) }}
+        >
+          {showFullBody ? 'less' : 'more'}
+        </span>
+      )}
 
-              <div className='mt-4'>
-              {post.videoMeta?.secure_url && <video className="recorded" src={post.videoMeta.secure_url} onClick={(event) => { event?.stopPropagation() }} controls />}
+      <div className='mt-4'>
+      {post.videoMeta?.secure_url && <video className="recorded" src={post.videoMeta.secure_url} onClick={(event) => { event?.stopPropagation() }} controls />}
 
-              {post.imageMeta?.secure_url && <img src={post.imageMeta.secure_url} alt="post picture" className="mt-4 cursor-pointer max-w-[200px]" onClick={handlePhotoClick} />}
-              </div>
-              {children}
-              </div>
-            </div>
+      {post.imageMeta?.secure_url && <img src={post.imageMeta.secure_url} alt="post picture" className="mt-4 cursor-pointer max-w-[200px]" onClick={handlePhotoClick} />}
+      </div>
+      {children}
+      </div>
+    </div>
+  )
 }

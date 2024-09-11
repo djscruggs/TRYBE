@@ -233,32 +233,6 @@ export function textToHtml (text: string): string {
   return text.split('\n').map(line => `<p style="margin-bottom:.5em">${line}</p>`).join('').replace(/\n|\r/g, '')
 }
 
-export function getIdAndType (props: Record<string, any>): { type: string, id: number | null } {
-  const { challengeId, postId, checkInId, threadId, commentId } = props
-  const idAndType: { type: string, id: number | null } = { type: '', id: null }
-  if (challengeId) {
-    idAndType.type = 'challenge'
-    idAndType.id = Number(challengeId)
-  }
-  if (postId) {
-    idAndType.type = 'post'
-    idAndType.id = Number(postId)
-  }
-  if (checkInId) {
-    idAndType.type = 'checkin'
-    idAndType.id = Number(checkInId)
-  }
-  if (threadId) {
-    idAndType.type = 'thread'
-    idAndType.id = Number(threadId)
-  }
-  if (commentId) {
-    idAndType.type = 'comment'
-    idAndType.id = Number(commentId)
-  }
-  return idAndType
-}
-
 export function pluralize (count: number, singular: string, plural = ''): string {
   if (count === 1) return singular
   if (plural !== '') {

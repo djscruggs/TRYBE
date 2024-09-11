@@ -199,7 +199,8 @@ export function CheckinRow (props: CheckinRowProps): JSX.Element {
                       onClose={hideComments}
                       comments={comments}
                       size={500}
-                      checkInId={checkInObj.id}
+                      id={checkInObj.id}
+                      type='checkin'
                     >
                       <CheckInContent checkIn={checkInObj} timestamp={formatted} />
                     </ChatDrawer>

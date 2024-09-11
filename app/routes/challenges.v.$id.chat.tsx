@@ -124,7 +124,7 @@ export default function ViewChallengeChat (): JSX.Element {
         <div key={date}>
           <h2>{date}</h2>
           {posts.map(post => (
-            <div key={`post-${post.id}`} className='max-w-sm md:max-w-md lg:max-w-lg mb-6'>
+            <div key={`post-${post.id}`} className='max-w-sm md:max-w-xl mb-6'>
               <CardPost post={post} hideMeta={false} fullPost={false}/>
 
             </div>
