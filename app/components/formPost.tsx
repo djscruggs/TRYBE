@@ -124,7 +124,6 @@ export default function FormPost (props: FormPostProps): JSX.Element {
       const errors = {
         body: 'Post must be at least 10 characters long'
       }
-      console.error(errors)
       setErrors(errors)
       return false
     }
@@ -167,7 +166,6 @@ export default function FormPost (props: FormPostProps): JSX.Element {
         navigate('/posts/' + result.data.id)
       }
     } catch (error) {
-      console.error(error)
       toast.error(String(error))
     } finally {
       setSaving(false)
@@ -214,6 +212,7 @@ export default function FormPost (props: FormPostProps): JSX.Element {
         name='title'
         type='text'
         placeholder='Enter a Title'
+        autoFocus={true}
         required={true}
         value={formData.title}
         onChange={handleChange}
