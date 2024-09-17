@@ -39,7 +39,7 @@ export default function UserSpecificContent (): JSX.Element {
   const params = useParams()
   const [selected, setSelected] = useState(params.tab ?? 'memberships')
   const navigate = useNavigate()
-
+  console.log('data', data)
   const handleTabChange = (value: string): void => {
     setSelected(value)
     navigate(`/members/${userId}/content/${value}`)

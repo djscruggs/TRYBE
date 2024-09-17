@@ -6,14 +6,13 @@ import { CurrentUserContext } from '~/utils/CurrentUserContext'
 import { Lightbox } from 'react-modal-image'
 import AvatarLoader from './avatarLoader'
 import FormCheckIn from './formCheckin'
-import type { CheckIn, Comment } from '~/utils/types'
+import type { CheckIn, Comment, Profile } from '~/utils/types'
 import Liker from '~/components/liker'
 import DialogDelete from './dialogDelete'
 import axios from 'axios'
 import { toast } from 'react-hot-toast'
 import { FaRegComment } from 'react-icons/fa'
 import ChatDrawer from '~/components/chatDrawer'
-
 interface CheckinsListProps {
   checkIns: CheckIn[]
   likes: number[]
@@ -50,7 +49,7 @@ export default function CheckinsList ({ checkIns, likes, comments, allowComments
             <div className='border-t border-teal flex items-center justify-center'>
               <div className="text-center p-1 -mt-3.5 rounded-md drop-shadow-xl w-[90px] bg-teal text-xs text-white">{date}</div>
             </div>
-            {uniqueUsers > 0 && <CollapsedCheckins count={uniqueUsers} />}
+            {uniqueUsers > 0 && <CollapsedCheckins checkIns={emptyCheckIns} />}
             {checkIns.map((checkIn: CheckIn, index: number) => {
               if (!checkIn.body?.length) return null // Skip empty check-ins
 
@@ -133,7 +132,7 @@ export function CheckinRow (props: CheckinRowProps): JSX.Element {
   }
   const menuRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
+    const handleClickOutside = (event: MouseEvent): void => {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
         setMenuOpen(false)
       }
@@ -261,18 +260,60 @@ interface CheckInAvatarProps {
 const CheckInAvatar = ({ checkIn }: CheckInAvatarProps): JSX.Element => {
   return (
     <div className='w-[50px] min-w-[50px] text-xs'>
-    <AvatarLoader object={checkIn} /><br />
+      <AvatarLoader object={checkIn} clickable={true}/>
     </div>
   )
 }
 interface CollapsedCheckinsProps {
   count: number
+  checkIns: CheckIn[]
 }
 
-const CollapsedCheckins = ({ count }: CollapsedCheckinsProps): JSX.Element => {
+const CollapsedCheckins = ({ checkIns }: CollapsedCheckinsProps): JSX.Element => {
+  if (checkIns.length === 0) {
+    return <></>
+  }
+  // const uniqueProfiles = Array.from(new Map(checkIns.map(checkIn => [checkIn.user?.profile?.id, checkIn.user?.profile])).values()).filter(profile => profile !== undefined)
+  const baseProfiles = Array.from(new Map(checkIns.map(checkIn => [checkIn.user?.profile?.id, checkIn.user?.profile])).values()).filter(profile => profile !== undefined)
+  // const X = 11
+  const testProfiles = Array(2).fill(baseProfiles).flat()
+  const uniqueProfiles = testProfiles
+  const count = uniqueProfiles.length
+
   return (
-    <div className='text-center p-2 bg-gray-100 rounded-md mb-4'>
-      <span className='text-sm text-gray-700'>{count} members checked in</span>
+    <div className='p-2 bg-gray-100 rounded-md mb-4 text-xs'>
+      {count === 1
+        ? (
+          <div className='flex items-center'>
+            <CheckInAvatar checkIn={checkIns[0]} />
+            <span className='ml-2'>{uniqueProfiles[0]?.fullName} checked in</span>
+          </div>
+          )
+        : count === 2
+          ? `${uniqueProfiles.slice(0, 3).map(profile => `${profile?.fullName}`).join(' and ')} checked in`
+          : `${uniqueProfiles.slice(0, 3).map(profile => `${profile?.fullName}`).join(', ')} and ${count - 3} others checked in`
+      }
+      {count > 1 &&
+        <StackedAvaters profiles={uniqueProfiles as Profile[]} />
+      }
+    </div>
+  )
+}
+
+const StackedAvaters = ({ profiles }: { profiles: Profile[] }): JSX.Element => {
+  const maxProfiles = 5
+  return (
+    <div className="flex items-center -space-x-4">
+      {profiles.slice(0, maxProfiles).map((profile) => (
+        profile?.profileImage && (
+          <img
+            key={profile.id}
+            alt={profile.fullName ?? ''}
+            src={profile.profileImage}
+            className="relative inline-block h-12 w-12 !rounded-full border-2 border-white object-cover object-center hover:z-10 focus:z-10"
+          />
+        )
+      ))}
     </div>
   )
 }
