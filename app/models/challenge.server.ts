@@ -220,19 +220,22 @@ export const fetchUserChallenges = async (userId: string | number, showPrivate =
 }
 export const fetchUserMemberships = async (userId: string | number): Promise<MemberChallenge[]> => {
   const uid = Number(userId)
-  return await prisma.memberChallenge.findMany(
-    {
-      where: { userId: uid },
-      include: {
-        challenge: true,
-        user: {
-          include: {
-            profile: true
-          }
+  const memberships = await prisma.memberChallenge.findMany({
+    where: { userId: uid },
+    include: {
+      challenge: true,
+      user: {
+        include: {
+          profile: true
         }
       }
     }
-  ) as unknown as MemberChallenge[]
+  }) as unknown as MemberChallenge[]
+
+  // Deduplicate memberships based on userId and challengeId
+  const uniqueMemberships = Array.from(new Map(memberships.map(m => [`${m.userId}-${m.challengeId}`, m])).values())
+
+  return uniqueMemberships
 }
 export const loadMemberChallenge = async (userId: number, challengeId: number): Promise<MemberChallenge | null> => {
   const uid = Number(userId)
@@ -272,10 +275,11 @@ export const joinChallenge = async (userId: number, challengeId: number): Promis
     }
   }) as unknown as MemberChallenge
 }
-export const unjoinChallenge = async (id: number): Promise<MemberChallenge> => {
-  return await prisma.memberChallenge.delete({
+export const unjoinChallenge = async (userId: number, challengeId: number): Promise<MemberChallenge> => {
+  return await prisma.memberChallenge.deleteMany({
     where: {
-      id
+      userId,
+      challengeId
     }
   }) as unknown as MemberChallenge
 }
@@ -307,7 +311,7 @@ export const loadCheckIn = async (checkInId: number): Promise<CheckIn | null> =>
     where: { id }
   }) as CheckIn | null
 }
-export const deleteCheckIn = async (checkInId): Promise<CheckIn> => {
+export const deleteCheckIn = async (checkInId: number): Promise<CheckIn> => {
   const id = Number(checkInId)
   // check to see if there are any image or video to delete
   const checkIn = await loadCheckIn(id)

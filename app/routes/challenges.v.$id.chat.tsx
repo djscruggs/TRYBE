@@ -1,4 +1,4 @@
-import { Outlet, useLoaderData } from '@remix-run/react'
+import { useLoaderData } from '@remix-run/react'
 import { useEffect, useRef } from 'react'
 import { requireCurrentUser } from '~/models/auth.server'
 import type { Post, CheckIn } from '~/utils/types'
@@ -6,8 +6,6 @@ import { type LoaderFunction, type LoaderFunctionArgs } from '@remix-run/node'
 import { prisma } from '~/models/prisma.server'
 import CardPost from '~/components/cardPost'
 import CheckinsList from '~/components/checkinsList'
-import ChatDrawer from '~/components/chatDrawer'
-import { TbRuler } from 'react-icons/tb'
 interface ChallengeChatData {
   posts: Post[] | null
   checkIns: CheckIn[]
@@ -42,14 +40,7 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
     },
     orderBy: { createdAt: 'asc' }
   })
-  const postsByDate: Record<string, Post[]> = posts.reduce<Record<string, Post[]>>((acc, post) => {
-    const date = post.createdAt.toISOString().split('T')[0]
-    if (!acc[date]) {
-      acc[date] = []
-    }
-    acc[date].push(post)
-    return acc
-  }, {})
+
   // get list of checkins with bodies
   const checkIns = await prisma.checkIn.findMany({
     where: {
@@ -122,8 +113,7 @@ export default function ViewChallengeChat (): JSX.Element {
     <>
       {Object.entries(data.groupedData).map(([date, { posts, checkIns }]) => (
         <div key={date}>
-          <h2>{date}</h2>
-          {posts.map(post => (
+          {posts.map((post: Post) => (
             <div key={`post-${post.id}`} className='max-w-sm md:max-w-xl mb-6'>
               <CardPost post={post} hideMeta={false} fullPost={false}/>
 

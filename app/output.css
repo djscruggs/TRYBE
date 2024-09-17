@@ -1903,6 +1903,12 @@ video {
   margin-bottom: calc(1rem * var(--tw-space-y-reverse));
 }
 
+.-space-x-4 > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-x-reverse: 0;
+  margin-right: calc(-1rem * var(--tw-space-x-reverse));
+  margin-left: calc(-1rem * calc(1 - var(--tw-space-x-reverse)));
+}
+
 .divide-x > :not([hidden]) ~ :not([hidden]) {
   --tw-divide-x-reverse: 0;
   border-right-width: calc(1px * var(--tw-divide-x-reverse));
@@ -5022,6 +5028,10 @@ video {
   z-index: 20;
 }
 
+.hover\:z-10:hover {
+  z-index: 10;
+}
+
 .hover\:scale-110:hover {
   --tw-scale-x: 1.1;
   --tw-scale-y: 1.1;
@@ -5294,6 +5304,10 @@ video {
 .hover\:before\:opacity-10:hover::before {
   content: var(--tw-content);
   opacity: 0.1;
+}
+
+.focus\:z-10:focus {
+  z-index: 10;
 }
 
 .focus\:scale-110:focus {
