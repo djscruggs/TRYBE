@@ -75,7 +75,7 @@ export default function ChatItem (props: CommentsProps): JSX.Element {
     {showForm
       ? (
         <div className='w-full border-l-2  pl-4 mb-4 pr-2'>
-          <FormChat afterSave={afterSave} afterCommit={afterSave} type='comment' onCancel={() => { setShowForm(false) }} comment={comment} />
+          <FormChat afterSave={afterSave} onPending={afterSave} type='comment' onCancel={() => { setShowForm(false) }} comment={comment} />
         </div>
         )
       : (

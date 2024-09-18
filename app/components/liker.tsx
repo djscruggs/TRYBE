@@ -21,6 +21,13 @@ export default function Liker (props: LikerProps): JSX.Element {
     setIsLiked(props.isLiked)
   }, [props.isLiked])
   const handleLike = async (): Promise<void> => {
+    const tempIsLiked = isLiked
+    let newCount: number = isLiked ? count - 1 : count + 1
+    if (newCount < 0) {
+      newCount = 0
+    }
+    setCount(newCount)
+    setIsLiked(!isLiked)
     const formData = new FormData()
     if (itemType === 'comment') {
       formData.append('commentId', String(itemId))
@@ -46,14 +53,12 @@ export default function Liker (props: LikerProps): JSX.Element {
     setLoading(true)
     try {
       const response = await axios.post('/api/likes', formData)
-      let newCount: number = isLiked ? count - 1 : count + 1
-      if (newCount < 0) {
-        newCount = 0
-      }
-      setIsLiked(!isLiked)
+
       setCount(response.data?.totalLikes ? response.data?.totalLikes as number : newCount)
     } catch (error) {
       toast.error('Error:' + error?.message)
+      setIsLiked(tempIsLiked)
+      setCount(newCount > 0 ? newCount - 1 : 0)
       console.error(error)
     } finally {
       setLoading(false)
@@ -62,13 +67,8 @@ export default function Liker (props: LikerProps): JSX.Element {
 
   return (
     <div className='text-xs'>
-      {loading
-        ? <><Spinner className="h-4 w-4 inline" /><span className='text-xs ml-1'>{count}</span></>
-        : <>
       <TbHeartFilled className={`h-4 w-4 mr-1 cursor-pointer text-sm inline ${isLiked ? 'text-red' : 'text-grey'}`} onClick={handleLike}/>
         {count}
-        </>
-      }
     </div>
   )
 }
