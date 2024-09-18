@@ -27,6 +27,7 @@ interface CardPostProps {
   fullPost?: boolean
   hideMeta?: boolean
   revalidator?: Revalidator
+  isChat?: boolean
 }
 interface Revalidator {
   revalidate: () => void
@@ -34,7 +35,7 @@ interface Revalidator {
 
 export default function CardPost (props: CardPostProps): JSX.Element {
   const { currentUser } = useContext(CurrentUserContext)
-  const { hasLiked, fullPost, isShare, hideMeta, revalidator } = props
+  const { hasLiked, fullPost, isShare, hideMeta, revalidator, isChat } = props
   const dateTimeFormat = currentUser?.dateTimeFormat ? currentUser.dateTimeFormat : 'M-dd-yyyy @ h:mm a'
   const [post, setPost] = useState(props.post)
   const [showComments, setShowComments] = useState(false)
@@ -106,7 +107,7 @@ export default function CardPost (props: CardPostProps): JSX.Element {
       : <div className={'mt-2 w-full border-0  drop-shadow-none mr-2'}>
       <div className={`drop-shadow-none ${!isOwnRoute ? 'cursor-pointer' : ''}`} >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Card className={'md:col-span-2 p-2 border-1 drop-shadow-lg  border border-gray rounded-md relative'}>
+          <Card className={`md:col-span-2 p-2  relative ${isChat ? 'shadow-none' : 'border-1 drop-shadow-lg  border border-gray rounded-md'}`}>
             {!post.published &&
               <>
               <div className='bg-yellow w-full p-0 text-center absolute left-0 top-0 b-4 rounded-t-md'>Draft</div>
@@ -135,13 +136,11 @@ export default function CardPost (props: CardPostProps): JSX.Element {
       </div>
       {!isShare && !hideMeta &&
         <>
-          <hr />
-          <div className="grid grid-cols-3 text-center py-2 cursor-pointer w-full">
-            <div className="flex justify-center items-center" onClick={() => { setShowComments(true) }}>
-
+          <hr className={`${isChat ? 'border-0 none' : 'border-gray'}`} />
+          <div className={`grid grid-cols-3 text-center ${isChat ? 'pt-0' : 'py-2'} cursor-pointer w-full`}>
+            <div className="ml-6 flex justify-center items-center" onClick={() => { setShowComments(true) }}>
                 <FaRegComment className="text-grey mr-1 inline" />
                 <span className="text-xs">{post.commentCount} comments</span>
-
             </div>
             <div className="flex justify-center items-center cursor-pointer">
 
@@ -183,7 +182,7 @@ const PostContent = (props: { post: PostSummary, fullPost: boolean, children?: R
 
   return (
     <div className="flex items-start">
-      <AvatarLoader object={post} marginClass='mr-4'/>
+      <AvatarLoader object={post} marginClass='mr-2'/>
       <div className="flex flex-col w-full h-full">
       <div className='font-bold my-2'>{post.title}</div>
       <div>

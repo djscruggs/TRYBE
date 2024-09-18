@@ -51,7 +51,7 @@ export default function ShareMenu (props: ShareMenuProps): JSX.Element {
       </div>
       {showMenu &&
         <div className='cursor-pointer w-32 absolute left-0 bottom-8 bg-white border border-gray rounded-md flex flex-col text-left' >
-          <p className='text-black text-sm hover:bg-gray-100 p-1' onClick={shareOnTimeline}>Share on Timeline</p>
+          {/* <p className='text-black text-sm hover:bg-gray-100 p-1' onClick={shareOnTimeline}>Share on Timeline</p> */}
           <p className='text-black text-sm hover:bg-gray-100 p-1' onClick={async () => { await copyToClipboard(copyUrl) }}>Copy Link</p>
         </div>
       }

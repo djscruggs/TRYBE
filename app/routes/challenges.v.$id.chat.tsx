@@ -115,7 +115,7 @@ export default function ViewChallengeChat (): JSX.Element {
         <div key={date}>
           {posts.map((post: Post) => (
             <div key={`post-${post.id}`} className='max-w-sm md:max-w-xl mb-6'>
-              <CardPost post={post} hideMeta={false} fullPost={false}/>
+              <CardPost post={post} hideMeta={false} fullPost={false} isChat={true}/>
 
             </div>
           ))}
