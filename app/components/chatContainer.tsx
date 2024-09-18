@@ -9,7 +9,7 @@ interface CommentsProps {
 }
 
 export default function ChatContainer (props: CommentsProps): JSX.Element {
-  const { comments } = props
+  const [comments, setComments] = useState<Comment[]>(props.comments)
   const [likedCommentIds, setLikedCommentIds] = useState<number[]>([])
   const [firstComment, setFirstComment] = useState<Comment | null>(props.firstComment ?? null)
   useEffect(() => {
@@ -18,6 +18,9 @@ export default function ChatContainer (props: CommentsProps): JSX.Element {
   useEffect(() => {
     setFirstComment(props.firstComment ?? null)
   }, [props.firstComment])
+  useEffect(() => {
+    setComments(props.comments)
+  }, [props.comments])
   const uniqueComments = (): Comment[] => {
     const unique = Array.from(new Set(comments.map(comment => comment.id)))
       .map(id => comments.find(comment => comment.id === id))

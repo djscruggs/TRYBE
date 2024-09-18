@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import { Drawer } from '@material-tailwind/react'
 import ChatContainer from './chatContainer'
 import type { Comment } from '~/utils/types'
+import { ChatRowSkeleton } from './skeletons'
 import { toast } from 'react-hot-toast'
 import FormChat from './formChat'
 import axios from 'axios'
@@ -12,6 +13,7 @@ interface ChatDrawerProps {
   size: number
   type: 'post' | 'challenge' | 'checkin'
   id: number
+  commentCount?: number
   comments?: Comment[]
   children: React.ReactNode
 
@@ -19,6 +21,7 @@ interface ChatDrawerProps {
 
 export default function ChatDrawer (props: ChatDrawerProps): JSX.Element {
   // Determine the type based on which ID is set
+  const skeletonRows = props.commentCount ?? 0
   const { type, id } = props
   const { isOpen, placement, onClose, size, children } = props
   const bottomRef = useRef<HTMLDivElement>(null)
@@ -27,34 +30,39 @@ export default function ChatDrawer (props: ChatDrawerProps): JSX.Element {
   const [open, setOpen] = useState(false)
   const [firstComment, setFirstComment] = useState<Comment | null>(null)
   const [refresh, setRefresh] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
   const closeDrawer = (): void => {
     setOpen(false)
     onClose()
   }
-  const [pendingComment, setPendingComment] = useState(false)
-  const afterSave = (comment: Comment): void => {
-    if (firstComment && !pendingComment) {
+  const afterSaveComment = (comment: Comment): void => {
+    console.log('afterSave comment is', comment)
+    if (firstComment?.id) {
       setComments([firstComment, ...(comments ?? [])])
     }
-    if (!comment.id) {
-      setPendingComment(true)
-      setFirstComment(comment)
-    } else {
-      setPendingComment(false)
-    }
+    const filteredComments = comments?.filter(comment => comment.id !== undefined)
+    setComments(filteredComments ?? [])
+    setFirstComment(comment)
     setRefresh(true)
   }
-  const onFormError = (error: Error): void => {
-    if (pendingComment) {
-      setFirstComment(null)
-      setPendingComment(false)
+  const onPendingComment = (comment: Comment): void => {
+    if (firstComment) {
+      setComments([firstComment, ...(comments ?? [])])
     }
-    toast.error('Failed to save comment:' + String(error))
+    console.log('onPending comment is', comment)
+    setFirstComment(comment)
+    setRefresh(true)
+  }
+  const onSaveCommentError = (error: Error): void => {
+    setFirstComment(null)
+    toast.error('Failed to send chat:' + String(error))
   }
   const [likedCommentIds, setLikedCommentIds] = useState<number[]>([])
   const fetchComments = async (): Promise<void> => {
+    setIsLoading(true)
     const { data } = await axios.get<Comment[]>(`/api/comments/${type}/${id}`)
     setComments(data)
+    setIsLoading(false)
   }
   const fetchLikedCommentIds = async (): Promise<void> => {
     const { data } = await axios.get<number[]>(`/api/likes/${type}/${id}/comments`)
@@ -103,14 +111,19 @@ export default function ChatDrawer (props: ChatDrawerProps): JSX.Element {
           </svg>
         </div>
         <div className="pt-4 pb-2 flex items-center justify-between bg-gray-100">
-          <div className='p-2'>
-            {children}
-          </div>
+          {children}
+
         </div>
         <div className='overflow-y-auto'>
-          <ChatContainer comments={comments ?? []} firstComment={firstComment} likedCommentIds={likedCommentIds} />
+          {isLoading
+            ? <div className='p-2'>
+                <ChatRowSkeleton count={skeletonRows} />
+              </div>
+            : <ChatContainer comments={comments ?? []} firstComment={firstComment} likedCommentIds={likedCommentIds} />
+          }
+
           <div className='px-2' ref={bottomRef}>
-            <FormChat afterSave={afterSave} onPending={afterSave} onError={onFormError} objectId={id} type={type} inputRef={inputRef} />
+            <FormChat afterSave={afterSaveComment} onPending={onPendingComment} onError={onSaveCommentError} objectId={id} type={type} inputRef={inputRef} />
           </div>
         </div>
 

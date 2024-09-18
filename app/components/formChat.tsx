@@ -171,6 +171,7 @@ export default function FormChat (props: FormChatProps): JSX.Element {
           ...(type === 'checkin' && { checkInId: props.objectId }),
           ...(type === 'thread' && { threadId: props.objectId })
         }
+        console.log('_comment', _comment)
         props.onPending(_comment as Comment)
       }
       const updated = await axios.post('/api/comments', formData)
@@ -209,7 +210,6 @@ export default function FormChat (props: FormChatProps): JSX.Element {
           required={true}
           autoFocus={true}
           value={body}
-          disabled={submitting}
           onChange={(ev) => {
             setBody(String(ev.target.value))
             return ev.target.value

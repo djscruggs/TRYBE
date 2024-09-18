@@ -201,6 +201,7 @@ export function CheckinRow (props: CheckinRowProps): JSX.Element {
                       size={500}
                       id={checkInObj.id}
                       type='checkin'
+                      commentCount={checkInObj.commentCount}
                     >
                       <CheckInContent checkIn={checkInObj} timestamp={formatted} />
                     </ChatDrawer>
