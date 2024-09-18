@@ -6,6 +6,7 @@ import { ChatRowSkeleton } from './skeletons'
 import { toast } from 'react-hot-toast'
 import FormChat from './formChat'
 import axios from 'axios'
+
 interface ChatDrawerProps {
   isOpen: boolean
   placement: 'left' | 'right' | 'top' | 'bottom'
@@ -16,7 +17,6 @@ interface ChatDrawerProps {
   commentCount?: number
   comments?: Comment[]
   children: React.ReactNode
-
 }
 
 export default function ChatDrawer (props: ChatDrawerProps): JSX.Element {
@@ -34,9 +34,9 @@ export default function ChatDrawer (props: ChatDrawerProps): JSX.Element {
   const closeDrawer = (): void => {
     setOpen(false)
     onClose()
+    document.body.classList.remove('overflow-hidden') // Enable body scroll
   }
   const afterSaveComment = (comment: Comment): void => {
-    console.log('afterSave comment is', comment)
     if (firstComment?.id) {
       setComments([firstComment, ...(comments ?? [])])
     }
@@ -49,7 +49,6 @@ export default function ChatDrawer (props: ChatDrawerProps): JSX.Element {
     if (firstComment) {
       setComments([firstComment, ...(comments ?? [])])
     }
-    console.log('onPending comment is', comment)
     setFirstComment(comment)
     setRefresh(true)
   }
@@ -91,43 +90,45 @@ export default function ChatDrawer (props: ChatDrawerProps): JSX.Element {
     }
   }, [comments, isOpen, refresh])
 
+  const mouseEnter = (): void => {
+    document.body.classList.add('overflow-hidden') // Disable body scroll
+  }
+  const mouseLeave = (): void => {
+    document.body.classList.remove('overflow-hidden') // Enable body scroll
+  }
+
   return (
-
-      <Drawer open={open} placement={placement} onClose={closeDrawer} className="p-0 resize-x shadow-lg overflow-y-scroll" size={size} overlay={false}>
-        <div className="absolute top-2 right-2 cursor-pointer " onClick={closeDrawer}>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={2}
-            stroke="currentColor"
-            className="h-5 w-5"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M6 18L18 6M6 6l12 12"
-            />
-          </svg>
+    <Drawer open={open} placement={placement} onMouseEnter={mouseEnter} onMouseLeave={mouseLeave} onClose={closeDrawer} className="p-0 resize-x shadow-lg overflow-y-scroll" size={size} overlay={false} >
+      <div className="absolute top-2 right-2 cursor-pointer " onClick={closeDrawer}>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          strokeWidth={2}
+          stroke="currentColor"
+          className="h-5 w-5"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M6 18L18 6M6 6l12 12"
+          />
+        </svg>
+      </div>
+      <div className="pt-4 pb-2 flex items-center justify-between bg-gray-100">
+        {children}
+      </div>
+      <div className='overflow-y-auto'>
+        {isLoading
+          ? <div className='p-2'>
+              <ChatRowSkeleton count={skeletonRows} />
+            </div>
+          : <ChatContainer comments={comments ?? []} firstComment={firstComment} likedCommentIds={likedCommentIds} />
+        }
+        <div className='px-2' ref={bottomRef}>
+          <FormChat afterSave={afterSaveComment} onPending={onPendingComment} onError={onSaveCommentError} objectId={id} type={type} inputRef={inputRef} />
         </div>
-        <div className="pt-4 pb-2 flex items-center justify-between bg-gray-100">
-          {children}
-
-        </div>
-        <div className='overflow-y-auto'>
-          {isLoading
-            ? <div className='p-2'>
-                <ChatRowSkeleton count={skeletonRows} />
-              </div>
-            : <ChatContainer comments={comments ?? []} firstComment={firstComment} likedCommentIds={likedCommentIds} />
-          }
-
-          <div className='px-2' ref={bottomRef}>
-            <FormChat afterSave={afterSaveComment} onPending={onPendingComment} onError={onSaveCommentError} objectId={id} type={type} inputRef={inputRef} />
-          </div>
-        </div>
-
-      </Drawer>
-
+      </div>
+    </Drawer>
   )
 }
