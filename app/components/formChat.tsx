@@ -23,12 +23,29 @@ interface FormChatProps {
   prompt?: string
   inputRef?: React.RefObject<HTMLTextAreaElement | HTMLInputElement>
 }
-
+function getTypeAndId (comment: Comment): { type: string, id: number } {
+  if (comment.postId) return { type: 'post', id: comment.postId }
+  if (comment.challengeId) return { type: 'challenge', id: comment.challengeId }
+  if (comment.checkInId) return { type: 'checkin', id: comment.checkInId }
+  if (comment.threadId) return { type: 'thread', id: comment.threadId }
+  throw new Error('Not type found in Comment: ' + JSON.stringify(comment))
+}
 export default function FormChat (props: FormChatProps): JSX.Element {
-  let { comment, type, id, onCancel } = props
+  const { comment, onCancel } = props
+  let type: string | undefined
+  let id: number | undefined
+  let objectId: number | undefined
   if (comment) {
-    type = comment.type
+    const { type: commentType, id: commentId } = getTypeAndId(comment)
+    type = commentType
     id = comment.id
+    objectId = commentId
+  } else if (props.type) {
+    type = props.type
+    objectId = props.objectId
+  }
+  if (!type || !objectId) {
+    throw new Error('type and objectId are required in formChat (props: ' + JSON.stringify(props) + ')')
   }
 
   const { currentUser } = useContext(CurrentUserContext)
@@ -111,16 +128,16 @@ export default function FormChat (props: FormChatProps): JSX.Element {
       // Set the appropriate ID based on the type
       switch (type) {
         case 'post':
-          formData.set('postId', String(props.objectId))
+          formData.set('postId', String(objectId))
           break
         case 'challenge':
-          formData.set('challengeId', String(props.objectId))
+          formData.set('challengeId', String(objectId))
           break
         case 'checkin':
-          formData.set('checkInId', String(props.objectId))
+          formData.set('checkInId', String(objectId))
           break
         case 'thread':
-          formData.set('threadId', String(props.objectId))
+          formData.set('threadId', String(objectId))
           break
         default:
           throw new Error('Invalid type in formChat: ' + type)
@@ -171,18 +188,17 @@ export default function FormChat (props: FormChatProps): JSX.Element {
           ...(type === 'checkin' && { checkInId: props.objectId }),
           ...(type === 'thread' && { threadId: props.objectId })
         }
-        console.log('_comment', _comment)
         props.onPending(_comment as Comment)
       }
       const updated = await axios.post('/api/comments', formData)
-      if (props.afterSave) {
-        props.afterSave(updated.data as Comment)
-      }
+
+      props.afterSave(updated.data as Comment)
     } catch (error: any) {
-      if (props.onError) {
+      if (props.onError && !id) {
         props.onError(error as Error)
       }
-      const errorMessage = typeof error?.response.data.message === 'string' ? error.message : 'An unexpected error occurred'
+      console.error('error', error)
+      const errorMessage = typeof error?.response?.data.message === 'string' ? error?.response?.data.message : 'An unexpected error occurred'
       toast.error(errorMessage as string)
       setError(errorMessage as string)
       setBody(tempBody)

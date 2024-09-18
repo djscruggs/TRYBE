@@ -30,6 +30,7 @@ export default function ChatItem (props: CommentsProps): JSX.Element {
     setIsLiked(props.likedCommentIds?.includes(comment?.id ?? 0))
   }, [props.likedCommentIds])
   const handleEdit = (): void => {
+    setMenuOpen(false)
     if (!comment || deleting) return
     setShowForm(true)
   }
@@ -41,6 +42,7 @@ export default function ChatItem (props: CommentsProps): JSX.Element {
     setMenuOpen(!menuOpen)
   }
   const handleDelete = async (event: any): Promise<void> => {
+    setMenuOpen(false)
     event.preventDefault()
     event.stopPropagation()
     if (!comment) return
