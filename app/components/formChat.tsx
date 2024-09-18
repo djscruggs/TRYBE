@@ -13,12 +13,15 @@ import { handleFileUpload } from '~/utils/helpers'
 import { TiDeleteOutline } from 'react-icons/ti'
 import VideoPreview from './videoPreview'
 interface FormChatProps {
-  type?: 'post' | 'challenge' | 'reply' | 'thread' | 'checkIn' | 'comment'
+  type?: 'post' | 'challenge' | 'reply' | 'thread' | 'checkin' | 'comment'
   objectId?: number
+  afterCommit: (comment: Comment) => void
   afterSave: (comment: Comment) => void
   onCancel?: () => void
+  onError?: (error: Error) => void
   comment?: Comment
   prompt?: string
+  inputRef?: React.RefObject<HTMLTextAreaElement | HTMLInputElement>
 }
 
 export default function FormChat (props: FormChatProps): JSX.Element {
@@ -36,6 +39,7 @@ export default function FormChat (props: FormChatProps): JSX.Element {
   const [video, setVideo] = useState<File | string | null>(null)
   const [videoUrl, setVideoUrl] = useState<string | null>(comment?.videoMeta?.secure_url ? comment?.videoMeta?.secure_url : null)
   const imageRef = useRef<HTMLInputElement>(null)
+  const inputRef = props.inputRef ?? useRef<HTMLTextAreaElement>(null)
   const [videoUploadOnly, setVideoUploadOnly] = useState(false)
   const [showVideoRecorder, setShowVideoRecorder] = useState(false)
   const [submitting, setSubmitting] = useState(false)
@@ -92,6 +96,14 @@ export default function FormChat (props: FormChatProps): JSX.Element {
     if (!body) {
       return
     }
+
+    // construct a comment object that can be used for afterCommit
+    const tempBody = body
+    const tempImage = image
+    const tempVideo = video
+    setBody('')
+    setVideo(null)
+    setImage(null)
     setSubmitting(true)
     try {
       const formData = new FormData()
@@ -105,16 +117,18 @@ export default function FormChat (props: FormChatProps): JSX.Element {
         case 'challenge':
           formData.set('challengeId', String(props.objectId))
           break
-        case 'checkIn':
+        case 'checkin':
           formData.set('checkInId', String(props.objectId))
           break
-          // Add other cases as needed
-        default:
+        case 'thread':
+          formData.set('threadId', String(props.objectId))
           break
+        default:
+          throw new Error('Invalid type in formChat: ' + type)
       }
 
-      if (comment?.id) {
-        formData.set('id', String(comment.id))
+      if (id) {
+        formData.set('id', String(id))
       }
       // these are blob objects to upload
       if (image) {
@@ -123,16 +137,57 @@ export default function FormChat (props: FormChatProps): JSX.Element {
       if (video) {
         formData.set('video', video)
       }
+      // construct a comment object that can be used for afterCommit
+      if (props.afterCommit) {
+        const _comment = {
+          body,
+          type,
+          id,
+          imageMeta: image
+            ? {
+                secure_url: URL.createObjectURL(image as File),
+                url: '',
+                public_id: '',
+                format: '',
+                resource_type: ''
+              }
+            : undefined,
+          videoMeta: video
+            ? {
+                secure_url: URL.createObjectURL(video as File),
+                url: '',
+                public_id: '',
+                format: '',
+                resource_type: ''
+              }
+            : undefined,
+          user: currentUser,
+          userId: currentUser?.id ?? 0,
+          likeCount: 0,
+          replyCount: 0,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          ...(type === 'post' && { postId: props.objectId }),
+          ...(type === 'challenge' && { challengeId: props.objectId }),
+          ...(type === 'checkin' && { checkInId: props.objectId }),
+          ...(type === 'thread' && { threadId: props.objectId })
+        }
+        props.afterCommit(_comment as Comment)
+      }
       const updated = await axios.post('/api/comments', formData)
-      setBody('')
-      setVideo(null)
-      setImage(null)
       if (props.afterSave) {
         props.afterSave(updated.data as Comment)
       }
     } catch (error: any) {
+      if (props.onError) {
+        props.onError(error as Error)
+      }
       const errorMessage = typeof error?.response.data.message === 'string' ? error.message : 'An unexpected error occurred'
       toast.error(errorMessage as string)
+      setError(errorMessage as string)
+      setBody(tempBody)
+      setVideo(tempVideo)
+      setImage(tempImage)
     } finally {
       setSubmitting(false)
     }
@@ -146,11 +201,12 @@ export default function FormChat (props: FormChatProps): JSX.Element {
   return (
     <div className='w-full'>
       <Form method="post" onSubmit={handleSubmit}>
-      <FormField
+        <FormField
           name='comment'
           placeholder={props.prompt ?? 'Reply...'}
           type='textarea'
           rows={2}
+          inputRef={inputRef}
           required={true}
           autoFocus={true}
           value={body}

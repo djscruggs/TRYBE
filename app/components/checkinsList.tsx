@@ -1,11 +1,12 @@
 import { userLocale } from '~/utils/helpers'
 import { HiDotsHorizontal } from 'react-icons/hi'
-import { Spinner } from '@material-tailwind/react'
+import { Spinner, Tooltip } from '@material-tailwind/react'
 import { useContext, useState, useRef, useEffect } from 'react'
 import { CurrentUserContext } from '~/utils/CurrentUserContext'
 import { Lightbox } from 'react-modal-image'
 import AvatarLoader from './avatarLoader'
 import FormCheckIn from './formCheckin'
+import { useNavigate } from 'react-router-dom'
 import type { CheckIn, Comment, Profile } from '~/utils/types'
 import Liker from '~/components/liker'
 import DialogDelete from './dialogDelete'
@@ -255,17 +256,18 @@ const CheckInContent = ({ checkIn, timestamp }: CheckInProps): JSX.Element => {
 }
 interface CheckInAvatarProps {
   checkIn: CheckIn
+  size?: 'small' | 'medium' | 'large'
+  shape?: 'circle' | 'square'
 }
 
-const CheckInAvatar = ({ checkIn }: CheckInAvatarProps): JSX.Element => {
+const CheckInAvatar = ({ checkIn, size = 'medium', shape = 'circle' }: CheckInAvatarProps): JSX.Element => {
   return (
     <div className='w-[50px] min-w-[50px] text-xs'>
-      <AvatarLoader object={checkIn} clickable={true}/>
+      <AvatarLoader object={checkIn} clickable={true} size={size} shape={shape}/>
     </div>
   )
 }
 interface CollapsedCheckinsProps {
-  count: number
   checkIns: CheckIn[]
 }
 
@@ -273,11 +275,13 @@ const CollapsedCheckins = ({ checkIns }: CollapsedCheckinsProps): JSX.Element =>
   if (checkIns.length === 0) {
     return <></>
   }
-  // const uniqueProfiles = Array.from(new Map(checkIns.map(checkIn => [checkIn.user?.profile?.id, checkIn.user?.profile])).values()).filter(profile => profile !== undefined)
   const baseProfiles = Array.from(new Map(checkIns.map(checkIn => [checkIn.user?.profile?.id, checkIn.user?.profile])).values()).filter(profile => profile !== undefined)
-  // const X = 11
-  const testProfiles = Array(2).fill(baseProfiles).flat()
-  const uniqueProfiles = testProfiles
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const testProfiles = Array(12).fill(baseProfiles).flat().map((profile, index) => ({
+    ...profile,
+    id: `${profile.id}-${index}`
+  }))
+  const uniqueProfiles = baseProfiles
   const count = uniqueProfiles.length
 
   return (
@@ -302,16 +306,27 @@ const CollapsedCheckins = ({ checkIns }: CollapsedCheckinsProps): JSX.Element =>
 
 const StackedAvaters = ({ profiles }: { profiles: Profile[] }): JSX.Element => {
   const maxProfiles = 5
+  const navigate = useNavigate()
+  const handleProfileClick = (profile: Profile): void => {
+    navigate(`/members/${profile.userId}/content`)
+  }
+
   return (
-    <div className="flex items-center -space-x-4">
+    <div className="flex items-center -space-x-4 h-12">
       {profiles.slice(0, maxProfiles).map((profile) => (
         profile?.profileImage && (
-          <img
-            key={profile.id}
-            alt={profile.fullName ?? ''}
-            src={profile.profileImage}
-            className="relative inline-block h-12 w-12 !rounded-full border-2 border-white object-cover object-center hover:z-10 focus:z-10"
-          />
+          <div key={profile.id}>
+            <Tooltip content={profile.fullName} className='text-xs'>
+              <img
+                key={profile.id}
+                alt={profile.fullName ?? ''}
+                src={profile.profileImage}
+                className="relative inline-block h-8 w-8 !rounded-full border-2 border-white object-cover object-center hover:z-10 hover:h-10 hover:w-10 hover:cursor-pointer focus:z-10"
+                onClick={() => { handleProfileClick(profile) }}
+              />
+            </Tooltip>
+          </div>
+
         )
       ))}
     </div>

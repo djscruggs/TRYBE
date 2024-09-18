@@ -75,12 +75,12 @@ export default function ChatItem (props: CommentsProps): JSX.Element {
     {showForm
       ? (
         <div className='w-full border-l-2  pl-4 mb-4 pr-2'>
-          <FormChat afterSave={afterSave} type='comment' onCancel={() => { setShowForm(false) }} comment={comment} />
+          <FormChat afterSave={afterSave} afterCommit={afterSave} type='comment' onCancel={() => { setShowForm(false) }} comment={comment} />
         </div>
         )
       : (
       <>
-        <div className="w-full p-1 hover:bg-gray-100 pr-2 pt-2 pl-2">
+        <div className="w-full p-1 z-max hover:bg-gray-100 pr-2 pt-2 pl-2">
           <div className='relative break-all'>
 
             <div className='flex'>
@@ -116,7 +116,7 @@ export default function ChatItem (props: CommentsProps): JSX.Element {
                               <HiDotsHorizontal className='h-4 w-4' />
                           </button>
                           {menuOpen && (
-                              <div className="absolute right-0 z-10 mt-2 w-20 bg-white border border-gray-200 rounded shadow-lg">
+                              <div className="absolute right-0 bottom-full mt-2 w-20 bg-white border border-gray-200 rounded shadow-lg">
                                   <ul className='flex flex-col'>
                                       <li className="px-4 py-2 w-full text-left hover:bg-gray-100 cursor-pointer" onClick={handleEdit}>Edit</li>
                                       <li className="px-4 py-2 w-full text-left hover:bg-gray-100 cursor-pointer" onClick={() => { setDeleteDialog(true) }}>

@@ -22,6 +22,7 @@ export default function ChatDrawer (props: ChatDrawerProps): JSX.Element {
   const { type, id } = props
   const { isOpen, placement, onClose, size, children } = props
   const bottomRef = useRef<HTMLDivElement>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
   const [comments, setComments] = useState<Comment[] | null>(props.comments ?? null)
   const [open, setOpen] = useState(false)
   const [firstComment, setFirstComment] = useState<Comment | null>(null)
@@ -30,12 +31,25 @@ export default function ChatDrawer (props: ChatDrawerProps): JSX.Element {
     setOpen(false)
     onClose()
   }
+  const [pendingComment, setPendingComment] = useState(false)
   const afterSave = (comment: Comment): void => {
-    if (firstComment) {
+    if (firstComment && !pendingComment) {
       setComments([firstComment, ...(comments ?? [])])
     }
-    setFirstComment(comment)
+    if (!comment.id) {
+      setPendingComment(true)
+      setFirstComment(comment)
+    } else {
+      setPendingComment(false)
+    }
     setRefresh(true)
+  }
+  const onFormError = (error: Error): void => {
+    if (pendingComment) {
+      setFirstComment(null)
+      setPendingComment(false)
+    }
+    toast.error('Failed to save comment:' + String(error))
   }
   const [likedCommentIds, setLikedCommentIds] = useState<number[]>([])
   const fetchComments = async (): Promise<void> => {
@@ -57,6 +71,7 @@ export default function ChatDrawer (props: ChatDrawerProps): JSX.Element {
       fetchLikedCommentIds().catch(error => {
         toast.error('Failed to fetch liked comments:' + String(error))
       })
+      inputRef.current?.focus() // Focus the input when the drawer opens
     }
   }, [isOpen])
 
@@ -95,7 +110,7 @@ export default function ChatDrawer (props: ChatDrawerProps): JSX.Element {
         <div className='overflow-y-auto'>
           <ChatContainer comments={comments ?? []} firstComment={firstComment} likedCommentIds={likedCommentIds} />
           <div className='px-2' ref={bottomRef}>
-            <FormChat afterSave={afterSave} objectId={id} type={type} />
+            <FormChat afterSave={afterSave} afterCommit={afterSave} onError={onFormError} objectId={id} type={type} inputRef={inputRef} />
           </div>
         </div>
 

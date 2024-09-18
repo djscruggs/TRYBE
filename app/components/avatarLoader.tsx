@@ -7,8 +7,10 @@ interface AvatarLoaderProps {
   object: any
   marginClass?: string
   clickable?: boolean
+  size?: 'small' | 'medium' | 'large'
+  shape?: 'circle' | 'square'
 }
-export default function AvatarLoader ({ object, marginClass = '', clickable = false }: AvatarLoaderProps): JSX.Element {
+export default function AvatarLoader ({ object, marginClass = '', clickable = false, size = 'medium', shape = 'circle' }: AvatarLoaderProps): JSX.Element {
   const [loading, setLoading] = useState(!object.user?.profile)
   const [profile, setProfile] = useState(object.user?.profile)
   const initials = userInitials(object.user)
@@ -37,7 +39,7 @@ export default function AvatarLoader ({ object, marginClass = '', clickable = fa
     if (clickable) {
       return <Link to={`/members/${object.userId}/content`}><Avatar src={avatarImg} className={`w-12 h-12 ${marginClass}`}/></Link>
     } else {
-      return <Avatar src={avatarImg} className={`w-12 h-12 ${marginClass}`}/>
+      return <Avatar src={avatarImg} className={`w-12 h-12 ${marginClass} ${shape === 'circle' ? 'rounded-full' : 'rounded-lg'}`}/>
     }
   }
 

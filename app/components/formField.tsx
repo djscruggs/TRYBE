@@ -18,6 +18,7 @@ interface FormFieldProps {
   rows?: number
   cols?: number
   disabled?: boolean
+  inputRef?: React.RefObject<HTMLTextAreaElement | HTMLInputElement>
 }
 
 export function FormField ({
@@ -35,7 +36,8 @@ export function FormField ({
   autoResize = false,
   cols = 30,
   rows = 10,
-  disabled = false
+  disabled = false,
+  inputRef
 
 }: FormFieldProps): JSX.Element {
   const [errorText, setErrorText] = useState(error)
@@ -47,7 +49,7 @@ export function FormField ({
   if (type === 'password' && passwordVisible) {
     localType = 'text'
   }
-  const textRef = useRef<HTMLTextAreaElement>(null)
+  const textRef = inputRef ?? useRef<HTMLTextAreaElement | HTMLInputElement>(null)
   useEffect(() => {
     if (textRef.current && autoResize) {
       textRef.current.style.height = `${rows * 2}rem`
@@ -103,6 +105,7 @@ export function FormField ({
           value={value}
           autoComplete={autoComplete}
           autoFocus = {autoFocus}
+          ref={textRef}
       />
 
           )}
