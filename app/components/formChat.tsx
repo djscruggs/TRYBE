@@ -15,7 +15,7 @@ import VideoPreview from './videoPreview'
 interface FormChatProps {
   type?: 'post' | 'challenge' | 'reply' | 'thread' | 'checkin' | 'comment'
   objectId?: number
-  afterCommit: (comment: Comment) => void
+  onPending: (comment: Comment) => void
   afterSave: (comment: Comment) => void
   onCancel?: () => void
   onError?: (error: Error) => void
@@ -97,7 +97,6 @@ export default function FormChat (props: FormChatProps): JSX.Element {
       return
     }
 
-    // construct a comment object that can be used for afterCommit
     const tempBody = body
     const tempImage = image
     const tempVideo = video
@@ -137,8 +136,8 @@ export default function FormChat (props: FormChatProps): JSX.Element {
       if (video) {
         formData.set('video', video)
       }
-      // construct a comment object that can be used for afterCommit
-      if (props.afterCommit) {
+      // construct a comment object that can be used for onPending
+      if (props.onPending) {
         const _comment = {
           body,
           type,
@@ -172,7 +171,7 @@ export default function FormChat (props: FormChatProps): JSX.Element {
           ...(type === 'checkin' && { checkInId: props.objectId }),
           ...(type === 'thread' && { threadId: props.objectId })
         }
-        props.afterCommit(_comment as Comment)
+        props.onPending(_comment as Comment)
       }
       const updated = await axios.post('/api/comments', formData)
       if (props.afterSave) {

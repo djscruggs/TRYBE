@@ -110,7 +110,7 @@ export default function ChatDrawer (props: ChatDrawerProps): JSX.Element {
         <div className='overflow-y-auto'>
           <ChatContainer comments={comments ?? []} firstComment={firstComment} likedCommentIds={likedCommentIds} />
           <div className='px-2' ref={bottomRef}>
-            <FormChat afterSave={afterSave} afterCommit={afterSave} onError={onFormError} objectId={id} type={type} inputRef={inputRef} />
+            <FormChat afterSave={afterSave} onPending={afterSave} onError={onFormError} objectId={id} type={type} inputRef={inputRef} />
           </div>
         </div>
 

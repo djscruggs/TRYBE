@@ -110,7 +110,7 @@ export default function ViewChallengeChat (): JSX.Element {
   }, [data])
 
   return (
-    <>
+    <div className='max-w-2xl'>
       {Object.entries(data.groupedData).map(([date, { posts, checkIns }]) => (
         <div key={date}>
           {posts.map((post: Post) => (
@@ -124,6 +124,6 @@ export default function ViewChallengeChat (): JSX.Element {
         </div>
       ))}
 
-    </>
+    </div>
   )
 }
