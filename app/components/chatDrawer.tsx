@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { Drawer } from '@material-tailwind/react'
 import ChatContainer from './chatContainer'
 import type { Comment } from '~/utils/types'
@@ -20,71 +20,77 @@ interface ChatDrawerProps {
 }
 
 export default function ChatDrawer (props: ChatDrawerProps): JSX.Element {
-  const skeletonRows = props.commentCount ?? 0
-  const { type, id } = props
-  const { isOpen, placement, onClose, size, children } = props
+  const { isOpen, placement, onClose, size, type, id, commentCount, comments: initialComments, children } = props
+  const skeletonRows = commentCount ?? 0
   const bottomRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
-  const [comments, setComments] = useState<Comment[] | null>(props.comments ?? null)
-  const [open, setOpen] = useState(false)
+  const [comments, setComments] = useState<Comment[] | null>(initialComments ?? null)
+  const [open, setOpen] = useState(isOpen)
   const [firstComment, setFirstComment] = useState<Comment | null>(null)
   const [refresh, setRefresh] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
-  const closeDrawer = (): void => {
+  const [likedCommentIds, setLikedCommentIds] = useState<number[]>([])
+
+  const closeDrawer = useCallback((): void => {
     setOpen(false)
     onClose()
     document.body.classList.remove('overflow-hidden') // Enable body scroll
-  }
-  const afterSaveComment = (comment: Comment): void => {
+  }, [onClose])
+
+  const afterSaveComment = useCallback((comment: Comment): void => {
     console.log('afterSaveComment', comment)
-    if (firstComment?.id) {
-      setComments([firstComment, ...(comments ?? [])])
-    }
-    const filteredComments = comments?.filter(comment => comment.id !== undefined)
-    setComments(filteredComments ?? [])
+    setComments(prevComments => {
+      const filteredComments = prevComments?.filter(c => c.id !== undefined) ?? []
+      return [comment, ...filteredComments]
+    })
     setFirstComment(comment)
     setRefresh(true)
-  }
-  const onPendingComment = (comment: Comment): void => {
+  }, [])
+
+  const onPendingComment = useCallback((comment: Comment): void => {
     console.log('onPendingComment', comment)
-    if (firstComment) {
-      setComments([firstComment, ...(comments ?? [])])
-    }
     setFirstComment(comment)
     setRefresh(true)
-  }
-  const onSaveCommentError = (error: Error): void => {
+  }, [])
+
+  const onSaveCommentError = useCallback((error: Error): void => {
     console.log('onSaveCommentError', error)
     setFirstComment(null)
     toast.error('Failed to send chat:' + String(error))
-  }
-  const [likedCommentIds, setLikedCommentIds] = useState<number[]>([])
-  const fetchComments = async (): Promise<void> => {
+  }, [])
+
+  const fetchComments = useCallback(async (): Promise<void> => {
     setIsLoading(true)
-    const { data } = await axios.get<Comment[]>(`/api/comments/${type}/${id}`)
-    setComments(data)
-    setIsLoading(false)
-  }
-  const fetchLikedCommentIds = async (): Promise<void> => {
-    const { data } = await axios.get<number[]>(`/api/likes/${type}/${id}/comments`)
-    setLikedCommentIds(data)
-  }
+    try {
+      const { data } = await axios.get<Comment[]>(`/api/comments/${type}/${id}`)
+      setComments(data)
+    } catch (error) {
+      toast.error('Failed to fetch chat:' + String(error))
+    } finally {
+      setIsLoading(false)
+    }
+  }, [type, id])
+
+  const fetchLikedCommentIds = useCallback(async (): Promise<void> => {
+    try {
+      const { data } = await axios.get<number[]>(`/api/likes/${type}/${id}/comments`)
+      setLikedCommentIds(data)
+    } catch (error) {
+      toast.error('Failed to fetch liked comments:' + String(error))
+    }
+  }, [type, id])
+
   useEffect(() => {
     setOpen(isOpen)
-    if (!isOpen) {
-      onClose()
-    } else {
-      fetchComments().catch(error => {
-        toast.error('Failed to fetch chat:' + String(error))
-      })
-      fetchLikedCommentIds().catch(error => {
-        toast.error('Failed to fetch liked comments:' + String(error))
-      })
+    if (isOpen) {
+      void fetchComments()
+      void fetchLikedCommentIds()
       inputRef.current?.focus() // Focus the input when the drawer opens
+    } else {
+      onClose()
     }
-  }, [isOpen])
+  }, [isOpen, fetchComments, fetchLikedCommentIds, onClose])
 
-  // scroll to bottom of the page when the data changes
   useEffect(() => {
     if (isOpen || refresh) {
       bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -92,16 +98,17 @@ export default function ChatDrawer (props: ChatDrawerProps): JSX.Element {
     }
   }, [comments, isOpen, refresh])
 
-  const mouseEnter = (): void => {
+  const mouseEnter = useCallback((): void => {
     document.body.classList.add('overflow-hidden') // Disable body scroll
-  }
-  const mouseLeave = (): void => {
+  }, [])
+
+  const mouseLeave = useCallback((): void => {
     document.body.classList.remove('overflow-hidden') // Enable body scroll
-  }
+  }, [])
 
   return (
     <Drawer open={open} placement={placement} onMouseEnter={mouseEnter} onMouseLeave={mouseLeave} onClose={closeDrawer} className="p-0 resize-x shadow-lg overflow-y-scroll" size={size} overlay={false} >
-      <div className="absolute top-2 right-2 cursor-pointer " onClick={closeDrawer}>
+      <div className="absolute top-2 right-2 cursor-pointer" onClick={closeDrawer}>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
@@ -122,15 +129,13 @@ export default function ChatDrawer (props: ChatDrawerProps): JSX.Element {
       </div>
       <div className='overflow-y-auto'>
         {isLoading
-          ? <div className='p-2'>
-              <ChatRowSkeleton count={skeletonRows} />
-            </div>
+          ? <ChatRowSkeleton count={skeletonRows} />
           : <ChatContainer comments={comments ?? []} firstComment={firstComment} allowReplies={false} likedCommentIds={likedCommentIds} />
         }
         {id &&
           <div className='px-2' ref={bottomRef}>
             <FormChat afterSave={afterSaveComment} onPending={onPendingComment} onError={onSaveCommentError} objectId={id} type={type} inputRef={inputRef} />
-        </div>
+          </div>
         }
       </div>
     </Drawer>

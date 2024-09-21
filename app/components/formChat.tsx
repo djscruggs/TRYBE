@@ -1,4 +1,4 @@
-import React, { useState, useContext, useRef, useMemo } from 'react'
+import React, { useState, useContext, useRef, useMemo, useCallback } from 'react'
 import { Form } from '@remix-run/react'
 import axios from 'axios'
 import { FormField } from './formField'
@@ -12,6 +12,7 @@ import VideoChooser from './videoChooser'
 import { handleFileUpload } from '~/utils/helpers'
 import { TiDeleteOutline } from 'react-icons/ti'
 import VideoPreview from './videoPreview'
+
 interface FormChatProps {
   type?: 'post' | 'challenge' | 'reply' | 'thread' | 'checkin' | 'comment'
   objectId?: number
@@ -23,6 +24,7 @@ interface FormChatProps {
   prompt?: string
   inputRef?: React.RefObject<HTMLTextAreaElement | HTMLInputElement>
 }
+
 function getTypeAndId (comment: Comment): { type: string, id: number } {
   if (comment.postId) return { type: 'post', id: comment.postId }
   if (comment.challengeId) return { type: 'challenge', id: comment.challengeId }
@@ -31,6 +33,7 @@ function getTypeAndId (comment: Comment): { type: string, id: number } {
   if (comment.replyToId) return { type: 'comment', id: comment.replyToId }
   throw new Error('Not type found in Comment: ' + JSON.stringify(comment))
 }
+
 export default function FormChat (props: FormChatProps): JSX.Element {
   const { comment, onCancel } = props
   let type: string | undefined
@@ -50,82 +53,81 @@ export default function FormChat (props: FormChatProps): JSX.Element {
   }
 
   const { currentUser } = useContext(CurrentUserContext)
-  const [body, setBody] = useState(comment ? comment.body : '')
-  const [error, setError] = useState('')
-  const [recording, setRecording] = useState(false)
-  const [image, setImage] = useState<File | string | null>(null)
-  const [video, setVideo] = useState<File | string | null>(null)
-  const [videoUrl, setVideoUrl] = useState<string | null>(comment?.videoMeta?.secure_url ? comment?.videoMeta?.secure_url : null)
+  const [state, setState] = useState({
+    body: comment ? comment.body : '',
+    error: '',
+    recording: false,
+    image: null as File | string | null,
+    video: null as File | string | null,
+    videoUrl: comment?.videoMeta?.secure_url ?? null,
+    videoUploadOnly: false,
+    showVideoRecorder: false,
+    submitting: false
+  })
   const imageRef = useRef<HTMLInputElement>(null)
   const inputRef = props.inputRef ?? useRef<HTMLTextAreaElement>(null)
-  const [videoUploadOnly, setVideoUploadOnly] = useState(false)
-  const [showVideoRecorder, setShowVideoRecorder] = useState(false)
-  const [submitting, setSubmitting] = useState(false)
-  // this triggers the browser's upload file dialog, not a modal
-  const imageDialog = (): void => {
+
+  const imageDialog = useCallback((): void => {
     if (imageRef.current) {
       imageRef.current.click()
     }
-  }
-  const handleImage = (event: React.ChangeEvent<HTMLInputElement>): void => {
+  }, [])
+
+  const handleImage = useCallback((event: React.ChangeEvent<HTMLInputElement>): void => {
     const params = {
       event,
-      setFile: setImage
+      setFile: (file: File | string | null) => { setState(prev => ({ ...prev, image: file })) }
     }
     handleFileUpload(params)
-  }
-  const correctImageUrl = (): string => {
-    // if image (file object) is set that means user attached a new image instead of existing url in db
-    if (image && image !== 'delete') {
-      return URL.createObjectURL(image as File)
+  }, [])
+
+  const correctImageUrl = useCallback((): string => {
+    if (state.image && state.image !== 'delete') {
+      return URL.createObjectURL(state.image as File)
     }
     if (comment?.imageMeta?.secure_url) {
       return comment.imageMeta.secure_url
     }
     return ''
-  }
-  const deleteCorrectImage = (): void => {
-    if (image && image !== 'delete') {
-      setImage(null)
+  }, [state.image, comment?.imageMeta?.secure_url])
+
+  const deleteCorrectImage = useCallback((): void => {
+    if (state.image && state.image !== 'delete') {
+      setState(prev => ({ ...prev, image: null }))
     } else if (comment?.imageMeta?.secure_url) {
       comment.imageMeta.secure_url = ''
-      setImage('delete')
+      setState(prev => ({ ...prev, image: 'delete' }))
     }
-  }
-  const videoChooserCallbackShow = (uploadOnly: boolean): void => {
-    if (uploadOnly) {
-      setVideoUploadOnly(true)
-    } else {
-      setVideoUploadOnly(uploadOnly)
-    }
-    setShowVideoRecorder(true)
-  }
-  const videoChooserCallbackHide = (): void => {
-    setShowVideoRecorder(false)
-  }
-  const deleteVideo = (): void => {
-    setVideo('delete')
-    setVideoUrl(null)
-  }
+  }, [state.image, comment?.imageMeta?.secure_url])
+
+  const videoChooserCallbackShow = useCallback((uploadOnly: boolean): void => {
+    setState(prev => ({ ...prev, videoUploadOnly: uploadOnly, showVideoRecorder: true }))
+  }, [])
+
+  const videoChooserCallbackHide = useCallback((): void => {
+    setState(prev => ({ ...prev, showVideoRecorder: false }))
+  }, [])
+
+  const deleteVideo = useCallback((): void => {
+    setState(prev => ({ ...prev, video: 'delete', videoUrl: null }))
+  }, [])
+
   const renderVideo = useMemo(() => (
-    <VideoPreview video={videoUrl ?? video} onClear={deleteVideo} />
-  ), [video, videoUrl])
-  async function handleSubmit (): Promise<void> {
-    if (!body) {
+    <VideoPreview video={state.videoUrl ?? state.video} onClear={deleteVideo} />
+  ), [state.video, state.videoUrl, deleteVideo])
+
+  const handleSubmit = useCallback(async (): Promise<void> => {
+    if (!state.body) {
       return
     }
 
-    const tempBody = body
-    const tempImage = image
-    const tempVideo = video
-    setBody('')
-    setVideo(null)
-    setImage(null)
-    setSubmitting(true)
+    const tempBody = state.body
+    const tempImage = state.image
+    const tempVideo = state.video
+    setState(prev => ({ ...prev, body: '', video: null, image: null, submitting: true }))
     try {
       const formData = new FormData()
-      formData.set('body', body)
-      // Set the appropriate ID based on the type
+      formData.set('body', state.body)
       switch (type) {
         case 'post':
           formData.set('postId', String(objectId))
@@ -149,31 +151,29 @@ export default function FormChat (props: FormChatProps): JSX.Element {
       if (id) {
         formData.set('id', String(id))
       }
-      // these are blob objects to upload
-      if (image) {
-        formData.set('image', image)
+      if (state.image) {
+        formData.set('image', state.image)
       }
-      if (video) {
-        formData.set('video', video)
+      if (state.video) {
+        formData.set('video', state.video)
       }
-      // construct a comment object that can be used for onPending
       if (props.onPending) {
         const _comment = {
-          body,
+          body: state.body,
           type,
           id,
-          imageMeta: image
+          imageMeta: state.image
             ? {
-                secure_url: URL.createObjectURL(image as File),
+                secure_url: URL.createObjectURL(state.image as File),
                 url: '',
                 public_id: '',
                 format: '',
                 resource_type: ''
               }
             : undefined,
-          videoMeta: video
+          videoMeta: state.video
             ? {
-                secure_url: URL.createObjectURL(video as File),
+                secure_url: URL.createObjectURL(state.video as File),
                 url: '',
                 public_id: '',
                 format: '',
@@ -203,20 +203,19 @@ export default function FormChat (props: FormChatProps): JSX.Element {
       console.error('error', error)
       const errorMessage = typeof error?.response?.data.message === 'string' ? error?.response?.data.message : 'An unexpected error occurred'
       toast.error(errorMessage as string)
-      setError(errorMessage as string)
-      setBody(tempBody)
-      setVideo(tempVideo)
-      setImage(tempImage)
+      setState(prev => ({ ...prev, error: errorMessage, body: tempBody, video: tempVideo, image: tempImage }))
     } finally {
-      setSubmitting(false)
+      setState(prev => ({ ...prev, submitting: false }))
     }
-  }
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>): void => {
+  }, [state.body, state.image, state.video, type, objectId, id, props, currentUser])
+
+  const handleKeyDown = useCallback((event: React.KeyboardEvent<HTMLTextAreaElement>): void => {
     if (event.key === 'Enter' && !event.shiftKey) {
       event.preventDefault()
       void handleSubmit()
     }
-  }
+  }, [handleSubmit])
+
   return (
     <div className='w-full'>
       <Form method="post" onSubmit={handleSubmit}>
@@ -228,14 +227,14 @@ export default function FormChat (props: FormChatProps): JSX.Element {
           inputRef={inputRef}
           required={true}
           autoFocus={true}
-          value={body}
+          value={state.body}
           onChange={(ev) => {
-            setBody(String(ev.target.value))
+            setState(prev => ({ ...prev, body: String(ev.target.value) }))
             return ev.target.value
           }}
           onKeyDown={handleKeyDown}
-          error={error}
-          />
+          error={state.error}
+        />
         <input type="file" name="image" hidden ref={imageRef} onChange={handleImage} accept="image/*"/>
 
         {correctImageUrl() &&
@@ -244,12 +243,12 @@ export default function FormChat (props: FormChatProps): JSX.Element {
             <TiDeleteOutline onClick={deleteCorrectImage} className='text-lg bg-white rounded-full text-red cursor-pointer absolute top-1 right-1' />
           </div>
         }
-        {(video ?? videoUrl) && !showVideoRecorder &&
+        {(state.video ?? state.videoUrl) && !state.showVideoRecorder &&
           renderVideo
         }
-        {showVideoRecorder &&
+        {state.showVideoRecorder &&
           <div className='w-full h-full my-6'>
-            <VideoRecorder uploadOnly={videoUploadOnly} onStart={() => { setRecording(true) }} onStop={() => { setRecording(false) }} onSave={setVideo} onFinish={() => { setShowVideoRecorder(false) }} />
+            <VideoRecorder uploadOnly={state.videoUploadOnly} onStart={() => { setState(prev => ({ ...prev, recording: true })) }} onStop={() => { setState(prev => ({ ...prev, recording: false })) }} onSave={(file) => { setState(prev => ({ ...prev, video: file })) }} onFinish={() => { setState(prev => ({ ...prev, showVideoRecorder: false })) }} />
           </div>
         }
         <div className='flex items-end justify-end -mt-3 rounded-md p-1'>
@@ -257,18 +256,15 @@ export default function FormChat (props: FormChatProps): JSX.Element {
             {comment?.id && onCancel &&
               <div className='underline text-red mr-2 cursor-pointer' onClick={onCancel}>cancel</div>
             }
-            <span className='mr-2'><VideoChooser recorderShowing={showVideoRecorder} showRecorder={videoChooserCallbackShow} hideRecorder={videoChooserCallbackHide} /></span>
+            <span className='mr-2'><VideoChooser recorderShowing={state.showVideoRecorder} showRecorder={videoChooserCallbackShow} hideRecorder={videoChooserCallbackHide} /></span>
             <MdImage onClick={imageDialog} className='text-2xl cursor-pointer mr-2' />
-            {submitting
+            {state.submitting
               ? <Spinner />
               : <MdSend onClick={handleSubmit} className='text-2xl cursor-pointer' />
-
             }
           </div>
         </div>
-
       </Form>
-
     </div>
   )
 }
