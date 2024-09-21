@@ -12,7 +12,7 @@ interface ChatDrawerProps {
   placement: 'left' | 'right' | 'top' | 'bottom'
   onClose: () => void
   size: number
-  type: 'post' | 'challenge' | 'checkin'
+  type: 'post' | 'challenge' | 'checkin' | 'comment'
   id: number
   commentCount?: number
   comments?: Comment[]
@@ -20,7 +20,6 @@ interface ChatDrawerProps {
 }
 
 export default function ChatDrawer (props: ChatDrawerProps): JSX.Element {
-  // Determine the type based on which ID is set
   const skeletonRows = props.commentCount ?? 0
   const { type, id } = props
   const { isOpen, placement, onClose, size, children } = props
@@ -37,6 +36,7 @@ export default function ChatDrawer (props: ChatDrawerProps): JSX.Element {
     document.body.classList.remove('overflow-hidden') // Enable body scroll
   }
   const afterSaveComment = (comment: Comment): void => {
+    console.log('afterSaveComment', comment)
     if (firstComment?.id) {
       setComments([firstComment, ...(comments ?? [])])
     }
@@ -46,6 +46,7 @@ export default function ChatDrawer (props: ChatDrawerProps): JSX.Element {
     setRefresh(true)
   }
   const onPendingComment = (comment: Comment): void => {
+    console.log('onPendingComment', comment)
     if (firstComment) {
       setComments([firstComment, ...(comments ?? [])])
     }
@@ -53,6 +54,7 @@ export default function ChatDrawer (props: ChatDrawerProps): JSX.Element {
     setRefresh(true)
   }
   const onSaveCommentError = (error: Error): void => {
+    console.log('onSaveCommentError', error)
     setFirstComment(null)
     toast.error('Failed to send chat:' + String(error))
   }
@@ -123,11 +125,13 @@ export default function ChatDrawer (props: ChatDrawerProps): JSX.Element {
           ? <div className='p-2'>
               <ChatRowSkeleton count={skeletonRows} />
             </div>
-          : <ChatContainer comments={comments ?? []} firstComment={firstComment} likedCommentIds={likedCommentIds} />
+          : <ChatContainer comments={comments ?? []} firstComment={firstComment} allowReplies={false} likedCommentIds={likedCommentIds} />
         }
-        <div className='px-2' ref={bottomRef}>
-          <FormChat afterSave={afterSaveComment} onPending={onPendingComment} onError={onSaveCommentError} objectId={id} type={type} inputRef={inputRef} />
+        {id &&
+          <div className='px-2' ref={bottomRef}>
+            <FormChat afterSave={afterSaveComment} onPending={onPendingComment} onError={onSaveCommentError} objectId={id} type={type} inputRef={inputRef} />
         </div>
+        }
       </div>
     </Drawer>
   )

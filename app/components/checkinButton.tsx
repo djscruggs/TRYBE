@@ -11,10 +11,11 @@ interface ChallengeMemberCheckinProps {
   challenge: Challenge
   memberChallenge: MemberChallenge | null
   showDetails?: boolean
+  label?: string
   afterCheckIn?: (checkIn: CheckIn) => void
   size?: 'sm' | 'md' | 'lg'
 }
-export function CheckInButton ({ challenge, memberChallenge, showDetails, afterCheckIn, size }: ChallengeMemberCheckinProps): JSX.Element {
+export function CheckInButton ({ challenge, memberChallenge, showDetails, afterCheckIn, size, label = 'Check In' }: ChallengeMemberCheckinProps): JSX.Element {
   if (!challenge?.id) {
     throw new Error('Challenge object with id is required')
   }
@@ -35,7 +36,7 @@ export function CheckInButton ({ challenge, memberChallenge, showDetails, afterC
             className='w-40 bg-red hover:bg-green-500 text-white font-bold rounded-full p-2 justify-center text-sm disabled:bg-gray-400'
             disabled={isExpired}
           >
-            {isExpired ? 'Challenge Ended' : 'Check In'}
+            {isExpired ? 'Challenge Ended' : label}
         </button>
       </div>
       {showForm &&
@@ -58,9 +59,9 @@ function DialogCheckIn ({ challengeId, onCancel, afterCheckIn, isOpen }: Checkin
   }
   return (
     <Dialog open={open} handler={handleOpen} size='xs'>
-        <DialogBody>
-          <FormCheckIn challengeId={challengeId} onCancel={onCancel} afterCheckIn={afterCheckIn} />
-        </DialogBody>
-      </Dialog>
+      <DialogBody>
+        <FormCheckIn challengeId={challengeId} onCancel={onCancel} afterCheckIn={afterCheckIn} />
+      </DialogBody>
+    </Dialog>
   )
 }

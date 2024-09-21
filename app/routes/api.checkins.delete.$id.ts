@@ -2,7 +2,7 @@ import { deleteCheckIn } from '~/models/challenge.server'
 import { requireCurrentUser } from '~/models/auth.server'
 import { json, type LoaderFunction, type ActionFunctionArgs } from '@remix-run/node'
 
-export async function action (args: ActionFunctionArgs) {
+export async function action (args: ActionFunctionArgs): Promise<Response> {
   const { params } = args
   await requireCurrentUser(args)
   try {

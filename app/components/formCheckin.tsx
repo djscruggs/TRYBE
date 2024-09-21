@@ -113,7 +113,7 @@ export default function FormCheckIn (props: FormCheckinProps): JSX.Element {
       clearInputs()
       toast.success('🎉 Woo hoo! Great job!')
       if (afterCheckIn) {
-        afterCheckIn(result.data as CheckIn)
+        afterCheckIn(result.data.checkIn as CheckIn)
       } else {
         navigate('/challenges/v/' + challengeId + '/checkins/mine')
       }

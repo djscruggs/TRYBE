@@ -19,9 +19,14 @@ export const loader: LoaderFunction = async (args) => {
     case 'checkin':
       query = { checkInId: Number(id) }
       break
+    case 'comment':
+      query = { replyToId: Number(id) }
+      break
     default:
       throw new Error('Invalid type parameter')
   }
+  console.log('query', query)
   const comments = await fetchComments(query)
+  console.log('comments', comments)
   return json(comments)
 }

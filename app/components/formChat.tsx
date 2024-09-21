@@ -28,6 +28,7 @@ function getTypeAndId (comment: Comment): { type: string, id: number } {
   if (comment.challengeId) return { type: 'challenge', id: comment.challengeId }
   if (comment.checkInId) return { type: 'checkin', id: comment.checkInId }
   if (comment.threadId) return { type: 'thread', id: comment.threadId }
+  if (comment.replyToId) return { type: 'comment', id: comment.replyToId }
   throw new Error('Not type found in Comment: ' + JSON.stringify(comment))
 }
 export default function FormChat (props: FormChatProps): JSX.Element {
@@ -124,7 +125,6 @@ export default function FormChat (props: FormChatProps): JSX.Element {
     try {
       const formData = new FormData()
       formData.set('body', body)
-
       // Set the appropriate ID based on the type
       switch (type) {
         case 'post':
@@ -138,6 +138,9 @@ export default function FormChat (props: FormChatProps): JSX.Element {
           break
         case 'thread':
           formData.set('threadId', String(objectId))
+          break
+        case 'comment':
+          formData.set('replyToId', String(objectId))
           break
         default:
           throw new Error('Invalid type in formChat: ' + type)
@@ -186,12 +189,12 @@ export default function FormChat (props: FormChatProps): JSX.Element {
           ...(type === 'post' && { postId: props.objectId }),
           ...(type === 'challenge' && { challengeId: props.objectId }),
           ...(type === 'checkin' && { checkInId: props.objectId }),
-          ...(type === 'thread' && { threadId: props.objectId })
+          ...(type === 'thread' && { threadId: props.objectId }),
+          ...(type === 'comment' && { replyToId: props.objectId })
         }
         props.onPending(_comment as Comment)
       }
       const updated = await axios.post('/api/comments', formData)
-
       props.afterSave(updated.data as Comment)
     } catch (error: any) {
       if (props.onError && !id) {

@@ -7,16 +7,17 @@ interface AvatarLoaderProps {
   object: any
   marginClass?: string
   clickable?: boolean
-  size?: 'small' | 'medium' | 'large'
+  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl'
   shape?: 'circle' | 'square'
 }
-export default function AvatarLoader ({ object, marginClass = '', clickable = false, size = 'medium', shape = 'circle' }: AvatarLoaderProps): JSX.Element {
+export default function AvatarLoader ({ object, marginClass = '', clickable = false, size = 'md', shape = 'circle' }: AvatarLoaderProps): JSX.Element {
   const [loading, setLoading] = useState(!object.user?.profile)
   const [profile, setProfile] = useState(object.user?.profile)
   const initials = userInitials(object.user)
   useEffect(() => {
     if (!profile) {
       setLoading(true)
+      console.log('loading profile for object', object)
       axios.get(`/api/users/${object.userId}`)
         .then(res => {
           // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
@@ -37,9 +38,11 @@ export default function AvatarLoader ({ object, marginClass = '', clickable = fa
   const avatarImg = profile?.profileImage ? profile.profileImage : ''
   if (avatarImg) {
     if (clickable) {
-      return <Link to={`/members/${object.userId}/content`}><Avatar src={avatarImg} className={`w-12 h-12 ${marginClass}`}/></Link>
+      return <Link to={`/members/${object.userId}/content`}>
+        <Avatar src={avatarImg} size={size} className={`${marginClass}`}/>
+      </Link>
     } else {
-      return <Avatar src={avatarImg} className={`w-12 h-12 ${marginClass} ${shape === 'circle' ? 'rounded-full' : 'rounded-lg'}`}/>
+      return <Avatar src={avatarImg} size={size} className={`${marginClass} ${shape === 'circle' ? 'rounded-full' : 'rounded-lg'}`}/>
     }
   }
 
