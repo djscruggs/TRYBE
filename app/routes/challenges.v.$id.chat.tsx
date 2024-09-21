@@ -1,15 +1,19 @@
-import { useLoaderData } from '@remix-run/react'
-import { useEffect, useRef } from 'react'
+import { useLoaderData, useRouteLoaderData } from '@remix-run/react'
+import { useEffect, useRef, useState, useContext } from 'react'
 import { requireCurrentUser } from '~/models/auth.server'
-import type { Post, CheckIn } from '~/utils/types'
+import type { Post, CheckIn, Challenge, Comment, MemberChallenge } from '~/utils/types'
 import { type LoaderFunction, type LoaderFunctionArgs } from '@remix-run/node'
 import { prisma } from '~/models/prisma.server'
 import CardPost from '~/components/cardPost'
 import CheckinsList from '~/components/checkinsList'
+import FormChat from '~/components/formChat'
+import ChatContainer from '~/components/chatContainer'
+import { CurrentUserContext } from '~/utils/CurrentUserContext'
+import { CheckInButton } from '~/components/checkinButton'
 interface ChallengeChatData {
-  posts: Post[] | null
-  checkIns: CheckIn[]
-  checkInsByDay: Record<string, number>
+  groupedData: Record<string, { posts: Post[], checkIns: { empty: CheckIn[], nonEmpty: CheckIn[] }, comments: Comment[] }>
+  likedCheckInIds: number[]
+  likedCommentIds: number[]
 }
 
 export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
@@ -60,29 +64,52 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
     },
     orderBy: { createdAt: 'asc' }
   })
+  const comments = await prisma.comment.findMany({
+    where: {
+      challengeId: Number(params.id),
+      replyToId: null
+    },
+    include: {
+      user: {
+        include: {
+          profile: true
+        }
+      }
+    },
+    orderBy: { createdAt: 'asc' }
+  })
 
-  // group posts and checkins by date
-  const groupedData: Record<string, { posts: Post[], checkIns: { empty: CheckIn[], nonEmpty: CheckIn[] } }> = {}
+  // group posts, comments and checkins by date
+  const groupedData: Record<string, { posts: Post[], checkIns: { empty: CheckIn[], nonEmpty: CheckIn[] }, comments: Comment[] }> = {}
 
   posts.forEach(post => {
     const date = post.createdAt.toISOString().split('T')[0]
     if (!groupedData[date]) {
-      groupedData[date] = { posts: [], checkIns: { empty: [], nonEmpty: [] } }
+      groupedData[date] = { posts: [], checkIns: { empty: [], nonEmpty: [] }, comments: [] }
     }
     groupedData[date].posts.push(post)
+  })
+
+  comments.forEach(comment => {
+    const date = comment.createdAt.toISOString().split('T')[0]
+    if (!groupedData[date]) {
+      groupedData[date] = { posts: [], checkIns: { empty: [], nonEmpty: [] }, comments: [] }
+    }
+    groupedData[date].comments.push(comment)
   })
 
   checkIns.forEach(checkIn => {
     const date = checkIn.createdAt.toISOString().split('T')[0]
     if (!groupedData[date]) {
-      groupedData[date] = { posts: [], checkIns: { empty: [], nonEmpty: [] } }
+      groupedData[date] = { posts: [], checkIns: { empty: [], nonEmpty: [] }, comments: [] }
     }
     if (checkIn.body !== null || checkIn.imageMeta !== null || checkIn.videoMeta !== null) {
-      groupedData[date].checkIns.nonEmpty.push(checkIn)
+      groupedData[date].checkIns.nonEmpty.push(checkIn as unknown as CheckIn)
     } else {
-      groupedData[date].checkIns.empty.push(checkIn)
+      groupedData[date].checkIns.empty.push(checkIn as unknown as CheckIn)
     }
   })
+
   // fetch liked check-in ids
   const likedCheckIns = await prisma.like.findMany({
     where: {
@@ -93,36 +120,119 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
       checkinId: true
     }
   })
-  const likedCheckInIds = likedCheckIns.map(like => like.checkinId)
+  const likedCheckInIds: number[] = likedCheckIns.map(like => like.checkinId).filter(id => id !== null) as number[]
 
-  const data: ChallengeChatData = { posts, checkIns, groupedData, likedCheckInIds }
+  // fetch liked comment ids
+  const likedComments = await prisma.like.findMany({
+    where: {
+      userId: user?.id,
+      commentId: { not: null }
+    },
+    select: {
+      commentId: true
+    }
+  })
+  const likedCommentIds: number[] = likedComments.map(like => like.commentId).filter(id => id !== null) as number[]
+
+  const data: ChallengeChatData = { groupedData, likedCheckInIds, likedCommentIds }
   return data
 }
 export default function ViewChallengeChat (): JSX.Element {
-  const data = useLoaderData<typeof loader>()
+  const { currentUser } = useContext(CurrentUserContext)
+  const { groupedData, likedCheckInIds, likedCommentIds } = useLoaderData<ChallengeChatData>()
   const bottomRef = useRef<HTMLDivElement>(null)
-  if (!data) {
+  const { challenge, membership } = useRouteLoaderData<{ challenge: Challenge, membership: MemberChallenge }>('routes/challenges.v.$id') as unknown as { challenge: Challenge, membership: MemberChallenge }
+  if (!groupedData) {
     return <p>No data.</p>
   }
   // scroll to bottom of the page when the data changes
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [data])
-
+  }, [groupedData])
+  const inputRef = useRef<HTMLInputElement>(null)
+  const [newestComment, setNewestComment] = useState<Comment | null>(null)
+  const afterSaveComment = (comment: Comment): void => {
+    // only saved comments will have an id
+    if (newestComment?.id) {
+      // merge the existing newest comment in the groupedData with the new comment
+      console.log('newestComment', newestComment)
+      const date = new Date(newestComment.createdAt).toISOString().split('T')[0]
+      const group = groupedData[date]
+      if (group) {
+        group.comments = group.comments.map(c => c.id === comment.id
+          ? {
+              ...comment,
+              createdAt: comment.createdAt.toISOString(),
+              updatedAt: comment.updatedAt.toISOString(),
+              challenge: comment.challenge as unknown as Challenge
+              // ... other properties if needed
+            }
+          : c)
+      }
+    }
+    setNewestComment(comment)
+  }
+  const onPendingComment = (comment: Comment): void => {
+    setNewestComment(comment)
+    bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }
+  const onSaveCommentError = (): void => {
+    bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }
+  const checkedInToday = (): boolean => {
+    if (!currentUser) {
+      return false
+    }
+    const today = new Date().toISOString().split('T')[0]
+    const nonEmptyCheckIns = Object.values(groupedData).some((group) =>
+      group.checkIns.nonEmpty.some((checkIn) => {
+        const checkInDate = new Date(checkIn.createdAt).toISOString().split('T')[0]
+        return checkIn.userId === currentUser?.id && checkInDate === today
+      })
+    )
+    if (nonEmptyCheckIns) {
+      return true
+    }
+    return Object.values(groupedData).some((group) =>
+      group.checkIns.empty.some((checkIn) => {
+        const checkInDate = new Date(checkIn.createdAt).toISOString().split('T')[0]
+        return checkIn.userId === currentUser?.id && checkInDate === today
+      })
+    )
+  }
+  const [hasCheckedInToday, setHasCheckedInToday] = useState(checkedInToday())
+  const handleAfterCheckIn = (checkIn: CheckIn): void => {
+    setHasCheckedInToday(true)
+  }
   return (
     <div className='max-w-2xl'>
-      {Object.entries(data.groupedData).map(([date, { posts, checkIns }]) => (
+      {/* had to add this additional date sorting because javascript objects don't always follow the order of insertion */}
+      {Object.entries(groupedData)
+        .sort(([dateA], [dateB]) => new Date(dateA).getTime() - new Date(dateB).getTime())
+        .map(([date, { posts, checkIns, comments }]) => (
         <div key={date}>
-          {posts.map((post: Post) => (
-            <div key={`post-${post.id}`} className='max-w-sm md:max-w-xl mb-6'>
-              <CardPost post={post} hideMeta={false} fullPost={false} isChat={true}/>
-
-            </div>
-          ))}
-          <CheckinsList checkIns={checkIns.nonEmpty} likes={data.likedCheckInIds} allowComments={true} />
+          {posts.map((post: Post) => {
+            const publishAt = post.publishAt ? new Date(post.publishAt) : null
+            return (
+              <div key={`post-${post.id}`} className='max-w-sm md:max-w-xl mb-6'>
+                  <CardPost post={{ ...post, publishAt }} hideMeta={false} fullPost={false} isChat={true}/>
+                </div>
+            )
+          })}
+          <CheckinsList checkIns={checkIns.nonEmpty as unknown as CheckIn[]} likes={likedCheckInIds} allowComments={true} />
+          <ChatContainer comments={comments as unknown as Comment[]} firstComment={newestComment} likedCommentIds={likedCommentIds} allowReplies={true}/>
           {/* Render empty check-ins if needed */}
         </div>
-      ))}
+        ))}
+      {(currentUser && membership && !hasCheckedInToday) && (
+        <>
+        <p>You have not checked in today</p>
+        <CheckInButton challenge={challenge} memberChallenge={membership} label='Check In Now' afterCheckIn={handleAfterCheckIn} />
+        </>
+      )}
+      {currentUser &&
+          <FormChat afterSave={afterSaveComment} prompt="Sound off..." onPending={onPendingComment} onError={onSaveCommentError} objectId={challenge.id} type={'challenge'} inputRef={inputRef} />
+      }
 
     </div>
   )

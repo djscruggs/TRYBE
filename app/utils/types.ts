@@ -14,6 +14,7 @@ export interface User {
   id?: number | string
   email: string
   profile: Profile | null
+  lastLogin: Date | null
   memberChallenges?: MemberChallenge[]
   challenges?: Challenge[] | ChallengeSummary[]
   notes?: Note[]
@@ -79,21 +80,23 @@ export interface ThreadSummary extends Thread {
 }
 
 export interface Post {
-  id?: number
-  userId?: number
-  title?: string | null
-  body?: string | null
+  id: number
+  userId: number
+  title: string | null
+  body: string | null
   imageMeta?: CloudinaryMeta
   videoMeta?: CloudinaryMeta
   embed?: string | null
-  public?: boolean
+  public: boolean
   challengeId?: number | null
-  published?: boolean
+  published: boolean
   publishAt?: Date | null
   createdAt?: Date
   updatedAt?: Date
   challenge?: Challenge
-  user?: User
+  commentCount: number
+  likeCount: number
+  user: User
   notifyMembers?: boolean | null
   notificationSentOn: Date | null
   live?: boolean // computed field @see prisma.server
@@ -122,6 +125,7 @@ export interface Challenge {
   public: boolean
   userId: number
   likeCount: number
+  commentCount: number
   _count?: CountType
 }
 export interface ChallengeWithHost extends Challenge {
@@ -147,11 +151,12 @@ export interface ChallengeSummary extends Challenge {
 
 export interface MemberChallenge {
   id?: number | string
-  userId: number | string
-  challengeId: number | string
-  challenge?: Challenge
-  lastCheckIn?: Date
-  nextCheckIn?: Date
+  userId: number
+  challengeId: number
+  user: User
+  challenge: Challenge
+  lastCheckIn: Date
+  nextCheckIn: Date
   _count?: {
     checkIns?: number
   }
@@ -184,7 +189,8 @@ export interface CheckIn {
   id: number
   userId: number
   challengeId: number
-  createdAt: Date
+  createdAt: Date | string
+  updatedAt: Date | string
   data: JSONObject
   body: string
   imageMeta: CloudinaryMeta

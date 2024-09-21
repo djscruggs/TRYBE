@@ -10,7 +10,7 @@ export const loader: LoaderFunction = async (args) => {
       case 'post':
         return { postId: Number(id) }
       case 'comment':
-        return { commentId: Number(id) }
+        return { replyToId: Number(id) }
       case 'challenge':
         return { challengeId: Number(id) }
       case 'checkin':

@@ -2,6 +2,7 @@ import { useLoaderData, json } from '@remix-run/react'
 import { type LoaderFunction } from '@remix-run/server-runtime'
 import { fetchChallengeMembers } from '~/models/challenge.server'
 import AvatarLoader from '~/components/avatarLoader'
+import { type MemberChallenge } from '~/utils/types'
 export const loader: LoaderFunction = async ({ request, params }) => {
   if (!params.id) {
     return json({ loadingError: 'Challenge id not included' })
@@ -22,7 +23,7 @@ export default function ViewChallengeMembers (): JSX.Element {
 
     <div className="mt-8">
       <p>Members</p>
-      {members.map((member) => {
+      {members.map((member: MemberChallenge) => {
         return (
           <div key={member.id} className='max-w-sm'>
             <div className='mb-2 p-4 border border-gray-200 break-all rounded-md even:bg-white odd:bg-gray-50'>

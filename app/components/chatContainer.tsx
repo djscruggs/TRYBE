@@ -2,14 +2,16 @@ import ChatItem from './chatItem'
 import type { Comment } from '~/utils/types'
 import { useState, useEffect } from 'react'
 
-interface CommentsProps {
+interface ChatContainerProps {
   comments: Comment[]
   firstComment?: Comment | null
   likedCommentIds: number[]
+  allowReplies?: boolean
 }
 
-export default function ChatContainer (props: CommentsProps): JSX.Element {
-  const [comments, setComments] = useState<Comment[]>(props.comments)
+export default function ChatContainer (props: ChatContainerProps): JSX.Element {
+  const [comments, setComments] = useState(props.comments)
+  const { allowReplies } = props
   const [likedCommentIds, setLikedCommentIds] = useState<number[]>([])
   const [firstComment, setFirstComment] = useState<Comment | null>(props.firstComment ?? null)
   useEffect(() => {
@@ -35,11 +37,11 @@ export default function ChatContainer (props: CommentsProps): JSX.Element {
 
       {uniqueComments().map((comment) => {
         return (
-          <ChatItem key={`comment-${comment.id}`} comment={comment} likedCommentIds={likedCommentIds} />
+          <ChatItem key={`comment-${comment.id}`} comment={comment} likedCommentIds={likedCommentIds} allowReply={allowReplies} />
         )
       })}
       {firstComment &&
-        <ChatItem key={`comment-${firstComment.id}`} comment={firstComment} likedCommentIds={likedCommentIds} />
+        <ChatItem key={`comment-${firstComment.id}`} comment={firstComment} likedCommentIds={likedCommentIds} allowReply={allowReplies} />
       }
     </div>
   )

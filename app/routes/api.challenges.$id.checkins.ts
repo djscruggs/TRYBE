@@ -1,9 +1,7 @@
 import { prisma } from '~/models/prisma.server'
 import { requireCurrentUser } from '~/models/auth.server'
-import { loadUser } from '~/models/user.server'
 import { joinChallenge, loadChallenge, calculateNextCheckin, updateCheckin } from '~/models/challenge.server'
 import { json, type LoaderFunction, type ActionFunctionArgs } from '@remix-run/node'
-import type { MemberChallenge } from '@prisma/client'
 import { unstable_parseMultipartFormData } from '@remix-run/node'
 import { uploadHandler, handleFormUpload } from '~/utils/uploadFile'
 
@@ -66,6 +64,7 @@ export async function action (args: ActionFunctionArgs): Promise<prisma.checkIn>
         }
       })
     }
+
     // update last check in on subscription
     await prisma.memberChallenge.update({
       where: {
@@ -77,19 +76,37 @@ export async function action (args: ActionFunctionArgs): Promise<prisma.checkIn>
       }
     })
     await handleFormUpload({ formData: rawData, dataObj: result, nameSpace: 'checkin', onUpdate: updateCheckin })
-    // reload membership
-    const reloaded = await prisma.memberChallenge.findFirst({
+    // reload membership and checkin
+    const reloadedMemberChallenge = await prisma.memberChallenge.findFirst({
       where: {
         userId: Number(currentUser.id),
         challengeId: Number(params.id)
       },
       include: {
+        user: {
+          include: {
+            profile: true
+          }
+        },
         _count: {
           select: { checkIns: true }
         }
       }
     })
-    return { checkIn: result, memberChallenge: reloaded }
+    // reload the checkin with the user and memberChallenge
+    const reloadedCheckin = await prisma.checkIn.findUnique({
+      where: {
+        id: result.id
+      },
+      include: {
+        user: {
+          include: {
+            profile: true
+          }
+        }
+      }
+    })
+    return { checkIn: reloadedCheckin, memberChallenge: reloadedMemberChallenge }
   } else {
     // eslint-disable-next-line @typescript-eslint/no-throw-literal
     throw new Response(null, {

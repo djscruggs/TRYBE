@@ -1,11 +1,5 @@
 import { prisma } from './prisma.server'
 import { deleteFromCloudinary } from '~/utils/uploadFile'
-interface FetchCommentsParams {
-  challengeId?: number
-  postId?: number
-  threadId?: number
-  checkInId?: number
-}
 function generateIncludeObject (levels: number): any {
   if (levels <= 0) {
     return true
@@ -47,22 +41,38 @@ export const fetchChallengeCheckinComments = async (challengeId: number): Promis
 
   return commentsByCheckInId
 }
+interface FetchCommentsParams {
+  challengeId?: number
+  postId?: number
+  threadId?: number
+  checkInId?: number
+  replyToId?: number
+}
 
 export const fetchComments = async (params: FetchCommentsParams): Promise<prisma.comment[]> => {
-  const { challengeId, postId, threadId, checkInId } = params
-  if (!challengeId && !postId && !threadId && !checkInId) {
-    throw new Error('challengeId or postId must be provided')
+  const { challengeId, postId, threadId, checkInId, replyToId } = params
+  if (!challengeId && !postId && !threadId && !checkInId && !replyToId) {
+    throw new Error('challengeId or postId or threadId or checkInId or replyToId must be provided')
   }
+  const orClause = {
+    challengeId: challengeId ? Number(challengeId) : undefined,
+    postId: postId ? Number(postId) : undefined,
+    threadId: threadId ? Number(threadId) : undefined,
+    checkInId: checkInId ? Number(checkInId) : undefined,
+    replyToId: replyToId ? Number(replyToId) : undefined
+  }
+  console.log('orClause', orClause)
   const includes = generateIncludeObject(5)
   const comments = await prisma.comment.findMany({
     where: {
       AND: {
-        replyToId: null,
+        replyToId: replyToId ? Number(replyToId) : null,
         OR: [
           { challengeId: challengeId ? Number(challengeId) : undefined },
           { postId: postId ? Number(postId) : undefined },
           { threadId: threadId ? Number(threadId) : undefined },
-          { checkInId: checkInId ? Number(checkInId) : undefined }
+          { checkInId: checkInId ? Number(checkInId) : undefined },
+          { replyToId: replyToId ? Number(replyToId) : undefined }
         ]
       }
     },
@@ -71,6 +81,7 @@ export const fetchComments = async (params: FetchCommentsParams): Promise<prisma
     },
     include: includes
   })
+
   return comments
 }
 export const fetchReplies = async (commentId: string | number): Promise<prisma.comment[]> => {
