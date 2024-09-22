@@ -1,6 +1,7 @@
-import { useEffect, useState, useContext } from 'react'
+import { useEffect, useState, useContext, useRef } from 'react'
 import axios from 'axios'
 import { CurrentUserContext } from '~/utils/CurrentUserContext'
+import { toast } from 'react-hot-toast'
 interface UserLikes {
   post?: number[]
   comment?: number[]
@@ -41,6 +42,13 @@ export function useUserLikes (): {
       console.error('Failed to fetch user likes:', error)
     }
   }
+
+  useEffect(() => {
+    const storedLikes = localStorage.getItem('userLikes')
+    if (!storedLikes) {
+      void fetchLikes()
+    }
+  }, [userId])
 
   const hasLiked = (type: LikeableType, id: number): boolean => {
     return likes[type]?.includes(id) ?? false
@@ -96,15 +104,12 @@ export function useUserLikes (): {
       formData.append('unlike', 'true')
     }
     try {
-      const response = await axios.post('/api/likes', formData)
+      await axios.post('/api/likes', formData)
     } catch (error) {
       toast.error('Error:' + error?.message)
       console.error(error)
     }
   }
-  useEffect(() => {
-    void fetchLikes()
-  }, [userId])
 
   useEffect(() => {
     localStorage.setItem('userLikes', JSON.stringify(likes)) // Sync likes to local storage on change

@@ -39,7 +39,7 @@ export default function CheckIns (): JSX.Element {
         <Outlet />
         <ChallengeMemberCheckin showDetails={true} challenge={challenge} memberChallenge={membership} afterCheckIn={() => { revalidator.revalidate() }} />
         <div className='flex flex-col items-start justify-center mt-4  w-full'>
-          <CheckinsList checkIns={checkIns} likes={likes} allowComments={true} comments={comments}/>
+          <CheckinsList checkIns={checkIns} allowComments={true} comments={comments}/>
         </div>
     </div>
   )
