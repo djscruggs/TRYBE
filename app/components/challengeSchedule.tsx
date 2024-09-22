@@ -89,7 +89,7 @@ export default function ChallengeSchedule ({ challenge, posts, isSchedule = fals
               </div>
               <div className="flex flex-col items-start justify-start h-full mt-4 mb-2 overflow-hidden pb-2">
                 {postsByDayNum[dayNum]?.map((post) => (
-                  <PostsBlock post={post} challenge={challenge} key={post.id} />
+                  <PostsBlock post={post} isSchedule={isSchedule} challenge={challenge} key={post.id} />
                 ))}
                 {isSchedule && isInRange && !postsByDayNum[dayNum] && userIsCreator &&
                   <NewPostLink day={dayNum} challenge={challenge} />
@@ -106,7 +106,7 @@ export default function ChallengeSchedule ({ challenge, posts, isSchedule = fals
   )
 }
 
-const PostsBlock = ({ post, challenge }: { post: Post, challenge: Challenge }): JSX.Element => {
+const PostsBlock = ({ post, challenge, isSchedule }: { post: Post, challenge: Challenge, isSchedule: boolean }): JSX.Element => {
   const { currentUser } = useContext(CurrentUserContext)
   const navigate = useNavigate()
   // if post is in the future, don't link to the full post UNLESS it's the user's post
@@ -114,22 +114,21 @@ const PostsBlock = ({ post, challenge }: { post: Post, challenge: Challenge }): 
   if (currentUser?.id === post.userId) {
     linkable = true
   }
-  const editPost = (): void => {
-    navigate(`/posts/${post.id}/edit`)
+  const goToPost = (): void => {
+    navigate(`/posts/${post.id}`)
   }
   return (
     <>
       {((post.publishAt ?? post.published) || currentUser?.id === challenge.userId) &&
           <div
             key={post.id}
-            className={`text-xs overflow-hidden text-black font-bold w-full text-ellipsis mb-1 ${linkable ? 'cursor-pointer' : ''}`}
-            onClick={editPost}
+            className={`${isSchedule ? 'text-xs' : 'text-xl h-full flex items-center'} overflow-hidden text-black font-bold w-full text-ellipsis mb-1 ${linkable ? 'cursor-pointer' : ''}`}
+            onClick={goToPost}
           >
             {!post.published
               ? <div className='bg-red text-white text-center p-1 rounded-md'>Draft</div>
               : post.title
             }
-            {post.title}
           </div>
       }
       </>
