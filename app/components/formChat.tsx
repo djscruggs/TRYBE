@@ -192,11 +192,9 @@ export default function FormChat (props: FormChatProps): JSX.Element {
           ...(type === 'thread' && { threadId: props.objectId }),
           ...(type === 'comment' && { replyToId: props.objectId })
         }
-        console.log('comment for pending', _comment)
         props.onPending(_comment as Comment)
       }
       const updated = await axios.post('/api/comments', formData)
-      console.log('updated', updated)
       props.afterSave(updated.data as Comment)
     } catch (error: any) {
       if (props.onError && !id) {
