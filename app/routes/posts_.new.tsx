@@ -1,5 +1,5 @@
 import { requireCurrentUser } from '~/models/auth.server'
-import { useLoaderData, useSearchParams, useLocation } from '@remix-run/react'
+import { useLoaderData, type MetaFunction, useLocation } from '@remix-run/react'
 import type { ChallengeSummary, Post, PostSummary } from '~/utils/types'
 import { useNavigate } from 'react-router-dom'
 import { type LoaderFunction, type LoaderFunctionArgs } from '@remix-run/node'
@@ -18,6 +18,9 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs): Promise<
     challenge = await loadChallengeSummary(params.challengeId, !!user?.id)
   }
   return { challenge }
+}
+export const meta: MetaFunction = () => {
+  return [{ title: 'Create Post' }]
 }
 
 interface PostsNewProps {

@@ -4,7 +4,7 @@ import { likesByType } from '~/models/like.server'
 import { useContext, useState, useEffect } from 'react'
 import UserAvatar from '~/components/useravatar'
 import FormNote from '~/components/formNote'
-import { useLoaderData } from '@remix-run/react'
+import { useLoaderData, type MetaFunction } from '@remix-run/react'
 import type { ChallengeSummary, NoteSummary } from '~/utils/types'
 import { useMobileSize } from '~/utils/useMobileSize'
 import { type LoaderFunction } from '@remix-run/node'
@@ -18,6 +18,10 @@ interface FeedLoaderData {
   notes: NoteSummary[]
   likes: Record<string, number[]>
 };
+export const meta: MetaFunction = () => {
+  return [{ title: 'TRYBE Home' }]
+}
+
 export const loader: LoaderFunction = async (args): Promise<FeedLoaderData> => {
   const currentUser = await requireCurrentUser(args)
   const challenges = await prisma.challenge.findMany({

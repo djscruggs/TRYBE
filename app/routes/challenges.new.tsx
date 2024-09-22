@@ -1,8 +1,9 @@
-import React, { useContext } from 'react'
+import { useContext } from 'react'
 import ChallengeForm from '~/components/formChallenge'
 import { requireCurrentUser } from '~/models/auth.server'
 import { type LoaderFunction } from '@remix-run/node'
 import { CurrentUserContext } from '~/utils/CurrentUserContext'
+import { type MetaFunction } from '@remix-run/react'
 
 interface LoaderData {
   locale?: string
@@ -10,6 +11,9 @@ interface LoaderData {
 export const loader: LoaderFunction = async (args): Promise<LoaderData> => {
   await requireCurrentUser(args)
   return {}
+}
+export const meta: MetaFunction = () => {
+  return [{ title: 'Create Post' }]
 }
 
 export default function NewChallenge (): JSX.Element {
