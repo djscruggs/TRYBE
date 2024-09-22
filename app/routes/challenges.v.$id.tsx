@@ -2,7 +2,7 @@ import { loadChallengeSummary } from '~/models/challenge.server'
 import { Outlet, useLoaderData, useNavigate, useLocation, useMatches } from '@remix-run/react'
 import { useContext, useState } from 'react'
 import { requireCurrentUser } from '~/models/auth.server'
-import type { MemberChallenge, Challenge, ChallengeSummary } from '~/utils/types'
+import type { MemberChallenge, Challenge, ChallengeSummary, CheckIn } from '~/utils/types'
 import { type LoaderFunction, type LoaderFunctionArgs } from '@remix-run/node'
 import axios from 'axios'
 import {
@@ -22,7 +22,6 @@ import { CheckInButton } from '~/components/checkinButton'
 
 interface ViewChallengeData {
   challenge: ChallengeSummary
-  hasLiked?: boolean
   membership?: MemberChallenge | null | undefined
 
 }
@@ -183,10 +182,6 @@ export default function ViewChallenge (): JSX.Element {
                       No members yet
                   </div>
                       )}
-                  {/* <div className='relative flex justify-end'>
-                    <div className='mr-2 inline'><Liker isLiked={Boolean(hasLiked)} itemId={Number(challenge?.id)} itemType='challenge' count={Number(likesCount)}/></div>
-                    <ShareMenu copyUrl={getFullUrl()} itemType='challenge' itemId={challenge?.id}/>
-                  </div> */}
               </div>
             </div>
             <Outlet />

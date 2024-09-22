@@ -23,7 +23,6 @@ import ChatDrawer from '~/components/chatDrawer'
 interface CardPostProps {
   post: PostSummary | null
   isShare?: boolean
-  hasLiked?: boolean
   fullPost?: boolean
   hideMeta?: boolean
   revalidator?: Revalidator
@@ -35,11 +34,10 @@ interface Revalidator {
 
 export default function CardPost (props: CardPostProps): JSX.Element {
   const { currentUser } = useContext(CurrentUserContext)
-  const { hasLiked, fullPost, isShare, hideMeta, revalidator, isChat } = props
+  const { fullPost, isShare, hideMeta, revalidator, isChat } = props
   const dateTimeFormat = currentUser?.dateTimeFormat ? currentUser.dateTimeFormat : 'M-dd-yyyy @ h:mm a'
   const [post, setPost] = useState(props.post)
   const [showComments, setShowComments] = useState(false)
-  const [hideComments, setHideComments] = useState(false)
   if (!post) return <></>
   const [showLightbox, setShowLightbox] = useState(false)
   const [editing, setEditing] = useState(false)
@@ -144,7 +142,7 @@ export default function CardPost (props: CardPostProps): JSX.Element {
             </div>
             <div className="flex justify-center items-center cursor-pointer">
 
-            <div className='mr-2'><Liker isLiked={Boolean(hasLiked)} itemId={Number(post.id)} itemType='post' count={Number(totalLikes)}/></div>
+            <div className='mr-2'><Liker itemId={Number(post.id)} itemType='post' count={Number(totalLikes)}/></div>
             </div>
             {post.public && post.published &&
             <div className="flex justify-center items-center cursor-pointer">

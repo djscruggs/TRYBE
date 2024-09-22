@@ -3,24 +3,21 @@ import { fetchComments, recursivelyCollectCommentIds } from '~/models/comment.se
 import { Outlet, useLoaderData, useLocation } from '@remix-run/react'
 import { useState } from 'react'
 import { requireCurrentUser } from '~/models/auth.server'
-import type { ObjectData, ThreadSummary, Comment } from '~/utils/types'
-import { json, type LoaderFunction, type LoaderFunctionArgs } from '@remix-run/node'
-import { userHasLiked, likesByType } from '~/models/like.server'
+import type { ThreadSummary, Comment } from '~/utils/types'
+import { type LoaderFunction, type LoaderFunctionArgs } from '@remix-run/node'
 import FormComment from '~/components/formComment'
 import CardThread from '~/components/cardThread'
 import CommentsContainer from '~/components/commentsContainer'
 
 interface ThreadData {
   thread: ThreadSummary
-  hasLiked: boolean
   comments: Comment[]
-  likedCommentIds: number[]
 }
 interface ErrorData {
   loadingError: string
 }
 export const loader: LoaderFunction = async (args: LoaderFunctionArgs): Promise<ThreadData | ErrorData | null> => {
-  const currentUser = await requireCurrentUser(args)
+  await requireCurrentUser(args)
   const { params } = args
   if (!params.id) {
     return null
@@ -30,18 +27,9 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs): Promise<
     const error: ErrorData = { loadingError: 'Thread not found' }
     return error
   }
-  // load memberships & likes for current user if it exists
-  let hasLiked = false
-  let likes = { thread: [] as number[], comment: [] as number[] }
-  if (currentUser) {
-    // has the user liked this thread?
-    likes = await likesByType({ userId: currentUser.id }) || { thread: [], comment: [] }
-    hasLiked = likes.thread.includes(Number(thread.id))
-  }
   // get comments
   const comments = await fetchComments({ threadId: thread.id })
-  const likedCommentIds = likes.comment
-  const data: ThreadData = { thread: thread as unknown as ThreadSummary, hasLiked, comments, likedCommentIds }
+  const data: ThreadData = { thread: thread as unknown as ThreadSummary, comments }
   return data
 }
 
@@ -59,7 +47,7 @@ export default function ViewThread (): JSX.Element {
   }
   const [thread, setThread] = useState(data.thread)
 
-  const { hasLiked, comments, likedCommentIds } = data
+  const { comments } = data
   if (!data?.thread) {
     return <p>Loading...</p>
   }
@@ -71,14 +59,14 @@ export default function ViewThread (): JSX.Element {
   return (
     <>
     <div className='w-dvw md:max-w-md lg:max-w-lg mt-10 p-4'>
-      <CardThread thread={thread} hasLiked={hasLiked} />
+      <CardThread thread={thread} />
       <div className='mt-2 w-full border-0  drop-shadow-none mr-2'>
           <FormComment threadId={thread.id} afterSave={afterCommentSave} prompt='Add your response' />
         </div>
     </div>
     {data.comments && data.comments.length > 0 &&
     <div className='max-w-[400px] md:max-w-md lg:max-w-lg'>
-      <CommentsContainer comments={comments} likedCommentIds={likedCommentIds} allowReplies={true} isReply={false} />
+      <CommentsContainer comments={comments} allowReplies={true} isReply={false} />
     </div>
     }
     </>

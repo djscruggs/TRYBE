@@ -3,7 +3,6 @@ import { type LoaderFunction, json } from '@remix-run/node'
 import { useLoaderData, useNavigate, useParams, useFetcher } from '@remix-run/react'
 import { fetchChallengeSummaries, fetchUserChallengesAndMemberships } from '~/models/challenge.server'
 import { fetchMemberChallenges } from '~/models/user.server'
-import { likesByType } from '~/models/like.server'
 import { useEffect, useState } from 'react'
 import ChallengeList from '~/components/challengeList'
 
@@ -24,16 +23,14 @@ export const loader: LoaderFunction = async (args) => {
     return json(error)
   }
   const memberships = await fetchMemberChallenges(uid) || [] as number[]
-  const rawLikes = await likesByType({ userId: uid }) || { challenge: [] as number[] }
-  const likes = rawLikes.challenge
-  return json({ challenges, memberships, error: null, likes })
+  return json({ challenges, memberships, error: null })
 }
 
 export default function ChallengesIndex (): JSX.Element {
   const fetcher = useFetcher()
   const data: any = useLoaderData<typeof loader>()
 
-  const { memberships, error, challenges, likes } = fetcher.data || data
+  const { memberships, error, challenges } = fetcher.data || data
   const params = useParams()
   const [status, setStatus] = useState(params.status ?? 'active')
   const navigate = useNavigate()
@@ -70,7 +67,7 @@ export default function ChallengesIndex (): JSX.Element {
                 {fetcher.state === 'idle' && challenges.length === 0 &&
                   <div className="text-center mt-10">No {status !== 'mine' ? status : ''} challenges found</div>
                 }
-                <ChallengeList challenges={challenges} memberships={memberships} isLoading={fetcher.state === 'loading'} likes={likes} />
+                <ChallengeList challenges={challenges} memberships={memberships} isLoading={fetcher.state === 'loading'} />
               </div>
           </div>
 

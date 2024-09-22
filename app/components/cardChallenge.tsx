@@ -14,7 +14,6 @@ interface CardChallengeProps {
   challenge: ChallengeSummary
   isShare?: boolean
   isMember?: boolean
-  isLiked?: boolean
   isPreview?: boolean
 }
 

@@ -25,13 +25,12 @@ import DialogDelete from './dialogDelete'
 interface CardNoteProps {
   note: Note
   isThread?: boolean
-  isReplyTo?: boolean
-  hasLiked?: boolean
+  isReplyTo?: booleanhasLik
 }
 
 export default function CardNote (props: CardNoteProps): JSX.Element {
   const { currentUser } = useContext(CurrentUserContext)
-  const { isReplyTo, hasLiked, isThread } = props
+  const { isReplyTo, isThread } = props
   const [note, setNote] = useState(props.note)
   // updating note wasn't trigering re-render, so added a noteBody attribute
   const [noteBody, setNoteBody] = useState(textToJSX(note.body ?? ''))
@@ -165,30 +164,7 @@ export default function CardNote (props: CardNoteProps): JSX.Element {
         <FormNote replyToId={note.id} afterSave={afterSave} onCancel={() => { setAddReply(false) }} prompt='Add your response' />
       </div>
       }
-      {/* don't show likes etc if this is a reply or a reply is being added */}
-      {(!isReplyTo && !addReply && !isQuote) &&
-      <>
-        <hr />
-        <div className="grid grid-cols-2 text-center py-2 cursor-pointer">
-          {/* <div className="flex justify-center items-center">
-          {!isThread &&
-            <Link to={`/notes/${note.id}`}>
-              <FaRegComment className="text-grey mr-1 inline" />
-              <span className="text-xs">{note._count?.replies} replies</span>
-            </Link>
 
-          }
-          </div> */}
-          <div className="flex justify-center items-center cursor-pointer">
-
-          {/* <div className='mr-2'><Liker isLiked={Boolean(hasLiked)} itemId={Number(note.id)} itemType='note' count={Number(note._count?.likes)}/></div> */}
-          </div>
-          {/* <div className="flex justify-center items-center cursor-pointer">
-            <ShareMenu copyUrl={getFullUrl()} itemType='note' itemId={Number(note.id)}/>
-          </div> */}
-        </div>
-      </>
-      }
     </div>
     }
     {(note.imageMeta?.secure_url && showLightbox) && <Lightbox medium={note.imageMeta.secure_url} large={note.imageMeta.secure_url} alt="note photo" onClose={() => { setShowLightbox(false) }}/>}

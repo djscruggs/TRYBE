@@ -26,37 +26,35 @@ export default function ChatDrawer (props: ChatDrawerProps): JSX.Element {
   const inputRef = useRef<HTMLInputElement>(null)
   const [comments, setComments] = useState<Comment[] | null>(initialComments ?? null)
   const [open, setOpen] = useState(isOpen)
-  const [firstComment, setFirstComment] = useState<Comment | null>(null)
+  const [newestComment, setNewestComment] = useState<Comment | null>(null)
   const [refresh, setRefresh] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
-  const [likedCommentIds, setLikedCommentIds] = useState<number[]>([])
-
   const closeDrawer = useCallback((): void => {
     setOpen(false)
     onClose()
     document.body.classList.remove('overflow-hidden') // Enable body scroll
   }, [onClose])
 
+  // Memoize the function to avoid unnecessary re-renders of child components
   const afterSaveComment = useCallback((comment: Comment): void => {
-    console.log('afterSaveComment', comment)
     setComments(prevComments => {
+      // Filter out comments without an id and prepend the new comment
       const filteredComments = prevComments?.filter(c => c.id !== undefined) ?? []
       return [comment, ...filteredComments]
     })
-    setFirstComment(comment)
+    setNewestComment(null)
     setRefresh(true)
   }, [])
 
+  // this is used to immediately display the pending without waiting for the server
   const onPendingComment = useCallback((comment: Comment): void => {
-    console.log('onPendingComment', comment)
-    setFirstComment(comment)
+    setNewestComment(comment)
     setRefresh(true)
   }, [])
 
   const onSaveCommentError = useCallback((error: Error): void => {
-    console.log('onSaveCommentError', error)
-    setFirstComment(null)
-    toast.error('Failed to send chat:' + String(error))
+    setNewestComment(null)
+    toast.error('Failed to send message:' + String(error))
   }, [])
 
   const fetchComments = useCallback(async (): Promise<void> => {
@@ -71,25 +69,15 @@ export default function ChatDrawer (props: ChatDrawerProps): JSX.Element {
     }
   }, [type, id])
 
-  const fetchLikedCommentIds = useCallback(async (): Promise<void> => {
-    try {
-      const { data } = await axios.get<number[]>(`/api/likes/${type}/${id}/comments`)
-      setLikedCommentIds(data)
-    } catch (error) {
-      toast.error('Failed to fetch liked comments:' + String(error))
-    }
-  }, [type, id])
-
   useEffect(() => {
     setOpen(isOpen)
     if (isOpen) {
       void fetchComments()
-      void fetchLikedCommentIds()
       inputRef.current?.focus() // Focus the input when the drawer opens
     } else {
       onClose()
     }
-  }, [isOpen, fetchComments, fetchLikedCommentIds, onClose])
+  }, [isOpen, fetchComments, onClose])
 
   useEffect(() => {
     if (isOpen || refresh) {
@@ -130,7 +118,7 @@ export default function ChatDrawer (props: ChatDrawerProps): JSX.Element {
       <div className='overflow-y-auto'>
         {isLoading
           ? <ChatRowSkeleton count={skeletonRows} />
-          : <ChatContainer comments={comments ?? []} firstComment={firstComment} allowReplies={false} likedCommentIds={likedCommentIds} />
+          : <ChatContainer comments={comments ?? []} newestComment={newestComment} allowReplies={false} />
         }
         {id &&
           <div className='px-2' ref={bottomRef}>

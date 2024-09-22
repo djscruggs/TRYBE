@@ -12,8 +12,6 @@ import { CurrentUserContext } from '~/utils/CurrentUserContext'
 import { CheckInButton } from '~/components/checkinButton'
 interface ChallengeChatData {
   groupedData: Record<string, { posts: Post[], checkIns: { empty: CheckIn[], nonEmpty: CheckIn[] }, comments: Comment[] }>
-  likedCheckInIds: number[]
-  likedCommentIds: number[]
 }
 
 export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
@@ -110,36 +108,12 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
     }
   })
 
-  // fetch liked check-in ids
-  const likedCheckIns = await prisma.like.findMany({
-    where: {
-      userId: user?.id,
-      checkinId: { not: null }
-    },
-    select: {
-      checkinId: true
-    }
-  })
-  const likedCheckInIds: number[] = likedCheckIns.map(like => like.checkinId).filter(id => id !== null) as number[]
-
-  // fetch liked comment ids
-  const likedComments = await prisma.like.findMany({
-    where: {
-      userId: user?.id,
-      commentId: { not: null }
-    },
-    select: {
-      commentId: true
-    }
-  })
-  const likedCommentIds: number[] = likedComments.map(like => like.commentId).filter(id => id !== null) as number[]
-
-  const data: ChallengeChatData = { groupedData, likedCheckInIds, likedCommentIds }
+  const data: ChallengeChatData = { groupedData }
   return data
 }
 export default function ViewChallengeChat (): JSX.Element {
   const { currentUser } = useContext(CurrentUserContext)
-  const { groupedData, likedCheckInIds, likedCommentIds } = useLoaderData<ChallengeChatData>()
+  const { groupedData } = useLoaderData<ChallengeChatData>()
   const bottomRef = useRef<HTMLDivElement>(null)
   const { challenge, membership } = useRouteLoaderData<{ challenge: Challenge, membership: MemberChallenge }>('routes/challenges.v.$id') as unknown as { challenge: Challenge, membership: MemberChallenge }
   if (!groupedData) {
@@ -155,7 +129,6 @@ export default function ViewChallengeChat (): JSX.Element {
     // only saved comments will have an id
     if (newestComment?.id) {
       // merge the existing newest comment in the groupedData with the new comment
-      console.log('newestComment', newestComment)
       const date = new Date(newestComment.createdAt).toISOString().split('T')[0]
       const group = groupedData[date]
       if (group) {
@@ -203,6 +176,15 @@ export default function ViewChallengeChat (): JSX.Element {
   const [hasCheckedInToday, setHasCheckedInToday] = useState(checkedInToday())
   const handleAfterCheckIn = (checkIn: CheckIn): void => {
     setHasCheckedInToday(true)
+    const date = new Date(checkIn.createdAt).toISOString().split('T')[0]
+    if (!groupedData[date]) {
+      groupedData[date] = { posts: [], checkIns: { empty: [], nonEmpty: [] }, comments: [] }
+    }
+    if (checkIn.body !== null || checkIn.imageMeta !== null || checkIn.videoMeta !== null) {
+      groupedData[date].checkIns.nonEmpty.push(checkIn as unknown as CheckIn)
+    } else {
+      groupedData[date].checkIns.empty.push(checkIn as unknown as CheckIn)
+    }
   }
   return (
     <div className='max-w-2xl'>
@@ -219,15 +201,17 @@ export default function ViewChallengeChat (): JSX.Element {
                 </div>
             )
           })}
-          <CheckinsList checkIns={checkIns.nonEmpty as unknown as CheckIn[]} likes={likedCheckInIds} allowComments={true} />
-          <ChatContainer comments={comments as unknown as Comment[]} firstComment={newestComment} likedCommentIds={likedCommentIds} allowReplies={true}/>
+          <CheckinsList checkIns={checkIns.nonEmpty as unknown as CheckIn[]} allowComments={true} />
+          <ChatContainer comments={comments as unknown as Comment[]} newestComment={newestComment} allowReplies={true}/>
           {/* Render empty check-ins if needed */}
         </div>
         ))}
       {(currentUser && membership && !hasCheckedInToday) && (
         <>
-        <p>You have not checked in today</p>
-        <CheckInButton challenge={challenge} memberChallenge={membership} label='Check In Now' afterCheckIn={handleAfterCheckIn} />
+        <div className="flex justify-between items-center my-4">
+          <p>You have not checked in today</p>
+          <CheckInButton challenge={challenge} memberChallenge={membership} label='Check In Now' afterCheckIn={handleAfterCheckIn} size='sm'/>
+        </div>
         </>
       )}
       {currentUser &&

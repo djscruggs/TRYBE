@@ -6,11 +6,9 @@ import ChallengeHeader from '~/components/challengeHeader'
 import { requireCurrentUser } from '~/models/auth.server'
 import type { PostSummary } from '~/utils/types'
 import { json, type LoaderFunction, type LoaderFunctionArgs } from '@remix-run/node'
-import { prisma } from '~/models/prisma.server'
 
 export interface PostData {
   post: PostSummary | null
-  hasLiked: boolean
   loadingError?: string
 }
 
@@ -26,19 +24,7 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
     const error = { loadingError: 'Post not found' }
     return json(error)
   }
-  // load likes for current user if it exists
-  let hasLiked = false
-  if (currentUser) {
-    // has the user liked this note?
-    const likes = await prisma.like.count({
-      where: {
-        postId: Number(post.id),
-        userId: Number(currentUser.id)
-      }
-    })
-    hasLiked = likes > 0
-  }
-  const data: PostData = { post, hasLiked }
+  const data: PostData = { post }
   return json(data)
 }
 
@@ -47,7 +33,7 @@ export default function ViewPost (): JSX.Element {
   if (location.pathname.includes('edit')) {
     return <Outlet />
   }
-  const { hasLiked, loadingError, post } = useLoaderData() as PostData
+  const { loadingError, post } = useLoaderData() as PostData
   if (loadingError) {
     return <h1>{loadingError}</h1>
   }
@@ -59,7 +45,7 @@ export default function ViewPost (): JSX.Element {
     <>
     {post.challenge && <ChallengeHeader size='small' challenge={post.challenge} />}
     <div className='max-w-[400px] md:max-w-lg mt-10'>
-      <CardPost post={_post} hasLiked={Boolean(hasLiked)} fullPost={true} />
+      <CardPost post={_post} fullPost={true} />
     </div>
     <Outlet context={{ post }} />
     </>
