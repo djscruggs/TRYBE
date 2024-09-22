@@ -17,12 +17,10 @@ import DialogDelete from './dialogDelete'
 
 interface CardThreadProps {
   thread: Thread | ThreadSummary
-  hasLiked?: boolean
 }
 
 export default function CardThread (props: CardThreadProps): JSX.Element {
   const { currentUser } = useContext(CurrentUserContext)
-  const { hasLiked } = props
   const [thread, setThread] = useState(props.thread)
   const [showLightbox, setShowLightbox] = useState(false)
   const [editing, setEditing] = useState(false)
@@ -132,7 +130,7 @@ export default function CardThread (props: CardThreadProps): JSX.Element {
 
           <div className="flex justify-center items-center cursor-pointer">
             <div className='mr-2'>
-              <Liker isLiked={Boolean(hasLiked)} itemId={Number(thread.id)} itemType='thread' count={Number(thread.likeCount ?? 0)}/>
+              <Liker itemId={Number(thread.id)} itemType='thread' count={Number(thread.likeCount ?? 0)}/>
             </div>
           </div>
           <div className="flex justify-center items-center cursor-pointer">

@@ -13,12 +13,11 @@ import CommentsIconWithCount from '~/components/commentsIcon'
 import ChatDrawer from '~/components/chatDrawer'
 interface CheckinsListProps {
   checkIns: CheckIn[]
-  likes: number[]
   comments?: Record<number, Comment[]>
   allowComments: boolean
 }
 
-export default function CheckinsList ({ checkIns, likes, comments, allowComments }: CheckinsListProps): JSX.Element {
+export default function CheckinsList ({ checkIns, comments, allowComments }: CheckinsListProps): JSX.Element {
   const [checkInsArr, setCheckInsArr] = useState(checkIns)
   const handleDelete = (deletedCheckIn: CheckIn): void => {
     setCheckInsArr(checkInsArr.filter(checkIn => checkIn.id !== deletedCheckIn.id))
@@ -40,7 +39,6 @@ export default function CheckinsList ({ checkIns, likes, comments, allowComments
       {Object.entries(checkInsByDay).map(([date, checkIns]) => {
         // Filter out empty check-ins and count unique users for the day
         const emptyCheckIns = checkIns.filter(checkIn => !checkIn.body?.length)
-        const checkInsWithContent = checkIns.filter(checkIn => checkIn.body?.length)
         const uniqueUsers = new Set(emptyCheckIns.map(checkIn => checkIn.userId)).size
 
         return (
@@ -55,7 +53,7 @@ export default function CheckinsList ({ checkIns, likes, comments, allowComments
               return (
                 <div key={checkIn.id} className={`relative pt-2 ${index === 0 ? '' : 'border-t'}`}>
                   <div className='mt-2'>
-                    <CheckinRow checkIn={checkIn} isLiked={likes.includes(checkIn.id)} comments={_comments[checkIn.id]} allowComments={allowComments} afterDelete={handleDelete}/>
+                    <CheckinRow checkIn={checkIn} comments={_comments[checkIn.id]} allowComments={allowComments} afterDelete={handleDelete}/>
                   </div>
                 </div>
               )
@@ -69,7 +67,6 @@ export default function CheckinsList ({ checkIns, likes, comments, allowComments
 
 interface CheckinRowProps {
   checkIn: CheckIn
-  isLiked: boolean
   comments?: Comment[]
   allowComments: boolean
   afterDelete: (deletedCheckIn: CheckIn) => void
@@ -77,7 +74,7 @@ interface CheckinRowProps {
 export function CheckinRow (props: CheckinRowProps): JSX.Element {
   const { currentUser } = useContext(CurrentUserContext)
   const locale = userLocale(currentUser)
-  const { allowComments, isLiked, comments, checkIn } = props
+  const { allowComments, comments, checkIn } = props
   const [checkInObj, setCheckInObj] = useState<CheckIn>(checkIn)
   const [deleted, setDeleted] = useState(false)
   const [showComments, setShowComments] = useState(false)
@@ -122,9 +119,8 @@ export function CheckinRow (props: CheckinRowProps): JSX.Element {
                       />
                     }
                     <Liker
-                      isLiked={isLiked}
                       itemId={checkInObj.id}
-                      itemType='checkIn'
+                      itemType='checkin'
                       count={checkInObj.likeCount}
                     />
                     {!showEditForm &&

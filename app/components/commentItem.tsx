@@ -2,11 +2,7 @@ import React, { useState, useContext, useEffect } from 'react'
 import FormComment from './formComment'
 import { Avatar, Spinner } from '@material-tailwind/react'
 import { CurrentUserContext } from '~/utils/CurrentUserContext'
-import {
-  textToJSX,
-  separateTextAndLinks,
-  formatLinks
-} from '~/utils/helpers'
+import { textToJSX } from '~/utils/helpers'
 import { toast } from 'react-hot-toast'
 import axios from 'axios'
 import type { Comment } from '~/utils/types'
@@ -19,15 +15,13 @@ import DialogDelete from './dialogDelete'
 interface CommentsProps {
   comment: Comment | null
   isReply: boolean | undefined
-  likedCommentIds: number[]
   allowReplies: boolean
 }
 
 export default function CommentItem (props: CommentsProps): JSX.Element {
   const [comment, setComment] = useState<Comment | null>(props.comment ?? null)
   const [replies, setReplies] = useState<Comment[]>(comment?.replies ?? [])
-  const [firstReply, setFirstReply] = useState<Comment | null>(null)
-  const [isLiked, setIsLiked] = useState(props?.likedCommentIds?.includes(comment?.id ?? 0))
+  const [newestReply, setNewestReply] = useState<Comment | null>(null)
   const [showLightbox, setShowLightbox] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [showForm, setShowForm] = useState(false)
@@ -35,9 +29,6 @@ export default function CommentItem (props: CommentsProps): JSX.Element {
   const [deleteDialog, setDeleteDialog] = useState(false)
   const { currentUser } = useContext(CurrentUserContext)
 
-  useEffect(() => {
-    setIsLiked(props.likedCommentIds?.includes(comment?.id ?? 0))
-  }, [props.likedCommentIds])
   const handleEdit = (): void => {
     if (!comment || deleting) return
     setShowForm(true)
@@ -78,7 +69,7 @@ export default function CommentItem (props: CommentsProps): JSX.Element {
       const newReplies = [reply].concat(replies)
       setReplies(newReplies)
     } else {
-      setFirstReply(reply)
+      setNewestReply(reply)
     }
 
     setReplying(false)
@@ -139,7 +130,7 @@ export default function CommentItem (props: CommentsProps): JSX.Element {
                 {replying && <FormComment afterSave={afterSaveReply} onCancel={() => { setReplying(false) }} replyToId={comment.id} /> }
                 {!replying &&
                   <>
-                    <Liker isLiked={isLiked} itemId={comment.id} itemType='comment' count={comment.likeCount}/>
+                    <Liker itemId={comment.id} itemType='comment' count={comment.likeCount}/>
                     {canReply() &&
                       <div className='ml-2'>
                         <FaRegComment className='h-4 w-4 text-grey cursor-pointer' onClick={() => { setReplying(true) }}/>
@@ -157,7 +148,7 @@ export default function CommentItem (props: CommentsProps): JSX.Element {
         {/* comment contains replies, so create a new container for those */}
         {replies && replies.length > 0 &&
           <div className='pl-4'>
-            <CommentsContainer firstComment={firstReply} likedCommentIds={props.likedCommentIds} comments={replies} isReply={true} allowReplies={canReply()} />
+            <CommentsContainer newestComment={newestReply} comments={replies} isReply={true} allowReplies={canReply()} />
           </div>
         }
       </>

@@ -8,15 +8,12 @@ import { CircularProgressbarWithChildren, buildStyles } from 'react-circular-pro
 import { useContext } from 'react'
 import { CurrentUserContext } from '~/utils/CurrentUserContext'
 import 'react-circular-progressbar/dist/styles.css'
-import { likesByType } from '~/models/like.server'
 export const loader: LoaderFunction = async (args) => {
   const currentUser = await requireCurrentUser(args)
   const userId = Number(args.params.userId ?? currentUser?.id)
   const challengeId = Number(args.params.id)
   const checkIns = await fetchCheckIns({ userId, challengeId }) as { error?: string }
-  const rawLikes = await likesByType({ userId }) || { checkin: [] as number[] }
-  const likes = rawLikes.checkin
-  return json({ checkIns, likes })
+  return json({ checkIns })
 }
 export default function MyCheckIns (): JSX.Element {
   const { checkIns, error } = useLoaderData<typeof loader>()

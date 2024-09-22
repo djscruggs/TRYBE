@@ -1,73 +1,49 @@
 import { TbHeartFilled } from 'react-icons/tb'
-import { Spinner } from '@material-tailwind/react'
-import { useState, useEffect } from 'react'
-import axios from 'axios'
+import { useState } from 'react'
 import { toast } from 'react-hot-toast'
-
+import { useUserLikes } from '~/hooks/useUserLikes'
 interface LikerProps {
-  isLiked: boolean
   itemId: number
-  itemType: 'comment' | 'post' | 'note' | 'challenge' | 'thread' | 'checkIn'
+  itemType: 'comment' | 'post' | 'note' | 'challenge' | 'thread' | 'checkin'
   count: number
   className?: string
 }
 
 export default function Liker (props: LikerProps): JSX.Element {
   const { itemId, itemType, className } = props
-  const [isLiked, setIsLiked] = useState(props.isLiked)
+  const { hasLiked, like, unlike } = useUserLikes()
+  const [isLiked, setIsLiked] = useState(hasLiked(itemType, itemId))
   const [count, setCount] = useState(props.count)
-  const [loading, setLoading] = useState(false)
-  useEffect(() => {
-    setIsLiked(props.isLiked)
-  }, [props.isLiked])
+
   const handleLike = async (): Promise<void> => {
     const tempIsLiked = isLiked
-    let newCount: number = isLiked ? count - 1 : count + 1
+    const newIsLiked = !isLiked
+    let newCount: number = newIsLiked ? count + 1 : count - 1
     if (newCount < 0) {
       newCount = 0
     }
-    setCount(newCount)
-    setIsLiked(!isLiked)
-    const formData = new FormData()
-    if (itemType === 'comment') {
-      formData.append('commentId', String(itemId))
-    }
-    if (itemType === 'post') {
-      formData.append('postId', String(itemId))
-    }
-    if (itemType === 'note') {
-      formData.append('noteId', String(itemId))
-    }
-    if (itemType === 'challenge') {
-      formData.append('challengeId', String(itemId))
-    }
-    if (itemType === 'thread') {
-      formData.append('threadId', String(itemId))
-    }
-    if (itemType === 'checkIn') {
-      formData.append('checkinId', String(itemId))
-    }
-    if (isLiked) {
-      formData.append('unlike', 'true')
-    }
-    setLoading(true)
+    console.log('isLiked', isLiked)
     try {
-      const response = await axios.post('/api/likes', formData)
-
-      setCount(response.data?.totalLikes ? response.data?.totalLikes as number : newCount)
+      if (isLiked) {
+        await unlike(itemType, itemId)
+      } else {
+        await like(itemType, itemId)
+      }
+      console.log('newIsLiked', newIsLiked)
+      console.log('newCount', newCount)
+      setIsLiked(newIsLiked)
+      setCount(newCount)
     } catch (error) {
       toast.error('Error:' + error?.message)
       setIsLiked(tempIsLiked)
       setCount(newCount > 0 ? newCount - 1 : 0)
       console.error(error)
-    } finally {
-      setLoading(false)
     }
   }
 
   return (
     <div className='text-xs'>
-      <TbHeartFilled className={`h-4 w-4 mr-1 cursor-pointer text-sm inline ${isLiked ? 'text-red' : 'text-grey'}`} onClick={handleLike}/>
+      <TbHeartFilled className={`h-4 w-4 mr-1 cursor-pointer text-sm inline ${isLiked ? 'text-red' : 'text-grey'} ${className}`} onClick={handleLike}/>
         {count}
     </div>
   )

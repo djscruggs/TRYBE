@@ -9,10 +9,8 @@ import AvatarLoader from './avatarLoader'
 import ChatDrawer from './chatDrawer'
 import { FaRegComment } from 'react-icons/fa'
 import ActionsPopupMenu from './actionsPopupMenu'
-
 interface CommentsProps {
   comment: Comment | null
-  likedCommentIds: number[]
   allowReply?: boolean
 }
 
@@ -20,13 +18,9 @@ export default function ChatItem (props: CommentsProps): JSX.Element {
   const [comment, setComment] = useState<Comment | null>(props.comment ?? null)
   const [deleted, setDeleted] = useState(false)
   const [showReplies, setShowReplies] = useState(false)
-  const [isLiked, setIsLiked] = useState(props?.likedCommentIds?.includes(comment?.id ?? 0))
   const allowReply = props.allowReply ?? false
   const [showLightbox, setShowLightbox] = useState(false)
   const [showForm, setShowForm] = useState(false)
-  useEffect(() => {
-    setIsLiked(props.likedCommentIds?.includes(comment?.id ?? 0))
-  }, [props.likedCommentIds])
 
   const handleEdit = (): void => {
     if (!comment || deleted) return
@@ -88,7 +82,7 @@ export default function ChatItem (props: CommentsProps): JSX.Element {
                   </ChatDrawer>
                 </>
               }
-              <Liker isLiked={isLiked} itemId={comment.id} itemType='comment' count={comment.likeCount}/>
+              <Liker itemId={comment.id} itemType='comment' count={comment.likeCount}/>
               <ActionsPopupMenu
                 object={comment}
                 type='comment'

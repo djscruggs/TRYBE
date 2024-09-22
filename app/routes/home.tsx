@@ -163,7 +163,7 @@ export default function Home (): JSX.Element {
             {feedItems.map(item => {
               if ('mission' in item) {
                 return (<div className="pl-0 mt-4 w-full max-w-lg" key={`challenge-${item.id}`}>
-                          <CardChallenge challenge={item as unknown as ChallengeSummary} isMember={memberships.includes(item.id)} isLiked={likes.challenge.includes(item.id)}/>
+                          <CardChallenge challenge={item as unknown as ChallengeSummary} isMember={memberships.includes(item.id)} />
                         </div>)
               } else {
                 return (<div className=" pl-0 mt-4 w-full max-w-lg" key={`note-${item.id}`}>

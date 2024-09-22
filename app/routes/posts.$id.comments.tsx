@@ -23,24 +23,23 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
   }
   const comments: Comment[] = result
   const likes = currentUser?.id ? await likesByType({ userId: currentUser.id }) : { comment: [] }
-  const likedCommentIds = likes.comment
-  return { commentsData: comments, postId, likedCommentIds }
+  return { commentsData: comments, postId }
 }
 export default function ViewPostComments (): JSX.Element {
-  const { commentsData, postId, likedCommentIds } = useLoaderData<{ commentsData: Comment[], postId: number, likedCommentIds: number[] }>()
+  const { commentsData, postId } = useLoaderData<{ commentsData: Comment[], postId: number }>()
   const [comments, setComments] = useState<Comment[]>(commentsData as unknown as Comment[])
   const [showForm, setShowForm] = useState(commentsData.length === 0)
 
   // first comment holds the comment posted by the user
   // it's intiially null, but if they save a commennt it shows at the top
-  const [firstComment, setFirstComment] = useState<Comment | null>(null)
-  const saveFirstComment = (comment: Comment): void => {
-    if (firstComment) {
+  const [newestComment, setNewestComment] = useState<Comment | null>(null)
+  const saveNewestComment = (comment: Comment): void => {
+    if (newestComment) {
       // push the comment to the top of the list
-      const newComments = [firstComment].concat(comments)
+      const newComments = [newestComment].concat(comments)
       setComments(newComments)
     }
-    setFirstComment(comment)
+    setNewestComment(comment)
     setShowForm(false)
   }
   const currentUser = useContext(CurrentUserContext)
@@ -54,7 +53,7 @@ export default function ViewPostComments (): JSX.Element {
           ? (
               <div className="mt-1">
                 {postId &&
-                  <FormComment afterSave={saveFirstComment} onCancel={() => { setShowForm(false) }} postId={postId} />
+                  <FormComment afterSave={saveNewestComment} onCancel={() => { setShowForm(false) }} postId={postId} />
                 }
               </div>
             )
@@ -69,7 +68,7 @@ export default function ViewPostComments (): JSX.Element {
         <Button onClick={() => { navigate('/signup') }} className="bg-red p-2 mt-2">Sign Up</Button>
       </div>
     }
-    <CommentsContainer firstComment={firstComment} allowReplies={true} comments={comments} isReply={false} likedCommentIds={likedCommentIds}/>
+    <CommentsContainer newestComment={newestComment} allowReplies={true} comments={comments} isReply={false} />
   </div>
 
   )

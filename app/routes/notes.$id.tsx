@@ -9,11 +9,10 @@ import { prisma } from '~/models/prisma.server'
 
 interface NoteObjectData {
   note: Note
-  hasLiked: boolean
 }
 
 export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
-  const currentUser = await requireCurrentUser(args)
+  await requireCurrentUser(args)
   const { params } = args
   if (!params.id) {
     return null
@@ -23,24 +22,9 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
     const error = { loadingError: 'Note not found' }
     return json(error)
   }
-  // load memberships & likes for current user if it exists
-  let hasReposted = false
-  let hasLiked = false
-  if (currentUser) {
-    // has the user liked this note?
-    const likes = await prisma.like.count({
-      where: {
-        noteId: note.id,
-        userId: Number(currentUser.id)
-      }
-    })
-    hasLiked = likes > 0
-    // has the user reposted this note?
-    const reposted = await loadRepost(note.id, currentUser.id, null)
-    if (reposted) {
-      hasReposted = true
-    }
-  }
+  // load memberships current user if it exists
+  const hasReposted = false
+
   // get count of resposts
   const repostCount = await prisma.note.count({
     where: {
@@ -64,7 +48,7 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
       }
     }
   })
-  const data: NoteObjectData = { note, hasLiked, hasReposted, repostCount, replies }
+  const data: NoteObjectData = { note, hasReposted, repostCount, replies }
   return json(data)
 }
 
@@ -87,7 +71,7 @@ export default function ViewNote (): JSX.Element {
   return (
     <>
     <div className='w-dvw md:max-w-md lg:max-w-lg mt-10 p-4'>
-      <CardNote note={data.note} repostCount={data.repostCount} hasLiked={Boolean(data.hasLiked)} hasReposted={Boolean(data.hasReposted)} />
+      <CardNote note={data.note} repostCount={data.repostCount} hasReposted={Boolean(data.hasReposted)} />
     </div>
     <div className='max-w-[400px] md:max-w-md lg:max-w-lg'>
       {data.replies?.map((reply) => {

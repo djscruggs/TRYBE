@@ -10,9 +10,8 @@ interface ChallengeListProps {
   challenges: ChallengeSummary[]
   memberships: MemberChallenge[]
   isLoading: boolean
-  likes: Like[]
 }
-export default function ChallengeList ({ challenges, memberships, isLoading, likes }: ChallengeListProps): JSX.Element {
+export default function ChallengeList ({ challenges, memberships, isLoading }: ChallengeListProps): JSX.Element {
   function isMember (challenge: ChallengeSummary): boolean {
     return memberships.some((membership: MemberChallenge) => membership.challengeId === challenge.id)
   }

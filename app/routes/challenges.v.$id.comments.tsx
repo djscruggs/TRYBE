@@ -14,12 +14,11 @@ export const loader: LoaderFunction = async (args) => {
   const currentUser: CurrentUser | null = await requireCurrentUser(args)
   const comments = await fetchComments({ challengeId: Number(args.params.id) })
   const likes = currentUser?.id ? await likesByType({ userId: currentUser.id }) : { comment: [] as number[] }
-  const likedCommentIds = likes.comment
   if (!comments) {
     const error = { loadingError: 'Challenge not found' }
     return json(error)
   }
-  return json({ comments, likedCommentIds })
+  return json({ comments })
 }
 export default function ViewChallengeComments (): JSX.Element {
   const revalidator = useRevalidator()
@@ -27,7 +26,7 @@ export default function ViewChallengeComments (): JSX.Element {
     setShowForm(false)
     revalidator.revalidate()
   }
-  const { comments, likedCommentIds } = useLoaderData<typeof loader>()
+  const { comments } = useLoaderData<typeof loader>()
   const [showForm, setShowForm] = useState(comments.length === 0)
 
   const params = useParams()
@@ -49,7 +48,7 @@ export default function ViewChallengeComments (): JSX.Element {
         </div>
       }
       <div className="max-w-sm">
-        <CommentsContainer comments={comments} isReply={false} allowReplies={true} likedCommentIds={likedCommentIds} />
+        <CommentsContainer comments={comments} isReply={false} allowReplies={true} />
 
       </div>
 
