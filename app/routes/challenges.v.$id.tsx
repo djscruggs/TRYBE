@@ -1,5 +1,5 @@
 import { loadChallengeSummary } from '~/models/challenge.server'
-import { Outlet, useLoaderData, useNavigate, useLocation, useMatches } from '@remix-run/react'
+import { Outlet, useLoaderData, useNavigate, useLocation, useMatches, type MetaFunction } from '@remix-run/react'
 import { useContext, useState } from 'react'
 import { requireCurrentUser } from '~/models/auth.server'
 import type { MemberChallenge, Challenge, ChallengeSummary, CheckIn } from '~/utils/types'
@@ -60,6 +60,11 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs): Promise<
   }
 
   return { challenge, membership }
+}
+export const meta: MetaFunction<typeof loader> = ({
+  data
+}) => {
+  return [{ title: data?.challenge?.name ?? 'Challenge' }]
 }
 export default function ViewChallenge (): JSX.Element {
   const data = useLoaderData<typeof loader>()
