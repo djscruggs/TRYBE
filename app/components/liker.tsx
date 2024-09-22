@@ -22,16 +22,15 @@ export default function Liker (props: LikerProps): JSX.Element {
     if (newCount < 0) {
       newCount = 0
     }
-    console.log('isLiked', isLiked)
     try {
+      setIsLiked(newIsLiked)
+      setCount(newCount)
       if (isLiked) {
         await unlike(itemType, itemId)
       } else {
         await like(itemType, itemId)
       }
-      console.log('newIsLiked', newIsLiked)
-      console.log('newCount', newCount)
-      setIsLiked(newIsLiked)
+
       setCount(newCount)
     } catch (error) {
       toast.error('Error:' + error?.message)

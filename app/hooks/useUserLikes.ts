@@ -8,10 +8,12 @@ interface UserLikes {
   checkin?: number[]
 }
 
+type LikeableType = 'post' | 'comment' | 'note' | 'challenge' | 'thread' | 'checkin'
+
 export function useUserLikes (): {
-  hasLiked: (type: 'comment' | 'post' | 'note' | 'challenge' | 'thread' | 'checkin', id: number) => boolean
-  like: (type: 'comment' | 'post' | 'note' | 'challenge' | 'thread' | 'checkin', id: number) => Promise<void>
-  unlike: (type: 'comment' | 'post' | 'note' | 'challenge' | 'thread' | 'checkin', id: number) => Promise<void>
+  hasLiked: (type: LikeableType, id: number) => boolean
+  like: (type: LikeableType, id: number) => Promise<void>
+  unlike: (type: LikeableType, id: number) => Promise<void>
 } {
   const { currentUser } = useContext(CurrentUserContext)
   const userId = currentUser?.id
@@ -40,33 +42,36 @@ export function useUserLikes (): {
     }
   }
 
-  const hasLiked = (type: 'post' | 'comment' | 'thread' | 'checkin', id: number): boolean => {
+  const hasLiked = (type: LikeableType, id: number): boolean => {
     return likes[type]?.includes(id) ?? false
   }
 
-  const like = async (type: 'post' | 'comment' | 'thread' | 'checkin', id: number, unlike: boolean = false): Promise<void> => {
-    const updatedLikes = { ...likes }
+  const like = async (type: LikeableType, id: number): Promise<void> => {
+    await postLike(type, id, false)
+  }
+
+  const unlike = async (type: LikeableType, id: number): Promise<void> => {
+    await postLike(type, id, true)
+  }
+
+  const postLike = async (type: LikeableType, id: number, unlike: boolean = false): Promise<void> => {
+    const updatedLikes: Record<LikeableType, number[]> = { ...likes }
+
     if (!updatedLikes[type]) {
       updatedLikes[type] = []
     }
-    if (!updatedLikes[type].includes(id)) {
-      updatedLikes[type].push(id)
-      setLikes(updatedLikes)
-      localStorage.setItem('userLikes', JSON.stringify(updatedLikes)) // Update local storage
 
-      // Update remote server
-      try {
-        await postLike(type, id)
-        // await axios.post(`/api/likes/${userId}`, { type, id })
-      } catch (error) {
-        console.error('Failed to like:', error)
+    if (unlike) {
+      updatedLikes[type] = updatedLikes[type].filter((likeId) => likeId !== id)
+    } else {
+      if (!updatedLikes[type].includes(id)) {
+        updatedLikes[type].push(id)
       }
     }
-  }
-  const unlike = async (type: 'comment' | 'post' | 'note' | 'challenge' | 'thread' | 'checkin', id: number): Promise<void> => {
-    await like(type, id, true)
-  }
-  const postLike = async (type: 'comment' | 'post' | 'note' | 'challenge' | 'thread' | 'checkin', id: number, unlike: boolean = false): Promise<void> => {
+
+    setLikes(updatedLikes)
+    localStorage.setItem('userLikes', JSON.stringify(updatedLikes)) // Update local storage
+
     const formData = new FormData()
     const _type = type.toLowerCase()
     if (_type === 'comment') {

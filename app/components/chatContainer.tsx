@@ -32,7 +32,7 @@ export default function ChatContainer (props: ChatContainerProps): JSX.Element {
         <ChatItem key={`comment-${comment.id}`} comment={comment} allowReply={allowReplies} />
       ))}
       {newestComment && (
-        <ChatItem key={`comment-${newestComment.id}`} comment={newestComment} likedCommentIds={likedCommentIds} allowReply={allowReplies} />
+        <ChatItem key={`comment-${newestComment.id}`} comment={newestComment} allowReply={allowReplies} />
       )}
     </div>
   )
