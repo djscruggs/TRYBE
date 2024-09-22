@@ -3,7 +3,7 @@
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = "trybe-production"
+app = "trybe-icy-smoke-8833"
 primary_region = "atl"
 
 ENV = { NODE_ENV = "production" }
