@@ -199,7 +199,7 @@ export default function ViewChallenge (): JSX.Element {
       <div className='flex justify-between mt-6 mb-20 max-w-sm md:max-w-md lg:max-w-lg'>
         <button
             className='w-40 bg-red hover:bg-green-500 text-white font-bold rounded-full p-2 justify-center text-sm disabled:bg-gray-400'
-            onClick={() => { navigate(`/challenges/v/${challenge.id}/checkins/mine`) }}
+            onClick={() => { navigate(`/challenges/v/${challenge.id}/checkins`) }}
           >
           View Progress
         </button>

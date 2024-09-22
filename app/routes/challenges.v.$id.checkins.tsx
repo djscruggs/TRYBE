@@ -1,46 +1,63 @@
 import { requireCurrentUser } from '~/models/auth.server'
 import { type LoaderFunction, json } from '@remix-run/node'
-import { useLoaderData, useRevalidator, useRouteLoaderData, Outlet } from '@remix-run/react'
+import { useLoaderData, useRouteLoaderData } from '@remix-run/react'
 import { fetchCheckIns } from '~/models/challenge.server'
-import { fetchChallengeCheckinComments } from '~/models/comment.server'
-import type { Challenge, MemberChallenge } from '~/utils/types'
-import { ChallengeMemberCheckin } from '~/components/challengeMemberCheckin'
+import type { Challenge, MemberChallenge, CurrentUser } from '~/utils/types'
+import CheckinsList from '~/components/checkinsList'
+import { differenceInDays, format } from 'date-fns'
+import { CircularProgressbarWithChildren, buildStyles } from 'react-circular-progressbar'
 import { useContext } from 'react'
 import { CurrentUserContext } from '~/utils/CurrentUserContext'
-
-import CheckinsList from '~/components/checkinsList'
 import 'react-circular-progressbar/dist/styles.css'
-import { likesByType } from '~/models/like.server'
 export const loader: LoaderFunction = async (args) => {
   const currentUser = await requireCurrentUser(args)
   const userId = Number(args.params.userId ?? currentUser?.id)
   const challengeId = Number(args.params.id)
-  const checkIns = await fetchCheckIns({ challengeId }) as { error?: string }
-  const rawLikes = await likesByType({ userId }) || { comment: [] as number[] }
-  const likes = rawLikes.comment
-  const comments = await fetchChallengeCheckinComments(challengeId)
-
-  return json({ checkIns, likes, comments })
+  const checkIns = await fetchCheckIns({ userId, challengeId }) as { error?: string }
+  return json({ checkIns })
 }
-export default function CheckIns (): JSX.Element {
-  const revalidator = useRevalidator()
-  const { currentUser } = useContext(CurrentUserContext)
-  const { checkIns, error, likes, comments } = useLoaderData<typeof loader>()
-
+export default function MyCheckIns (): JSX.Element {
+  const { checkIns, error } = useLoaderData<typeof loader>()
   const { membership, challenge } = useRouteLoaderData<typeof useRouteLoaderData>('routes/challenges.v.$id') as { membership: MemberChallenge, challenge: Challenge }
+  const { currentUser } = useContext(CurrentUserContext)
   if (error) {
     return <h1>{error}</h1>
   }
-  if (!membership && currentUser?.id !== challenge.userId) {
-    return <p>Loading...</p>
+  if (!membership && challenge.userId !== currentUser?.id) {
+    return <></>
   }
+
   return (
-      <div className='flex flex-col items-start justify-center mt-4  w-full max-w-lg md:max-w-xl'>
-        <Outlet />
-        <ChallengeMemberCheckin showDetails={true} challenge={challenge} memberChallenge={membership} afterCheckIn={() => { revalidator.revalidate() }} />
-        <div className='flex flex-col items-start justify-center mt-4  w-full'>
-          <CheckinsList checkIns={checkIns} allowComments={true} comments={comments}/>
+    <div className='flex flex-col items-start justify-center mt-4  w-full max-w-lg md:max-w-xl'>
+      <div className='w-full flex items-center justify-center mb-8'>
+        <div className='max-w-[200px] flex items-center justify-center'>
+            <ChallengeMemberProgressChart challenge={challenge} checkIns={checkIns} />
         </div>
+      </div>
+      <CheckinsList checkIns={checkIns} allowComments={false} />
     </div>
+  )
+}
+
+export function ChallengeMemberProgressChart ({ challenge, checkIns }: { challenge: Challenge, checkIns: Array<{ createdAt: string }> }): JSX.Element {
+  const numDays = (challenge?.endAt && challenge.startAt) ? differenceInDays(challenge.endAt, challenge.startAt) : 0
+  const typedCheckIns = checkIns as Array<{ createdAt: string }>
+  const uniqueDays = new Set(typedCheckIns.map(checkIn => format(new Date(checkIn.createdAt), 'yyyy-MM-dd'))).size
+  const progress = (uniqueDays / numDays) * 100
+  return (
+    <CircularProgressbarWithChildren
+      value={progress}
+      maxValue={numDays}
+
+      strokeWidth={5}
+      styles={buildStyles({
+        textColor: 'red',
+        pathColor: 'red'
+      })}
+    >
+      <div className='text-center text-5xl text-red'>{uniqueDays} / {numDays}
+      <div className='text-center text-xl text-gray-500'>Days</div>
+      </div>
+    </CircularProgressbarWithChildren>
   )
 }
