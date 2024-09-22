@@ -1,15 +1,8 @@
-
-
-
 @tailwind base;
 @tailwind components;
 
-@font-face {
-  font-family: Source Sans Pro;
-  font-weight: 400;
-  src: url(/fonts/source-sans-pro/SourceSansPro-Regular.otf) format("otf");
-}
-
+/* Import Google Font */
+@import url('https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;500;600;700&display=swap');
 
 @tailwind utilities;
 

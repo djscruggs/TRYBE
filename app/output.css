@@ -46,7 +46,7 @@ html,
   -o-tab-size: 4;
      tab-size: 4;
   /* 3 */
-  font-family: Source Sans Pro, Roboto, Helvetica, Arial, sans-serif;
+  font-family: "Source Sans 3", Roboto, Helvetica, Arial, sans-serif;
   /* 4 */
   font-feature-settings: normal;
   /* 5 */
@@ -578,13 +578,7 @@ video {
   }
 }
 
-@font-face {
-  font-family: Source Sans Pro;
-
-  font-weight: 400;
-
-  src: url(/fonts/source-sans-pro/SourceSansPro-Regular.otf) format("otf");
-}
+/* Import Google Font */
 
 .pointer-events-none {
   pointer-events: none;
@@ -1496,12 +1490,16 @@ video {
   width: 100vw;
 }
 
-.w-60 {
-  width: 15rem;
+.min-w-32 {
+  min-width: 8rem;
 }
 
 .min-w-36 {
   min-width: 9rem;
+}
+
+.min-w-40 {
+  min-width: 10rem;
 }
 
 .min-w-8 {
@@ -1558,18 +1556,6 @@ video {
 
 .min-w-full {
   min-width: 100%;
-}
-
-.min-w-32 {
-  min-width: 8rem;
-}
-
-.min-w-48 {
-  min-width: 12rem;
-}
-
-.min-w-40 {
-  min-width: 10rem;
 }
 
 .max-w-2xl {
@@ -2169,6 +2155,11 @@ video {
   border-top-width: 2px;
 }
 
+.border-\[\#CECECE\] {
+  --tw-border-opacity: 1;
+  border-color: rgb(206 206 206 / var(--tw-border-opacity));
+}
+
 .border-amber-500 {
   --tw-border-opacity: 1;
   border-color: rgb(255 193 7 / var(--tw-border-opacity));
@@ -2573,6 +2564,11 @@ video {
 
 .bg-light-green-500\/20 {
   background-color: rgb(139 195 74 / 0.2);
+}
+
+.bg-lightgrey {
+  --tw-bg-opacity: 1;
+  background-color: rgb(247 246 246 / var(--tw-bg-opacity));
 }
 
 .bg-lime-500 {
@@ -3220,7 +3216,7 @@ video {
 }
 
 .font-sans {
-  font-family: Source Sans Pro, Roboto, Helvetica, Arial, sans-serif;
+  font-family: "Source Sans 3", Roboto, Helvetica, Arial, sans-serif;
 }
 
 .\!text-\[11px\] {

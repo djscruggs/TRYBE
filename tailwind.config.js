@@ -1,15 +1,15 @@
 /** @type {import('tailwindcss').Config} */
 const withMT = require("@material-tailwind/react/utils/withMT");
-const colors = require('tailwindcss/colors')
+const colors = require('tailwindcss/colors');
+
 module.exports = withMT({
   content: ["./app/**/*.{js,jsx,ts,tsx}"],
-  darkMode: ['class', '[data-mode="dark"]'],
-  mode: 'jit',
+  darkMode: ['class', '[data-mode="dark"]'], // Ensure this matches your dark mode strategy
+  mode: 'jit', // Just-In-Time mode for faster builds
   theme: {
-    
     extend: {
       fontFamily: {
-        'sans': ['Source Sans Pro', 'Roboto', 'Helvetica', 'Arial', 'sans-serif']
+        'sans': ['"Source Sans 3"', 'Roboto', 'Helvetica', 'Arial', 'sans-serif'],
       },
       colors: {
         transparent: 'transparent',
@@ -22,11 +22,12 @@ module.exports = withMT({
         black: colors.black,
         red: '#EC5F5C',
         darkgrey: '#5F5F5F',
+        lightgrey: '#F7F6F6',
         yellow: '#F5C44E',
         blue: '#3295B7',
         grey: '#C4C4C4',
         salmon: '#EEAA94',
-        teal: '#1A525C'
+        teal: '#1A525C',
       },
       opacity: {
         '01': '.01',
@@ -49,6 +50,5 @@ module.exports = withMT({
       },
     },
   },
-  
   plugins: [],
-})
+});

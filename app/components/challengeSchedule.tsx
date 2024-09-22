@@ -8,7 +8,7 @@ import {
   differenceInDays,
   isFuture
 } from 'date-fns'
-import { CiCirclePlus } from 'react-icons/ci'
+import { FaCirclePlus } from 'react-icons/fa6'
 import { type Challenge } from '~/utils/types'
 import { userLocale, pluralize } from '~/utils/helpers'
 import { CurrentUserContext } from '~/utils/CurrentUserContext'
@@ -73,7 +73,7 @@ export default function ChallengeSchedule ({ challenge, posts, isSchedule = fals
             {(postsByDayNum[dayNum] || isSchedule) &&
             <div
               key={day.toISOString()}
-              className={`relative p-2  h-24  ${isInRange ? 'bg-grey' : 'bg-white'}`}
+              className={`relative p-2  h-24   ${isInRange ? 'bg-lightgrey border border-[#CECECE]' : 'bg-white'}`}
             >
               <div className="absolute top-0 left-0 m-1 text-xs ">
                 <span className={`${isSchedule ? 'md:hidden' : ''}`}>
@@ -122,7 +122,7 @@ const PostsBlock = ({ post, challenge }: { post: Post, challenge: Challenge }): 
       {((post.publishAt ?? post.published) || currentUser?.id === challenge.userId) &&
           <div
             key={post.id}
-            className={`text-xs overflow-hidden border border-red bg-white rounded-md p-1 text-red w-full text-ellipsis mb-1 ${linkable ? 'cursor-pointer' : ''}`}
+            className={`text-xs overflow-hidden text-black font-bold w-full text-ellipsis mb-1 ${linkable ? 'cursor-pointer' : ''}`}
             onClick={editPost}
           >
             {!post.published
@@ -148,8 +148,8 @@ const NewPostLink = ({ day, challenge }: { day: number, challenge: Challenge }):
   }
   return (
     <div className='flex items-start -mt-3 pt-6 justify-center w-full h-full cursor-pointer'>
-      <CiCirclePlus
-        className='h-8 w-8 text-white bg-red hover:bg-green-600 rounded-full'
+      <FaCirclePlus
+        className='h-8 w-8 text-red hover:bg-green-600 rounded-full'
         onClick={newPost}
       />
     </div>
