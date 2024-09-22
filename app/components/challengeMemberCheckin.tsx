@@ -82,7 +82,7 @@ export function ChallengeMemberCheckin ({ challenge, memberChallenge, showDetail
 
               {linkToMyCheckins &&
                 <div className='underline'>
-                  <Link to={`/challenges/v/${challenge.id}/checkins/mine`}>
+                  <Link to={`/challenges/v/${challenge.id}/checkins`}>
                     View Progress
                   </Link>
                 </div>
