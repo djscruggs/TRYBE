@@ -115,7 +115,7 @@ export default function FormCheckIn (props: FormCheckinProps): JSX.Element {
       if (afterCheckIn) {
         afterCheckIn(result.data.checkIn as CheckIn)
       } else {
-        navigate('/challenges/v/' + challengeId + '/checkins/mine')
+        navigate('/challenges/v/' + challengeId + '/checkins')
       }
     } catch (error) {
       if (axios.isAxiosError(error)) {
