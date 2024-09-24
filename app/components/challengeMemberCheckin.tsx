@@ -19,7 +19,7 @@ export function ChallengeMemberCheckin ({ challenge, memberChallenge, showDetail
   const membership = memberChallenge
   const challengeIsExpired = challenge?.endAt ? isPast(challenge?.endAt) : false
   const location = useLocation()
-  const linkToMyCheckins = !location.pathname.includes('checkins/mine')
+  const linkToMyCheckins = !location.pathname.includes('checkins')
   const formatNextCheckin = (): string => {
     if (!membership?.nextCheckIn) {
       return ''

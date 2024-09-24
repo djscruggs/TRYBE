@@ -207,7 +207,7 @@ export default function ViewChallenge (): JSX.Element {
           size='lg'
           challenge={challenge}
           memberChallenge={membership}
-          afterCheckIn={(checkIn: CheckIn) => { navigate(`/challenges/v/${challenge.id}/checkins/mine`) }}
+          afterCheckIn={(checkIn: CheckIn) => { navigate(`/challenges/v/${challenge.id}/checkins`) }}
           showDetails={false}/>
       </div>
       }
