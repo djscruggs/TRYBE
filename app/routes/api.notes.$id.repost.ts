@@ -9,20 +9,14 @@ export const action: ActionFunction = async (args) => {
 
   const request = args.request
   const rawData = await unstable_parseMultipartFormData(request, uploadHandler)
-  console.log('rawData', rawData.get('unrepost'))
   if (rawData.get('unrepost')) {
-    console.log('unreposting', rawData.get('replyToId'))
     const repost = await loadRepost(rawData.get('replyToId'), currentUser?.id, null)
-    console.log('result of loadRepost', repost)
     if (repost) {
-      console.log('deleting repost', repost)
       await deleteNote(repost.id, currentUser?.id)
     }
     return json({ message: 'Repost deleted' }, 200)
   }
-  console.log('creating repost')
   const image = rawData.get('image')
-  console.log(rawData)
   if (!rawData.get('replyToId')) {
     throw new Error('replyToId is required')
   }
@@ -45,7 +39,6 @@ export const action: ActionFunction = async (args) => {
     result.image = webPath
   }
   const updated = await updateNote(result)
-  console.log('returning', updated)
   return json(updated)
 }
 

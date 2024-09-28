@@ -49,7 +49,6 @@ export const FullLayout = (): JSX.Element => {
   if (currentUser) {
     const redirectTo = localStorage.getItem('redirectTo') ?? ''
     if (redirectTo) {
-      console.log('current user exists, redireting to', redirectTo)
       localStorage.removeItem('redirectTo')
       navigate(redirectTo)
     }

@@ -120,7 +120,6 @@ function App (): JSX.Element {
 
     if (redirectTo && !localStorage.getItem('redirectTo')) {
       localStorage.setItem('redirectTo', redirectTo)
-      console.log('root rediret is ', redirectTo)
     }
   }
 

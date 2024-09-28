@@ -5,7 +5,6 @@ import { requireCurrentUser } from '~/models/auth.server'
 import { type LoaderFunction } from '@remix-run/node'
 
 const inputDir = path.join(__dirname, '../public/images/icons')
-console.log('inputDir', inputDir)
 const outputDir = path.join(__dirname, '../public/images/icons/resized')
 const targetWidth = 150
 const targetHeight = 150
@@ -18,7 +17,6 @@ export const loader: LoaderFunction = async (args) => {
 
       files.forEach(file => {
         const inputFile = path.join(inputDir, file)
-        console.log(inputFile)
         const outputFile = path.join(outputDir, file)
 
         sharp(inputFile)
@@ -28,7 +26,6 @@ export const loader: LoaderFunction = async (args) => {
           })
           .toFile(outputFile, (err, info) => {
             if (err) throw err
-            console.log(`Processed ${file}:`, info)
           })
       })
     })
