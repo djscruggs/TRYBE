@@ -29,18 +29,16 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs): Promise<
 export default function Quote (): JSX.Element {
   const { currentUser } = useContext(CurrentUserContext)
   const { userChallengeCount, userCount } = useLoaderData<LoaderData>()
-  const quote = getRandomQuote()
+  const [quote, setQuote] = useState({ quote: '', author: '' })
+
   const navigate = useNavigate()
   const [navigating, setNavigating] = useState(false)
   const goHome = (): void => {
     setNavigating(true)
-    navigate('/home')
+    navigate('/challenges')
   }
   useEffect(() => {
-    const timer = setTimeout(goHome, 3000)
-    return (): void => {
-      clearTimeout(timer)
-    }
+    setQuote(getRandomQuote())
   }, [])
 
   return (
