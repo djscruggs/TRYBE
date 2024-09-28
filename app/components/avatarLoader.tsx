@@ -17,7 +17,6 @@ export default function AvatarLoader ({ object, marginClass = '', clickable = fa
   useEffect(() => {
     if (!profile) {
       setLoading(true)
-      console.log('loading profile for object', object)
       axios.get(`/api/users/${object.userId}`)
         .then(res => {
           // eslint-disable-next-line @typescript-eslint/no-unsafe-argument

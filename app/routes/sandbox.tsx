@@ -4,7 +4,6 @@ const ogs = require('open-graph-scraper')
 const options = { url: 'http://ogp.me/' }
 export const loader: LoaderFunction = async (args) => {
   const user = await requireCurrentUser(args)
-  console.log('user', user)
 
   const data = await ogs(options)
   const { error, html, result } = data

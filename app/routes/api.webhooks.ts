@@ -27,13 +27,11 @@ export const action: ActionFunction = async ({ request }) => {
   const svix_signature = headers.get('svix-signature')!
 
   if (!svix_id || !svix_timestamp || !svix_signature) {
-    console.log('no svix headers')
     return new Response('Error occured -- no svix headers', {
       status: 400
     })
   }
   const bodyJson = JSON.parse(payload)
-  console.log('bodyJson', bodyJson)
 
   // @todo fix this
   // NOT WORKING
@@ -75,7 +73,6 @@ export const action: ActionFunction = async ({ request }) => {
         profileImage: bodyJson.data.profile_image_url,
         lastLogin: new Date()
       }
-      console.log('data to create', data)
       const user = await createUser(data)
     }
     if (bodyJson.type === 'user.updated') {
@@ -90,7 +87,6 @@ export const action: ActionFunction = async ({ request }) => {
       })
       // update email address
       const primaryEmailAddress = bodyJson.data.email_addresses.find((address: any) => address.id === bodyJson.data.primary_email_address_id).email_address
-      console.log('primaryEmailAddress', primaryEmailAddress)
       await prisma.user.update({
         where: {
           id: user?.id
@@ -114,12 +110,10 @@ export const action: ActionFunction = async ({ request }) => {
       })
     }
     if (bodyJson.type === 'session.created') {
-      console.log('updating lastLogin')
       const data = {
         clerkId: bodyJson.data.user_id,
         lastLogin: new Date()
       }
-      console.log('data', data)
       await updateUser(
         {
           clerkId: bodyJson.data.user_id,
@@ -128,14 +122,12 @@ export const action: ActionFunction = async ({ request }) => {
       )
     }
     if (bodyJson.type === 'user.deleted') {
-      console.log('deleting user')
       await deleteUser({ clerkId: bodyJson.data.id })
     }
   } catch (e) {
-    console.log('error in user operation', e)
+    console.error('error in user operation', e)
   }
   // Console log the full payload to view
-  console.log('Webhook body:', bodyJson)
   return json({ message: 'Webhook received' }, {
     status: 200,
     statusText: 'OK',

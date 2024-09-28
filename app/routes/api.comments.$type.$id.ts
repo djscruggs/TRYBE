@@ -25,8 +25,6 @@ export const loader: LoaderFunction = async (args) => {
     default:
       throw new Error('Invalid type parameter')
   }
-  console.log('query', query)
   const comments = await fetchComments(query)
-  console.log('comments', comments)
   return json(comments)
 }

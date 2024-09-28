@@ -61,7 +61,6 @@ export const fetchComments = async (params: FetchCommentsParams): Promise<prisma
     checkInId: checkInId ? Number(checkInId) : undefined,
     replyToId: replyToId ? Number(replyToId) : undefined
   }
-  console.log('orClause', orClause)
   const includes = generateIncludeObject(5)
   const comments = await prisma.comment.findMany({
     where: {
