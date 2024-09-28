@@ -1,10 +1,9 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { SignedIn, SignedOut, UserButton } from '@clerk/remix'
 import useHasLoaded from '~/utils/useHasLoaded'
-import { useLocation, Outlet, useNavigate, Link, useNavigation } from '@remix-run/react'
+import { useLocation, Outlet, useNavigate, Link } from '@remix-run/react'
 
 import NavLinks from './navlinks'
-import { Spinner } from '@material-tailwind/react'
 import { CurrentUserContext } from '~/utils/CurrentUserContext'
 import {
   // BellIcon,
@@ -29,7 +28,6 @@ export default function Layout (): JSX.Element {
   return (
     <>
       <FullLayout />
-
     </>
   )
 }
@@ -47,7 +45,6 @@ export const FullLayout = (): JSX.Element => {
   const { currentUser } = useContext(CurrentUserContext)
   const location = useLocation()
   const navigate = useNavigate()
-  const navigation = useNavigation()
   const [newOpen, setNewOpen] = useState(false)
   if (currentUser) {
     const redirectTo = localStorage.getItem('redirectTo') ?? ''
@@ -108,11 +105,11 @@ export const FullLayout = (): JSX.Element => {
                 <div className="flex items-center mb-4 mt-10">
                   <div className="flex h-full flex-col px-3 py-4 md:px-2">
                     {showNav &&
-                    <div className="flex grow flex-row justify-between space-x-2 md:flex-col md:space-x-0 md:space-y-2 h-full">
-                        <div className='fixed'>
-                          <NavLinks />
-                        </div>
-                    </div>
+                      <div className="flex grow flex-row justify-between space-x-2 md:flex-col md:space-x-0 md:space-y-2 h-full">
+                          <div className='fixed'>
+                            <NavLinks />
+                          </div>
+                      </div>
                     }
                   </div>
                 </div>
@@ -191,42 +188,42 @@ export const FullLayout = (): JSX.Element => {
                         <TrophyIcon className='cursor-pointer w-8 h-8' />
                       </Link>
                       <div className="flex items-center justify-center relative min-w-8" onClick={(event) => { handlePlusClick(event) }}>
-                          {/* Your plus sign */}
+                           {/* Your plus sign */}
                           <PlusCircleIcon className='w-12 h-12 text-white rounded-full bg-red text-color-white cursor-pointer text-6xl -mt-10' />
                           <AnimatePresence mode='wait' initial={false}>
-                          {newOpen && (
-                              <motion.main
-                              key={useLocation().pathname}
-                              initial={{ opacity: 0 }}
-                              animate={{ opacity: 1 }}
-                              exit={{ opacity: 0 }}
-                              transition={{ duration: 0.4 }}
-                              >
-                              <div className="flex absolute top-[-100px] left-1/2 transform -translate-x-1/2">
-                                  <div onClick={(event) => { handleNewOpt('/posts/new', event) }} className="flex flex-col items-center justify-center w-16 h-16 rounded-full border border-black bg-[#FDC94C] mx-2 cursor-pointer text-sm p-2">
-                                  <ChatBubbleLeftEllipsisIcon className='-scale-x-100' />
-                                      <span className="cursor-pointer text-xs">Post</span>
-                                  </div>
+                            {newOpen && (
+                                <motion.main
+                                key={useLocation().pathname}
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                transition={{ duration: 0.4 }}
+                                >
+                                <div className="flex absolute top-[-100px] left-1/2 transform -translate-x-1/2">
+                                    <div onClick={(event) => { handleNewOpt('/posts/new', event) }} className="flex flex-col items-center justify-center w-16 h-16 rounded-full border border-black bg-[#FDC94C] mx-2 cursor-pointer text-sm p-2">
+                                    <ChatBubbleLeftEllipsisIcon className='-scale-x-100' />
+                                        <span className="cursor-pointer text-xs">Post</span>
+                                    </div>
 
-                                  <div onClick={(event) => { handleNewOpt('/challenges/new', event) }} className="flex flex-col items-center justify-center w-16 h-16 rounded-full border border-black bg-[#FDC94C] mx-2 cursor-pointer text-xxs p-3">
-                                      <TrophyIcon />
-                                      <span className="cursor-pointer text-xs mt-0">Challenge</span>
-                                  </div>
-                                {/* <div onClick={(event) => { handleNewOpt('/groups/new', event) }} className="flex flex-col items-center justify-center w-16 h-16 rounded-full bg-[#FDC94C] mx-2 cursor-pointer text-sm p-1">
-                                      <UsersIcon />
-                                      <span className="cursor-pointer text-xs">Group</span>
-                                  </div>
-                                  <div onClick={(event) => { handleNewOpt('/posts/new', event) }} className="flex flex-col items-center justify-center w-16 h-16 rounded-full bg-[#FDC94C] mx-2  cursor-pointer text-sm p-1" style={{ marginTop: '-24px' }}>
-                                      <ChatBubbleLeftEllipsisIcon className='-scale-x-100' />
-                                      <span className="cursor-pointer text-xs">Post</span>
-                                  </div>
-                                  <div onClick={(event) => { handleNewOpt('/challenges/new', event) }} className="flex flex-col items-center justify-center w-16 h-16 rounded-full bg-[#FDC94C] mx-2 cursor-pointer text-xxs p-2">
-                                      <TrophyIcon />
-                                      <span className="cursor-pointer text-xs mt-0">Challenge</span>
-                                  </div> */}
-                              </div>
-                              </motion.main>
-                          )}
+                                    <div onClick={(event) => { handleNewOpt('/challenges/new', event) }} className="flex flex-col items-center justify-center w-16 h-16 rounded-full border border-black bg-[#FDC94C] mx-2 cursor-pointer text-xxs p-3">
+                                        <TrophyIcon />
+                                        <span className="cursor-pointer text-xs mt-0">Challenge</span>
+                                    </div>
+                                  {/* <div onClick={(event) => { handleNewOpt('/groups/new', event) }} className="flex flex-col items-center justify-center w-16 h-16 rounded-full bg-[#FDC94C] mx-2 cursor-pointer text-sm p-1">
+                                        <UsersIcon />
+                                        <span className="cursor-pointer text-xs">Group</span>
+                                    </div>
+                                    <div onClick={(event) => { handleNewOpt('/posts/new', event) }} className="flex flex-col items-center justify-center w-16 h-16 rounded-full bg-[#FDC94C] mx-2  cursor-pointer text-sm p-1" style={{ marginTop: '-24px' }}>
+                                        <ChatBubbleLeftEllipsisIcon className='-scale-x-100' />
+                                        <span className="cursor-pointer text-xs">Post</span>
+                                    </div>
+                                    <div onClick={(event) => { handleNewOpt('/challenges/new', event) }} className="flex flex-col items-center justify-center w-16 h-16 rounded-full bg-[#FDC94C] mx-2 cursor-pointer text-xxs p-2">
+                                        <TrophyIcon />
+                                        <span className="cursor-pointer text-xs mt-0">Challenge</span>
+                                    </div> */}
+                                </div>
+                                </motion.main>
+                            )}
                           </AnimatePresence>
                       </div>
 
