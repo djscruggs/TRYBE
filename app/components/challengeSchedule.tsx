@@ -8,7 +8,7 @@ import {
   differenceInDays,
   isFuture
 } from 'date-fns'
-import { FaCirclePlus } from 'react-icons/fa6'
+import { HiMiniPlusSmall } from 'react-icons/hi2'
 import { type Challenge } from '~/utils/types'
 import { userLocale, pluralize } from '~/utils/helpers'
 import { CurrentUserContext } from '~/utils/CurrentUserContext'
@@ -147,8 +147,8 @@ const NewPostLink = ({ day, challenge }: { day: number, challenge: Challenge }):
   }
   return (
     <div className='flex items-start -mt-3 pt-6 justify-center w-full h-full cursor-pointer'>
-      <FaCirclePlus
-        className='h-8 w-8 text-red hover:bg-green-600 rounded-full'
+      <HiMiniPlusSmall
+        className='h-8 w-8  text-red bg-white hover:text-white hover:bg-red rounded-full'
         onClick={newPost}
       />
     </div>

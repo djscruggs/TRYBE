@@ -3946,6 +3946,10 @@ video {
   outline-offset: 2px;
 }
 
+.-outline-offset-2 {
+  outline-offset: -2px;
+}
+
 .outline-darkgrey {
   outline-color: #5F5F5F;
 }
@@ -5237,6 +5241,11 @@ video {
 .hover\:bg-yellow:hover {
   --tw-bg-opacity: 1;
   background-color: rgb(245 196 78 / var(--tw-bg-opacity));
+}
+
+.hover\:bg-white:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgb(255 255 255 / var(--tw-bg-opacity));
 }
 
 .hover\:bg-opacity-80:hover {
