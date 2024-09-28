@@ -7,8 +7,8 @@ import { useEffect, useState } from 'react'
 import ChallengeList from '~/components/challengeList'
 
 export const loader: LoaderFunction = async (args) => {
-  const { searchParams } = new URL(args.request.url)
-  const status = searchParams.get('status') ?? 'active'
+  const { status } = args.params ?? 'active'
+
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const currentUser = await requireCurrentUser(args)
   const uid = Number(currentUser?.id)
@@ -34,17 +34,13 @@ export default function ChallengesIndex (): JSX.Element {
   const params = useParams()
   const [status, setStatus] = useState(params.status ?? 'active')
   const navigate = useNavigate()
-  const isActive = status === 'active'
-  const isUpcoming = status === 'upcoming'
-  const isArchived = status === 'archived'
-  const isMine = status === 'mine'
   if (error) {
     return <h1>{error}</h1>
   }
   if (!data) {
     return <p>Loading...</p>
   }
-  const handleStatusChange = (newStatus: string) => {
+  const handleStatusChange = (newStatus: string): void => {
     setStatus(newStatus)
     navigate(`/challenges/${newStatus}`)
   }
@@ -57,10 +53,10 @@ export default function ChallengesIndex (): JSX.Element {
 
             <div className="w-full">
               <div className='text-lg py-2 flex items-center justify-center w-full relative'>
-                  <div className={`w-fit ${isActive ? 'border-b-2 border-red' : 'cursor-pointer'}`} onClick={() => { handleStatusChange('active') }}>Active</div>
-                  <div className={`w-fit mx-8 ${isUpcoming ? 'border-b-2 border-red' : 'cursor-pointer'}`} onClick={() => { handleStatusChange('upcoming') }}>Upcoming</div>
-                  <div className={`w-fit mr-8 ${isMine ? 'border-b-2 border-red' : 'cursor-pointer'}`} onClick={() => { handleStatusChange('mine') }}>Hosting</div>
-                  <div className={`absolute right-2 text-xs text-gray-500 underline cursor-pointer ${isArchived ? 'text-red' : ''}`} onClick={() => { navigate('/challenges/archived') }}>Archived</div>
+                  <div className={`w-fit ${status === 'active' ? 'border-b-2 border-red' : 'cursor-pointer'}`} onClick={() => { handleStatusChange('active') }}>Active</div>
+                  <div className={`w-fit mx-8 ${status === 'upcoming' ? 'border-b-2 border-red' : 'cursor-pointer'}`} onClick={() => { handleStatusChange('upcoming') }}>Upcoming</div>
+                  <div className={`w-fit mr-8 ${status === 'mine' ? 'border-b-2 border-red' : 'cursor-pointer'}`} onClick={() => { handleStatusChange('mine') }}>Hosting</div>
+                  <div className={`absolute right-2 text-xs text-gray-500 underline cursor-pointer ${status === 'archived' ? 'text-red' : ''}`} onClick={() => { handleStatusChange('archived') }}>Archived</div>
 
               </div>
               <div className="flex flex-col items-center max-w-lg w-full">

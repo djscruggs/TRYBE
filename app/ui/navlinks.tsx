@@ -1,6 +1,6 @@
 // NavLinks.tsx
 
-import { useLocation } from 'react-router-dom'
+import { useLocation, useNavigation } from 'react-router-dom'
 import {
   HomeIcon,
   TrophyIcon,
@@ -10,12 +10,14 @@ import {
 import { HiOutlineLogout } from 'react-icons/hi'
 import { CurrentUserContext } from '~/utils/CurrentUserContext'
 import { useContext } from 'react'
+import { Spinner } from '@material-tailwind/react'
 import { Link } from '@remix-run/react'
 import { useClerk } from '@clerk/remix'
 const NavLinks = (): JSX.Element => {
   const { currentUser } = useContext(CurrentUserContext)
   const location = useLocation()
   const { signOut } = useClerk()
+  const navigation = useNavigation()
   return (
       <>
       {currentUser &&
@@ -74,6 +76,7 @@ const NavLinks = (): JSX.Element => {
             <HiOutlineLogout className='h-8 w-8 cursor-pointer mb-1 text-darkgrey' onClick={signOut}/>
             <span className="cursor-pointer">Logout</span>
           </div>
+          {navigation.state === 'loading' && <Spinner />}
         </div>
       }
       </>
