@@ -57,7 +57,7 @@ export default function ChallengeSchedule ({ challenge, posts, isSchedule = fals
         </>
     }
 
-      <div className={`${isSchedule ? 'md:grid' : ''}  grid-cols-7 gap-1 w-full mt-4`}>
+      <div className={`${isSchedule ? 'md:grid' : ''}  grid-cols-7 gap-0 w-full mt-4 `}>
         {/* only show the days if we're on the schedule page */}
         {weekDays.map((day) => (
             <div key={day} className={`hidden ${isSchedule ? 'md:block' : ''} text-center font-bol`}>
