@@ -14,11 +14,8 @@ export default function ChatContainer (props: ChatContainerProps): JSX.Element {
 
   useEffect(() => {
     setNewestComment(initialNewestComment ?? null)
-  }, [initialNewestComment])
-
-  useEffect(() => {
-    setComments(initialComments)
-  }, [initialComments])
+    setComments(initialComments ?? [])
+  }, [props])
 
   function getUniqueComments (): Comment[] {
     const uniqueIds = new Set(comments.map(comment => comment.id))

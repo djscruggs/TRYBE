@@ -10,6 +10,7 @@ import FormChat from '~/components/formChat'
 import ChatContainer from '~/components/chatContainer'
 import { CurrentUserContext } from '~/utils/CurrentUserContext'
 import { CheckInButton } from '~/components/checkinButton'
+import { isFuture } from 'date-fns'
 interface ChallengeChatData {
   groupedData: Record<string, { posts: Post[], checkIns: { empty: CheckIn[], nonEmpty: CheckIn[] }, comments: Comment[] }>
 }
@@ -186,27 +187,39 @@ export default function ViewChallengeChat (): JSX.Element {
       groupedData[date].checkIns.empty.push(checkIn as unknown as CheckIn)
     }
   }
+  const today = new Date().toISOString().split('T')[0]
+  // flag to check if today is in the groupedData. f not we'll need to add an empty block to hold it
+  const hasToday = Object.keys(groupedData).includes(today)
   return (
     <div className='max-w-2xl'>
       {/* had to add this additional date sorting because javascript objects don't always follow the order of insertion */}
       {Object.entries(groupedData)
         .sort(([dateA], [dateB]) => new Date(dateA).getTime() - new Date(dateB).getTime())
-        .map(([date, { posts, checkIns, comments }]) => (
-        <div key={date}>
-          {posts.map((post: Post) => {
-            const publishAt = post.publishAt ? new Date(post.publishAt) : null
-            return (
-              <div key={`post-${post.id}`} className='max-w-sm md:max-w-xl mb-6'>
-                  <CardPost post={{ ...post, publishAt }} hideMeta={false} fullPost={false} isChat={true}/>
-                </div>
-            )
-          })}
-          <CheckinsList checkIns={checkIns.nonEmpty as unknown as CheckIn[]} allowComments={true} />
-          <ChatContainer comments={comments as unknown as Comment[]} newestComment={newestComment} allowReplies={true}/>
-          {/* Render empty check-ins if needed */}
-        </div>
-        ))}
-      {(currentUser && membership && !hasCheckedInToday) && (
+        .map(([date, { posts, checkIns, comments }]) => {
+          const isToday = date === today
+          return (
+            <ChallengeDayContent
+              key={date}
+              date={date}
+              posts={posts}
+              checkIns={checkIns}
+              comments={comments}
+              newestComment={isToday ? newestComment : null}
+            />
+          )
+        })}
+        {/* this is an additional block for today's date if it doesn't exist in the groupedData */}
+       {!hasToday && (
+          <ChallengeDayContent
+            key={today}
+            date={today}
+            posts={[]}
+            checkIns={{ empty: [], nonEmpty: [] }}
+            comments={[]}
+            newestComment={newestComment}
+          />
+       )}
+      {(currentUser && membership && !hasCheckedInToday && !isFuture(challenge.startAt)) && (
         <>
         <div className="flex justify-between items-center my-4">
           <p>You have not checked in today</p>
@@ -215,9 +228,43 @@ export default function ViewChallengeChat (): JSX.Element {
         </>
       )}
       {currentUser &&
+      <div className='max-w-lg  pt-4'>
           <FormChat afterSave={afterSaveComment} prompt="Sound off..." onPending={onPendingComment} onError={onSaveCommentError} objectId={challenge.id} type={'challenge'} inputRef={inputRef} />
+      </div>
       }
 
+    </div>
+  )
+}
+
+interface ChallengeDayContentProps {
+  date: string
+  posts: Post[]
+  checkIns: { empty: CheckIn[], nonEmpty: CheckIn[] }
+  comments: Comment[]
+  newestComment: Comment | null
+}
+
+export function ChallengeDayContent ({
+  date,
+  posts,
+  checkIns,
+  comments,
+  newestComment
+}: ChallengeDayContentProps): JSX.Element {
+  return (
+    <div key={date}>
+      {posts.map((post: Post) => {
+        const publishAt = post.publishAt ? new Date(post.publishAt) : null
+        return (
+          <div key={`post-${post.id}`} className='max-w-sm md:max-w-xl mb-6'>
+            <CardPost post={{ ...post, publishAt }} hideMeta={false} fullPost={false} isChat={true} />
+          </div>
+        )
+      })}
+      <CheckinsList checkIns={checkIns.nonEmpty as unknown as CheckIn[]} allowComments={true} />
+      <ChatContainer comments={comments as unknown as Comment[]} newestComment={newestComment} allowReplies={true} />
+      {/* Render empty check-ins if needed */}
     </div>
   )
 }
