@@ -129,7 +129,7 @@ export default function UserSpecificContent (): JSX.Element {
                         </p>
                       ))}
                       </>
-                      : <p>You have not created any notes. Go to the <Link to="/home" className="text-blue underline">home page</Link> and create one now!</p>
+                      : <p>You have not created any notes. Go to the <Link to="/challenges" className="text-blue underline">home page</Link> and create one now!</p>
                   }
 
                   </div>

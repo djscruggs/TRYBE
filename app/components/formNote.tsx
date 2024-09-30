@@ -132,7 +132,7 @@ export default function FormNote (props: FormNoteProps): JSX.Element {
       if (afterSave) {
         afterSave(result.data as NoteSummary)
       } else {
-        navigate('/home')
+        navigate('/challenges')
       }
     } catch (error) {
       console.error(error)

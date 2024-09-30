@@ -23,7 +23,7 @@ const NavLinks = (): JSX.Element => {
       {currentUser &&
         <div className="flex flex-col justify-start items-center min-h-full">
           {/* <div className={`w-24 flex items-center flex-col text-darkgrey text-center mb-4 p-2 rounded-lg ${location.pathname === '/' ? 'bg-gray-100' : 'hover:bg-gray-300'}`}>
-            <Link to="/home" className='flex items-center flex-col' prefetch='render'>
+            <Link to="/challenges" className='flex items-center flex-col' prefetch='render'>
               <HomeIcon className='className="h-8 w-8 cursor-pointer mb-1' />
               <span className="cursor-pointer ">Home</span>
             </Link>
