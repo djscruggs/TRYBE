@@ -112,8 +112,8 @@ export interface Challenge {
   name: string | null | undefined
   description: string | null | undefined
   mission: string | null | undefined
-  startAt: Date | null | undefined
-  endAt: Date | null | undefined
+  startAt: Date
+  endAt: Date
   frequency: 'DAILY' | 'WEEKDAYS' | 'ALTERNATING' | 'WEEKLY' | 'CUSTOM'
   coverPhotoMeta: Record<string, string> | null
   icon: string | null | undefined
