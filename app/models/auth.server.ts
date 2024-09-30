@@ -27,7 +27,7 @@ export async function createUserSession (userId: string | number, redirectTo: st
   const session = await storage.getSession()
   session.set('userId', userId)
   if (!redirectTo) {
-    return redirect('/home')
+    return redirect('/challenges')
   }
   return redirect(redirectTo, {
     headers: {
@@ -51,7 +51,7 @@ export async function register (user: RegisterForm): Promise<Response> {
       { status: 400 }
     )
   }
-  return await createUserSession(newUser.id, '/home')
+  return await createUserSession(newUser.id, '/challenges')
 }
 
 export async function login ({ email, password, request }: LoginForm): Promise<Response> {
@@ -61,7 +61,7 @@ export async function login ({ email, password, request }: LoginForm): Promise<R
   if (!currentUser || !(await bcrypt.compare(String(password), String(currentUser.password)))) { return json({ error: 'Incorrect login' }, { status: 400 }) }
   const parsedUrl = new URL(request.url)
 
-  let redirect = '/home'
+  let redirect = '/challenges'
   if (parsedUrl.searchParams) {
     const params = parsedUrl.searchParams
     if (params.get('redirectTo')) {

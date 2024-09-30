@@ -9,7 +9,7 @@ import { Button } from '@material-tailwind/react'
 
 export const loader: LoaderFunction = async (args) => {
   // If there's already acurrentUser in the session, redirect to the home page
-  return (await requireCurrentUser(args)) ? redirect('/home') : null
+  return (await requireCurrentUser(args)) ? redirect('/challenges') : null
 }
 export const action: ActionFunction = async ({ request }) => {
   const form = await request.formData()

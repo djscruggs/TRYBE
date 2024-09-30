@@ -77,7 +77,7 @@ export default function CardNote (props: CardNoteProps): JSX.Element {
       .then(() => {
         toast.success('Note deleted')
         revalidator.revalidate()
-        navigate('/home')
+        navigate('/challenges')
       })
       .catch(error => {
         toast.error('Error deleting note')

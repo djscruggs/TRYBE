@@ -65,7 +65,7 @@ export default function CardThread (props: CardThreadProps): JSX.Element {
       .then(() => {
         toast.success('Thread deleted')
         revalidator.revalidate()
-        navigate('/home')
+        navigate('/challenges')
       })
       .catch(error => {
         toast.error('Error deleting thread')

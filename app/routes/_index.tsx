@@ -6,7 +6,7 @@ import { WelcomePage } from '~/components/welcomepage'
 export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
   const { userId } = await getAuth(args)
   if (userId) {
-    return redirect('/home')
+    return redirect('/challenges')
   }
   return null
 }
