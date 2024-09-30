@@ -80,7 +80,7 @@ export default function CardPost (props: CardPostProps): JSX.Element {
         if (revalidator) {
           revalidator.revalidate()
         }
-        navigate('/challenges')
+        navigate('/ch')
       })
       .catch(error => {
         toast.error('Error deleting post')

@@ -123,7 +123,7 @@ const PostsBlock = ({ post, challenge, isSchedule }: { post: Post, challenge: Ch
           <div
             key={post.id}
             className={`${isSchedule ? 'text-xs' : 'text-xl h-full flex items-center'} overflow-hidden text-black font-bold w-full text-ellipsis mb-1 ${linkable ? 'cursor-pointer' : ''}`}
-            onClick={goToPost}
+            onClick={linkable ? goToPost : undefined}
           >
             {!post.published
               ? <div className='bg-red text-white text-center p-1 rounded-md'>Draft</div>
