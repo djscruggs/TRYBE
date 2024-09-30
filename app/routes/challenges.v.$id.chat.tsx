@@ -10,7 +10,7 @@ import FormChat from '~/components/formChat'
 import ChatContainer from '~/components/chatContainer'
 import { CurrentUserContext } from '~/utils/CurrentUserContext'
 import { CheckInButton } from '~/components/checkinButton'
-import { isFuture } from 'date-fns'
+import { isFuture, isPast } from 'date-fns'
 interface ChallengeChatData {
   groupedData: Record<string, { posts: Post[], checkIns: { empty: CheckIn[], nonEmpty: CheckIn[] }, comments: Comment[] }>
 }
@@ -146,6 +146,9 @@ export default function ViewChallengeChat (): JSX.Element {
     }
     setNewestComment(comment)
   }
+  function canCheckIn (): boolean {
+    return currentUser && membership && !hasCheckedInToday && !isFuture(challenge.startAt) && !isPast(challenge.endAt)
+  }
   const onPendingComment = (comment: Comment): void => {
     setNewestComment(comment)
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -219,7 +222,7 @@ export default function ViewChallengeChat (): JSX.Element {
             newestComment={newestComment}
           />
        )}
-      {(currentUser && membership && !hasCheckedInToday && !isFuture(challenge.startAt)) && (
+      {canCheckIn() && (
         <>
         <div className="flex justify-between items-center my-4">
           <p>You have not checked in today</p>
