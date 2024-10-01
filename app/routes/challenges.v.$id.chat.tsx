@@ -128,13 +128,11 @@ export default function ViewChallengeChat (): JSX.Element {
 
   // refetch data every 15 seconds in case someone else has checked in or commented
   useEffect(() => {
-    const intervalId = setInterval(() => {
+    const refreshChat = setInterval(() => {
       revalidator.revalidate()
-      // You can call any function or perform any action here
     }, 15000)
-
     // Cleanup interval on component unmount
-    return () => { clearInterval(intervalId) }
+    return () => { clearInterval(refreshChat) }
   }, [])
   const inputRef = useRef<HTMLInputElement>(null)
   const [newestComment, setNewestComment] = useState<Comment | null>(null)

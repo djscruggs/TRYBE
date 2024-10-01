@@ -17,7 +17,11 @@ export const loader: LoaderFunction = async (args) => {
       }
     },
     include: {
-      user: true,
+      user: {
+        include: {
+          profile: true
+        }
+      },
       challenge: {
         include: {
           members: {
@@ -41,7 +45,7 @@ export const loader: LoaderFunction = async (args) => {
           to: member.user.email,
           replyTo: post.user.email,
           dynamic_template_data: {
-            name: member.user.profile?.fullName,
+            name: post.user.profile?.fullName ?? '',
             post_url: `https://www.jointhetrybe.com/posts/${post.id}`,
             date: post.createdAt.toLocaleDateString(),
             subject: `New post from ${post.challenge?.name}`,
