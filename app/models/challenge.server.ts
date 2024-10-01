@@ -268,6 +268,22 @@ export const fetchChallengeMembers = async (cId: string | number): Promise<Membe
   return await prisma.memberChallenge.findMany(params) as unknown as MemberChallenge[]
 }
 export const joinChallenge = async (userId: number, challengeId: number): Promise<MemberChallenge> => {
+  // Check if the member challenge already exists
+  const existingMemberChallenge = await prisma.memberChallenge.findFirst({
+    where: {
+      userId,
+      challengeId
+    },
+    orderBy: {
+      createdAt: 'desc'
+    }
+  })
+
+  if (existingMemberChallenge) {
+    return existingMemberChallenge
+  }
+
+  // If not, create a new member challenge
   return await prisma.memberChallenge.create({
     data: {
       userId,
