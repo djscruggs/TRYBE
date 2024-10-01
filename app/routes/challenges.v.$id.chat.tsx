@@ -1,4 +1,4 @@
-import { useLoaderData, useRouteLoaderData } from '@remix-run/react'
+import { useLoaderData, useRouteLoaderData, useRevalidator } from '@remix-run/react'
 import { useEffect, useRef, useState, useContext } from 'react'
 import { requireCurrentUser } from '~/models/auth.server'
 import type { Post, CheckIn, Challenge, Comment, MemberChallenge } from '~/utils/types'
@@ -16,7 +16,7 @@ interface ChallengeChatData {
 }
 
 export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
-  const user = await requireCurrentUser(args)
+  await requireCurrentUser(args)
   const { params } = args
   if (!params.id) {
     return null
@@ -120,10 +120,22 @@ export default function ViewChallengeChat (): JSX.Element {
   if (!groupedData) {
     return <p>No data.</p>
   }
+  const revalidator = useRevalidator()
   // scroll to bottom of the page when the data changes
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [groupedData])
+
+  // refetch data every 15 seconds in case someone else has checked in or commented
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      revalidator.revalidate()
+      // You can call any function or perform any action here
+    }, 15000)
+
+    // Cleanup interval on component unmount
+    return () => { clearInterval(intervalId) }
+  }, [])
   const inputRef = useRef<HTMLInputElement>(null)
   const [newestComment, setNewestComment] = useState<Comment | null>(null)
   const afterSaveComment = (comment: Comment): void => {
@@ -147,7 +159,7 @@ export default function ViewChallengeChat (): JSX.Element {
     setNewestComment(comment)
   }
   function canCheckIn (): boolean {
-    return currentUser && membership && !hasCheckedInToday && !isFuture(challenge.startAt) && !isPast(challenge.endAt)
+    return Boolean(currentUser) && membership && !hasCheckedInToday && !isFuture(challenge.startAt) && !isPast(challenge.endAt)
   }
   const onPendingComment = (comment: Comment): void => {
     setNewestComment(comment)
