@@ -124,7 +124,12 @@ export default function ViewChallengeChat (): JSX.Element {
   // scroll to bottom of the page when the data changes
   useEffect(() => {
     // don't scroll if there is an anchor in the URL
-    if (!window.location.hash) {
+    if (window.location.hash) {
+      const anchor = document.querySelector(window.location.hash)
+      if (anchor) {
+        anchor.scrollIntoView({ behavior: 'smooth' })
+      }
+    } else {
       bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
     }
   }, [groupedData])
