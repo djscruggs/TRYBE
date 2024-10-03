@@ -22,6 +22,7 @@ interface FormChatProps {
   onError?: (error: Error) => void
   comment?: Comment
   prompt?: string
+  autoFocus?: boolean
   inputRef?: React.RefObject<HTMLTextAreaElement | HTMLInputElement>
 }
 
@@ -226,7 +227,7 @@ export default function FormChat (props: FormChatProps): JSX.Element {
           rows={2}
           inputRef={inputRef}
           required={true}
-          autoFocus={true}
+          autoFocus={props.autoFocus ?? true}
           value={state.body}
           onChange={(ev) => {
             setState(prev => ({ ...prev, body: String(ev.target.value) }))
