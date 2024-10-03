@@ -123,6 +123,7 @@ export default function ViewChallengeChat (): JSX.Element {
   const revalidator = useRevalidator()
   // scroll to bottom of the page when the data changes
   useEffect(() => {
+    console.log('hash', window.location.hash)
     // don't scroll if there is an anchor in the URL
     if (window.location.hash) {
       const anchor = document.querySelector(window.location.hash)
@@ -133,7 +134,6 @@ export default function ViewChallengeChat (): JSX.Element {
       bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
     }
   }, [groupedData])
-
   // refetch data every 15 seconds in case someone else has checked in or commented
   useEffect(() => {
     const refreshChat = setInterval(() => {
@@ -240,16 +240,17 @@ export default function ViewChallengeChat (): JSX.Element {
             newestComment={newestComment}
           />
        )}
-      {canCheckIn() && (
-        <>
-        <div className="flex justify-between items-center my-4">
-          <p>You have not checked in today</p>
-          <CheckInButton challenge={challenge} memberChallenge={membership} label='Check In Now' afterCheckIn={handleAfterCheckIn} size='sm'/>
-        </div>
-        </>
-      )}
+
       {currentUser &&
-      <div className='max-w-lg  pt-4'>
+      <div className='fixed w-full max-w-2xl bottom-0  bg-white bg-opacity-70' >
+         {canCheckIn() && (
+            <>
+            <div className="flex justify-between items-center my-4">
+              <p>You have not checked in today</p>
+              <CheckInButton challenge={challenge} memberChallenge={membership} label='Check In Now' afterCheckIn={handleAfterCheckIn} size='sm'/>
+            </div>
+            </>
+         )}
           <FormChat
             afterSave={afterSaveComment}
             prompt="Sound off..."
@@ -262,7 +263,8 @@ export default function ViewChallengeChat (): JSX.Element {
           />
         </div>
       }
-
+      {/* this is a spacer at the bottom that the app scrolls to on load */}
+      <div ref={bottomRef} className='min-h-[40px]'></div>
     </div>
   )
 }
