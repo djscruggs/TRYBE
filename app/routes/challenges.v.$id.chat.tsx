@@ -123,7 +123,10 @@ export default function ViewChallengeChat (): JSX.Element {
   const revalidator = useRevalidator()
   // scroll to bottom of the page when the data changes
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
+    // don't scroll if there is an anchor in the URL
+    if (!window.location.hash) {
+      bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
+    }
   }, [groupedData])
 
   // refetch data every 15 seconds in case someone else has checked in or commented
@@ -242,8 +245,17 @@ export default function ViewChallengeChat (): JSX.Element {
       )}
       {currentUser &&
       <div className='max-w-lg  pt-4'>
-          <FormChat afterSave={afterSaveComment} prompt="Sound off..." onPending={onPendingComment} onError={onSaveCommentError} objectId={challenge.id} type={'challenge'} inputRef={inputRef} />
-      </div>
+          <FormChat
+            afterSave={afterSaveComment}
+            prompt="Sound off..."
+            onPending={onPendingComment}
+            onError={onSaveCommentError}
+            objectId={challenge.id}
+            type={'challenge'}
+            inputRef={inputRef}
+            autoFocus={!window.location.hash}
+          />
+        </div>
       }
 
     </div>
