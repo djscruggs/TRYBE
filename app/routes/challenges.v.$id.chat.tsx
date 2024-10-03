@@ -270,7 +270,7 @@ export function ChallengeDayContent ({
       {posts.map((post: Post) => {
         const publishAt = post.publishAt ? new Date(post.publishAt) : null
         return (
-          <div key={`post-${post.id}`} className='max-w-sm md:max-w-xl mb-6'>
+          <div key={`post-${post.id}`} className='max-w-sm md:max-w-xl mb-6' id={`post-${post.id}`}>
             <CardPost post={{ ...post, publishAt }} hideMeta={false} fullPost={false} isChat={true} />
           </div>
         )

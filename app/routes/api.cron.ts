@@ -46,7 +46,7 @@ export const loader: LoaderFunction = async (args) => {
           replyTo: post.user.email,
           dynamic_template_data: {
             name: post.user.profile?.fullName ?? '',
-            post_url: `https://www.jointhetrybe.com/posts/${post.id}`,
+            post_url: `https://app.jointhetrybe.com/challenges/v/${post.challenge?.id}/chat#post-${post.id}`,
             date: post.createdAt.toLocaleDateString(),
             subject: `New post from ${post.challenge?.name}`,
             title: post.title,
