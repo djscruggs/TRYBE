@@ -41,7 +41,6 @@ export default function CardPost (props: CardPostProps): JSX.Element {
   if (!post) return <></>
   const [showLightbox, setShowLightbox] = useState(false)
   const [editing, setEditing] = useState(false)
-  const totalLikes = post._count?.likes ?? 0
   const location = useLocation()
   const isOwnRoute = location.pathname === `/posts/${post.id}`
   const navigate = useNavigate()
@@ -142,7 +141,14 @@ export default function CardPost (props: CardPostProps): JSX.Element {
             </div>
             <div className="flex justify-center items-center cursor-pointer">
 
-            <div className='mr-2'><Liker itemId={Number(post.id)} itemType='post' count={Number(totalLikes)}/></div>
+            <div className='mr-2'>
+              <Liker
+                itemId={post.id}
+                itemType='post'
+                count={post.likeCount}
+                className='mr-2'
+              />
+            </div>
             </div>
             {post.public && post.published &&
             <div className="flex justify-center items-center cursor-pointer">
