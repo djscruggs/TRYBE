@@ -6,18 +6,24 @@ import { Lightbox } from 'react-modal-image'
 import AvatarLoader from './avatarLoader'
 import FormCheckIn from './formCheckin'
 import { useNavigate } from 'react-router-dom'
-import type { CheckIn, Comment, Profile } from '~/utils/types'
+import type { CheckIn, Comment, Post, Profile } from '~/utils/types'
 import Liker from '~/components/liker'
 import ActionsPopupMenu from './actionsPopupMenu'
 import CommentsIconWithCount from '~/components/commentsIcon'
 import ChatDrawer from '~/components/chatDrawer'
+import CardPost from './cardPost'
+import ChatContainer from './chatContainer'
+// Import the hook
+
 interface CheckinsListProps {
   checkIns: CheckIn[]
-  comments?: Record<number, Comment[]>
+  posts: Post[]
+  comments?: Comment[]
+  newestComment: Comment | null
   allowComments: boolean
 }
 
-export default function CheckinsList ({ checkIns, comments, allowComments }: CheckinsListProps): JSX.Element {
+export default function CheckinsList ({ checkIns, posts, comments, newestComment, allowComments }: CheckinsListProps): JSX.Element {
   const [checkInsArr, setCheckInsArr] = useState(checkIns)
   const handleDelete = (deletedCheckIn: CheckIn): void => {
     setCheckInsArr(checkInsArr.filter(checkIn => checkIn.id !== deletedCheckIn.id))
@@ -33,10 +39,30 @@ export default function CheckinsList ({ checkIns, comments, allowComments }: Che
     acc[date].push(checkIn)
     return acc
   }, {})
+  const postsByDay = posts.reduce<Record<string, Post[]>>((acc, post) => {
+    const date = post.publishAt ? new Date(post.publishAt).toLocaleDateString() : new Date(post.createdAt).toLocaleDateString()
+    if (!acc[date]) {
+      acc[date] = []
+    }
+    acc[date].push(post)
+    return acc
+  }, {})
+  const commentsByDay = comments?.reduce<Record<string, Comment[]>>((acc, comment) => {
+    const date = new Date(comment.createdAt as unknown as string).toLocaleDateString() // Cast to string
+    if (!acc[date]) {
+      acc[date] = []
+    }
+    acc[date].push(comment)
+    return acc
+  }, {})
+  const allDates = new Set([...Object.keys(checkInsByDay), ...Object.keys(postsByDay), ...Object.keys(commentsByDay ?? {})])
 
   return (
     <div className='text-left flex flex-col w-full'>
-      {Object.entries(checkInsByDay).map(([date, checkIns]) => {
+      {Array.from(allDates).map(date => {
+        const checkIns = checkInsByDay[date] || []
+        const posts = postsByDay[date] || []
+
         // Filter out empty check-ins and count unique users for the day
         const emptyCheckIns = checkIns.filter(checkIn => !checkIn.body?.length)
         const uniqueUsers = new Set(emptyCheckIns.map(checkIn => checkIn.userId)).size
@@ -53,11 +79,28 @@ export default function CheckinsList ({ checkIns, comments, allowComments }: Che
               return (
                 <div key={checkIn.id} className={`relative pt-2 ${index === 0 ? '' : 'border-t'}`}>
                   <div className='mt-2'>
-                    <CheckinRow checkIn={checkIn} comments={_comments[checkIn.id]} allowComments={allowComments} afterDelete={handleDelete}/>
+                    <CheckinRow checkIn={checkIn} comments={[]} allowComments={allowComments} afterDelete={handleDelete} />
                   </div>
                 </div>
               )
             })}
+            {posts.map((post: Post) => (
+                <div key={`post-${post.id}`} className='max-w-sm md:max-w-xl mb-6' id={`post-${post.id}`}>
+                  <CardPost post={post} hideMeta={false} fullPost={false} isChat={true} />
+                </div>
+            ))}
+            {commentsByDay?.[date] &&
+            <>
+
+                  <ChatContainer
+                    key={date} // Add a unique key prop
+                    comments={commentsByDay[date] || []}
+                    newestComment={newestComment}
+                    allowReplies={true}
+                  />
+
+            </>
+            }
           </div>
         )
       })}
@@ -70,6 +113,7 @@ interface CheckinRowProps {
   comments?: Comment[]
   allowComments: boolean
   afterDelete: (deletedCheckIn: CheckIn) => void
+
 }
 export function CheckinRow (props: CheckinRowProps): JSX.Element {
   const { currentUser } = useContext(CurrentUserContext)
@@ -78,7 +122,9 @@ export function CheckinRow (props: CheckinRowProps): JSX.Element {
   const [checkInObj, setCheckInObj] = useState<CheckIn>(checkIn)
   const [deleted, setDeleted] = useState(false)
   const [showComments, setShowComments] = useState(false)
-
+  const onClose = (): void => {
+    setShowComments(false)
+  }
   const created = new Date(props.checkIn.createdAt)
   const formatted = created.toLocaleTimeString(locale, { hour: 'numeric', minute: 'numeric' })
   const resetOnSave = (checkIn: CheckIn): void => {
@@ -137,7 +183,7 @@ export function CheckinRow (props: CheckinRowProps): JSX.Element {
                   <ChatDrawer
                     isOpen={showComments}
                     placement='right'
-                    onClose={() => { setShowComments(false) }}
+                    onClose={onClose}
                     comments={comments}
                     size={500}
                     id={checkInObj.id}

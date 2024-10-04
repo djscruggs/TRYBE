@@ -4,13 +4,12 @@ import { requireCurrentUser } from '~/models/auth.server'
 import type { Post, CheckIn, Challenge, Comment, MemberChallenge } from '~/utils/types'
 import { type LoaderFunction, type LoaderFunctionArgs } from '@remix-run/node'
 import { prisma } from '~/models/prisma.server'
-import CardPost from '~/components/cardPost'
 import CheckinsList from '~/components/checkinsList'
 import FormChat from '~/components/formChat'
-import ChatContainer from '~/components/chatContainer'
 import { CurrentUserContext } from '~/utils/CurrentUserContext'
 import { CheckInButton } from '~/components/checkinButton'
 import { isFuture, isPast } from 'date-fns'
+import { useShouldRefresh } from '~/utils/useShouldRefresh'
 interface ChallengeChatData {
   groupedData: Record<string, { posts: Post[], checkIns: { empty: CheckIn[], nonEmpty: CheckIn[] }, comments: Comment[] }>
 }
@@ -82,7 +81,7 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
   const groupedData: Record<string, { posts: Post[], checkIns: { empty: CheckIn[], nonEmpty: CheckIn[] }, comments: Comment[] }> = {}
 
   posts.forEach(post => {
-    const date = post.createdAt.toISOString().split('T')[0]
+    const date = post.publishAt ? post.publishAt.toISOString().split('T')[0] : post.createdAt.toISOString().split('T')[0]
     if (!groupedData[date]) {
       groupedData[date] = { posts: [], checkIns: { empty: [], nonEmpty: [] }, comments: [] }
     }
@@ -116,14 +115,20 @@ export default function ViewChallengeChat (): JSX.Element {
   const { currentUser } = useContext(CurrentUserContext)
   const { groupedData } = useLoaderData<ChallengeChatData>()
   const bottomRef = useRef<HTMLDivElement>(null)
+  const { shouldRefresh } = useShouldRefresh()
   const { challenge, membership } = useRouteLoaderData<{ challenge: Challenge, membership: MemberChallenge }>('routes/challenges.v.$id') as unknown as { challenge: Challenge, membership: MemberChallenge }
   if (!groupedData) {
     return <p>No data.</p>
   }
   const revalidator = useRevalidator()
+  const shouldRefreshRef = useRef(shouldRefresh)
+
+  useEffect(() => {
+    shouldRefreshRef.current = shouldRefresh
+  }, [shouldRefresh])
+
   // scroll to bottom of the page when the data changes
   useEffect(() => {
-    console.log('hash', window.location.hash)
     // don't scroll if there is an anchor in the URL
     if (window.location.hash) {
       const anchor = document.querySelector(window.location.hash)
@@ -134,11 +139,14 @@ export default function ViewChallengeChat (): JSX.Element {
       bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
     }
   }, [groupedData])
-  // refetch data every 15 seconds in case someone else has checked in or commented
+  // refetch data every five seconds minutes in case someone else has checked in or commented
   useEffect(() => {
     const refreshChat = setInterval(() => {
-      revalidator.revalidate()
-    }, 15000)
+      if (shouldRefreshRef.current) {
+        revalidator.revalidate()
+      }
+    }, 10000)
+
     // Cleanup interval on component unmount
     return () => { clearInterval(refreshChat) }
   }, [])
@@ -212,91 +220,56 @@ export default function ViewChallengeChat (): JSX.Element {
   // flag to check if today is in the groupedData. f not we'll need to add an empty block to hold it
   const hasToday = Object.keys(groupedData).includes(today)
   return (
-    <div className='max-w-2xl'>
-      {/* had to add this additional date sorting because javascript objects don't always follow the order of insertion */}
-      {Object.entries(groupedData)
-        .sort(([dateA], [dateB]) => new Date(dateA).getTime() - new Date(dateB).getTime())
-        .map(([date, { posts, checkIns, comments }]) => {
-          const isToday = date === today
-          return (
-            <ChallengeDayContent
-              key={date}
-              date={date}
-              posts={posts}
-              checkIns={checkIns}
-              comments={comments}
-              newestComment={isToday ? newestComment : null}
+
+        <div className='max-w-2xl'>
+          <p>Should refresh: {shouldRefresh ? 'true' : 'false'}</p>
+          {/* had to add this additional date sorting because javascript objects don't always follow the order of insertion */}
+          {Object.entries(groupedData)
+            .sort(([dateA], [dateB]) => new Date(dateA).getTime() - new Date(dateB).getTime())
+            .map(([date, { posts, checkIns, comments }]) => {
+              const isToday = date === today
+              return (
+
+                <CheckinsList key={date} posts={posts as Post[]} comments={comments as unknown as Comment[] } newestComment={newestComment} checkIns={checkIns.nonEmpty as unknown as CheckIn[]} allowComments={true} />
+              )
+            })}
+            {/* this is an additional block for today's date if it doesn't exist in the groupedData */}
+          {!hasToday && (
+                <CheckinsList
+                  key={today}
+                  date={today}
+                  posts={[]}
+                  checkIns={[]}
+                  comments={[]}
+                  newestComment={newestComment}
+                />
+          )}
+
+          {currentUser &&
+          <div className='fixed w-full max-w-2xl bottom-0  bg-white bg-opacity-70' >
+            {canCheckIn() && (
+                <>
+                <div className="flex justify-between items-center my-4">
+                  <p>You have not checked in today</p>
+                  <CheckInButton challenge={challenge} memberChallenge={membership} label='Check In Now' afterCheckIn={handleAfterCheckIn} size='sm'/>
+                </div>
+                </>
+            )}
+            <FormChat
+              afterSave={afterSaveComment}
+              prompt="Sound off..."
+              onPending={onPendingComment}
+              onError={onSaveCommentError}
+              objectId={challenge.id}
+              type={'challenge'}
+              inputRef={inputRef}
+              autoFocus={!window.location.hash}
             />
-          )
-        })}
-        {/* this is an additional block for today's date if it doesn't exist in the groupedData */}
-       {!hasToday && (
-          <ChallengeDayContent
-            key={today}
-            date={today}
-            posts={[]}
-            checkIns={{ empty: [], nonEmpty: [] }}
-            comments={[]}
-            newestComment={newestComment}
-          />
-       )}
-
-      {currentUser &&
-      <div className='fixed w-full max-w-2xl bottom-0  bg-white bg-opacity-70' >
-         {canCheckIn() && (
-            <>
-            <div className="flex justify-between items-center my-4">
-              <p>You have not checked in today</p>
-              <CheckInButton challenge={challenge} memberChallenge={membership} label='Check In Now' afterCheckIn={handleAfterCheckIn} size='sm'/>
-            </div>
-            </>
-         )}
-          <FormChat
-            afterSave={afterSaveComment}
-            prompt="Sound off..."
-            onPending={onPendingComment}
-            onError={onSaveCommentError}
-            objectId={challenge.id}
-            type={'challenge'}
-            inputRef={inputRef}
-            autoFocus={!window.location.hash}
-          />
-        </div>
-      }
-      {/* this is a spacer at the bottom that the app scrolls to on load */}
-      <div ref={bottomRef} className='min-h-[40px]'></div>
-    </div>
-  )
-}
-
-interface ChallengeDayContentProps {
-  date: string
-  posts: Post[]
-  checkIns: { empty: CheckIn[], nonEmpty: CheckIn[] }
-  comments: Comment[]
-  newestComment: Comment | null
-}
-
-export function ChallengeDayContent ({
-  date,
-  posts,
-  checkIns,
-  comments,
-  newestComment
-}: ChallengeDayContentProps): JSX.Element {
-  return (
-    <div key={date}>
-      {posts.map((post: Post) => {
-        const publishAt = post.publishAt ? new Date(post.publishAt) : null
-        return (
-          <div key={`post-${post.id}`} className='max-w-sm md:max-w-xl mb-6' id={`post-${post.id}`}>
-            <CardPost post={{ ...post, publishAt }} hideMeta={false} fullPost={false} isChat={true} />
           </div>
-        )
-      })}
-      <CheckinsList checkIns={checkIns.nonEmpty as unknown as CheckIn[]} allowComments={true} />
-      <ChatContainer comments={comments as unknown as Comment[]} newestComment={newestComment} allowReplies={true} />
-      {/* Render empty check-ins if needed */}
-    </div>
+          }
+          {/* this is a spacer at the bottom that the app scrolls to on load */}
+          <div ref={bottomRef} className='min-h-[40px]'></div>
+        </div>
+
   )
 }
