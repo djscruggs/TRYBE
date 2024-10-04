@@ -127,18 +127,22 @@ export default function ViewChallengeChat (): JSX.Element {
     shouldRefreshRef.current = shouldRefresh
   }, [shouldRefresh])
 
-  // scroll to bottom of the page when the data changes
+  const hasRunOnceRef = useRef(false) // flag to track that if the scroll to end has run. previously it was running on every revalidation
   useEffect(() => {
-    // don't scroll if there is an anchor in the URL
-    if (window.location.hash) {
-      const anchor = document.querySelector(window.location.hash)
-      if (anchor) {
-        anchor.scrollIntoView({ behavior: 'smooth' })
+    if (!hasRunOnceRef.current) { // Check if the effect has already run
+      // don't scroll if there is an anchor in the URL
+      if (window.location.hash) {
+        const anchor = document.querySelector(window.location.hash)
+        if (anchor) {
+          anchor.scrollIntoView({ behavior: 'smooth' })
+        }
+      } else {
+        bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
       }
-    } else {
-      bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
+      hasRunOnceRef.current = true // Set the flag to true after running
     }
-  }, [groupedData])
+  }, []) // Empty dependency array to ensure it runs only once
+
   // refetch data every five seconds minutes in case someone else has checked in or commented
   useEffect(() => {
     const refreshChat = setInterval(() => {

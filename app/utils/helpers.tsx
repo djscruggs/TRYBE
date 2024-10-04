@@ -8,6 +8,7 @@ import { IoFishOutline } from 'react-icons/io5'
 import type { ChangeEvent } from 'react'
 import { toast } from 'react-hot-toast'
 import { type CurrentUser, type User } from './types'
+import { removeRenderedLinks } from '~/components/linkRenderer'
 
 export const copyToClipboard = async (text: string): Promise<void> => {
   try {
@@ -198,29 +199,29 @@ export function textToJSX (text: string | undefined): React.ReactNode {
   if (!text) return null
   return (
     <div>
-      {text.split('\n').map((line: string, index: number) => (
+      {text.split('\n').map((line: string, index: number, array: string[]) => (
         <React.Fragment key={index}>
           {convertTextToJSXAnchors(line)}
-          <br />
+          {index < array.length - 1 && <br />} {/* Only add <br /> if not the last element */}
         </React.Fragment>
       ))}
     </div>
   )
 }
 export function convertTextToJSXAnchors (text: string): React.ReactNode {
+  // Filter out any parts that are YouTube links
+  const nonYoutubeText = removeRenderedLinks(text)
+
   const urlRegex = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig
   // Split the text into parts that are URLs and non-URLs
-  const parts = text.split(urlRegex)
-
-  // for some reason the regex is returning additional http, https, and \r
-  // Filter out any parts that are just those
-  const filteredParts = parts.filter(part => part !== 'http' && part !== 'https' && part !== '\r')
+  const parts = nonYoutubeText.split(urlRegex)
   return (
     <>
-      {filteredParts.map((part, index) => {
+      {parts.map((part, index) => {
         // Check if the part is a URL
         if (part.match(urlRegex)) {
-          return <a className='underline blue' key={index} href={part} target="_blank" rel="noopener noreferrer">{part}</a>
+          const displayText = part.replace(/(https?|ftp):\/\//, '') // Remove the protocol
+          return <a className='underline blue' key={index} href={part} target="_blank" rel="noopener noreferrer">{displayText}</a>
         } else {
           return part
         }
