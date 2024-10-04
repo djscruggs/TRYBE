@@ -34,7 +34,7 @@ export default function MyCheckIns (): JSX.Element {
             <ChallengeMemberProgressChart challenge={challenge} checkIns={checkIns} />
         </div>
       </div>
-      <CheckinsList checkIns={checkIns} allowComments={false} />
+      <CheckinsList checkIns={checkIns} allowComments={false} posts={[]}/>
     </div>
   )
 }

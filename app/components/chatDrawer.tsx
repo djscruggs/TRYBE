@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react'
+import React, { useState, useEffect, useRef, useCallback, useContext } from 'react'
 import { Drawer } from '@material-tailwind/react'
 import ChatContainer from './chatContainer'
 import type { Comment } from '~/utils/types'
@@ -6,11 +6,12 @@ import { ChatRowSkeleton } from './skeletons'
 import { toast } from 'react-hot-toast'
 import FormChat from './formChat'
 import axios from 'axios'
-
+import { useShouldRefresh } from '~/utils/useShouldRefresh'
 interface ChatDrawerProps {
   isOpen: boolean
   placement: 'left' | 'right' | 'top' | 'bottom'
-  onClose: () => void
+  onClose?: () => void
+  onOpen?: () => void
   size: number
   type: 'post' | 'challenge' | 'checkin' | 'comment'
   id: number
@@ -20,18 +21,20 @@ interface ChatDrawerProps {
 }
 
 export default function ChatDrawer (props: ChatDrawerProps): JSX.Element {
-  const { isOpen, placement, onClose, size, type, id, commentCount, comments: initialComments, children } = props
+  const { isOpen, placement, onClose, size, type, id, commentCount, comments: initialComments, children, onOpen } = props
   const skeletonRows = commentCount ?? 0
   const bottomRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const [comments, setComments] = useState<Comment[] | null>(initialComments ?? null)
   const [open, setOpen] = useState(isOpen)
   const [newestComment, setNewestComment] = useState<Comment | null>(null)
-  const [refresh, setRefresh] = useState(false)
+  const { setShouldRefresh } = useShouldRefresh()
   const [isLoading, setIsLoading] = useState(false)
   const closeDrawer = useCallback((): void => {
     setOpen(false)
-    onClose()
+    onClose?.()
+    setShouldRefresh(true)
+    console.log('setting shouldRefresh in closeDrawer in chat drawer to true')
     document.body.classList.remove('overflow-hidden') // Enable body scroll
   }, [onClose])
 
@@ -43,13 +46,11 @@ export default function ChatDrawer (props: ChatDrawerProps): JSX.Element {
       return [comment, ...filteredComments]
     })
     setNewestComment(null)
-    setRefresh(true)
   }, [])
 
   // this is used to immediately display the pending without waiting for the server
   const onPendingComment = useCallback((comment: Comment): void => {
     setNewestComment(comment)
-    setRefresh(true)
   }, [])
 
   const onSaveCommentError = useCallback((error: Error): void => {
@@ -70,21 +71,24 @@ export default function ChatDrawer (props: ChatDrawerProps): JSX.Element {
   }, [type, id])
 
   useEffect(() => {
+    console.log('isOpen in first useEffect in chat drawer', isOpen)
     setOpen(isOpen)
     if (isOpen) {
+      console.log('isOpen', isOpen)
+      setShouldRefresh(false)
       void fetchComments()
       inputRef.current?.focus() // Focus the input when the drawer opens
-    } else {
-      onClose()
     }
-  }, [isOpen, fetchComments, onClose])
+  }, [isOpen, fetchComments])
 
   useEffect(() => {
-    if (isOpen || refresh) {
-      bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
-      setRefresh(false)
+    if (isOpen) {
+      onOpen?.()
     }
-  }, [comments, isOpen, refresh])
+    if (isOpen) {
+      bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
+    }
+  }, [comments, isOpen, onOpen])
 
   const mouseEnter = useCallback((): void => {
     document.body.classList.add('overflow-hidden') // Disable body scroll
