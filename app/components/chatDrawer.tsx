@@ -34,7 +34,6 @@ export default function ChatDrawer (props: ChatDrawerProps): JSX.Element {
     setOpen(false)
     onClose?.()
     setShouldRefresh(true)
-    console.log('setting shouldRefresh in closeDrawer in chat drawer to true')
     document.body.classList.remove('overflow-hidden') // Enable body scroll
   }, [onClose])
 
@@ -71,10 +70,8 @@ export default function ChatDrawer (props: ChatDrawerProps): JSX.Element {
   }, [type, id])
 
   useEffect(() => {
-    console.log('isOpen in first useEffect in chat drawer', isOpen)
     setOpen(isOpen)
     if (isOpen) {
-      console.log('isOpen', isOpen)
       setShouldRefresh(false)
       void fetchComments()
       inputRef.current?.focus() // Focus the input when the drawer opens

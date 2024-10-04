@@ -2300,11 +2300,6 @@ video {
   border-color: rgb(245 196 78 / var(--tw-border-opacity));
 }
 
-.border-gray-300 {
-  --tw-border-opacity: 1;
-  border-color: rgb(203 213 225 / var(--tw-border-opacity));
-}
-
 .\!border-t-transparent {
   border-top-color: transparent !important;
 }
