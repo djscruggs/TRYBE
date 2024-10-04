@@ -1315,10 +1315,6 @@ video {
   min-height: 310px;
 }
 
-.min-h-\[40px\] {
-  min-height: 40px;
-}
-
 .min-h-\[48px\] {
   min-height: 48px;
 }

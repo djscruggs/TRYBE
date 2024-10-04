@@ -20,6 +20,7 @@ import Liker from './liker'
 import DialogDelete from './dialogDelete'
 import { format } from 'date-fns'
 import ChatDrawer from '~/components/chatDrawer'
+import LinkRenderer from './linkRenderer'
 interface CardPostProps {
   post: PostSummary | null
   isShare?: boolean
@@ -119,7 +120,7 @@ export default function CardPost (props: CardPostProps): JSX.Element {
               </>
             }
             <PostContent post={post} fullPost={fullPost ?? false} handlePhotoClick={handlePhotoClick}>
-            {currentUser?.id === post.userId && !isShare && isOwnRoute &&
+              {currentUser?.id === post.userId && !isShare &&
                 <div className="mt-2 text-xs text-gray-500 w-full text-right">
                     <span className='underline cursor-pointer mr-1' onClick={handleEdit}>edit</span>
                     <span className='underline cursor-pointer mr-1' onClick={handleDeleteDialog}>delete</span>
@@ -183,7 +184,27 @@ const PostContent = (props: { post: PostSummary, fullPost: boolean, children?: R
   const shortBody = fullPost ? post.body : post.body?.slice(0, maxLength) + '...'
   const isTruncated = (shortBody?.length && post?.body?.length) ? shortBody.length < post.body.length : false
   const [showFullBody, setShowFullBody] = useState(fullPost)
-
+  const renderYouTubeLink = (text: string): JSX.Element | null => {
+    const youtubeRegex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/
+    const match = text.match(youtubeRegex)
+    if (match) {
+      const videoId = match[1]
+      // Remove the YouTube link from the text
+      text = text.replace(youtubeRegex, '')
+      return (
+        <iframe
+          width="560"
+          height="315"
+          src={`https://www.youtube.com/embed/${videoId}`}
+          title="YouTube video player"
+          frameBorder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+        ></iframe>
+      )
+    }
+    return null
+  }
   return (
     <div className="flex items-start">
       <AvatarLoader object={post} marginClass='mr-2'/>
@@ -194,12 +215,13 @@ const PostContent = (props: { post: PostSummary, fullPost: boolean, children?: R
       </div>
       {isTruncated && (
         <span
-          className='text-xs underline text-blue cursor-pointer mr-1 text-right italic'
+          className='text-xs underline text-blue cursor-pointer mr-1 mb-4 text-right italic'
           onClick={() => { setShowFullBody(!showFullBody) }}
         >
           {showFullBody ? 'less' : 'more'}
         </span>
       )}
+      <LinkRenderer text={post.body ?? ''} />
 
       <div className='mt-4'>
       {post.videoMeta?.secure_url && <video className="recorded" src={post.videoMeta.secure_url} onClick={(event) => { event?.stopPropagation() }} controls />}
