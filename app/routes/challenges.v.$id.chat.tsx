@@ -268,7 +268,7 @@ export default function ViewChallengeChat (): JSX.Element {
           </div>
           }
           {/* this is a spacer at the bottom that the app scrolls to on load */}
-          <div ref={bottomRef} className='min-h-[40px]'></div>
+          <div ref={bottomRef} className='min-h-[50px]'></div>
         </div>
 
   )
