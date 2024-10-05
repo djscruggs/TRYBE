@@ -19,6 +19,14 @@ export const copyToClipboard = async (text: string): Promise<void> => {
     console.error(error)
   }
 }
+export const convertToLocalDateString = (user: CurrentUser | null, date: Date): string => {
+  if (user?.locale) {
+    const locale = user.locale
+    return date.toLocaleDateString(locale, { timeZone: 'UTC' })
+  }
+  return date.toISOString().split('T')[0]
+}
+
 // helper  function that converts booleans, integers and dates from strings to the proper type
 export function convertStringValues (obj: any): any {
   const result: any = {}

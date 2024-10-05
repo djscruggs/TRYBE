@@ -10,12 +10,12 @@ import { CurrentUserContext } from '~/utils/CurrentUserContext'
 import { CheckInButton } from '~/components/checkinButton'
 import { isFuture, isPast } from 'date-fns'
 import { useShouldRefresh } from '~/utils/useShouldRefresh'
+import { convertToLocalDateString } from '~/utils/helpers'
 interface ChallengeChatData {
   groupedData: Record<string, { posts: Post[], checkIns: { empty: CheckIn[], nonEmpty: CheckIn[] }, comments: Comment[] }>
 }
-
 export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
-  await requireCurrentUser(args)
+  const currentUser = await requireCurrentUser(args)
   const { params } = args
   if (!params.id) {
     return null
@@ -81,7 +81,7 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
   const groupedData: Record<string, { posts: Post[], checkIns: { empty: CheckIn[], nonEmpty: CheckIn[] }, comments: Comment[] }> = {}
 
   posts.forEach(post => {
-    const date = post.publishAt ? post.publishAt.toISOString().split('T')[0] : post.createdAt.toISOString().split('T')[0]
+    const date = post.publishAt ? convertToLocalDateString(currentUser, post.publishAt) : convertToLocalDateString(currentUser, post.createdAt)
     if (!groupedData[date]) {
       groupedData[date] = { posts: [], checkIns: { empty: [], nonEmpty: [] }, comments: [] }
     }
@@ -89,7 +89,7 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
   })
 
   comments.forEach(comment => {
-    const date = comment.createdAt.toISOString().split('T')[0]
+    const date = convertToLocalDateString(currentUser, comment.createdAt)
     if (!groupedData[date]) {
       groupedData[date] = { posts: [], checkIns: { empty: [], nonEmpty: [] }, comments: [] }
     }
@@ -97,7 +97,7 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
   })
 
   checkIns.forEach(checkIn => {
-    const date = checkIn.createdAt.toISOString().split('T')[0]
+    const date = convertToLocalDateString(currentUser, checkIn.createdAt)
     if (!groupedData[date]) {
       groupedData[date] = { posts: [], checkIns: { empty: [], nonEmpty: [] }, comments: [] }
     }
@@ -190,15 +190,18 @@ export default function ViewChallengeChat (): JSX.Element {
     if (!currentUser) {
       return false
     }
-    const today = new Date().toISOString().split('T')[0]
+    const today = new Date().toLocaleDateString('en-GB', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit'
+    }).split('/').reverse().join('-')
     const todayGroup = groupedData[today]
-
-    if (todayGroup) {
-      const hasNonEmptyCheckIn = todayGroup.checkIns.nonEmpty.some(checkIn => checkIn.userId === currentUser?.id)
-      const hasEmptyCheckIn = todayGroup.checkIns.empty.some(checkIn => checkIn.userId === currentUser?.id)
-      return hasNonEmptyCheckIn || hasEmptyCheckIn
+    if (!todayGroup) {
+      return false
     }
-    return false
+    const hasNonEmptyCheckIn = todayGroup.checkIns.nonEmpty.some(checkIn => checkIn.userId === currentUser?.id)
+    const hasEmptyCheckIn = todayGroup.checkIns.empty.some(checkIn => checkIn.userId === currentUser?.id)
+    return hasNonEmptyCheckIn || hasEmptyCheckIn
   }
   const [hasCheckedInToday, setHasCheckedInToday] = useState(checkedInToday())
   const handleAfterCheckIn = (checkIn: CheckIn): void => {
@@ -213,7 +216,7 @@ export default function ViewChallengeChat (): JSX.Element {
       groupedData[date].checkIns.empty.push(checkIn as unknown as CheckIn)
     }
   }
-  const today = new Date().toISOString().split('T')[0]
+  const today = convertToLocalDateString(currentUser, new Date())
   // flag to check if today is in the groupedData. f not we'll need to add an empty block to hold it
   const hasToday = Object.keys(groupedData).includes(today)
   return (
@@ -244,7 +247,7 @@ export default function ViewChallengeChat (): JSX.Element {
 
           {currentUser &&
           <div className='fixed w-full max-w-2xl bottom-0  bg-white bg-opacity-70' >
-            {canCheckIn() && (
+            {!hasCheckedInToday && (
                 <>
                 <div className="flex justify-between items-center my-4">
                   <p>You have not checked in today</p>
@@ -265,7 +268,7 @@ export default function ViewChallengeChat (): JSX.Element {
           </div>
           }
           {/* this is a spacer at the bottom that the app scrolls to on load */}
-          <div ref={bottomRef} className='min-h-[50px]'></div>
+          <div ref={bottomRef} className={`min-h-[${hasCheckedInToday ? '50px' : '100px'}]`}></div>
         </div>
 
   )
