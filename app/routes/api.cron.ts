@@ -50,7 +50,8 @@ export const loader: LoaderFunction = async (args) => {
             date: post.createdAt.toLocaleDateString(),
             subject: `New post from ${post.challenge?.name}`,
             title: post.title,
-            body: convertYouTubeLinksToImages(post.body)
+            body: post.body
+            // body: convertYouTubeLinksToImages(post.body)
           }
         }
         try {
