@@ -191,21 +191,14 @@ export default function ViewChallengeChat (): JSX.Element {
       return false
     }
     const today = new Date().toISOString().split('T')[0]
-    const nonEmptyCheckIns = Object.values(groupedData).some((group) =>
-      group.checkIns.nonEmpty.some((checkIn) => {
-        const checkInDate = new Date(checkIn.createdAt).toISOString().split('T')[0]
-        return checkIn.userId === currentUser?.id && checkInDate === today
-      })
-    )
-    if (nonEmptyCheckIns) {
-      return true
+    const todayGroup = groupedData[today]
+
+    if (todayGroup) {
+      const hasNonEmptyCheckIn = todayGroup.checkIns.nonEmpty.some(checkIn => checkIn.userId === currentUser?.id)
+      const hasEmptyCheckIn = todayGroup.checkIns.empty.some(checkIn => checkIn.userId === currentUser?.id)
+      return hasNonEmptyCheckIn || hasEmptyCheckIn
     }
-    return Object.values(groupedData).some((group) =>
-      group.checkIns.empty.some((checkIn) => {
-        const checkInDate = new Date(checkIn.createdAt).toISOString().split('T')[0]
-        return checkIn.userId === currentUser?.id && checkInDate === today
-      })
-    )
+    return false
   }
   const [hasCheckedInToday, setHasCheckedInToday] = useState(checkedInToday())
   const handleAfterCheckIn = (checkIn: CheckIn): void => {
