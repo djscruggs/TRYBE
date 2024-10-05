@@ -1,4 +1,4 @@
-import { useLoaderData, useRouteLoaderData, useRevalidator } from '@remix-run/react'
+import { useLoaderData, useRouteLoaderData, useFetcher } from '@remix-run/react'
 import { useEffect, useRef, useState, useContext } from 'react'
 import { requireCurrentUser } from '~/models/auth.server'
 import type { Post, CheckIn, Challenge, Comment, MemberChallenge } from '~/utils/types'
@@ -120,8 +120,8 @@ export default function ViewChallengeChat (): JSX.Element {
   if (!groupedData) {
     return <p>No data.</p>
   }
-  const revalidator = useRevalidator()
   const shouldRefreshRef = useRef(shouldRefresh)
+  const fetcher = useFetcher()
 
   useEffect(() => {
     shouldRefreshRef.current = shouldRefresh
@@ -143,11 +143,11 @@ export default function ViewChallengeChat (): JSX.Element {
     }
   }, []) // Empty dependency array to ensure it runs only once
 
-  // refetch data every five seconds minutes in case someone else has checked in or commented
+  // refetch data every 10 seconds in case someone else has checked in or commented
   useEffect(() => {
     const refreshChat = setInterval(() => {
       if (shouldRefreshRef.current) {
-        revalidator.revalidate()
+        fetcher.load(window.location.pathname) // Reload only the current route data
       }
     }, 10000)
 
