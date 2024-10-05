@@ -50,7 +50,7 @@ export const loader: LoaderFunction = async (args) => {
             date: post.createdAt.toLocaleDateString(),
             subject: `New post from ${post.challenge?.name}`,
             title: post.title,
-            body: post.body
+            body: convertYouTubeLinksToImages(post.body)
           }
         }
         try {
@@ -83,6 +83,13 @@ export const loader: LoaderFunction = async (args) => {
   // send email
 
   return json({ posts }, 200)
+}
+
+function convertYouTubeLinksToImages (body: string): string {
+  const youtubeRegex = /https?:\/\/(www\.)?youtube\.com\/watch\?v=([a-zA-Z0-9_-]+)/g
+  return body.replace(youtubeRegex, (match, p1, videoId) => {
+    return `<img src="https://img.youtube.com/vi/${videoId}/sddefault.jpg" alt="YouTube Video">`
+  })
 }
 
 // export const loader: LoaderFunction = async (args) => {
