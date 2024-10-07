@@ -135,7 +135,6 @@ export default function ViewChallengeChat (): JSX.Element {
       if (postId && postRefs.current[postId]) {
         postRefs.current[postId]?.scrollIntoView({ behavior: 'smooth' })
       } else {
-        console.log('scroll to bottom')
         bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
       }
     }
