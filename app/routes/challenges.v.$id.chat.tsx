@@ -122,6 +122,7 @@ export default function ViewChallengeChat (): JSX.Element {
   }
   const shouldRefreshRef = useRef(shouldRefresh)
   const fetcher = useFetcher()
+  const postRefs = useRef<Record<string, HTMLDivElement | null>>({})
 
   useEffect(() => {
     shouldRefreshRef.current = shouldRefresh
@@ -129,17 +130,19 @@ export default function ViewChallengeChat (): JSX.Element {
 
   const hasRunOnceRef = useRef(false) // flag to track that if the scroll to end has run. previously it was running on every revalidation
   useEffect(() => {
-    if (!hasRunOnceRef.current) { // Check if the effect has already run
-      // don't scroll if there is an anchor in the URL
-      if (window.location.hash) {
-        const anchor = document.querySelector(window.location.hash)
-        if (anchor) {
-          anchor.scrollIntoView({ behavior: 'smooth' })
-        }
+    const scrollToAnchorOrBottom = () => {
+      const postId = window.location.hash.replace('#post-', '')
+      if (postId && postRefs.current[postId]) {
+        postRefs.current[postId]?.scrollIntoView({ behavior: 'smooth' })
       } else {
+        console.log('scroll to bottom')
         bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
       }
-      hasRunOnceRef.current = true // Set the flag to true after running
+    }
+
+    if (!hasRunOnceRef.current) {
+      scrollToAnchorOrBottom()
+      hasRunOnceRef.current = true
     }
   }, []) // Empty dependency array to ensure it runs only once
 
@@ -229,8 +232,15 @@ export default function ViewChallengeChat (): JSX.Element {
             .map(([date, { posts, checkIns, comments }]) => {
               const isToday = date === today
               return (
-
-                <CheckinsList key={date} posts={posts as Post[]} comments={comments as unknown as Comment[] } newestComment={newestComment} checkIns={checkIns.nonEmpty as unknown as CheckIn[]} allowComments={true} />
+                <div key={date} ref={el => postRefs.current[date] = el}>
+                  <CheckinsList
+                    posts={posts as Post[]}
+                    comments={comments as unknown as Comment[]}
+                    newestComment={newestComment}
+                    checkIns={checkIns.nonEmpty as unknown as CheckIn[]}
+                    allowComments={true}
+                  />
+                </div>
               )
             })}
             {/* this is an additional block for today's date if it doesn't exist in the groupedData */}
