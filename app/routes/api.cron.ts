@@ -41,17 +41,20 @@ export const loader: LoaderFunction = async (args) => {
   await Promise.all(posts.map(async post => {
     if (post.challenge?.members) {
       await Promise.all(post.challenge?.members.map(async member => {
+        const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https'
+        const host = process.env.NODE_ENV === 'development' ? 'localhost:3000' : 'app.jointhetrybe.com'
+        const postLink = `${protocol}://${host}/challenges/v/${post.challenge?.id}/chat#post-${post.id}`
         const props = {
           to: member.user.email,
           replyTo: post.user.email,
           dynamic_template_data: {
             name: post.user.profile?.fullName ?? '',
-            post_url: `https://app.jointhetrybe.com/challenges/v/${post.challenge?.id}/chat#post-${post.id}`,
+            post_url: postLink,
             date: post.createdAt.toLocaleDateString(),
-            subject: `New post from ${post.challenge?.name}`,
+            subject: `${post.challenge?.name}: ${post.title}`,
             title: post.title,
-            body: post.body
-            // body: convertYouTubeLinksToImages(post.body)
+            // body: post.body
+            body: convertYouTubeLinksToImages(post.body ?? '', postLink)
           }
         }
         try {
@@ -86,12 +89,29 @@ export const loader: LoaderFunction = async (args) => {
   return json({ posts }, 200)
 }
 
-function convertYouTubeLinksToImages (body: string): string {
+export function convertYouTubeLinksToImages (body: string, postLink: string = ''): string {
   const youtubeRegex = /https?:\/\/(www\.)?youtube\.com\/watch\?v=([a-zA-Z0-9_-]+)/g
   return body.replace(youtubeRegex, (match, p1, videoId) => {
-    return `<img src="https://img.youtube.com/vi/${videoId}/sddefault.jpg" alt="YouTube Video">`
+    if (postLink) {
+      return `<br><br ><a href="${postLink}"><img src="https://img.youtube.com/vi/${videoId}/sddefault.jpg" alt="YouTube Video"></a>`
+    }
+    return `<br><br><img src="https://img.youtube.com/vi/${videoId}/hqdefault.jpg" alt="YouTube Video">`
   })
 }
+
+/*
+YouTube Image Sizes
+ Default (120x90):
+URL: https://img.youtube.com/vi/${videoId}/default.jpg
+Medium (320x180):
+URL: https://img.youtube.com/vi/${videoId}/mqdefault.jpg
+3. High (480x360):
+URL: https://img.youtube.com/vi/${videoId}/hqdefault.jpg
+Standard (640x480):
+URL: https://img.youtube.com/vi/${videoId}/sddefault.jpg
+Max Resolution (1280x720):
+URL: https://img.youtube.com/vi/${videoId}/maxresdefault.jpg
+*/
 
 // export const loader: LoaderFunction = async (args) => {
 //   return json({ message: 'This route does not accept GET requests' }, 200)
