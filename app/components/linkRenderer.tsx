@@ -17,8 +17,8 @@ const LinkRenderer: React.FC<LinkRendererProps> = ({ text }) => {
     const videoId = matchYouTube[1]
     return (
       <iframe
-        width="560"
-        height="315"
+        width="500"
+        height="280"
         src={`https://www.youtube.com/embed/${videoId}`}
         title="YouTube video player"
         frameBorder="0"

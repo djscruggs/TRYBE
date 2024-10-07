@@ -2,15 +2,14 @@ import React, { useContext, useState } from 'react'
 import {
   Card
 } from '@material-tailwind/react'
-import type { Post, PostSummary } from '~/utils/types'
+import type { PostSummary } from '~/utils/types'
 // import { AiOutlineRetweet } from 'react-icons/ai'
 // import { GoComment } from 'react-icons/go'
-import { textToJSX, separateTextAndLinks, formatLinks } from '~/utils/helpers'
+import { textToJSX } from '~/utils/helpers'
 
 import { CurrentUserContext } from '~/utils/CurrentUserContext'
 import AvatarLoader from './avatarLoader'
-import { Link, useNavigate, useLocation } from '@remix-run/react'
-import { Lightbox } from 'react-modal-image'
+import { useNavigate, useLocation } from '@remix-run/react'
 import { toast } from 'react-hot-toast'
 import FormPost from './formPost'
 import axios from 'axios'
