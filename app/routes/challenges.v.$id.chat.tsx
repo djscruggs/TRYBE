@@ -121,6 +121,7 @@ export default function ViewChallengeChat (): JSX.Element {
     return <p>No data.</p>
   }
   const shouldRefreshRef = useRef(shouldRefresh)
+  const [showBottomBar, setShowBottomBar] = useState(false)
   const fetcher = useFetcher()
   const postRefs = useRef<Record<string, HTMLDivElement | null>>({})
 
@@ -130,20 +131,27 @@ export default function ViewChallengeChat (): JSX.Element {
 
   const hasRunOnceRef = useRef(false) // flag to track that if the scroll to end has run. previously it was running on every revalidation
   useEffect(() => {
-    const scrollToAnchorOrBottom = () => {
-      const postId = window.location.hash.replace('#post-', '')
-      if (postId && postRefs.current[postId]) {
-        postRefs.current[postId]?.scrollIntoView({ behavior: 'smooth' })
-      } else {
-        bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
-      }
+    // this waits 2 seconds for the page to load before scrolling to the anchor or bottom
+    const scrollToAnchorOrBottom = async () => {
+      await new Promise<void>((resolve) => {
+        setTimeout(() => {
+          const postId = window.location.hash.replace('#post-', '')
+          if (postId && postRefs.current[postId]) {
+            postRefs.current[postId]?.scrollIntoView({ behavior: 'smooth' })
+          } else {
+            bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
+          }
+          resolve()
+        }, 2000)
+      })
     }
-
     if (!hasRunOnceRef.current) {
-      scrollToAnchorOrBottom()
       hasRunOnceRef.current = true
+      void scrollToAnchorOrBottom().then(() => {
+        setShowBottomBar(true)
+      })
     }
-  }, []) // Empty dependency array to ensure it runs only once
+  }, [])
 
   // refetch data every 10 seconds in case someone else has checked in or commented
   useEffect(() => {
@@ -177,9 +185,6 @@ export default function ViewChallengeChat (): JSX.Element {
       }
     }
     setNewestComment(comment)
-  }
-  function canCheckIn (): boolean {
-    return Boolean(currentUser) && membership && !hasCheckedInToday && !isFuture(challenge.startAt) && !isPast(challenge.endAt)
   }
   const onPendingComment = (comment: Comment): void => {
     setNewestComment(comment)
@@ -224,15 +229,14 @@ export default function ViewChallengeChat (): JSX.Element {
   return (
 
         <div className='max-w-2xl'>
-          <p>Should refresh: {shouldRefresh ? 'true' : 'false'}</p>
           {/* had to add this additional date sorting because javascript objects don't always follow the order of insertion */}
           {Object.entries(groupedData)
             .sort(([dateA], [dateB]) => new Date(dateA).getTime() - new Date(dateB).getTime())
-            .map(([date, { posts, checkIns, comments }]) => {
-              const isToday = date === today
+            .map(([date, { posts, checkIns, comments }], index) => { // Add index here
               return (
-                <div key={date} ref={el => postRefs.current[date] = el}>
+                <div key={date} ref={el => { postRefs.current[date] = el }}>
                   <CheckinsList
+                    id={`checkins-${index}`} // Add the id here
                     posts={posts as Post[]}
                     comments={comments as unknown as Comment[]}
                     newestComment={newestComment}
@@ -254,27 +258,25 @@ export default function ViewChallengeChat (): JSX.Element {
                 />
           )}
 
-          {currentUser &&
-          <div className='fixed w-full max-w-2xl bottom-0  bg-white bg-opacity-70' >
-            {!hasCheckedInToday && (
-                <>
+          {currentUser && showBottomBar &&
+            <div className='fixed w-full max-w-2xl bottom-0  bg-white bg-opacity-70' >
+              {!hasCheckedInToday && (
                 <div className="flex justify-between items-center my-4">
                   <p>You have not checked in today</p>
                   <CheckInButton challenge={challenge} memberChallenge={membership} label='Check In Now' afterCheckIn={handleAfterCheckIn} size='sm'/>
                 </div>
-                </>
-            )}
-            <FormChat
-              afterSave={afterSaveComment}
-              prompt="Sound off..."
-              onPending={onPendingComment}
-              onError={onSaveCommentError}
-              objectId={challenge.id}
-              type={'challenge'}
-              inputRef={inputRef}
-              autoFocus={!window.location.hash}
-            />
-          </div>
+              )}
+              <FormChat
+                afterSave={afterSaveComment}
+                prompt="Sound off..."
+                onPending={onPendingComment}
+                onError={onSaveCommentError}
+                objectId={challenge.id}
+                type={'challenge'}
+                inputRef={inputRef}
+                autoFocus={!window.location.hash}
+              />
+            </div>
           }
           {/* this is a spacer at the bottom that the app scrolls to on load */}
           <div ref={bottomRef} className={`min-h-[${hasCheckedInToday ? '50px' : '100px'}]`}></div>
