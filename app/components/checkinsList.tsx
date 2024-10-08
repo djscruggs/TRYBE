@@ -21,14 +21,14 @@ interface CheckinsListProps {
   comments?: Comment[]
   newestComment: Comment | null
   allowComments: boolean
+  id?: string
 }
 
-export default function CheckinsList ({ checkIns, posts, comments, newestComment, allowComments }: CheckinsListProps): JSX.Element {
+export default function CheckinsList ({ checkIns, posts, comments, newestComment, allowComments, id }: CheckinsListProps): JSX.Element {
   const [checkInsArr, setCheckInsArr] = useState(checkIns)
   const handleDelete = (deletedCheckIn: CheckIn): void => {
     setCheckInsArr(checkInsArr.filter(checkIn => checkIn.id !== deletedCheckIn.id))
   }
-  const _comments = comments ?? {}
 
   // Group check-ins by day
   const checkInsByDay = checkInsArr.reduce<Record<string, CheckIn[]>>((acc, checkIn) => {
@@ -58,7 +58,7 @@ export default function CheckinsList ({ checkIns, posts, comments, newestComment
   const allDates = new Set([...Object.keys(checkInsByDay), ...Object.keys(postsByDay), ...Object.keys(commentsByDay ?? {})])
 
   return (
-    <div className='text-left flex flex-col w-full'>
+    <div className='text-left flex flex-col w-full' id={id ?? 'checkins-list'}>
       {Array.from(allDates).map(date => {
         const checkIns = checkInsByDay[date] || []
         const posts = postsByDay[date] || []
