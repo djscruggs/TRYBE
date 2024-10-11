@@ -93,23 +93,25 @@ export function convertYouTubeLinksToImages (body: string, postLink: string = ''
   const youtubeRegex = /https?:\/\/(www\.)?youtube\.com\/watch\?v=([a-zA-Z0-9_-]+)/g
   return body.replace(youtubeRegex, (match, p1, videoId) => {
     if (postLink) {
-      return `<br><br ><a href="${postLink}"><img src="https://img.youtube.com/vi/${videoId}/sddefault.jpg" alt="YouTube Video"></a>`
+      return `<br><br ><a href="${postLink}"><img src="https://img.youtube.com/vi/${videoId}/mqdefault.jpg" alt="YouTube Video"></a>`
     }
     return `<br><br><img src="https://img.youtube.com/vi/${videoId}/hqdefault.jpg" alt="YouTube Video">`
   })
 }
 
 /*
+StackOverflow discussion: https://stackoverflow.com/questions/10624139/how-to-get-youtube-thumbnail-from-url
+https://img.youtube.com/vi/ROJ_VVc5oPM/mqdefault.jpg
 YouTube Image Sizes
  Default (120x90):
 URL: https://img.youtube.com/vi/${videoId}/default.jpg
 Medium (320x180):
 URL: https://img.youtube.com/vi/${videoId}/mqdefault.jpg
-3. High (480x360):
+High (480x360) has black bars:
 URL: https://img.youtube.com/vi/${videoId}/hqdefault.jpg
-Standard (640x480):
+Standard (640x480) has black bars:
 URL: https://img.youtube.com/vi/${videoId}/sddefault.jpg
-Max Resolution (1280x720):
+Max Resolution (1280x720) no black bars but large:
 URL: https://img.youtube.com/vi/${videoId}/maxresdefault.jpg
 */
 
