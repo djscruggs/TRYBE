@@ -45,7 +45,10 @@ export async function mailPost (props: PostMailerProps): Promise<any> {
     replyTo,
     to,
     templateId: TEMPLATES.POST,
-    dynamic_template_data
+    dynamic_template_data,
+    asm: {
+      group_id: 29180
+    }
   }
   const result = await sgMail.send(msg)
   return result
