@@ -70,7 +70,6 @@ export const loader: LoaderFunction = async (args) => {
           })
         } catch (err) {
           console.error('Error sending notification', err)
-          console.log(err.response.body)
         }
       }))
     }

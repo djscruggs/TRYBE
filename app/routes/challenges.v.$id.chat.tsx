@@ -134,7 +134,6 @@ export default function ViewChallengeChat (): JSX.Element {
 
   useEffect(() => {
     renderCountRef.current += 1
-    console.log(`Render count: ${renderCountRef.current}`)
   })
 
   useLayoutEffect(() => {
@@ -254,11 +253,9 @@ export default function ViewChallengeChat (): JSX.Element {
 
   useEffect(() => {
     if (prevGroupedDataRef.current !== groupedData) {
-      console.log('groupedData changed:', groupedData)
       prevGroupedDataRef.current = groupedData
     }
     if (prevShouldRefreshRef.current !== shouldRefresh) {
-      console.log('shouldRefresh changed:', shouldRefresh)
       prevShouldRefreshRef.current = shouldRefresh
     }
   }, [groupedData, shouldRefresh])
