@@ -1,5 +1,5 @@
 import { useLoaderData, useRouteLoaderData, useFetcher } from '@remix-run/react'
-import { useEffect, useRef, useState, useContext } from 'react'
+import { useLayoutEffect, useEffect, useRef, useState, useContext } from 'react'
 import { requireCurrentUser } from '~/models/auth.server'
 import type { Post, CheckIn, Challenge, Comment, MemberChallenge } from '~/utils/types'
 import { type LoaderFunction, type LoaderFunctionArgs } from '@remix-run/node'
@@ -129,27 +129,49 @@ export default function ViewChallengeChat (): JSX.Element {
     shouldRefreshRef.current = shouldRefresh
   }, [shouldRefresh])
 
-  const hasRunOnceRef = useRef(false) // flag to track that if the scroll to end has run. previously it was running on every revalidation
+  const hasRunOnceRef = useRef(false)
+  const renderCountRef = useRef(0) // Track render count
+
   useEffect(() => {
-    // this waits 2 seconds for the page to load before scrolling to the anchor or bottom
-    const scrollToAnchorOrBottom = async () => {
-      await new Promise<void>((resolve) => {
-        setTimeout(() => {
-          const postId = window.location.hash.replace('#post-', '')
-          if (postId && postRefs.current[postId]) {
-            postRefs.current[postId]?.scrollIntoView({ behavior: 'smooth' })
-          } else {
-            bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
-          }
-          resolve()
-        }, 2000)
-      })
+    renderCountRef.current += 1
+    console.log(`Render count: ${renderCountRef.current}`)
+  })
+
+  useLayoutEffect(() => {
+    const scrollToAnchorOrBottom = () => {
+      const postId = window.location.hash.replace('#post-', '')
+      if (postId && postRefs.current[postId]) {
+        postRefs.current[postId]?.scrollIntoView({ behavior: 'smooth' })
+      } else {
+        bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
+      }
     }
-    if (!hasRunOnceRef.current) {
-      hasRunOnceRef.current = true
-      void scrollToAnchorOrBottom().then(() => {
+
+    const handleLoad = (): void => {
+      if (!hasRunOnceRef.current) {
+        hasRunOnceRef.current = true
+        scrollToAnchorOrBottom()
         setShowBottomBar(true)
-      })
+      }
+    }
+
+    const observer = new MutationObserver(() => {
+      if (!hasRunOnceRef.current) {
+        hasRunOnceRef.current = true
+        scrollToAnchorOrBottom()
+        setShowBottomBar(true)
+      }
+    })
+
+    observer.observe(document.body, { childList: true, subtree: true })
+
+    window.addEventListener('load', handleLoad)
+    window.addEventListener('resize', handleLoad)
+
+    return () => {
+      observer.disconnect()
+      window.removeEventListener('load', handleLoad)
+      window.removeEventListener('resize', handleLoad)
     }
   }, [])
 
@@ -226,6 +248,21 @@ export default function ViewChallengeChat (): JSX.Element {
   const today = convertToLocalDateString(currentUser, new Date())
   // flag to check if today is in the groupedData. f not we'll need to add an empty block to hold it
   const hasToday = Object.keys(groupedData).includes(today)
+
+  const prevGroupedDataRef = useRef(groupedData)
+  const prevShouldRefreshRef = useRef(shouldRefresh)
+
+  useEffect(() => {
+    if (prevGroupedDataRef.current !== groupedData) {
+      console.log('groupedData changed:', groupedData)
+      prevGroupedDataRef.current = groupedData
+    }
+    if (prevShouldRefreshRef.current !== shouldRefresh) {
+      console.log('shouldRefresh changed:', shouldRefresh)
+      prevShouldRefreshRef.current = shouldRefresh
+    }
+  }, [groupedData, shouldRefresh])
+
   return (
 
         <div className='max-w-2xl'>

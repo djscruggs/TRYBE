@@ -15,6 +15,7 @@ import sgMail from '@sendgrid/mail'
 interface PostMailerProps {
   to: string
   replyTo?: string
+  fromName?: string
   dynamic_template_data: {
     name: string
     post_url: string
@@ -38,9 +39,9 @@ export async function mailPost (props: PostMailerProps): Promise<any> {
   }
   sgMail.setApiKey(process.env.SENDGRID_API_KEY)
   // eslint-disable-next-line @typescript-eslint/naming-convention
-  const { to, dynamic_template_data, replyTo } = props
+  const { to, dynamic_template_data, replyTo, fromName } = props
   const msg = {
-    from: process.env.SENDGRID_FROM_EMAIL,
+    from: fromName ? `${fromName} <${process.env.SENDGRID_FROM_EMAIL}>` : process.env.SENDGRID_FROM_EMAIL,
     replyTo,
     to,
     templateId: TEMPLATES.POST,

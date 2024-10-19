@@ -47,6 +47,7 @@ export const loader: LoaderFunction = async (args) => {
         const props = {
           to: member.user.email,
           replyTo: post.user.email,
+          fromName: 'Trybe',
           dynamic_template_data: {
             name: post.user.profile?.fullName ?? '',
             post_url: postLink,
@@ -59,29 +60,20 @@ export const loader: LoaderFunction = async (args) => {
         }
         try {
           await mailPost(props)
+          await prisma.post.update({
+            where: {
+              id: post.id
+            },
+            data: {
+              notificationSentOn: new Date()
+            }
+          })
         } catch (err) {
           console.error('Error sending notification', err)
+          console.log(err.response.body)
         }
       }))
-
-      const update = await prisma.post.update({
-        where: {
-          id: post.id
-        },
-        data: {
-          notificationSentOn: new Date()
-        }
-      })
     }
-    // update the send date even if there were no members to mail
-    const update = await prisma.post.update({
-      where: {
-        id: post.id
-      },
-      data: {
-        notificationSentOn: new Date()
-      }
-    })
   }))
 
   // send email
