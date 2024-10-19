@@ -16,12 +16,13 @@ const LinkRenderer: React.FC<LinkRendererProps> = ({ text }) => {
   if (matchYouTube) {
     const videoId = matchYouTube[1]
     return (
-      <div className="aspect-w-16 aspect-h-9">
+      <div className="aspect-w-16 aspect-h-9 bg-gray-200">
         <iframe
           className="w-full h-full"
           src={`https://www.youtube.com/embed/${videoId}`}
           title="YouTube video player"
-          frameBorder="0"
+          width="560"
+          height="315"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
           allowFullScreen
         ></iframe>
