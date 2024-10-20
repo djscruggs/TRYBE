@@ -51,7 +51,7 @@ export const loader: LoaderFunction = async (args) => {
           dynamic_template_data: {
             name: post.user.profile?.fullName ?? '',
             post_url: postLink,
-            date: post.createdAt.toLocaleDateString(),
+            date: post.publishAt?.toLocaleDateString() ?? post.createdAt.toLocaleDateString(),
             subject: `${post.challenge?.name}: ${post.title}`,
             title: post.title,
             // body: post.body
