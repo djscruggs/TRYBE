@@ -9,13 +9,11 @@ import {
 
 interface ChallengeMemberCheckinProps {
   challenge: Challenge
-  memberChallenge: MemberChallenge | null
-  showDetails?: boolean
   label?: string
   afterCheckIn?: (checkIn: CheckIn) => void
   size?: 'sm' | 'md' | 'lg'
 }
-export function CheckInButton ({ challenge, memberChallenge, showDetails, afterCheckIn, size, label = 'Check In' }: ChallengeMemberCheckinProps): JSX.Element {
+export function CheckInButton ({ challenge, afterCheckIn, size, label = 'Check In' }: ChallengeMemberCheckinProps): JSX.Element {
   if (!challenge?.id) {
     throw new Error('Challenge object with id is required')
   }
