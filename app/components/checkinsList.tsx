@@ -22,9 +22,10 @@ interface CheckinsListProps {
   newestComment: Comment | null
   allowComments: boolean
   id?: string
+  date?: string
 }
 
-export default function CheckinsList ({ checkIns, posts, comments, newestComment, allowComments, id }: CheckinsListProps): JSX.Element {
+export default function CheckinsList ({ checkIns, posts, comments, newestComment, allowComments, id, date }: CheckinsListProps): JSX.Element {
   const [checkInsArr, setCheckInsArr] = useState(checkIns)
   const handleDelete = (deletedCheckIn: CheckIn): void => {
     setCheckInsArr(checkInsArr.filter(checkIn => checkIn.id !== deletedCheckIn.id))
@@ -90,16 +91,14 @@ export default function CheckinsList ({ checkIns, posts, comments, newestComment
                 </div>
             ))}
             {commentsByDay?.[date] &&
-            <>
-
-                  <ChatContainer
-                    key={date} // Add a unique key prop
-                    comments={commentsByDay[date] || []}
-                    newestComment={newestComment}
-                    allowReplies={true}
-                  />
-
-            </>
+              <>
+                <ChatContainer
+                  key={date} // Add a unique key prop
+                  comments={commentsByDay[date] || []}
+                  newestComment={newestComment}
+                  allowReplies={true}
+                />
+              </>
             }
           </div>
         )
