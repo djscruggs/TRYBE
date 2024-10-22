@@ -282,14 +282,15 @@ export default function ViewChallengeChat (): JSX.Element {
             })}
             {/* this is an additional block for today's date if it doesn't exist in the groupedData */}
           {!hasToday && (
-                <CheckinsList
-                  key={today}
-                  date={today}
-                  posts={[]}
-                  checkIns={[]}
-                  comments={[]}
-                  newestComment={newestComment}
-                />
+            <CheckinsList
+              key={today}
+              date={today}
+              posts={[]}
+              checkIns={[]}
+              comments={[]}
+              newestComment={newestComment}
+              allowComments={true}
+            />
           )}
 
           {currentUser && showBottomBar &&
