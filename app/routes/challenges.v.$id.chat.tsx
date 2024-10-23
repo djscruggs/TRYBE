@@ -9,10 +9,11 @@ import CheckinsList from '~/components/checkinsList'
 import FormChat from '~/components/formChat'
 import { CurrentUserContext } from '~/utils/CurrentUserContext'
 import DialogCheckin from '~/components/dialogCheckin'
-import { convertToLocalDateString } from '~/utils/helpers'
+
 interface ChallengeChatData {
   groupedData: Record<string, { posts: Post[], checkIns: { empty: CheckIn[], nonEmpty: CheckIn[] }, comments: Comment[] }>
 }
+
 export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
   const currentUser = await requireCurrentUser(args)
   const { params } = args
@@ -80,7 +81,7 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
   const groupedData: Record<string, { posts: Post[], checkIns: { empty: CheckIn[], nonEmpty: CheckIn[] }, comments: Comment[] }> = {}
 
   posts.forEach(post => {
-    const date = post.publishAt ? convertToLocalDateString(currentUser, post.publishAt) : convertToLocalDateString(currentUser, post.createdAt)
+    const date = post.publishAt ? post.publishAt.toLocaleDateString('en-CA') : post.createdAt.toLocaleDateString('en-CA')
     if (!groupedData[date]) {
       groupedData[date] = { posts: [], checkIns: { empty: [], nonEmpty: [] }, comments: [] }
     }
@@ -88,7 +89,7 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
   })
 
   comments.forEach(comment => {
-    const date = convertToLocalDateString(currentUser, comment.createdAt)
+    const date = comment.createdAt.toLocaleDateString('en-CA')
     if (!groupedData[date]) {
       groupedData[date] = { posts: [], checkIns: { empty: [], nonEmpty: [] }, comments: [] }
     }
@@ -96,7 +97,7 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
   })
 
   checkIns.forEach(checkIn => {
-    const date = convertToLocalDateString(currentUser, checkIn.createdAt)
+    const date = checkIn.createdAt.toLocaleDateString('en-CA')
     if (!groupedData[date]) {
       groupedData[date] = { posts: [], checkIns: { empty: [], nonEmpty: [] }, comments: [] }
     }
@@ -115,6 +116,7 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
   const data: ChallengeChatData = { groupedData }
   return data
 }
+
 export default function ViewChallengeChat (): JSX.Element {
   const { currentUser } = useContext(CurrentUserContext)
   const { groupedData } = useLoaderData<ChallengeChatData>()
@@ -123,23 +125,26 @@ export default function ViewChallengeChat (): JSX.Element {
   if (!groupedData) {
     return <p>No data.</p>
   }
+  // have to resort the groupedData by date because the data from loader is not guaranteed to be in order
+  const sortedGroupedData = Object.entries(groupedData)
+    .sort(([dateA], [dateB]) => new Date(dateA).getTime() - new Date(dateB).getTime())
   const postRefs = useRef<Record<string, HTMLDivElement | null>>({})
 
+  const [newestComment, setNewestComment] = useState<Comment | null>(null)
+  // used in various places to get the current date formatted as YYYY-MM-DD
+  const today = new Date().toLocaleDateString('en-CA')
+  const postId = window.location.hash.replace('#post-', '')
   useEffect(() => {
     const scrollToAnchorOrBottom = (): void => {
-      const postId = window.location.hash.replace('#post-', '')
       if (postId && postRefs.current[postId]) {
         postRefs.current[postId]?.scrollIntoView({ behavior: 'smooth' })
       } else {
         bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
       }
     }
-
     scrollToAnchorOrBottom()
   }, [])
 
-  const inputRef = useRef<HTMLInputElement>(null)
-  const [newestComment, setNewestComment] = useState<Comment | null>(null)
   const afterSaveComment = (comment: Comment): void => {
     // only saved comments will have an id
     if (newestComment?.id) {
@@ -171,11 +176,6 @@ export default function ViewChallengeChat (): JSX.Element {
     if (!currentUser) {
       return false
     }
-    const today = new Date().toLocaleDateString('en-GB', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit'
-    }).split('/').reverse().join('-')
     const todayGroup = groupedData[today]
     if (!todayGroup) {
       return false
@@ -202,28 +202,51 @@ export default function ViewChallengeChat (): JSX.Element {
       groupedData[date].checkIns.empty.push(formattedCheckIn as CheckIn)
     }
   }
-  const today = convertToLocalDateString(currentUser, new Date())
   // flag to check if today is in the groupedData. f not we'll need to add an empty block to hold it
   const hasToday = Object.keys(groupedData).includes(today)
 
+  // by default we only show the last five days
+  // BUT if they are linked to a post we want to show that day no matter waht, everything else with it
+  function getCorrectDays (sortedGroupedData: Array<[string, any]>, groupedData: Record<string, any>): Array<[string, any]> {
+    let postDate: string | null = null
+
+    if (postId) {
+      const post = Object.values(groupedData).flatMap(group => group.posts).find(p => p.id === postId)
+      if (post) {
+        postDate = post.publishAt ? post.publishAt.toLocaleDateString('en-CA') : post.createdAt.toLocaleDateString('en-CA')
+      }
+    }
+
+    let limitedGroupedData = sortedGroupedData.length > 5
+      ? sortedGroupedData.slice(-5)
+      : sortedGroupedData
+
+    if (postDate) {
+      const postDateIndex = sortedGroupedData.findIndex(([date]) => date === postDate)
+      if (postDateIndex !== -1) {
+        limitedGroupedData = sortedGroupedData.slice(postDateIndex)
+      }
+    }
+
+    return limitedGroupedData
+  }
+
+  const limitedGroupedData = getCorrectDays(sortedGroupedData, groupedData)
+
   return (
     <div className='max-w-2xl'>
-      {Object.entries(groupedData)
-        .sort(([dateA], [dateB]) => new Date(dateA).getTime() - new Date(dateB).getTime())
-        .map(([date, { posts, checkIns, comments }], index) => {
-          return (
-            <div key={date} ref={el => { postRefs.current[date] = el }}>
-              <CheckinsList
-                id={`checkins-${index}`}
-                posts={posts as Post[]}
-                comments={comments as unknown as Comment[]}
-                newestComment={newestComment}
-                checkIns={checkIns.nonEmpty as unknown as CheckIn[]}
-                allowComments={true}
-              />
-            </div>
-          )
-        })}
+      {limitedGroupedData.map(([date, { posts, checkIns, comments }], index) => (
+        <div key={date} ref={el => { postRefs.current[date] = el }}>
+          <CheckinsList
+            id={`checkins-${index}`}
+            posts={posts as Post[]}
+            comments={comments as unknown as Comment[]}
+            newestComment={newestComment}
+            checkIns={checkIns.nonEmpty as unknown as CheckIn[]}
+            allowComments={true}
+          />
+        </div>
+      ))}
       {/* this is an additional block for today's date if it doesn't exist in the groupedData */}
       {!hasToday && (
         <CheckinsList
@@ -249,7 +272,6 @@ export default function ViewChallengeChat (): JSX.Element {
             onError={onSaveCommentError}
             objectId={challenge.id}
             type={'challenge'}
-            inputRef={inputRef}
             autoFocus={!window.location.hash}
           />
         </div>
