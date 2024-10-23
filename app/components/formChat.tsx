@@ -23,7 +23,7 @@ interface FormChatProps {
   comment?: Comment
   prompt?: string
   autoFocus?: boolean
-  inputRef?: React.RefObject<HTMLTextAreaElement | HTMLInputElement>
+  inputRef?: React.RefObject<HTMLTextAreaElement | HTMLInputElement | HTMLDivElement>
 }
 
 function getTypeAndId (comment: Comment): { type: string, id: number } {
