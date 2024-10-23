@@ -81,7 +81,8 @@ export const loader: LoaderFunction = async (args) => {
 }
 
 export function convertYouTubeLinksToImages (body: string, postLink: string = ''): string {
-  const youtubeRegex = /https?:\/\/(www\.)?youtube\.com\/watch\?v=([a-zA-Z0-9_-]+)/g
+  const youtubeRegex = /https?:\/\/(www\.)?youtube\.com\/watch\?v=([a-zA-Z0-9_-]+)(?:&[^\s]*)?/g
+
   return body.replace(youtubeRegex, (match, p1, videoId) => {
     if (postLink) {
       return `<br><br ><a href="${postLink}"><img src="https://img.youtube.com/vi/${videoId}/mqdefault.jpg" alt="YouTube Video"></a>`
