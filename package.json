@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "production": "flyctl deploy --config ./fly.production.toml",
+    "deploy": "flyctl deploy --config ./fly.production.toml",
     "staging": "flyctl deploy --config ./fly.staging.toml",
     "generate": "npx prisma generate",
     "setup": "prisma generate && prisma migrate deploy",
