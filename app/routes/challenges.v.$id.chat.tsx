@@ -218,7 +218,7 @@ export default function ViewChallengeChat (): JSX.Element {
     const postDate: string | null = null
 
     let limitedGroupedData = sortedGroupedData.length > 5
-      ? sortedGroupedData.slice(-5)
+      ? sortedGroupedData.slice(-10)
       : sortedGroupedData
 
     if (postDate) {
