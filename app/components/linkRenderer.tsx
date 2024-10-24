@@ -1,14 +1,24 @@
 import React, { useState } from 'react'
+import { removeYouTubeLinks } from '~/utils/helpers'
+// const youtubeRegex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})([?&][^#\s]*)?(?:\.\.\.\.)?/g
+// const youtubeRegex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})([?&][^#\s]*)?/g
 
-const youtubeRegex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})([?&][^#\s]*)?/
 // convert url query param &t=10s to &start=10 because embeds use different query params
-function transformQueryParams (queryParams: string): string {
-  const result = queryParams.replace(/&t=(\d+)(s)?/, '&start=$1')
-  return result
-}
-
-export const removeRenderedLinks = (text: string): string => {
-  return text.replace(youtubeRegex, '')
+export const youtubeRegex = /((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube(-nocookie)?\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|v\/)?)([\w\-]+)(\S+).*?/
+function transformQueryParams (url: string): string {
+  try {
+    const urlObj = new URL(url)
+    const params = new URLSearchParams(urlObj.search)
+    if (params.has('t')) {
+      const time = params.get('t')?.replace('s', '')
+      params.set('start', time ?? '')
+      params.delete('t')
+    }
+    return params.toString()
+  } catch (error) {
+    console.error('Error transforming query params:', error)
+    return ''
+  }
 }
 
 interface LinkRendererProps {
@@ -16,18 +26,16 @@ interface LinkRendererProps {
 }
 
 const LinkRenderer: React.FC<LinkRendererProps> = ({ text }) => {
+  // const youtubeRegex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})(?:\.+)?/
   const matchYouTube = text.match(youtubeRegex)
   const [isIframeVisible, setIframeVisible] = useState(false)
-
   if (matchYouTube) {
-    const videoId = matchYouTube[1]
-    const queryParams = matchYouTube[2] || ''
-    const transformedParams = transformQueryParams(queryParams)
+    const transformedParams = transformQueryParams(matchYouTube[0])
+    const videoId = matchYouTube[0]?.match(/(?:v=|\/)([a-zA-Z0-9_-]{11})/)?.[1] ?? ''
     const thumbnailUrl = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`
-
     return (
       <>
-      <div className="aspect-w-16 aspect-h-9 bg-gray-200 relative">
+      <div className="aspect-w-16 aspect-h-9 bg-gray-200 relative mt-4">
         {!isIframeVisible
           ? (
             <div

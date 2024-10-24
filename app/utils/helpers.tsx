@@ -8,8 +8,7 @@ import { IoFishOutline } from 'react-icons/io5'
 import type { ChangeEvent } from 'react'
 import { toast } from 'react-hot-toast'
 import { type CurrentUser, type User } from './types'
-import { removeRenderedLinks } from '~/components/linkRenderer'
-
+import { youtubeRegex } from '~/components/linkRenderer'
 export const copyToClipboard = async (text: string): Promise<void> => {
   try {
     await navigator.clipboard.writeText(text)
@@ -43,6 +42,12 @@ export function convertStringValues (obj: any): any {
       result[key] = obj[key]
     }
   }
+  return result
+}
+export const removeYouTubeLinks = (text: string): string => {
+  const result = text.replace(youtubeRegex, (match) => {
+    return ''
+  })
   return result
 }
 
@@ -211,10 +216,9 @@ export function textToJSX (text: string | undefined): React.ReactNode {
 }
 export function convertTextToJSXAnchors (text: string): React.ReactNode {
   // Filter out any parts that are YouTube links
-  const nonYoutubeText = removeRenderedLinks(text)
-
-  const urlRegex = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig
+  const nonYoutubeText = removeYouTubeLinks(text)
   // Split the text into parts that are URLs and non-URLs
+  const urlRegex = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig
   const parts = nonYoutubeText.split(urlRegex)
   return (
     <>
