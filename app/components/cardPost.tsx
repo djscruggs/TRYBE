@@ -5,7 +5,7 @@ import {
 import type { PostSummary } from '~/utils/types'
 // import { AiOutlineRetweet } from 'react-icons/ai'
 // import { GoComment } from 'react-icons/go'
-import { textToJSX } from '~/utils/helpers'
+import { textToJSX, removeYouTubeLinks } from '~/utils/helpers'
 
 import { CurrentUserContext } from '~/utils/CurrentUserContext'
 import AvatarLoader from './avatarLoader'
@@ -176,12 +176,17 @@ export default function CardPost (props: CardPostProps): JSX.Element {
   )
 }
 
-const PostContent = (props: { post: PostSummary, fullPost: boolean, children?: React.ReactNode, handlePhotoClick: (event: any) => void }): JSX.Element => {
+export const PostContent = (props: { post: PostSummary, fullPost: boolean, children?: React.ReactNode, handlePhotoClick: (event: any) => void }): JSX.Element => {
   const { post, fullPost, children, handlePhotoClick } = props
-
   const maxLength = 300
-  const shortBody = fullPost ? post.body : post.body?.slice(0, maxLength) + '...'
-  const isTruncated = (shortBody?.length && post?.body?.length) ? shortBody.length < post.body.length : false
+  const fullBodyStripped = removeYouTubeLinks(post.body ?? '')
+  let shortBodyStripped = removeYouTubeLinks(post.body ?? '')
+  let isTruncated = false
+  if (shortBodyStripped.length > maxLength) {
+    shortBodyStripped = shortBodyStripped.slice(0, maxLength) + '...'
+    isTruncated = true
+  }
+  const finalBody = fullPost ? fullBodyStripped : shortBodyStripped
   const [showFullBody, setShowFullBody] = useState(fullPost)
 
   return (
@@ -190,7 +195,7 @@ const PostContent = (props: { post: PostSummary, fullPost: boolean, children?: R
       <div className="flex flex-col w-full h-full">
       <div className='font-bold my-2'>{post.title}</div>
       <div>
-        {textToJSX(showFullBody ? post.body ?? '' : shortBody ?? '')}
+        {textToJSX(String(showFullBody ? fullBodyStripped : shortBodyStripped))}
       </div>
       {isTruncated && (
         <span

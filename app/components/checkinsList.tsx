@@ -1,4 +1,4 @@
-import { userLocale, textToJSX } from '~/utils/helpers'
+import { userLocale, textToJSX, pluralize } from '~/utils/helpers'
 import { Tooltip } from '@material-tailwind/react'
 import { useContext, useState } from 'react'
 import { CurrentUserContext } from '~/utils/CurrentUserContext'
@@ -282,8 +282,8 @@ const CollapsedCheckins = ({ checkIns }: CollapsedCheckinsProps): JSX.Element =>
           </div>
           )
         : count === 2
-          ? `${uniqueProfiles.slice(0, 3).map(profile => `${profile?.fullName}`).join(' and ')} checked in`
-          : `${uniqueProfiles.slice(0, 3).map(profile => `${profile?.fullName}`).join(', ')} and ${count - 3} others checked in`
+          ? `${uniqueProfiles.slice(0, 2).map(profile => `${profile?.fullName}`).join(' and ')} checked in`
+          : `${uniqueProfiles.slice(0, 2).map(profile => `${profile?.fullName}`).join(', ')} and ${count - 2} ${pluralize(count - 2, 'other', 'others')} checked in`
       }
       {count > 1 &&
         <StackedAvaters profiles={uniqueProfiles as Profile[]} />

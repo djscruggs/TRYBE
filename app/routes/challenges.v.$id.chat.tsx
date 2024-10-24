@@ -9,13 +9,14 @@ import CheckinsList from '~/components/checkinsList'
 import FormChat from '~/components/formChat'
 import { CurrentUserContext } from '~/utils/CurrentUserContext'
 import DialogCheckin from '~/components/dialogCheckin'
-
+import DialogPost from '~/components/dialogPost'
+import { CheckInButton } from '~/components/checkinButton'
 interface ChallengeChatData {
   groupedData: Record<string, { posts: Post[], checkIns: { empty: CheckIn[], nonEmpty: CheckIn[] }, comments: Comment[] }>
 }
 
 export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
-  const currentUser = await requireCurrentUser(args)
+  await requireCurrentUser(args)
   const { params } = args
   if (!params.id) {
     return null
@@ -125,19 +126,25 @@ export default function ViewChallengeChat (): JSX.Element {
   if (!groupedData) {
     return <p>No data.</p>
   }
+
   // have to resort the groupedData by date because the data from loader is not guaranteed to be in order
   const sortedGroupedData = Object.entries(groupedData)
     .sort(([dateA], [dateB]) => new Date(dateA).getTime() - new Date(dateB).getTime())
   const postRefs = useRef<Record<string, HTMLDivElement | null>>({})
+  // find highlighted post in hash
+  const highlightedPostId = Number(window.location.hash.replace('#post-', ''))
+  const _highlightedPost = Object.entries(groupedData).find(([date, { posts }]) => posts.some(p => p.id === highlightedPostId))
+  const highlightedPost = _highlightedPost ? _highlightedPost[1].posts.find(p => p.id === highlightedPostId) : null
+  const [showHighlightedPost, setShowHighlightedPost] = useState(Boolean(highlightedPost))
 
   const [newestComment, setNewestComment] = useState<Comment | null>(null)
   // used in various places to get the current date formatted as YYYY-MM-DD
   const today = new Date().toLocaleDateString('en-CA')
-  const postId = window.location.hash.replace('#post-', '')
+
   useEffect(() => {
     const scrollToAnchorOrBottom = (): void => {
-      if (postId && postRefs.current[postId]) {
-        postRefs.current[postId]?.scrollIntoView({ behavior: 'smooth' })
+      if (highlightedPostId && postRefs.current[highlightedPostId]) {
+        postRefs.current[highlightedPostId]?.scrollIntoView({ behavior: 'smooth' })
       } else {
         bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
       }
@@ -206,16 +213,9 @@ export default function ViewChallengeChat (): JSX.Element {
   const hasToday = Object.keys(groupedData).includes(today)
 
   // by default we only show the last five days
-  // BUT if they are linked to a post we want to show that day no matter waht, everything else with it
+  // BUT if they are linked to a post we want to show that day no matter what, everything else with it
   function getCorrectDays (sortedGroupedData: Array<[string, any]>, groupedData: Record<string, any>): Array<[string, any]> {
-    let postDate: string | null = null
-
-    if (postId) {
-      const post = Object.values(groupedData).flatMap(group => group.posts).find(p => p.id === postId)
-      if (post) {
-        postDate = post.publishAt ? post.publishAt.toLocaleDateString('en-CA') : post.createdAt.toLocaleDateString('en-CA')
-      }
-    }
+    const postDate: string | null = null
 
     let limitedGroupedData = sortedGroupedData.length > 5
       ? sortedGroupedData.slice(-5)
@@ -227,16 +227,29 @@ export default function ViewChallengeChat (): JSX.Element {
         limitedGroupedData = sortedGroupedData.slice(postDateIndex)
       }
     }
-
     return limitedGroupedData
   }
-
+  const handleCloseHighlightedPost = (): void => {
+    setShowHighlightedPost(false)
+    console.log(postRefs.current[highlightedPostId])
+    if (highlightedPostId && postRefs.current[highlightedPostId]) {
+      postRefs.current[highlightedPostId]?.scrollIntoView({ behavior: 'smooth' })
+    }
+  }
   const limitedGroupedData = getCorrectDays(sortedGroupedData, groupedData)
 
   return (
     <div className='max-w-2xl'>
       {limitedGroupedData.map(([date, { posts, checkIns, comments }], index) => (
-        <div key={date} ref={el => { postRefs.current[date] = el }}>
+        <div
+          key={date}
+          ref={el => {
+            postRefs.current[date] = el
+            if (highlightedPostId && posts.some((post: Post) => post.id === highlightedPostId)) {
+              postRefs.current[highlightedPostId] = el
+            }
+          }}
+        >
           <CheckinsList
             id={`checkins-${index}`}
             posts={posts as Post[]}
@@ -260,7 +273,7 @@ export default function ViewChallengeChat (): JSX.Element {
         />
       )}
 
-      {currentUser &&
+      {currentUser && !showHighlightedPost && (
         <div className='fixed w-full max-w-2xl bottom-0  bg-white bg-opacity-70' >
           {!hasCheckedInToday && (
             <DialogCheckin challenge={challenge} open={true} onClose={() => { setHasCheckedInToday(true) }} afterCheckIn={handleAfterCheckIn} />
@@ -275,7 +288,16 @@ export default function ViewChallengeChat (): JSX.Element {
             autoFocus={!window.location.hash}
           />
         </div>
-      }
+      )}
+      {highlightedPost && (
+        <DialogPost post={highlightedPost as Post} open={showHighlightedPost} onClose={handleCloseHighlightedPost} >
+          {!hasCheckedInToday &&
+            <div className='flex items-center justify-center mt-4'>
+              <CheckInButton challenge={challenge} afterCheckIn={handleAfterCheckIn} />
+            </div>
+          }
+        </DialogPost>
+      )}
       {/* this is a spacer at the bottom that the app scrolls to on load */}
       <div ref={bottomRef} className={`min-h-[${hasCheckedInToday ? '50px' : '100px'}]`}></div>
     </div>
