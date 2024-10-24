@@ -14,6 +14,9 @@ function transformQueryParams (url: string): string {
       params.set('start', time ?? '')
       params.delete('t')
     }
+    if (params.has('v')) {
+      params.delete('v')
+    }
     return params.toString()
   } catch (error) {
     console.error('Error transforming query params:', error)
@@ -44,18 +47,18 @@ const LinkRenderer: React.FC<LinkRendererProps> = ({ text }) => {
               onClick={() => { setIframeVisible(true) }}
             >
               <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50">
-                <button className="text-white text-2xl">▶</button>
+                <button className="text-white text-5xl">▶</button>
               </div>
             </div>
             )
           : (
             <iframe
               className="w-full h-full"
-              src={`https://www.youtube.com/embed/${videoId}?autoplay=1${transformedParams}`}
+              src={`https://www.youtube.com/embed/${videoId}?autoplay=1&${transformedParams}`}
               title="YouTube video player"
               width="560"
               height="315"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allow="autoplay; picture-in-picture"
               referrerPolicy="strict-origin-when-cross-origin"
               allowFullScreen
             ></iframe>
