@@ -194,10 +194,13 @@ export default function ViewChallengeChat (): JSX.Element {
     const hasEmptyCheckIn = todayGroup.checkIns.empty.some(checkIn => checkIn.userId === currentUser?.id)
     return hasNonEmptyCheckIn || hasEmptyCheckIn
   }
+  // used to maintain the number of days we show after a fetch
+  const [dayCount, setDayCount] = useState(20)
   const [hasCheckedInToday, setHasCheckedInToday] = useState(checkedInToday())
   const [showDialogPopup, setShowDialogPopup] = useState(!hasCheckedInToday)
   const revalidator = useRevalidator()
   const handleAfterCheckIn = (checkIn: CheckIn): void => {
+    setDayCount(dayCount + 1)
     setHasCheckedInToday(true)
     setHasToday(true)
     revalidator.revalidate()
@@ -237,8 +240,8 @@ export default function ViewChallengeChat (): JSX.Element {
       // always return at least the last five days
       // so if startIndex is only in e.g. the last two days we'll return the last five days
       if (startIndex > -1) {
-        if (dates.length - startIndex < 10) {
-          startIndex = -10
+        if (dates.length - startIndex < dayCount) {
+          startIndex = -dayCount
         }
       }
     }
@@ -265,9 +268,6 @@ export default function ViewChallengeChat (): JSX.Element {
 
   return (
     <div className='max-w-2xl'>
-      <p>Length: {Object.keys(limitedGroupedData)?.length}</p>
-      <p>hasToday: {hasToday ? 'true' : 'false'}</p>
-      <p>hasCheckedInToday: {hasCheckedInToday ? 'true' : 'false'}</p>
       {limitedGroupedData && Object.entries(limitedGroupedData)?.map(([date, { posts, checkIns, comments }], index) => (
 
         <div
