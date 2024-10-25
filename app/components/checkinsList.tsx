@@ -11,6 +11,7 @@ import Liker from '~/components/liker'
 import ActionsPopupMenu from './actionsPopupMenu'
 import CommentsIconWithCount from '~/components/commentsIcon'
 import ChatDrawer from '~/components/chatDrawer'
+import DateDivider from '~/components/dateDivider'
 import CardPost from './cardPost'
 import ChatContainer from './chatContainer'
 // Import the hook
@@ -33,7 +34,7 @@ export default function CheckinsList ({ checkIns, posts, comments, newestComment
 
   // Group check-ins by day
   const checkInsByDay = checkInsArr.reduce<Record<string, CheckIn[]>>((acc, checkIn) => {
-    const date = new Date(checkIn.createdAt).toLocaleDateString()
+    const date = new Date(checkIn.createdAt).toLocaleDateString('en-CA')
     if (!acc[date]) {
       acc[date] = []
     }
@@ -41,7 +42,7 @@ export default function CheckinsList ({ checkIns, posts, comments, newestComment
     return acc
   }, {})
   const postsByDay = posts.reduce<Record<string, Post[]>>((acc, post) => {
-    const date = post.publishAt ? new Date(post.publishAt).toLocaleDateString() : new Date(post.createdAt).toLocaleDateString()
+    const date = post.publishAt ? new Date(post.publishAt).toLocaleDateString('en-CA') : new Date(post.createdAt).toLocaleDateString('en-CA')
     if (!acc[date]) {
       acc[date] = []
     }
@@ -49,7 +50,7 @@ export default function CheckinsList ({ checkIns, posts, comments, newestComment
     return acc
   }, {})
   const commentsByDay = comments?.reduce<Record<string, Comment[]>>((acc, comment) => {
-    const date = new Date(comment.createdAt as unknown as string).toLocaleDateString() // Cast to string
+    const date = new Date(comment.createdAt as unknown as string).toLocaleDateString('en-CA') // Cast to string
     if (!acc[date]) {
       acc[date] = []
     }
@@ -57,7 +58,6 @@ export default function CheckinsList ({ checkIns, posts, comments, newestComment
     return acc
   }, {})
   const allDates = new Set([...Object.keys(checkInsByDay), ...Object.keys(postsByDay), ...Object.keys(commentsByDay ?? {})])
-
   return (
     <div className='text-left flex flex-col w-full' id={id ?? 'checkins-list'}>
       {Array.from(allDates).map(date => {
@@ -67,12 +67,9 @@ export default function CheckinsList ({ checkIns, posts, comments, newestComment
         // Filter out empty check-ins and count unique users for the day
         const emptyCheckIns = checkIns.filter(checkIn => !checkIn.body?.length)
         const uniqueUsers = new Set(emptyCheckIns.map(checkIn => checkIn.userId)).size
-
         return (
           <div key={date}>
-            <div className='border-t border-teal flex items-center justify-center'>
-              <div className="text-center p-1 -mt-3.5 rounded-md drop-shadow-xl w-[90px] bg-teal text-xs text-white">{date}</div>
-            </div>
+            <DateDivider date={date} />
             {uniqueUsers > 0 && <CollapsedCheckins checkIns={emptyCheckIns} />}
             {checkIns.map((checkIn: CheckIn, index: number) => {
               if (!checkIn.body?.length) return null // Skip empty check-ins
@@ -271,7 +268,6 @@ const CollapsedCheckins = ({ checkIns }: CollapsedCheckinsProps): JSX.Element =>
   }))
   const uniqueProfiles = baseProfiles
   const count = uniqueProfiles.length
-
   return (
     <div className='p-2 bg-gray-100 rounded-md mb-4 text-xs'>
       {count === 1
