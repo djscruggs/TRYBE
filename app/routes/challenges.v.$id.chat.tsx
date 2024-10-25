@@ -237,8 +237,8 @@ export default function ViewChallengeChat (): JSX.Element {
       // always return at least the last five days
       // so if startIndex is only in e.g. the last two days we'll return the last five days
       if (startIndex > -1) {
-        if (dates.length - startIndex < 5) {
-          startIndex = -5
+        if (dates.length - startIndex < 10) {
+          startIndex = -10
         }
       }
     }
