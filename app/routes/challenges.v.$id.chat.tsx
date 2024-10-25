@@ -140,6 +140,7 @@ export default function ViewChallengeChat (): JSX.Element {
   const _highlightedPost = Object.entries(groupedData).find(([date, { posts }]) => posts.some(p => p.id === highlightedPostId))
   const highlightedPost = _highlightedPost ? _highlightedPost[1].posts.find(p => p.id === highlightedPostId) : null
   const [showHighlightedPost, setShowHighlightedPost] = useState(Boolean(highlightedPost))
+  const [dayCount, setDayCount] = useState(20)
   const [limitedGroupedData, setLimitedGroupedData] = useState(getCorrectDays(groupedData))
   const [newestComment, setNewestComment] = useState<Comment | null>(null)
   // used in various places to get the current date formatted as YYYY-MM-DD
@@ -195,7 +196,7 @@ export default function ViewChallengeChat (): JSX.Element {
     return hasNonEmptyCheckIn || hasEmptyCheckIn
   }
   // used to maintain the number of days we show after a fetch
-  const [dayCount, setDayCount] = useState(20)
+
   const [hasCheckedInToday, setHasCheckedInToday] = useState(checkedInToday())
   const [showDialogPopup, setShowDialogPopup] = useState(!hasCheckedInToday)
   const revalidator = useRevalidator()
@@ -233,7 +234,7 @@ export default function ViewChallengeChat (): JSX.Element {
       postDate = highlightedPost.publishAt ? new Date(highlightedPost.publishAt).toISOString().split('T')[0] : new Date(highlightedPost.createdAt ?? new Date()).toISOString().split('T')[0]
     }
     // If postDate is defined, find its index and slice everything before it
-    let startIndex = -5
+    let startIndex = 0 - dayCount
     if (postDate) {
       const dates = Object.keys(data)
       startIndex = dates.indexOf(postDate)
@@ -241,7 +242,7 @@ export default function ViewChallengeChat (): JSX.Element {
       // so if startIndex is only in e.g. the last two days we'll return the last five days
       if (startIndex > -1) {
         if (dates.length - startIndex < dayCount) {
-          startIndex = -dayCount
+          startIndex = 0 - dayCount
         }
       }
     }
@@ -265,7 +266,6 @@ export default function ViewChallengeChat (): JSX.Element {
     setHasToday(Object.keys(loaderData.groupedData).includes(today))
     scrollToAnchorOrBottom()
   }, [loaderData])
-
   return (
     <div className='max-w-2xl'>
       {limitedGroupedData && Object.entries(limitedGroupedData)?.map(([date, { posts, checkIns, comments }], index) => (
