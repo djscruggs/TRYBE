@@ -295,7 +295,7 @@ export default function ViewChallengeChat (): JSX.Element {
         <DateDivider date={today} />
       )}
 
-      {currentUser && !showHighlightedPost && (
+      {currentUser && (
         <div className='fixed w-full max-w-2xl bottom-0  bg-white bg-opacity-70' >
           {!highlightedPost && showDialogPopup && (
             <DialogCheckin challenge={challenge} open={true} onClose={() => { setShowDialogPopup(false) }} afterCheckIn={handleAfterCheckIn} />
