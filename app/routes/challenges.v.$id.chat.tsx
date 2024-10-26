@@ -297,7 +297,7 @@ export default function ViewChallengeChat (): JSX.Element {
 
       {currentUser && !showHighlightedPost && (
         <div className='fixed w-full max-w-2xl bottom-0  bg-white bg-opacity-70' >
-          {!hasCheckedInToday && showDialogPopup && (
+          {!highlightedPost && showDialogPopup && (
             <DialogCheckin challenge={challenge} open={true} onClose={() => { setShowDialogPopup(false) }} afterCheckIn={handleAfterCheckIn} />
           )}
           <FormChat
