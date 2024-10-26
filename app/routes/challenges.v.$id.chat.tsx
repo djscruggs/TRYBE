@@ -137,7 +137,7 @@ export default function ViewChallengeChat (): JSX.Element {
   // have to resort the groupedData by date because the data from loader is not guaranteed to be in order
   const postRefs = useRef<Record<string, HTMLDivElement | null>>({})
   // find highlighted post in hash
-  const highlightedPostId = Number(window.location.hash.replace('#post-', ''))
+  const [highlightedPostId, setHighlightedPostId] = useState(Number(window.location.hash.replace('#post-', '')))
   const _highlightedPost = Object.entries(groupedData).find(([date, { posts }]) => posts.some(p => p.id === highlightedPostId))
   const highlightedPost = _highlightedPost ? _highlightedPost[1].posts.find(p => p.id === highlightedPostId) : null
   const [showHighlightedPost, setShowHighlightedPost] = useState(Boolean(highlightedPost))
@@ -252,14 +252,14 @@ export default function ViewChallengeChat (): JSX.Element {
 
   const handleCloseHighlightedPost = (): void => {
     setShowHighlightedPost(false)
-    if (highlightedPostId && postRefs.current[highlightedPostId]) {
-      postRefs.current[highlightedPostId]?.scrollIntoView({ behavior: 'smooth' })
-    }
+    setHighlightedPostId(0)
+    setShowHighlightedPost(false)
+    window.history.replaceState(null, '', window.location.pathname)
+    scrollToAnchorOrBottom()
   }
   useEffect(() => {
     setGroupedData(loaderData.groupedData)
     setLimitedGroupedData(getCorrectDays(loaderData.groupedData))
-    setHasCheckedInToday(checkedInToday())
     setHasToday(Object.keys(loaderData.groupedData).includes(today))
     scrollToAnchorOrBottom()
   }, [loaderData])
