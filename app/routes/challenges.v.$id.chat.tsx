@@ -2,7 +2,7 @@ import { useLoaderData, useRouteLoaderData, useRevalidator } from '@remix-run/re
 import { useEffect, useRef, useState, useContext } from 'react'
 import { requireCurrentUser } from '~/models/auth.server'
 import type { Post, CheckIn, Challenge, Comment, MemberChallenge } from '~/utils/types'
-import { type LoaderFunction, type LoaderFunctionArgs } from '@remix-run/node'
+import { json, type LoaderFunction, type LoaderFunctionArgs, type SerializeFrom } from '@remix-run/node'
 import { prisma } from '~/models/prisma.server'
 import { Prisma } from '@prisma/client'
 import CheckinsList from '~/components/checkinsList'
@@ -12,10 +12,11 @@ import DialogCheckin from '~/components/dialogCheckin'
 import DialogPost from '~/components/dialogPost'
 import { CheckInButton } from '~/components/checkinButton'
 import DateDivider from '~/components/dateDivider'
+
 interface ChallengeChatData {
   groupedData: Record<string, { posts: Post[], checkIns: { empty: CheckIn[], nonEmpty: CheckIn[] }, comments: Comment[] }>
 }
-
+type GroupedDataEntry = SerializeFrom<ChallengeChatData['groupedData']>
 export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
   await requireCurrentUser(args)
   const { params } = args
@@ -80,7 +81,7 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
   })
 
   // group posts, comments and checkins by date
-  const groupedData: Record<string, { posts: Post[], checkIns: { empty: CheckIn[], nonEmpty: CheckIn[] }, comments: Comment[] }> = {}
+  const groupedData: ChallengeChatData['groupedData'] = {}
 
   posts.forEach(post => {
     const date = post.publishAt ? post.publishAt.toLocaleDateString('en-CA') : post.createdAt.toLocaleDateString('en-CA')
@@ -120,13 +121,13 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
     .sort(([dateA], [dateB]) => new Date(dateA).getTime() - new Date(dateB).getTime())
 
   const data: ChallengeChatData = { groupedData: Object.fromEntries(sortedGroupedData) }
-  return data
+  return json(data)
 }
 
 export default function ViewChallengeChat (): JSX.Element {
   const { currentUser } = useContext(CurrentUserContext)
   const loaderData = useLoaderData<ChallengeChatData>()
-  const [groupedData, setGroupedData] = useState(loaderData.groupedData) // Initialize state with loader data
+  const [groupedData, setGroupedData] = useState<GroupedDataEntry>(loaderData.groupedData) // Initialize state with loader data
   const bottomRef = useRef<HTMLDivElement>(null)
   const { challenge } = useRouteLoaderData<{ challenge: Challenge, membership: MemberChallenge }>('routes/challenges.v.$id') as unknown as { challenge: Challenge, membership: MemberChallenge }
   if (!groupedData) {
@@ -141,7 +142,7 @@ export default function ViewChallengeChat (): JSX.Element {
   const highlightedPost = _highlightedPost ? _highlightedPost[1].posts.find(p => p.id === highlightedPostId) : null
   const [showHighlightedPost, setShowHighlightedPost] = useState(Boolean(highlightedPost))
   const [dayCount, setDayCount] = useState(20)
-  const [limitedGroupedData, setLimitedGroupedData] = useState(getCorrectDays(groupedData))
+  const [limitedGroupedData, setLimitedGroupedData] = useState<GroupedDataEntry>(getCorrectDays(groupedData))
   const [newestComment, setNewestComment] = useState<Comment | null>(null)
   // used in various places to get the current date formatted as YYYY-MM-DD
   const today = new Date().toLocaleDateString('en-CA')
@@ -169,7 +170,6 @@ export default function ViewChallengeChat (): JSX.Element {
               createdAt: comment.createdAt.toISOString(),
               updatedAt: comment.updatedAt.toISOString(),
               challenge: comment.challenge as unknown as Challenge
-              // ... other properties if needed
             }
           : c)
       }
@@ -205,27 +205,26 @@ export default function ViewChallengeChat (): JSX.Element {
     setHasCheckedInToday(true)
     setHasToday(true)
     revalidator.revalidate()
-    return
-    const date = new Date().toISOString().split('T')[0]
-    const newGroupedData = { ...groupedData }
-    if (!newGroupedData[date]) {
-      newGroupedData[date] = { posts: [], checkIns: { empty: [], nonEmpty: [] }, comments: [] }
-    }
-    if (checkIn.body !== null || checkIn.imageMeta !== null || checkIn.videoMeta !== null) {
-      newGroupedData[date].checkIns.nonEmpty.push(checkIn)
-    } else {
-      newGroupedData[date].checkIns.empty.push(checkIn)
-    }
-    setGroupedData(newGroupedData)
-    setLimitedGroupedData(getCorrectDays(newGroupedData))
-    setHasCheckedInToday(true)
-    setHasToday(true)
+    // const date = new Date().toISOString().split('T')[0]
+    // const newGroupedData = { ...groupedData }
+    // if (!newGroupedData[date]) {
+    //   newGroupedData[date] = { posts: [], checkIns: { empty: [], nonEmpty: [] }, comments: [] }
+    // }
+    // if (checkIn.body !== null || checkIn.imageMeta !== null || checkIn.videoMeta !== null) {
+    //   newGroupedData[date].checkIns.nonEmpty.push(checkIn)
+    // } else {
+    //   newGroupedData[date].checkIns.empty.push(checkIn)
+    // }
+    // setGroupedData(newGroupedData)
+    // setLimitedGroupedData(getCorrectDays(newGroupedData))
+    // setHasCheckedInToday(true)
+    // setHasToday(true)
   }
 
   // flag to check if today is in the groupedData. if not we'll need to add an empty block to hold it
   const [hasToday, setHasToday] = useState(Object.keys(groupedData).includes(today))
   // Define the type for limitedGroupedData
-  type GroupedDataEntry = Record<string, { posts: Post[], checkIns: { empty: CheckIn[], nonEmpty: CheckIn[] }, comments: Comment[] }>
+
   // by default we only show the last five days
   // BUT if they are linked to a post we want to show that day no matter what, everything else with it
   function getCorrectDays (data: GroupedDataEntry): GroupedDataEntry {
@@ -240,10 +239,8 @@ export default function ViewChallengeChat (): JSX.Element {
       startIndex = dates.indexOf(postDate)
       // always return at least the last five days
       // so if startIndex is only in e.g. the last two days we'll return the last five days
-      if (startIndex > -1) {
-        if (dates.length - startIndex < dayCount) {
-          startIndex = 0 - dayCount
-        }
+      if (dates.length - startIndex < dayCount) {
+        startIndex = 0 - dayCount
       }
     }
     // Get the last five entries starting from the postDate or the beginning
@@ -274,14 +271,14 @@ export default function ViewChallengeChat (): JSX.Element {
           key={date}
           ref={el => {
             postRefs.current[date] = el
-            if (highlightedPostId && posts.some((post: Post) => post.id === highlightedPostId)) {
+            if (highlightedPostId && posts.some((post) => post.id === highlightedPostId)) {
               postRefs.current[highlightedPostId] = el
             }
           }}
         >
           <CheckinsList
             id={`checkins-${index}`}
-            posts={posts}
+            posts={posts as Post[]}
             comments={comments as unknown as Comment[]}
             newestComment={newestComment}
             checkIns={[...checkIns.empty, ...checkIns.nonEmpty] as CheckIn[]}
