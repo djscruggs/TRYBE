@@ -12,7 +12,7 @@ import DialogCheckin from '~/components/dialogCheckin'
 import DialogPost from '~/components/dialogPost'
 import { CheckInButton } from '~/components/checkinButton'
 import DateDivider from '~/components/dateDivider'
-
+import { isPast } from 'date-fns'
 interface ChallengeChatData {
   groupedData: Record<string, { posts: Post[], checkIns: { empty: CheckIn[], nonEmpty: CheckIn[] }, comments: Comment[] }>
 }
@@ -127,7 +127,7 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
 export default function ViewChallengeChat (): JSX.Element {
   const { currentUser } = useContext(CurrentUserContext)
   const loaderData = useLoaderData<ChallengeChatData>()
-  const [groupedData, setGroupedData] = useState<GroupedDataEntry>(loaderData.groupedData) // Initialize state with loader data
+  const [groupedData, setGroupedData] = useState<GroupedDataEntry>(loaderData.groupedData)
   const bottomRef = useRef<HTMLDivElement>(null)
   const { challenge } = useRouteLoaderData<{ challenge: Challenge, membership: MemberChallenge }>('routes/challenges.v.$id') as unknown as { challenge: Challenge, membership: MemberChallenge }
   if (!groupedData) {
@@ -141,7 +141,7 @@ export default function ViewChallengeChat (): JSX.Element {
   const _highlightedPost = Object.entries(groupedData).find(([date, { posts }]) => posts.some(p => p.id === highlightedPostId))
   const highlightedPost = _highlightedPost ? _highlightedPost[1].posts.find(p => p.id === highlightedPostId) : null
   const [showHighlightedPost, setShowHighlightedPost] = useState(Boolean(highlightedPost))
-  const [dayCount, setDayCount] = useState(20)
+  const [dayCount, setDayCount] = useState(10)
   const [limitedGroupedData, setLimitedGroupedData] = useState<GroupedDataEntry>(getCorrectDays(groupedData))
   const [newestComment, setNewestComment] = useState<Comment | null>(null)
   // used in various places to get the current date formatted as YYYY-MM-DD
@@ -192,7 +192,7 @@ export default function ViewChallengeChat (): JSX.Element {
     return hasNonEmptyCheckIn || hasEmptyCheckIn
   }
   // used to maintain the number of days we show after a fetch
-
+  const isExpired = isPast(challenge.endAt ?? new Date('1970-01-01'))
   const [hasCheckedInToday, setHasCheckedInToday] = useState(checkedInToday())
   const [showDialogPopup, setShowDialogPopup] = useState(!hasCheckedInToday)
   const revalidator = useRevalidator()
@@ -221,7 +221,7 @@ export default function ViewChallengeChat (): JSX.Element {
   const [hasToday, setHasToday] = useState(Object.keys(groupedData).includes(today))
   // Define the type for limitedGroupedData
 
-  // by default we only show the last five days
+  // by default we only show the last dayCount days
   // BUT if they are linked to a post we want to show that day no matter what, everything else with it
   function getCorrectDays (data: GroupedDataEntry): GroupedDataEntry {
     let postDate: string | null = null
@@ -253,14 +253,29 @@ export default function ViewChallengeChat (): JSX.Element {
     window.history.replaceState(null, '', window.location.pathname)
     scrollToBottom()
   }
+  const [hasEarlierDays, setHasEarlierDays] = useState(false)
+  const [hasScrolledToBottom, setHasScrolledToBottom] = useState(false)
   useEffect(() => {
     setGroupedData(loaderData.groupedData)
-    setLimitedGroupedData(getCorrectDays(loaderData.groupedData))
+    const daysToDisplay = getCorrectDays(loaderData.groupedData)
+    if (Object.keys(loaderData.groupedData).length > Object.keys(daysToDisplay).length) {
+      setHasEarlierDays(true)
+    } else {
+      setHasEarlierDays(false)
+    }
+    setLimitedGroupedData(daysToDisplay)
     setHasToday(Object.keys(loaderData.groupedData).includes(today))
-    scrollToBottom()
-  }, [loaderData])
+    if (!hasScrolledToBottom) {
+      scrollToBottom()
+      setHasScrolledToBottom(true)
+    }
+  }, [loaderData, dayCount])
+  const handleShowPreviousDays = (): void => {
+    setDayCount(dayCount + 5)
+  }
   return (
     <div className='max-w-2xl'>
+      {hasEarlierDays && <div className='text-center text-sm text-gray-500 mb-8 cursor-pointer' onClick={handleShowPreviousDays}>show previous days</div>}
       {limitedGroupedData && Object.entries(limitedGroupedData)?.map(([date, { posts, checkIns, comments }], index) => (
 
         <div
@@ -290,7 +305,7 @@ export default function ViewChallengeChat (): JSX.Element {
 
       {currentUser && (
         <div className='fixed w-full max-w-2xl bottom-0  bg-white bg-opacity-70' >
-          {!highlightedPost && showDialogPopup && (
+          {!highlightedPost && showDialogPopup && !isExpired && (
             <DialogCheckin challenge={challenge} open={true} onClose={() => { setShowDialogPopup(false) }} afterCheckIn={handleAfterCheckIn} />
           )}
           <FormChat
@@ -306,7 +321,7 @@ export default function ViewChallengeChat (): JSX.Element {
       )}
       {highlightedPost && (
         <DialogPost post={highlightedPost as Post} open={showHighlightedPost} onClose={handleCloseHighlightedPost} >
-          {!hasCheckedInToday &&
+          {!hasCheckedInToday && !isExpired &&
             <div className='flex items-center justify-center mt-4'>
               <CheckInButton challenge={challenge} afterCheckIn={handleAfterCheckIn} />
             </div>
