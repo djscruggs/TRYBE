@@ -146,15 +146,11 @@ export default function ViewChallengeChat (): JSX.Element {
   const [newestComment, setNewestComment] = useState<Comment | null>(null)
   // used in various places to get the current date formatted as YYYY-MM-DD
   const today = new Date().toLocaleDateString('en-CA')
-  const scrollToAnchorOrBottom = (): void => {
-    if (highlightedPostId && postRefs.current[highlightedPostId]) {
-      postRefs.current[highlightedPostId]?.scrollIntoView({ behavior: 'smooth' })
-    } else {
-      bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
-    }
+  const scrollToBottom = (): void => {
+    bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }
   useEffect(() => {
-    scrollToAnchorOrBottom()
+    scrollToBottom()
   }, [])
 
   const afterSaveComment = (comment: Comment): void => {
@@ -255,13 +251,13 @@ export default function ViewChallengeChat (): JSX.Element {
     setHighlightedPostId(0)
     setShowHighlightedPost(false)
     window.history.replaceState(null, '', window.location.pathname)
-    scrollToAnchorOrBottom()
+    scrollToBottom()
   }
   useEffect(() => {
     setGroupedData(loaderData.groupedData)
     setLimitedGroupedData(getCorrectDays(loaderData.groupedData))
     setHasToday(Object.keys(loaderData.groupedData).includes(today))
-    scrollToAnchorOrBottom()
+    scrollToBottom()
   }, [loaderData])
   return (
     <div className='max-w-2xl'>
