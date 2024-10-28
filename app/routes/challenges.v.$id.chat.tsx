@@ -194,7 +194,8 @@ export default function ViewChallengeChat (): JSX.Element {
   // used to maintain the number of days we show after a fetch
   const isExpired = isPast(challenge.endAt ?? new Date('1970-01-01'))
   const [hasCheckedInToday, setHasCheckedInToday] = useState(checkedInToday())
-  const [showDialogPopup, setShowDialogPopup] = useState(!hasCheckedInToday)
+  // only show the checkin popup if the user is logged in and they haven't checked in today, the challenge isn't expired, and there's no highlighted post
+  const [showCheckinPopup, setShowCheckinPopup] = useState(currentUser && !hasCheckedInToday && !isExpired && !highlightedPost)
   const revalidator = useRevalidator()
   const handleAfterCheckIn = (checkIn: CheckIn): void => {
     setDayCount(dayCount + 1)
@@ -302,12 +303,11 @@ export default function ViewChallengeChat (): JSX.Element {
       {!hasToday && (
         <DateDivider date={today} />
       )}
-
+      {showCheckinPopup && (
+        <DialogCheckin challenge={challenge} open={true} onClose={() => { setShowCheckinPopup(false) }} afterCheckIn={handleAfterCheckIn} />
+      )}
       {currentUser && (
-        <div className='fixed w-full max-w-2xl bottom-0  bg-white bg-opacity-70' >
-          {!highlightedPost && showDialogPopup && !isExpired && (
-            <DialogCheckin challenge={challenge} open={true} onClose={() => { setShowDialogPopup(false) }} afterCheckIn={handleAfterCheckIn} />
-          )}
+        <div className='fixed w-full max-w-2xl bottom-0  bg-white bg-opacity-70 max-h-3/4' >
           <FormChat
             afterSave={afterSaveComment}
             prompt="Sound off..."
