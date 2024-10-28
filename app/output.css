@@ -1311,6 +1311,18 @@ video {
   max-height: 100vh;
 }
 
+.max-h-\[90vh\] {
+  max-height: 90vh;
+}
+
+.max-h-\[600px\] {
+  max-height: 600px;
+}
+
+.max-h-\[800px\] {
+  max-height: 800px;
+}
+
 .min-h-96 {
   min-height: 24rem;
 }
@@ -6574,6 +6586,14 @@ video {
 
   .md\:h-full {
     height: 100%;
+  }
+
+  .md\:max-h-\[800px\] {
+    max-height: 800px;
+  }
+
+  .md\:max-h-screen {
+    max-height: 100vh;
   }
 
   .md\:w-1\/12 {
