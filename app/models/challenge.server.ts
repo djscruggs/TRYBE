@@ -119,18 +119,23 @@ export const fetchChallenges = async (userId: string | number): Promise<Challeng
 export const fetchChallengeSummaries = async (userId?: string | number, status?: string): Promise<ChallengeSummary[]> => {
   const uid = userId ? Number(userId) : undefined
   const where: any[] = [{ public: true }]
-  if (status === 'upcoming') {
-    where.push({ startAt: { gt: new Date() } })
-  }
-  if (status === 'archived') {
-    where.push({ endAt: { lt: new Date() } })
-  }
-  if (status === 'active') {
-    where.push({ endAt: { gt: new Date() } })
+  console.log('status', status)
+  switch (status) {
+    case 'upcoming':
+      where.push({ startAt: { gt: new Date() } })
+      break
+    case 'archived':
+      where.push({ endAt: { lt: new Date() } })
+      break
+    case 'active':
+      where.push({ startAt: { lt: new Date() } })
+      where.push({ endAt: { gte: new Date() } })
+      break
   }
   if (uid) {
-    // where.push({ userId: uid })
+    where.push({ userId: uid })
   }
+  console.log('where', where)
   const params: prisma.challengeFindManyArgs = {
     where: {
       AND: where
@@ -141,7 +146,11 @@ export const fetchChallengeSummaries = async (userId?: string | number, status?:
       }
     }
   }
-  return await prisma.challenge.findMany(params)
+  const challenges = await prisma.challenge.findMany(params)
+  challenges.forEach((challenge: any) => {
+    console.log(challenge.startAt)
+  })
+  return challenges as ChallengeSummary[]
 }
 export function calculateNextCheckin (challenge: Challenge): Date {
   const today = new Date()

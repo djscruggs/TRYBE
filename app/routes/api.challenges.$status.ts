@@ -1,6 +1,12 @@
 import { fetchMemberChallenges } from '~/models/user.server'
 
-import { createChallenge, updateChallenge, loadChallengeSummary, fetchChallengeSummaries } from '~/models/challenge.server'
+import {
+  createChallenge,
+  updateChallenge,
+  loadChallengeSummary,
+  fetchChallengeSummaries,
+  fetchUserChallengesAndMemberships
+} from '~/models/challenge.server'
 import { requireCurrentUser } from '~/models/auth.server'
 import {
   json, type LoaderFunction,
@@ -67,7 +73,36 @@ export async function action (args: ActionFunctionArgs): Promise<any> {
   }
 }
 
+// export const loader: LoaderFunction = async (args) => {
+//   const { params } = args
+//   // eslint-disable-next-line @typescript-eslint/no-unused-vars
+//   const currentUser = await requireCurrentUser(args)
+//   const uid = Number(currentUser?.id)
+//   const challenges = await fetchChallengeSummaries(uid) as { error?: string }
+//   if (!challenges || (challenges.error != null)) {
+//     const error = { loadingError: 'Unable to load challenges' }
+//     return json(error)
+//   }
+//   const memberships = await fetchMemberChallenges(uid) || []
+//   return json({ challenges, memberships, error: null })
+// }
+
 export const loader: LoaderFunction = async (args) => {
-  void requireCurrentUser(args)
-  return json({ message: 'This route does not accept GET requests' }, 200)
+  const { status } = args.params ?? 'active'
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const currentUser = await requireCurrentUser(args)
+  const uid = Number(currentUser?.id)
+  let challenges
+  if (status === 'mine') {
+    challenges = await fetchUserChallengesAndMemberships(uid) as { error?: string }
+  } else {
+    challenges = await fetchChallengeSummaries(uid, status) as { error?: string }
+  }
+  if (!challenges || (challenges.error != null)) {
+    const error = { loadingError: 'Unable to load challenges' }
+    return json(error)
+  }
+  const memberships = await fetchMemberChallenges(uid) || [] as number[]
+  return json({ challenges, memberships, error: null })
 }
