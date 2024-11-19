@@ -14,15 +14,14 @@ export const createChallenge = async (challenge: prisma.challengeCreateInput): P
       challengeId: newChallenge.id
     }
   })
-  return newChallenge
+  return newChallenge as Challenge
 }
 export const updateChallenge = async (challenge: prisma.challengeCreateInput): Promise<Challenge> => {
   const { id, userId, ...data } = challenge
   return await prisma.challenge.update({
     where: { id },
     data
-  })
-  return updatedChallenge as Challenge
+  }) as unknown as Challenge
 }
 export const loadChallenge = async (challengeId: number, userId?: number): Promise<Challenge | null> => {
   const id = Number(challengeId)
@@ -61,7 +60,7 @@ export const loadChallengeSummary = async (challengeId: string | number): Promis
         select: { members: true, comments: true, likes: true }
       }
     }
-  })
+  }) as unknown as ChallengeSummary
 }
 export const loadUserCreatedChallenges = async (userId: string | number) => {
   const uid = Number(userId)
@@ -76,19 +75,20 @@ export const loadUserCreatedChallenges = async (userId: string | number) => {
     }
   })
 }
+
 export const deleteChallenge = async (challengeId: string | number, userId: string | number): Promise<prisma.challenge> => {
   const id = Number(challengeId)
   const uid = Number(userId)
   // load the challenge first so you can get a handle to the coverPhoto
   const challenge = await prisma.challenge.findUnique({
     where: { id }
-  })
+  }) as unknown as Challenge
   if (!challenge) {
     throw new Error('Challenge not found')
   }
   try {
     if (challenge?.coverPhotoMeta?.public_id) {
-      await deleteFromCloudinary(String(challenge.coverPhotoMeta.public_id, 'image'))
+      await deleteFromCloudinary(String(challenge.coverPhotoMeta.public_id), 'image')
     }
   } catch (error: any) {
     console.error('error deleting coverPhoto', error)
@@ -114,12 +114,11 @@ export const fetchChallenges = async (userId: string | number): Promise<Challeng
     where: {
       userId: uid
     }
-  })
+  }) as unknown as Challenge[]
 }
 export const fetchChallengeSummaries = async (userId?: string | number, status?: string): Promise<ChallengeSummary[]> => {
   const uid = userId ? Number(userId) : undefined
   const where: any[] = [{ public: true }]
-  console.log('status', status)
   switch (status) {
     case 'upcoming':
       where.push({ startAt: { gt: new Date() } })
@@ -135,7 +134,6 @@ export const fetchChallengeSummaries = async (userId?: string | number, status?:
   if (uid) {
     where.push({ userId: uid })
   }
-  console.log('where', where)
   const params: prisma.challengeFindManyArgs = {
     where: {
       AND: where
@@ -147,10 +145,8 @@ export const fetchChallengeSummaries = async (userId?: string | number, status?:
     }
   }
   const challenges = await prisma.challenge.findMany(params)
-  challenges.forEach((challenge: any) => {
-    console.log(challenge.startAt)
-  })
-  return challenges as ChallengeSummary[]
+
+  return challenges as unknown as ChallengeSummary[]
 }
 export function calculateNextCheckin (challenge: Challenge): Date {
   const today = new Date()
@@ -175,7 +171,7 @@ export function calculateNextCheckin (challenge: Challenge): Date {
   return nextCheckin
 }
 export async function updateCheckin (checkin: CheckIn): Promise<CheckIn> {
-  const { id, ...data } = checkin
+  const { id, memberChallenge, challenge, user, ...data } = checkin
   return await prisma.checkIn.update({
     where: { id },
     data
@@ -207,11 +203,12 @@ export const fetchUserChallengesAndMemberships = async (userId: string | number)
     }
   )
   const memberships = memberChallenges.map(memberChallenge => {
-    memberChallenge.challenge.isMember = true as ChallengeSummary['isMember']
-    return memberChallenge.challenge
+    const challenge = memberChallenge.challenge as unknown as ChallengeSummary
+    challenge.isMember = true
+    return challenge
   })
   // de-dupe any overlap
-  const uniqueChallenges = [...new Map([...ownedChallenges, ...memberships].map(item => [item.id, item])).values()]
+  const uniqueChallenges = [...new Map([...ownedChallenges, ...memberships].map(item => [item.id, item])).values()] as ChallengeSummary[]
   return uniqueChallenges
 }
 export const fetchUserChallenges = async (userId: string | number, showPrivate = false): Promise<ChallengeSummary[]> => {
@@ -225,7 +222,7 @@ export const fetchUserChallenges = async (userId: string | number, showPrivate =
         select: { members: true, comments: true, likes: true }
       }
     }
-  })
+  }) as unknown as ChallengeSummary[]
 }
 export const fetchUserMemberships = async (userId: string | number): Promise<MemberChallenge[]> => {
   const uid = Number(userId)

@@ -82,6 +82,7 @@ export default function ViewChallenge (): JSX.Element {
   const navigate = useNavigate()
   const [loading, setLoading] = useState<boolean>(false)
   const [isMember, setIsMember] = useState(Boolean(membership?.id))
+  const isStarted = challenge.startAt ? isPast(challenge.startAt) : false
 
   if (!data) {
     return <p>No data.</p>
@@ -183,7 +184,7 @@ export default function ViewChallenge (): JSX.Element {
                       )
                     : (
                   <div>
-                    <LiaUserFriendsSolid className="text-grey h-5 w-5 inline ml-4 -mt-1 mr-1" />
+                    <LiaUserFriendsSolid className="text-grey h-5 w-5 inline -mt-1 mr-1" />
                       No members yet
                   </div>
                       )}
@@ -196,21 +197,28 @@ export default function ViewChallenge (): JSX.Element {
 
       <Outlet />
       {(membership || challenge.userId === currentUser?.id) &&
-      <div className='flex justify-between mt-6 mb-20 max-w-sm md:max-w-md lg:max-w-lg'>
-        <button
-            className='w-40 bg-red hover:bg-green-500 text-white font-bold rounded-full p-2 justify-center text-sm disabled:bg-gray-400'
-            onClick={() => { navigate(`/challenges/v/${challenge.id}/checkins`) }}
-          >
-          View Progress
-        </button>
-        <CheckInButton
-          size='lg'
-          challenge={challenge}
-          memberChallenge={membership}
-          afterCheckIn={(checkIn: CheckIn) => { navigate(`/challenges/v/${challenge.id}/checkins`) }}
-          showDetails={false}/>
+      <div className='mb-20 max-w-sm md:max-w-md lg:max-w-lg'>
+         {!isStarted && <div className='text-center text-grey mt-2'>You can check in and view progress once the challenge starts.</div>}
+         <div className='flex justify-between mt-2'>
+          <button
+              className='w-40 bg-red hover:bg-green-500 text-white font-bold rounded-full p-2 justify-center text-sm disabled:bg-gray-400'
+              onClick={() => { navigate(`/challenges/v/${challenge.id}/checkins`) }}
+              disabled={!isStarted}
+            >
+            View Progress
+          </button>
+          <CheckInButton
+            size='lg'
+            challenge={challenge}
+            memberChallenge={membership}
+            afterCheckIn={(checkIn: CheckIn) => { navigate(`/challenges/v/${challenge.id}/checkins`) }}
+            showDetails={false}
+            disabled={!isStarted}
+          />
+         </div>
       </div>
       }
+
   </div>
   )
 }

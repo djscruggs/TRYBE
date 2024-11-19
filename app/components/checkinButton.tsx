@@ -11,9 +11,11 @@ interface ChallengeMemberCheckinProps {
   challenge: Challenge
   label?: string
   afterCheckIn?: (checkIn: CheckIn) => void
-  size?: 'sm' | 'md' | 'lg'
+  size?: 'xs' | 'sm' | 'md' | 'lg'
+  className?: string
+  disabled?: boolean
 }
-export function CheckInButton ({ challenge, afterCheckIn, size, label = 'Check In' }: ChallengeMemberCheckinProps): JSX.Element {
+export function CheckInButton ({ challenge, afterCheckIn, size, label = 'Check In', className, disabled }: ChallengeMemberCheckinProps): JSX.Element {
   if (!challenge?.id) {
     throw new Error('Challenge object with id is required')
   }
@@ -25,15 +27,15 @@ export function CheckInButton ({ challenge, afterCheckIn, size, label = 'Check I
       afterCheckIn(checkIn)
     }
   }
-  const minWidth = size === 'sm' ? 'min-w-32' : size === 'md' ? 'min-w-32' : 'min-w-40'
+  const minWidth = size === 'xs' ? 'min-w-24' : size === 'sm' ? 'min-w-32' : size === 'md' ? 'min-w-32' : 'min-w-40'
 
   return (
     <>
       <div>
         <button
             onClick={() => { setShowForm(true) } }
-            className={`w-fit ${minWidth} bg-red hover:bg-green-500 text-white font-bold rounded-full p-2 justify-center text-sm disabled:bg-gray-400 ${isExpired ? 'opacity-50 cursor-not-allowed' : ''}`}
-            disabled={isExpired}
+            className={className ?? `w-fit ${minWidth} bg-red hover:bg-green-500 text-white font-bold rounded-full p-2 justify-center text-sm disabled:bg-gray-400 ${isExpired ? 'opacity-50 cursor-not-allowed' : ''}`}
+            disabled={isExpired || disabled}
           >
             {isExpired ? 'Challenge Ended' : label}
         </button>
