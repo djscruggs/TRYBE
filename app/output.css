@@ -2683,6 +2683,11 @@ video {
   background-color: rgb(245 196 78 / var(--tw-bg-opacity));
 }
 
+.bg-gray-400 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(148 163 184 / var(--tw-bg-opacity));
+}
+
 .bg-opacity-02 {
   --tw-bg-opacity: .02;
 }
