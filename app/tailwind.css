@@ -3,7 +3,7 @@
 
 /* Import Google Font */
 @import url('https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;500;600;700&display=swap');
-
+@import url('https://fonts.googleapis.com/css2?family=Taprom&family=Waiting+for+the+Sunrise&display=swap');
 @tailwind utilities;
 
 /* bug reporting widget see https://docs.sentry.io/platforms/javascript/user-feedback/configuration/ */

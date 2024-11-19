@@ -1,19 +1,20 @@
-import CardChallenge from '~/components/cardChallenge'
+import CardChallengeHome from '~/components/cardChallengeHome'
 import { Spinner } from '@material-tailwind/react'
 import {
   type ChallengeSummary,
-  type MemberChallenge,
-  type Like
+  type MemberChallenge
 } from '~/utils/types'
-
+import { CurrentUserContext } from '~/utils/CurrentUserContext'
+import { useContext } from 'react'
 interface ChallengeListProps {
   challenges: ChallengeSummary[]
   memberships: MemberChallenge[]
   isLoading: boolean
 }
 export default function ChallengeList ({ challenges, memberships, isLoading }: ChallengeListProps): JSX.Element {
+  const { currentUser } = useContext(CurrentUserContext)
   function isMember (challenge: ChallengeSummary): boolean {
-    return memberships.some((membership: MemberChallenge) => membership.challengeId === challenge.id)
+    return memberships.some((membership: MemberChallenge) => membership.challengeId === challenge.id) || challenge.userId === currentUser?.id
   }
   return (
           <div className="w-full h-full flex-cols justify-center items-center">
@@ -26,7 +27,7 @@ export default function ChallengeList ({ challenges, memberships, isLoading }: C
               : challenges?.length > 0 &&
               challenges.map((challenge: ChallengeSummary) => (
                 <div key={challenge.id} className="w-full mb-4">
-                  <CardChallenge challenge={challenge} isMember={isMember(challenge)} />
+                  <CardChallengeHome challenge={challenge} isMember={isMember(challenge)} />
                  </div>
               ))
             }

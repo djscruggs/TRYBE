@@ -112,15 +112,16 @@ export interface Challenge {
   name: string | null | undefined
   description: string | null | undefined
   mission: string | null | undefined
-  startAt: Date
-  endAt: Date
+  startAt: Date | null
+  endAt: Date | null
   frequency: 'DAILY' | 'WEEKDAYS' | 'ALTERNATING' | 'WEEKLY' | 'CUSTOM'
-  coverPhotoMeta: Record<string, string> | null
+  coverPhotoMeta: CloudinaryMeta | null
+  videoMeta: CloudinaryMeta | null
   icon: string | null | undefined
   color?: string | null | undefined
   reminders: boolean
   syncCalendar: boolean
-  publishAt: Date
+  publishAt: Date | null
   published: boolean
   public: boolean
   userId: number
@@ -154,7 +155,7 @@ export interface MemberChallenge {
   userId: number
   challengeId: number
   user: User
-  challenge: Challenge
+  challenge: Challenge | ChallengeSummary
   lastCheckIn: Date
   nextCheckIn: Date
   _count?: {
@@ -168,7 +169,7 @@ export interface Like {
   threadId: number
   thread?: Thread
   challengeId: number
-  challenge?: Challenge
+  challenge?: Challenge | ChallengeSummary
   commentId: number
   comment?: Comment
   noteId: number
@@ -191,10 +192,10 @@ export interface CheckIn {
   challengeId: number
   createdAt: Date | string
   updatedAt: Date | string
-  data: JSONObject
+  data: JSONObject | JSONValue | null
   body: string
-  imageMeta: CloudinaryMeta
-  videoMeta: CloudinaryMeta
+  imageMeta: CloudinaryMeta | null
+  videoMeta: CloudinaryMeta | null
   challenge?: Challenge
   user?: User
   memberChallenge?: MemberChallenge
@@ -226,7 +227,7 @@ export interface LoginForm {
   password: string
   request: Request
 }
-export interface CloudinaryMeta {
+export interface CloudinaryMeta extends JSONObject {
   url: string
   secure_url: string
   public_id: string
@@ -265,6 +266,5 @@ export interface ObjectData {
   errors?: ErrorObject
   formData?: Record<string, number | boolean | Date | null | undefined> | undefined
   object?: Record<string, number | boolean | Date | null | undefined> | undefined
-  loadingError?: string | undefined
-  [key: string]: null | number | boolean | Date | undefined | Record<string, number | boolean | Date | null | undefined> | undefined
+  [key: string]: null | number | boolean | Date | ErrorObject | Record<string, number | boolean | Date | null | undefined> | undefined
 }

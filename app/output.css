@@ -1375,6 +1375,10 @@ video {
   width: 25%;
 }
 
+.w-1\/5 {
+  width: 20%;
+}
+
 .w-10 {
   width: 2.5rem;
 }
@@ -1429,6 +1433,10 @@ video {
 
 .w-4 {
   width: 1rem;
+}
+
+.w-4\/5 {
+  width: 80%;
 }
 
 .w-40 {
@@ -1503,6 +1511,10 @@ video {
 
 .w-screen {
   width: 100vw;
+}
+
+.min-w-24 {
+  min-width: 6rem;
 }
 
 .min-w-32 {
@@ -3230,6 +3242,10 @@ video {
 
 .font-sans {
   font-family: "Source Sans 3", Roboto, Helvetica, Arial, sans-serif;
+}
+
+.font-taprom {
+  font-family: "Taprom", Roboto, Helvetica, Arial, sans-serif;
 }
 
 .\!text-\[11px\] {

@@ -88,6 +88,10 @@ const Document = withEmotionCache(({ children, title }: DocumentProps, emotionCa
           rel="stylesheet"
           href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;500;600;700&display=swap"
         />
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Taprom&family=Waiting+for+the+Sunrise&display=swap"
+        />
         <meta name="emotion-insertion-point" content="emotion-insertion-point" />
       </head>
       <body>
