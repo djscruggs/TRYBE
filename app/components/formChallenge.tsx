@@ -209,6 +209,15 @@ export default function FormChallenge ({ challenge }: { challenge: ChallengeInpu
                     error={errors?.name}
                     label="Name of Challenge" />
                 </div>
+                <div className="relative mb-2 max-w-[400px]">
+                  <label htmlFor='category'>Category</label>
+                  <select name='category' value={formData.category} onChange={handleChange}>
+                    <option value=''>Select Category</option>
+                    <option value='HEALTH'>Health</option>
+                    <option value='MINDSET'>Mindset</option>
+                    <option value='FINANCE'>Finance</option>
+                  </select>
+                </div>
                 {/* material-tailwind <Select> element doesn't populate an actual HTML input element, so this hidden field captres the value for submission */}
                 <input type="hidden" name='frequency' value={formData.frequency} />
                 <div className="relative mb-2 max-w-[400px] text-sm">

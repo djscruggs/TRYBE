@@ -2,6 +2,8 @@
 
 export type Role = "USER" | "ADMIN";
 
+export type Category = "meditation" | "journal" | "creativity";
+
 export type Frequency = "DAILY" | "WEEKDAYS" | "ALTERNATING" | "WEEKLY" | "CUSTOM";
 
 export interface User {
@@ -101,7 +103,6 @@ export interface Post {
   notes?: Note[];
   challenge?: Challenge | null;
   user?: User;
-  categories?: Category[];
 }
 
 export interface Challenge {
@@ -110,6 +111,7 @@ export interface Challenge {
   updatedAt: Date;
   publishAt: Date;
   name: string;
+  category: Category | null;
   published: boolean;
   userId: number;
   color: string | null;
@@ -213,12 +215,6 @@ export interface Like {
   post?: Post | null;
   checkIn?: CheckIn | null;
   user?: User;
-}
-
-export interface Category {
-  id: number;
-  name: string;
-  posts?: Post[];
 }
 
 type JsonValue = string | number | boolean | { [key in string]?: JsonValue } | Array<JsonValue> | null;

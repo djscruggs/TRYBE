@@ -48,9 +48,17 @@ export default function ChallengesIndex (): JSX.Element {
     setChallenges(otherChallenges)
     setLoading(false)
   }
+  let upcomingChallengesCache: ChallengeSummary[] | null = null
+
   const loadUpcomingChallenges = async (): Promise<void> => {
+    if (upcomingChallengesCache) {
+      setUpcomingChallenges(upcomingChallengesCache)
+      return
+    }
+
     const response = await axios.get('/api/challenges/upcoming')
-    setUpcomingChallenges(response.data.challenges)
+    upcomingChallengesCache = response.data.challenges as ChallengeSummary[]
+    setUpcomingChallenges(upcomingChallengesCache)
   }
   useEffect(() => {
     void loadData()
