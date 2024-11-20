@@ -74,12 +74,14 @@ export async function login ({ email, password, request }: LoginForm): Promise<R
 export async function requireCurrentUser (args: LoaderFunctionArgs): Promise<CurrentUser | null> {
   const request = args.request
   const clerkUser = await getAuth(args)
+  console.log('clerkUser', clerkUser)
   let dbUser
   if (!clerkUser.userId) {
     dbUser = await getUser(request)
   } else {
     dbUser = await getUserByClerkId(clerkUser.userId)
   }
+  console.log('dbUser', dbUser)
   const currentUser = dbUser
 
   const path = new URL(request.url).pathname

@@ -117,8 +117,7 @@ model Post {
   notes              Note[]
   challenge          Challenge? @relation(fields: [challengeId], references: [id], onDelete: Cascade)
   user               User       @relation(fields: [userId], references: [id], onDelete: SetNull)
-  categories         Category[] @relation("CategoryToPost")
-
+  
   @@index([userId])
   @@index([userId, createdAt])
 }
@@ -129,6 +128,7 @@ model Challenge {
   updatedAt      DateTime          @updatedAt
   publishAt      DateTime          @default(now())
   name           String
+  category       Category?
   published      Boolean           @default(false)
   userId         Int
   color          String?
@@ -254,17 +254,17 @@ model Like {
   @@index([threadId])
 }
 
-model Category {
-  id    Int    @id @default(autoincrement())
-  name  String
-  posts Post[] @relation("CategoryToPost")
-}
 
 enum Role {
   USER
   ADMIN
 }
 
+enum Category {
+  meditation
+  journal
+  creativity
+}
 enum Frequency {
   DAILY
   WEEKDAYS

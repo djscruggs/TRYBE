@@ -25,7 +25,7 @@ export default function CardChallengeHome ({ challenge, isMember, isPreview }: C
   const bgColor = colorToClassName(challenge?.color ?? '', 'red')
   const memberCount = challenge?._count?.members ?? 0
   const isExpired = isPast(challenge.endAt ?? new Date('1970-01-01'))
-  const isStarted = challenge.startAt ? isPast(challenge.startAt) : false
+  const isStarted = !isExpired && challenge.startAt ? isPast(challenge.startAt) : false
   const goToChallenge = (event: any): void => {
     event.stopPropagation()
     if (isPreview) {
