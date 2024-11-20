@@ -191,6 +191,13 @@ export default function FormChallenge ({ challenge }: { challenge: ChallengeInpu
     }
   }
 
+  function handleCategoryChange (value: 'meditation' | 'journal' | 'creativity'): void {
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      category: value
+    }))
+  }
+
   return (
       <>
         <div className='w-full flex justify-center md:justify-start'>
@@ -210,13 +217,17 @@ export default function FormChallenge ({ challenge }: { challenge: ChallengeInpu
                     label="Name of Challenge" />
                 </div>
                 <div className="relative mb-2 max-w-[400px]">
-                  <label htmlFor='category'>Category</label>
-                  <select name='category' value={formData.category} onChange={handleChange}>
-                    <option value=''>Select Category</option>
-                    <option value='HEALTH'>Health</option>
-                    <option value='MINDSET'>Mindset</option>
-                    <option value='FINANCE'>Finance</option>
-                  </select>
+                    <Select
+                    label="Select Category"
+                    placeholder='category'
+                    name="category"
+                    value={formData.category}
+                    onChange={handleCategoryChange}
+                    >
+                    {['meditation', 'journal', 'creativity'].map((category: string, index: number) => (
+                      <Option key={index} value={category} className='capitalize'>{category.charAt(0).toUpperCase() + category.slice(1).toLowerCase()}</Option>
+                    ))}
+                  </Select>
                 </div>
                 {/* material-tailwind <Select> element doesn't populate an actual HTML input element, so this hidden field captres the value for submission */}
                 <input type="hidden" name='frequency' value={formData.frequency} />

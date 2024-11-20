@@ -119,6 +119,7 @@ export interface Challenge {
   videoMeta: CloudinaryMeta | null
   icon: string | null | undefined
   color?: string | null | undefined
+  category: 'meditation' | 'journal' | 'creativity'
   reminders: boolean
   syncCalendar: boolean
   publishAt: Date | null
