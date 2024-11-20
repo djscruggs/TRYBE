@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from '@remix-run/react'
+import { useNavigate, useParams, useSearchParams } from '@remix-run/react'
 import { useEffect, useState, useContext } from 'react'
 import type { ChallengeSummary, MemberChallenge } from '~/utils/types'
 import ChallengeList from '~/components/challengeList'
@@ -22,11 +22,12 @@ export default function ChallengesIndex (): JSX.Element {
   }
   const handleCategoryChange = (newCategory: string): void => {
     setCategory(newCategory)
-    navigate(`/challenges/${status}?category=${newCategory}`)
   }
   const loadData = async (): Promise<void> => {
     setLoading(true)
-    const response = await axios.get(`/api/challenges/${status}`)
+    const url = `/api/challenges/${status}`
+
+    const response = await axios.get(url)
 
     const allChallenges = response.data.challenges as ChallengeSummary[]
     const userMemberships = response.data.memberships as MemberChallenge[]
@@ -48,22 +49,26 @@ export default function ChallengesIndex (): JSX.Element {
     setChallenges(otherChallenges)
     setLoading(false)
   }
-  let upcomingChallengesCache: ChallengeSummary[] | null = null
 
   const loadUpcomingChallenges = async (): Promise<void> => {
-    if (upcomingChallengesCache) {
-      setUpcomingChallenges(upcomingChallengesCache)
-      return
+    // if (upcomingChallengesCache) {
+    //   setUpcomingChallenges(upcomingChallengesCache)
+    //   return
+    // }
+    let url = '/api/challenges/upcoming'
+    if (category) {
+      url += `?category=${category}`
     }
-
-    const response = await axios.get('/api/challenges/upcoming')
-    upcomingChallengesCache = response.data.challenges as ChallengeSummary[]
-    setUpcomingChallenges(upcomingChallengesCache)
+    const response = await axios.get(url)
+    setUpcomingChallenges(response.data.challenges as ChallengeSummary[])
   }
   useEffect(() => {
     void loadData()
     void loadUpcomingChallenges()
   }, [status])
+  useEffect(() => {
+    void loadUpcomingChallenges()
+  }, [category])
 
   return (
         <div className="w-full">
@@ -78,7 +83,7 @@ export default function ChallengesIndex (): JSX.Element {
             }
             <ChallengeList challenges={myChallenges} memberships={memberships} isLoading={loading} />
           </div>
-          {!loading && upcomingChallenges.length > 0 &&
+          {!loading &&
             <>
               <div className='text-red'>Browse Challenges</div>
               <div className='py-2 space-x-2 flex items-center justify-between md:justify-start w-full relative text-white text-sm'>
