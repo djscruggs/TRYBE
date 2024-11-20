@@ -116,7 +116,7 @@ export const fetchChallenges = async (userId: string | number): Promise<Challeng
     }
   }) as unknown as Challenge[]
 }
-export const fetchChallengeSummaries = async (userId?: string | number, status?: string): Promise<ChallengeSummary[]> => {
+export const fetchChallengeSummaries = async (userId?: string | number, status?: string, category?: string): Promise<ChallengeSummary[]> => {
   const uid = userId ? Number(userId) : undefined
   const where: any[] = [{ public: true }]
   switch (status) {
@@ -133,6 +133,9 @@ export const fetchChallengeSummaries = async (userId?: string | number, status?:
   }
   if (uid) {
     where.push({ userId: uid })
+  }
+  if (category && ['meditation', 'journal', 'creativity'].includes(category)) {
+    where.push({ category })
   }
   const params: prisma.challengeFindManyArgs = {
     where: {

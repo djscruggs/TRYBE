@@ -22,6 +22,7 @@ interface Errors {
   name?: string
   description?: string
   icon?: string
+  category?: string
   startAt?: string
   endAt?: string
   coverPhoto?: string
@@ -141,6 +142,7 @@ export default function FormChallenge ({ challenge }: { challenge: ChallengeInpu
     if (!formData.startAt) { validation.startAt = 'Start date is required' }
     if (!formData.endAt) { validation.endAt = 'End date is required' }
     if (!formData.icon) { validation.icon = 'Icon is required' }
+    if (!formData.category) { validation.category = 'Category is required' }
     if (Object.keys(validation).length > 0) {
       setErrors(validation)
       return
@@ -191,11 +193,13 @@ export default function FormChallenge ({ challenge }: { challenge: ChallengeInpu
     }
   }
 
-  function handleCategoryChange (value: 'meditation' | 'journal' | 'creativity'): void {
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      category: value
-    }))
+  function handleCategoryChange (value: string | undefined): void {
+    if (value && ['meditation', 'journal', 'creativity'].includes(value)) {
+      setFormData((prevFormData) => ({
+        ...prevFormData,
+        category: value as 'meditation' | 'journal' | 'creativity'
+      }))
+    }
   }
 
   return (
@@ -218,11 +222,12 @@ export default function FormChallenge ({ challenge }: { challenge: ChallengeInpu
                 </div>
                 <div className="relative mb-2 max-w-[400px]">
                     <Select
-                    label="Select Category"
-                    placeholder='category'
-                    name="category"
-                    value={formData.category}
-                    onChange={handleCategoryChange}
+                      label="Select Category"
+                      placeholder='category'
+                      name="category"
+                      error={Boolean(errors?.category)}
+                      value={formData.category}
+                      onChange={handleCategoryChange}
                     >
                     {['meditation', 'journal', 'creativity'].map((category: string, index: number) => (
                       <Option key={index} value={category} className='capitalize'>{category.charAt(0).toUpperCase() + category.slice(1).toLowerCase()}</Option>
