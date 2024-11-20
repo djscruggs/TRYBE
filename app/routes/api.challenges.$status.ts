@@ -9,7 +9,6 @@ import { json, type LoaderFunction } from '@remix-run/node'
 
 export const loader: LoaderFunction = async (args) => {
   const { status } = args.params ?? 'active'
-
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const currentUser = await requireCurrentUser(args)
   const uid = Number(currentUser?.id)
@@ -17,7 +16,11 @@ export const loader: LoaderFunction = async (args) => {
   if (status === 'mine') {
     challenges = await fetchUserChallengesAndMemberships(uid) as { error?: string }
   } else {
-    challenges = await fetchChallengeSummaries(uid, status) as { error?: string }
+    if (status === 'all') {
+      challenges = await fetchChallengeSummaries() as { error?: string }
+    } else {
+      challenges = await fetchChallengeSummaries(uid, status) as { error?: string }
+    }
   }
   if (!challenges || (challenges.error != null)) {
     const error = { loadingError: 'Unable to load challenges' }
