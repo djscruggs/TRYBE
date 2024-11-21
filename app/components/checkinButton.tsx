@@ -19,7 +19,8 @@ export function CheckInButton ({ challenge, afterCheckIn, size, label = 'Check I
   if (!challenge?.id) {
     throw new Error('Challenge object with id is required')
   }
-  const isExpired = isPast(challenge?.endAt)
+  const isExpired = challenge?.endAt ? isPast(challenge?.endAt) : false
+  const hasStarted = challenge.startAt && new Date(challenge.startAt) < new Date()
   const [showForm, setShowForm] = useState<boolean>(false)
   const handleAfterCheckIn = (checkIn: CheckIn): void => {
     setShowForm(false)
@@ -35,9 +36,9 @@ export function CheckInButton ({ challenge, afterCheckIn, size, label = 'Check I
         <button
             onClick={() => { setShowForm(true) } }
             className={className ?? `w-fit ${minWidth} bg-red hover:bg-green-500 text-white font-bold rounded-full p-2 justify-center text-sm disabled:bg-gray-400 ${isExpired ? 'opacity-50 cursor-not-allowed' : ''}`}
-            disabled={isExpired || disabled}
+            disabled={isExpired || !hasStarted || disabled}
           >
-            {isExpired ? 'Challenge Ended' : label}
+            {isExpired ? 'Challenge Ended' : hasStarted ? label : 'Challenge Not Started'}
         </button>
       </div>
       {showForm &&
