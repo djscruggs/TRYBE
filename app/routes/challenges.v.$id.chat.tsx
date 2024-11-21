@@ -144,6 +144,7 @@ export default function ViewChallengeChat (): JSX.Element {
   const [dayCount, setDayCount] = useState(10)
   const [limitedGroupedData, setLimitedGroupedData] = useState<GroupedDataEntry>(getCorrectDays(groupedData))
   const [newestComment, setNewestComment] = useState<Comment | null>(null)
+  const hasStarted = challenge.startAt && new Date(challenge.startAt) < new Date()
   // used in various places to get the current date formatted as YYYY-MM-DD
   const today = new Date().toLocaleDateString('en-CA')
   const scrollToBottom = (): void => {
@@ -195,7 +196,7 @@ export default function ViewChallengeChat (): JSX.Element {
   const isExpired = isPast(challenge.endAt ?? new Date('1970-01-01'))
   const [hasCheckedInToday, setHasCheckedInToday] = useState(checkedInToday())
   // only show the checkin popup if the user is logged in and they haven't checked in today, the challenge isn't expired, and there's no highlighted post
-  const [showCheckinPopup, setShowCheckinPopup] = useState(currentUser && !hasCheckedInToday && !isExpired && !highlightedPost)
+  const [showCheckinPopup, setShowCheckinPopup] = useState(hasStarted && currentUser && !hasCheckedInToday && !isExpired && !highlightedPost)
   const revalidator = useRevalidator()
   const handleAfterCheckIn = (checkIn: CheckIn): void => {
     setDayCount(dayCount + 1)
@@ -321,7 +322,7 @@ export default function ViewChallengeChat (): JSX.Element {
       )}
       {highlightedPost && (
         <DialogPost post={highlightedPost as Post} open={showHighlightedPost} onClose={handleCloseHighlightedPost} >
-          {!hasCheckedInToday && !isExpired &&
+          {hasStarted && !hasCheckedInToday && !isExpired &&
             <div className='flex items-center justify-center mt-4'>
               <CheckInButton challenge={challenge} afterCheckIn={handleAfterCheckIn} />
             </div>
