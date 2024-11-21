@@ -147,6 +147,7 @@ model Challenge {
   coverPhotoMeta Json?
   videoMeta      Json?
   user           User              @relation(fields: [userId], references: [id])
+  template       Boolean           @default(false)
   checkIns       CheckIn[]
   comments       Comment[]
   likes          Like[]
@@ -264,6 +265,7 @@ enum Category {
   meditation
   journal
   creativity
+  health
 }
 enum Frequency {
   DAILY

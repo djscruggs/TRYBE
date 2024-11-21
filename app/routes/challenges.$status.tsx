@@ -13,6 +13,7 @@ export default function ChallengesIndex (): JSX.Element {
   const params = useParams()
   const [status, setStatus] = useState(params.status ?? 'active')
   const [loading, setLoading] = useState(true)
+  const [loadingUpcoming, setLoadingUpcoming] = useState(true)
   const navigate = useNavigate()
   const [memberships, setMemberships] = useState<MemberChallenge[]>([])
   const { currentUser } = useContext(CurrentUserContext)
@@ -55,12 +56,14 @@ export default function ChallengesIndex (): JSX.Element {
     //   setUpcomingChallenges(upcomingChallengesCache)
     //   return
     // }
+    setLoadingUpcoming(true)
     let url = '/api/challenges/upcoming'
     if (category) {
       url += `?category=${category}`
     }
     const response = await axios.get(url)
     setUpcomingChallenges(response.data.challenges as ChallengeSummary[])
+    setLoadingUpcoming(false)
   }
   useEffect(() => {
     void loadData()
@@ -69,7 +72,7 @@ export default function ChallengesIndex (): JSX.Element {
   useEffect(() => {
     void loadUpcomingChallenges()
   }, [category])
-
+  const categories: Array<Challenge['category']> = ['meditation', 'journal', 'creativity', 'health']
   return (
         <div className="w-full">
           <div className='text-lg py-2 flex items-center justify-start w-full relative'>
@@ -87,15 +90,24 @@ export default function ChallengesIndex (): JSX.Element {
             <>
               <div className='text-red'>Browse Challenges</div>
               <div className='py-2 space-x-2 flex items-center justify-between md:justify-start w-full relative text-white text-sm'>
-                <div className={`w-fit p-1 px-2  rounded-md cursor-pointer ${category === 'meditation' ? 'bg-gray-400' : 'text-black bg-gray-100'}`} onClick={() => { handleCategoryChange('meditation') }}>Meditation</div>
-                <div className={`w-fit p-1 px-2  rounded-md cursor-pointer ${category === 'journal' ? 'bg-gray-400' : 'text-black bg-gray-100'}`} onClick={() => { handleCategoryChange('journal') }}>Journal</div>
-                <div className={`w-fit p-1 px-2  rounded-md cursor-pointer ${category === 'creativity' ? 'bg-gray-400' : 'text-black bg-gray-100'}`} onClick={() => { handleCategoryChange('creativity') }}>Creativity</div>
+                {categories.map((cat: string) => (
+                  <div
+                    key={cat}
+                    className={`w-fit p-1 px-2 rounded-md cursor-pointer ${category === cat ? 'bg-gray-400' : 'text-black bg-gray-100'}`}
+                    onClick={() => { handleCategoryChange(cat) }}
+                  >
+                    {cat.charAt(0).toUpperCase() + cat.slice(1)}
+                  </div>
+                ))}
                 <div className='w-fit mx-2 text-grey'> | </div>
                 <div className={`w-fit p-1 px-2 rounded-md cursor-pointer ${category === 'self-guided' ? 'bg-gray-400' : 'text-black bg-gray-100'}`} onClick={() => { handleCategoryChange('self-guided') }}>Self-Guided</div>
                 <Switch crossOrigin="anonymous" />
               </div>
+              {!loadingUpcoming && upcomingChallenges.length === 0 &&
+                <p className='text-left text-gray-500 mt-4'>No challenges in this category.</p>
+              }
               <div className="flex flex-col items-center max-w-lg w-full">
-                <ChallengeList challenges={upcomingChallenges} memberships={memberships} isLoading={loading} />
+                <ChallengeList challenges={upcomingChallenges} memberships={memberships} isLoading={loadingUpcoming} />
               </div>
             </>
           }
