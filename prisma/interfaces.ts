@@ -2,7 +2,7 @@
 
 export type Role = "USER" | "ADMIN";
 
-export type Category = "meditation" | "journal" | "creativity";
+export type Category = "meditation" | "journal" | "creativity" | "health";
 
 export type Frequency = "DAILY" | "WEEKDAYS" | "ALTERNATING" | "WEEKLY" | "CUSTOM";
 
@@ -130,6 +130,7 @@ export interface Challenge {
   coverPhotoMeta: JsonValue | null;
   videoMeta: JsonValue | null;
   user?: User;
+  template: boolean;
   checkIns?: CheckIn[];
   comments?: Comment[];
   likes?: Like[];

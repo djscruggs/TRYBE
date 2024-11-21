@@ -109,6 +109,7 @@ export interface PostSummary extends Post {
 
 export interface Challenge {
   id: number | undefined
+  template: boolean
   name: string | null | undefined
   description: string | null | undefined
   mission: string | null | undefined
@@ -118,8 +119,8 @@ export interface Challenge {
   coverPhotoMeta: CloudinaryMeta | null
   videoMeta: CloudinaryMeta | null
   icon: string | null | undefined
-  color?: string | null | undefined
-  category: 'meditation' | 'journal' | 'creativity'
+  color: string | null | undefined
+  category: 'meditation' | 'journal' | 'creativity' | 'health'
   reminders: boolean
   syncCalendar: boolean
   publishAt: Date | null

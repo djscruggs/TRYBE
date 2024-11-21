@@ -6,7 +6,7 @@ import React, {
 } from 'react'
 import { Form, useNavigate } from '@remix-run/react'
 import type { Challenge } from '~/utils/types'
-import { Button, Select, Option, Radio, Menu, MenuHandler, MenuItem, MenuList } from '@material-tailwind/react'
+import { Button, Select, Option, Radio, Menu, MenuHandler, MenuItem, MenuList, Checkbox } from '@material-tailwind/react'
 import { FormField } from '~/components/formField'
 import DatePicker from 'react-datepicker'
 import { addDays, endOfMonth, isFirstDayOfMonth } from 'date-fns'
@@ -84,6 +84,12 @@ export default function FormChallenge ({ challenge }: { challenge: ChallengeInpu
     setFormData((prevFormData) => ({
       ...prevFormData,
       [name]: value
+    }))
+  }
+  function handleTemplateChange (event: ChangeEvent<HTMLInputElement>): void {
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      template: event.target.checked
     }))
   }
   function handleSelect (value: Challenge['frequency']): void {
@@ -192,12 +198,12 @@ export default function FormChallenge ({ challenge }: { challenge: ChallengeInpu
       navigate(`/challenges/v/${response.data.id}`, { replace: true })
     }
   }
-
+  const categories: Array<Challenge['category']> = ['meditation', 'journal', 'creativity', 'health']
   function handleCategoryChange (value: string | undefined): void {
-    if (value && ['meditation', 'journal', 'creativity'].includes(value)) {
+    if (value && categories.includes(value as Challenge['category'])) {
       setFormData((prevFormData) => ({
         ...prevFormData,
-        category: value as 'meditation' | 'journal' | 'creativity'
+        category: value as Challenge['category']
       }))
     }
   }
@@ -229,7 +235,7 @@ export default function FormChallenge ({ challenge }: { challenge: ChallengeInpu
                       value={formData.category}
                       onChange={handleCategoryChange}
                     >
-                    {['meditation', 'journal', 'creativity'].map((category: string, index: number) => (
+                    {categories.map((category: string, index: number) => (
                       <Option key={index} value={category} className='capitalize'>{category.charAt(0).toUpperCase() + category.slice(1).toLowerCase()}</Option>
                     ))}
                   </Select>
@@ -350,15 +356,12 @@ export default function FormChallenge ({ challenge }: { challenge: ChallengeInpu
                   <Menu>
                     <MenuHandler className="flex justify-center items-center">
                       <div className="flex items-center justify-center gap-2 cursor-pointer">
-
-                          <>
+                        <>
                           <div className="flex flex-col items-center justify-center">
-                          <ChallengeIcon icon={formData.icon as string | undefined} />
-                          <Button className="mt-4">Select Icon</Button>
+                            <ChallengeIcon icon={formData.icon as string | undefined} />
+                            <Button className="mt-4">Select Icon</Button>
                           </div>
-
-                          </>
-
+                        </>
                       </div>
                     </MenuHandler>
                     <MenuList className="justify-start items-start grid grid-cols-3">
@@ -370,10 +373,19 @@ export default function FormChallenge ({ challenge }: { challenge: ChallengeInpu
                   </MenuList>
                 </Menu>
                 </div>
-
               </div>
-
             </div>
+            {currentUser?.role === 'ADMIN' &&
+              <div className='mt-4'>
+                <Checkbox
+                  name='template'
+                  label='Save as a template'
+                  checked={formData.template}
+                  onChange={handleTemplateChange}
+                  crossOrigin={undefined}
+                />
+              </div>
+            }
             <div className="mt-8 flex justify-left">
               <Button type="submit" onClick={handleSubmit} placeholder='Save' className="bg-red hover:bg-green-500 rounded-full">Save Challenge</Button>
               <button onClick={handleCancel} className="underline ml-4 4 hover:text-red">cancel</button>

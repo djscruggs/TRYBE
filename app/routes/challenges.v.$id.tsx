@@ -15,11 +15,10 @@ import { CurrentUserContext } from '~/utils/CurrentUserContext'
 import { Spinner } from '@material-tailwind/react'
 import { LiaUserFriendsSolid } from 'react-icons/lia'
 import { prisma } from '~/models/prisma.server'
-import { isPast } from 'date-fns'
+import { isPast, differenceInDays } from 'date-fns'
 import DialogConfirm from '~/components/dialogConfirm'
 import ChallengeHeader from '~/components/challengeHeader'
 import { CheckInButton } from '~/components/checkinButton'
-
 interface ViewChallengeData {
   challenge: ChallengeSummary
   membership?: MemberChallenge | null | undefined
@@ -135,68 +134,64 @@ export default function ViewChallenge (): JSX.Element {
         <div className='relative'>
           {parsedDescription}
         </div>
-        <button className='cursor-pointer  bg-green-500 hover:bg-red float-right text-white text-xs p-1 px-2 rounded-full' onClick={() => { navigate(`/challenges/v/${challenge.id}/contact`) }}>Contact Host</button>
+        {!challenge.template && <button className='cursor-pointer  bg-green-500 hover:bg-red float-right text-white text-xs p-1 px-2 rounded-full' onClick={() => { navigate(`/challenges/v/${challenge.id}/contact`) }}>Contact Host</button>}
         <div className='text-lg py-2 flex items-center justify-center w-full gap-4'>
           <div className={`w-fit ${isOverview ? 'border-b-2 border-red' : 'cursor-pointer'}`} onClick={() => { navigate(`/challenges/v/${challenge.id}`) }}>Overview</div>
           <div className={`w-fit ${isProgram ? 'border-b-2 border-red' : 'cursor-pointer'}`} onClick={() => { navigate(`/challenges/v/${challenge.id}/program`) }}>Program</div>
-          <div className={`w-fit ${isPosts ? 'border-b-2 border-red' : 'cursor-pointer'}`} onClick={() => { navigate(`/challenges/v/${challenge.id}/chat`) }}>Chat</div>
-
-          {/* only show menu here if there is a cover photo */}
+          {!challenge.template && <div className={`w-fit ${isPosts ? 'border-b-2 border-red' : 'cursor-pointer'}`} onClick={() => { navigate(`/challenges/v/${challenge.id}/chat`) }}>Chat</div>}
         </div>
-
         {isOverview &&
-          <div className='mt-4'>
+          <div className={`${challenge.template ? 'mt-0' : 'mt-4'}`}>
             <ChallengeOverview challenge={challenge} />
           </div>
         }
-
       </div>
-      {isOverview &&
-          <div className="max-w-sm md:max-w-md lg:max-w-lg text-center">
-            {challenge?.userId !== currentUser?.id && !isExpired && (
-              <>
-                  <button
-                    onClick={confirmJoinUnjoin}
-                    className='mt-4  bg-red hover:bg-green-500 text-white rounded-full p-1 px-2 cursor-pointer text-xs'>
-                      { isMember ? 'Leave Challenge' : 'Join this Challenge' }
-                      { loading && <Spinner className='w-4 h-4 inline ml-2' /> }
-                  </button>
+      {isOverview && !challenge.template &&
+        <div className="max-w-sm md:max-w-md lg:max-w-lg text-center">
+          {challenge?.userId !== currentUser?.id && !isExpired && (
+            <>
+                <button
+                  onClick={confirmJoinUnjoin}
+                  className='mt-4  bg-red hover:bg-green-500 text-white rounded-full p-1 px-2 cursor-pointer text-xs'>
+                    { isMember ? 'Leave Challenge' : 'Join this Challenge' }
+                    { loading && <Spinner className='w-4 h-4 inline ml-2' /> }
+                </button>
 
-                  {showConfirm && (
-                    <DialogConfirm
-                      isOpen={showConfirm}
-                      onConfirm={toggleJoin}
-                      onCancel={() => { setShowConfirm(false) }}
-                      prompt='Are you sure you want to leave this challenge? All your check-ins will be lost.'
-                    />
-                  )}
-              </>
-            )}
+                {showConfirm && (
+                  <DialogConfirm
+                    isOpen={showConfirm}
+                    onConfirm={toggleJoin}
+                    onCancel={() => { setShowConfirm(false) }}
+                    prompt='Are you sure you want to leave this challenge? All your check-ins will be lost.'
+                  />
+                )}
+            </>
+          )}
 
-            <div className='w-full'>
-              <div className='flex flex-row justify-between w-full'>
-                  {challenge?._count?.members && challenge?._count?.members > 0
-                    ? (
-                  <div>
-                      <LiaUserFriendsSolid className="text-grey h-5 w-5 inline ml-4 -mt-1 mr-1" />
-                      {challenge?._count.members} {pluralize(challenge?._count.members as number, 'member')}
-                  </div>
-                      )
-                    : (
-                  <div>
-                    <LiaUserFriendsSolid className="text-grey h-5 w-5 inline -mt-1 mr-1" />
-                      No members yet
-                  </div>
-                      )}
-              </div>
+          <div className='w-full'>
+            <div className='flex flex-row justify-between w-full'>
+                {challenge?._count?.members && challenge?._count?.members > 0
+                  ? (
+                <div>
+                    <LiaUserFriendsSolid className="text-grey h-5 w-5 inline ml-4 -mt-1 mr-1" />
+                    {challenge?._count.members} {pluralize(challenge?._count.members as number, 'member')}
+                </div>
+                    )
+                  : (
+                <div>
+                  <LiaUserFriendsSolid className="text-grey h-5 w-5 inline -mt-1 mr-1" />
+                    No members yet
+                </div>
+                    )}
             </div>
-            <Outlet />
-
           </div>
+          <Outlet />
+
+        </div>
       }
 
       <Outlet />
-      {(membership || challenge.userId === currentUser?.id) &&
+      {!challenge.template && (membership || challenge.userId === currentUser?.id) &&
       <div className='mb-20 max-w-sm md:max-w-md lg:max-w-lg'>
          {!isStarted && <div className='text-center text-grey mt-2'>You can check in and view progress once the challenge starts.</div>}
          <div className='flex justify-between mt-2'>
@@ -235,31 +230,55 @@ function ChallengeOverview ({ challenge }: { challenge: Challenge | ChallengeSum
   }
   return (
     <div className='md:px-0 justify-start'>
-      {isExpired && <div className='text-red text-center'>This challenge has ended</div>}
+      {challenge.template
+        ? (
+        <>
 
-      <div className="mb-2 flex flex-cols">
+            <div className="w-1/3">
+              <div className="font-bold">
+                Frequency
+              </div>
+              <div className="capitalize">
+                  {challenge?.frequency?.toLowerCase()}
+              </div>
+            </div>
+            <div className="w-1/3">
+          <div className="font-bold">
+            Duration
+          </div>
+          {differenceInDays(challenge.endAt ?? new Date(), challenge.startAt ?? new Date())} days
+        </div>
+        <div className='text-red text-center mb-4'>This is a template. Click program to view the schedule.</div>
+        </>
+          )
+        : (
+        <>
+          {isExpired && <div className='text-red text-center'>This challenge has ended</div>}
+
+          <div className="mb-2 flex flex-cols">
         <div className="w-1/3">
           <div className="font-bold">
             {isExpired || isStarted ? 'Started' : 'Starts'}
           </div>
           {new Date(challenge.startAt).toLocaleDateString(locale, dateOptions)}
         </div>
-        <div className="w-1/3">
-          <div className="font-bold">
-            {isExpired ? 'Ended' : 'Ends'}
-          </div>
-          {new Date(challenge.endAt ?? '').toLocaleDateString(locale, dateOptions)}
-        </div>
-        <div className="w-1/3">
-          <div className="font-bold">
-            Frequency
-          </div>
-          <div className="capitalize">
-            {challenge?.frequency?.toLowerCase()}
-          </div>
-        </div>
-      </div>
-
+            <div className="w-1/3">
+              <div className="font-bold">
+                {isExpired ? 'Ended' : 'Ends'}
+              </div>
+              {new Date(challenge.endAt ?? '').toLocaleDateString(locale, dateOptions)}
+            </div>
+            <div className="w-1/3">
+              <div className="font-bold">
+                Frequency
+              </div>
+              <div className="capitalize">
+                  {challenge?.frequency?.toLowerCase()}
+              </div>
+            </div>
+            </div>
+          </>
+          )}
     </div>
   )
 }
