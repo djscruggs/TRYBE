@@ -99,7 +99,7 @@ export default function ChallengesIndex (): JSX.Element {
                   </div>
                 ))}
                 <div className='w-fit mx-2 text-grey'> | </div>fct
-                <div className={`w-fit p-1 px-2 rounded-md cursor-pointer ${categoryFilter.includes('self-guided') ? 'bg-gray-400' : 'text-black bg-gray-100'}`} onClick={() => { handleCategoryChange('self-guided') }}>Self-Guided</div>
+                <div className={`w-fit p-1 px-2 rounded-md cursor-pointer ${1 === 2 ? 'bg-gray-400' : 'text-black bg-gray-100'}`}>Self-Guided</div>
                 <Switch crossOrigin="anonymous" />
               </div>
               {!loadingUpcoming && upcomingChallenges.length === 0 &&
