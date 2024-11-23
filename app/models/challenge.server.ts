@@ -31,7 +31,10 @@ export const loadChallenge = async (challengeId: number, userId?: number): Promi
     where.userId = userId
   }
   const challenge = await prisma.challenge.findUnique({
-    where
+    where,
+    include: {
+      categories: true
+    }
   })
   return challenge as Challenge | null
 }
@@ -45,23 +48,32 @@ export const loadChallengeWithHost = async (challengeId: number): Promise<Challe
         include: {
           profile: true
         }
-      }
+      },
+      categories: true
     }
   })
   return challenge as ChallengeWithHost | null
 }
 export const loadChallengeSummary = async (challengeId: string | number): Promise<ChallengeSummary> => {
   const id = Number(challengeId)
-  return await prisma.challenge.findUnique({
+  const challenge = await prisma.challenge.findUnique({
     where: {
       id
     },
     include: {
       _count: {
         select: { members: true, comments: true, likes: true }
+      },
+      categories: {
+        select: {
+          category: true
+        }
       }
     }
   }) as unknown as ChallengeSummary
+
+  challenge.categories = challenge.categories.map(c => c.category)
+  return challenge
 }
 export const loadUserCreatedChallenges = async (userId: string | number) => {
   const uid = Number(userId)
@@ -117,7 +129,7 @@ export const fetchChallenges = async (userId: string | number): Promise<Challeng
     }
   }) as unknown as Challenge[]
 }
-export const fetchChallengeSummaries = async (userId?: string | number, status?: string, category?: string | null): Promise<ChallengeSummary[]> => {
+export const fetchChallengeSummaries = async (userId?: string | number, status?: string, category?: string | number | null): Promise<ChallengeSummary[]> => {
   const uid = userId ? Number(userId) : undefined
   const where: any[] = [{ public: true }]
   switch (status) {
@@ -136,12 +148,23 @@ export const fetchChallengeSummaries = async (userId?: string | number, status?:
     where.push({ userId: uid })
   }
   if (category) {
-    // query db for valid categories
-    const sql = Prisma.sql`SELECT enum_range(NULL::"Category")`
-    const result: any = await prisma.$queryRaw(sql)
-    const validCategories = result[0].enum_range as string
-    if (validCategories.includes(category)) {
-      where.push({ category })
+    if (typeof category === 'string') {
+      // get the category id
+      const categoryId = await prisma.category.findFirst({
+        where: { name: category }
+      })
+      category = categoryId?.id
+    }
+    if (typeof category === 'number') {
+      where.push({
+        categories: {
+          some: {
+            categoryId: {
+              equals: category
+            }
+          }
+        }
+      })
     }
   }
   const params: prisma.challengeFindManyArgs = {
@@ -151,7 +174,8 @@ export const fetchChallengeSummaries = async (userId?: string | number, status?:
     include: {
       _count: {
         select: { members: true, comments: true, likes: true }
-      }
+      },
+      categories: true
     }
   }
   const challenges = await prisma.challenge.findMany(params)

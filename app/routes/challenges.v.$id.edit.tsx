@@ -1,16 +1,29 @@
 import ChallengeForm from '~/components/formChallenge'
-import React, { useRouteLoaderData } from '@remix-run/react'
-import { type ObjectData } from '~/utils/types'
+import { useEffect, useState } from 'react'
+import axios from 'axios'
+import { type ChallengeSummary } from '~/utils/types'
+import { useParams } from '@remix-run/react'
+interface ChallengeInputs extends ChallengeSummary {
+  deleteImage: boolean
+}
 
 export default function EditChallenge (): JSX.Element {
-  const { challenge, locale, loadingError } = useRouteLoaderData<typeof useRouteLoaderData>('routes/challenges.v.$id') as ObjectData
-  if (loadingError) {
-    return <h1>{loadingError}</h1>
-  }
+  const [challenge, setChallenge] = useState<ChallengeInputs | null>(null)
+  const params = useParams()
+  useEffect(() => {
+    console.log('params', params)
+    const loadChallenge = async (): Promise<void> => {
+      const response = await axios.get('/api/challenges/v/' + params.id)
+      console.log('data', response.data)
+      setChallenge(response.data as ChallengeInputs)
+    }
+    void loadChallenge()
+  }, [])
+  console.log('challenge', challenge)
   if (!challenge) {
-    return <p>Loading.</p>
+    return <div>Loading...</div>
   }
   return (
-    <ChallengeForm challenge={challenge} locale={locale}/>
+    <ChallengeForm challenge={challenge} />
   )
 }

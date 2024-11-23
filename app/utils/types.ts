@@ -120,7 +120,7 @@ export interface Challenge {
   videoMeta: CloudinaryMeta | null
   icon: string | null | undefined
   color: string | null | undefined
-  category: 'meditation' | 'journal' | 'creativity' | 'health'
+  categories: Category[]
   reminders: boolean
   syncCalendar: boolean
   publishAt: Date | null
@@ -133,6 +133,10 @@ export interface Challenge {
 }
 export interface ChallengeWithHost extends Challenge {
   user: User
+}
+export interface Category {
+  id: number
+  name?: string
 }
 
 interface CountType {

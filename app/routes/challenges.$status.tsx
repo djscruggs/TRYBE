@@ -72,7 +72,7 @@ export default function ChallengesIndex (): JSX.Element {
   useEffect(() => {
     void loadUpcomingChallenges()
   }, [category])
-  const categories: Array<Challenge['category']> = ['meditation', 'journal', 'creativity', 'health']
+  const categories = ['Meditation', 'Journal', 'Creativity', 'Health']
   return (
         <div className="w-full">
           <div className='text-lg py-2 flex items-center justify-start w-full relative'>
@@ -96,10 +96,10 @@ export default function ChallengesIndex (): JSX.Element {
                     className={`w-fit p-1 px-2 rounded-md cursor-pointer ${category === cat ? 'bg-gray-400' : 'text-black bg-gray-100'}`}
                     onClick={() => { handleCategoryChange(cat) }}
                   >
-                    {cat.charAt(0).toUpperCase() + cat.slice(1)}
+                    {cat}
                   </div>
                 ))}
-                <div className='w-fit mx-2 text-grey'> | </div>
+                <div className='w-fit mx-2 text-grey'> | </div>fct
                 <div className={`w-fit p-1 px-2 rounded-md cursor-pointer ${category === 'self-guided' ? 'bg-gray-400' : 'text-black bg-gray-100'}`} onClick={() => { handleCategoryChange('self-guided') }}>Self-Guided</div>
                 <Switch crossOrigin="anonymous" />
               </div>
