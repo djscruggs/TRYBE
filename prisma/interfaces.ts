@@ -2,8 +2,6 @@
 
 export type Role = "USER" | "ADMIN";
 
-export type Category = "meditation" | "journal" | "creativity" | "health";
-
 export type Frequency = "DAILY" | "WEEKDAYS" | "ALTERNATING" | "WEEKLY" | "CUSTOM";
 
 export interface User {
@@ -111,7 +109,7 @@ export interface Challenge {
   updatedAt: Date;
   publishAt: Date;
   name: string;
-  category: Category | null;
+  categories?: CategoriesOnChallenges[];
   published: boolean;
   userId: number;
   color: string | null;
@@ -197,6 +195,19 @@ export interface Comment {
   user?: User;
   likes?: Like[];
   notes?: Note[];
+}
+
+export interface Category {
+  id: number;
+  name: string;
+  challenges?: CategoriesOnChallenges[];
+}
+
+export interface CategoriesOnChallenges {
+  challenge?: Challenge;
+  challengeId: number;
+  category?: Category;
+  categoryId: number;
 }
 
 export interface Like {

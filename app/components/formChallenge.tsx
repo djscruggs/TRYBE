@@ -2,16 +2,17 @@ import React, {
   useState,
   useContext,
   useRef,
+  useEffect,
   type ChangeEvent
 } from 'react'
 import { Form, useNavigate } from '@remix-run/react'
-import type { Challenge } from '~/utils/types'
+import axios from 'axios'
+import type { Category, Challenge } from '~/utils/types'
 import { Button, Select, Option, Radio, Menu, MenuHandler, MenuItem, MenuList, Checkbox } from '@material-tailwind/react'
 import { FormField } from '~/components/formField'
 import DatePicker from 'react-datepicker'
 import { addDays, endOfMonth, isFirstDayOfMonth } from 'date-fns'
 import { toast } from 'react-hot-toast'
-import axios from 'axios'
 import { colorToClassName, handleFileUpload } from '~/utils/helpers'
 import { useRevalidator } from 'react-router-dom'
 import { CurrentUserContext } from '~/utils/CurrentUserContext'
@@ -26,6 +27,7 @@ interface Errors {
   startAt?: string
   endAt?: string
   coverPhoto?: string
+  categories?: string
 }
 
 interface ChallengeInputs extends Challenge {
@@ -148,7 +150,7 @@ export default function FormChallenge ({ challenge }: { challenge: ChallengeInpu
     if (!formData.startAt) { validation.startAt = 'Start date is required' }
     if (!formData.endAt) { validation.endAt = 'End date is required' }
     if (!formData.icon) { validation.icon = 'Icon is required' }
-    if (!formData.category) { validation.category = 'Category is required' }
+    if (formData.categories?.length === 0) { validation.categories = 'Category is required' }
     if (Object.keys(validation).length > 0) {
       setErrors(validation)
       return
@@ -156,7 +158,9 @@ export default function FormChallenge ({ challenge }: { challenge: ChallengeInpu
     const toSubmit = new FormData()
     for (const key in formData) {
       if (key === 'id' || key === 'coverPhotoMeta') continue
-      if (Object.prototype.hasOwnProperty.call(formData, key)) {
+      if (key === 'categories') {
+        toSubmit.append(key, JSON.stringify(formData.categories?.map(category => category.id)))
+      } else if (Object.prototype.hasOwnProperty.call(formData, key)) {
         const value = formData[key as keyof typeof formData]
         if (typeof value === 'string') {
           toSubmit.append(key, value)
@@ -198,16 +202,33 @@ export default function FormChallenge ({ challenge }: { challenge: ChallengeInpu
       navigate(`/challenges/v/${response.data.id}`, { replace: true })
     }
   }
-  const categories: Array<Challenge['category']> = ['meditation', 'journal', 'creativity', 'health']
-  function handleCategoryChange (value: string | undefined): void {
-    if (value && categories.includes(value as Challenge['category'])) {
+
+  const [categories, setCategories] = useState<Category[]>([])
+  useEffect(() => {
+    const loadCategories = async (): Promise<void> => {
+      const categories = await axios.get('/api/categories')
+      setCategories(categories.data.categories as Category[])
+    }
+    void loadCategories()
+  }, [])
+  function handleCategoryChange (e: ChangeEvent<HTMLInputElement>): void {
+    const value = Number(e.target.value)
+    const checked = e.target.checked
+    const currentCategoryIds = formData.categories?.map(category => category.id)
+    if (checked) {
+      if (!currentCategoryIds?.includes(value)) {
+        setFormData((prevFormData) => ({
+          ...prevFormData,
+          categories: [...prevFormData.categories ?? [], { id: value }]
+        }))
+      }
+    } else {
       setFormData((prevFormData) => ({
         ...prevFormData,
-        category: value as Challenge['category']
+        categories: prevFormData.categories?.filter(c => c.id !== value)
       }))
     }
   }
-
   return (
       <>
         <div className='w-full flex justify-center md:justify-start'>
@@ -226,20 +247,26 @@ export default function FormChallenge ({ challenge }: { challenge: ChallengeInpu
                     error={errors?.name}
                     label="Name of Challenge" />
                 </div>
-                <div className="relative mb-2 max-w-[400px]">
-                    <Select
-                      label="Select Category"
-                      placeholder='category'
-                      name="category"
-                      error={Boolean(errors?.category)}
-                      value={formData.category}
-                      onChange={handleCategoryChange}
-                    >
-                    {categories.map((category: string, index: number) => (
-                      <Option key={index} value={category} className='capitalize'>{category.charAt(0).toUpperCase() + category.slice(1).toLowerCase()}</Option>
+                <fieldset className="mb-4">
+                  <legend className="text-lg mb-2">Categories</legend>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-1">
+                    {categories.map((category: Category) => (
+                      <div key={category.id} className="flex items-center mb-2">
+                        <Checkbox
+                          crossOrigin={undefined}
+                          id={`category-${category.id}`}
+                          name="categories"
+                          value={String(category.id)}
+                          checked={formData.categories?.some(c => c.id === category.id)}
+                          onChange={handleCategoryChange}
+                        />
+                        <label htmlFor={`category-${category.id}`} className="ml-2 capitalize">
+                          {category.name}
+                        </label>
+                      </div>
                     ))}
-                  </Select>
-                </div>
+                  </div>
+                </fieldset>
                 {/* material-tailwind <Select> element doesn't populate an actual HTML input element, so this hidden field captres the value for submission */}
                 <input type="hidden" name='frequency' value={formData.frequency} />
                 <div className="relative mb-2 max-w-[400px] text-sm">

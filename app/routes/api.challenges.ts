@@ -9,6 +9,7 @@ import {
 } from '@remix-run/node'
 import { convertStringValues } from '~/utils/helpers'
 import { uploadHandler, saveToCloudinary, deleteFromCloudinary } from '~/utils/uploadFile'
+import { prisma } from '~/models/prisma.server'
 
 export async function action (args: ActionFunctionArgs): Promise<any> {
   const currentUser = await requireCurrentUser(args)
@@ -20,6 +21,10 @@ export async function action (args: ActionFunctionArgs): Promise<any> {
   if (!cleanData.userId) {
     cleanData.userId = currentUser?.id
   }
+  const categories = JSON.parse(cleanData.categories as string ?? [])
+  console.log('categories', categories)
+  delete cleanData.categories
+
   try {
     const converted = cleanData
     delete converted.image
@@ -55,6 +60,14 @@ export async function action (args: ActionFunctionArgs): Promise<any> {
       data.coverPhotoMeta = coverPhotoMeta
     }
     await updateChallenge(data)
+    // insert categories
+    // delete existing categories first
+    await prisma.categoriesOnChallenges.deleteMany({
+      where: { challengeId: cleanData.id }
+    })
+    await prisma.categoriesOnChallenges.createMany({
+      data: categories.map((category: any) => ({ categoryId: category, challengeId: cleanData.id }))
+    })
     // reload challenge with all the extra info
     const updatedChallenge = await loadChallengeSummary(Number(data.id))
     return updatedChallenge
