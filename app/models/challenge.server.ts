@@ -113,7 +113,6 @@ export const deleteChallenge = async (challengeId: string | number, userId: stri
   } catch (error: any) {
     console.error('error deleting video', error)
   }
-
   return await prisma.challenge.delete({
     where: {
       id,
@@ -147,20 +146,22 @@ export const fetchChallengeSummaries = async (userId?: string | number, status?:
   if (uid) {
     where.push({ userId: uid })
   }
-  if (category) {
-    if (typeof category === 'string') {
-      // get the category id
-      const categoryId = await prisma.category.findFirst({
-        where: { name: category }
-      })
-      category = categoryId?.id
+  let queryCategory: number[] | null = null
+  if (typeof category === 'number') {
+    queryCategory = [category]
+  } else if (typeof category === 'string') {
+    const categoryIds = await prisma.category.findMany({
+      where: { name: { in: category.split(',') } }
+    })
+    if (categoryIds) {
+      queryCategory = categoryIds.map(c => c.id)
     }
-    if (typeof category === 'number') {
+    if (Array.isArray(queryCategory) && queryCategory.length > 0) {
       where.push({
         categories: {
           some: {
             categoryId: {
-              equals: category
+              in: queryCategory
             }
           }
         }

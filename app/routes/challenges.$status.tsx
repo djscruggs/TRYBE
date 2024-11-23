@@ -8,7 +8,7 @@ import { Switch } from '@material-tailwind/react'
 export default function ChallengesIndex (): JSX.Element {
   const [myChallenges, setMyChallenges] = useState<ChallengeSummary[]>([])
   const [challenges, setChallenges] = useState<ChallengeSummary[]>([])
-  const [category, setCategory] = useState<string>('')
+  const [categoryFilter, setCategoryFilter] = useState<string[]>('')
   const [upcomingChallenges, setUpcomingChallenges] = useState<ChallengeSummary[]>([])
   const params = useParams()
   const [status, setStatus] = useState(params.status ?? 'active')
@@ -22,7 +22,7 @@ export default function ChallengesIndex (): JSX.Element {
     navigate(`/challenges/${newStatus}`)
   }
   const handleCategoryChange = (newCategory: string): void => {
-    setCategory(newCategory)
+    setCategoryFilter(prev => prev.includes(newCategory) ? prev.filter(cat => cat !== newCategory) : [...prev, newCategory])
   }
   const loadData = async (): Promise<void> => {
     setLoading(true)
@@ -58,8 +58,8 @@ export default function ChallengesIndex (): JSX.Element {
     // }
     setLoadingUpcoming(true)
     let url = '/api/challenges/upcoming'
-    if (category) {
-      url += `?category=${category}`
+    if (categoryFilter.length > 0) {
+      url += `?category=${categoryFilter.join(',')}`
     }
     const response = await axios.get(url)
     setUpcomingChallenges(response.data.challenges as ChallengeSummary[])
@@ -71,14 +71,13 @@ export default function ChallengesIndex (): JSX.Element {
   }, [status])
   useEffect(() => {
     void loadUpcomingChallenges()
-  }, [category])
+  }, [categoryFilter])
   const categories = ['Meditation', 'Journal', 'Creativity', 'Health']
   return (
         <div className="w-full">
           <div className='text-lg py-2 flex items-center justify-start w-full relative'>
             <div className='text-red cursor-pointer' onClick={() => { handleStatusChange('active') }}>My Challenges</div>
             <div className={`absolute right-2 text-xs text-gray-500 underline cursor-pointer ${status === 'archived' ? 'text-red' : ''}`} onClick={() => { handleStatusChange('archived') }}>Archived</div>
-
           </div>
           <div className="flex flex-col items-center max-w-lg w-full">
             {!loading && myChallenges.length === 0 &&
@@ -93,14 +92,14 @@ export default function ChallengesIndex (): JSX.Element {
                 {categories.map((cat: string) => (
                   <div
                     key={cat}
-                    className={`w-fit p-1 px-2 rounded-md cursor-pointer ${category === cat ? 'bg-gray-400' : 'text-black bg-gray-100'}`}
+                    className={`w-fit p-1 px-2 rounded-md cursor-pointer ${categoryFilter.includes(cat) ? 'bg-gray-400' : 'text-black bg-gray-100'}`}
                     onClick={() => { handleCategoryChange(cat) }}
                   >
                     {cat}
                   </div>
                 ))}
                 <div className='w-fit mx-2 text-grey'> | </div>fct
-                <div className={`w-fit p-1 px-2 rounded-md cursor-pointer ${category === 'self-guided' ? 'bg-gray-400' : 'text-black bg-gray-100'}`} onClick={() => { handleCategoryChange('self-guided') }}>Self-Guided</div>
+                <div className={`w-fit p-1 px-2 rounded-md cursor-pointer ${categoryFilter.includes('self-guided') ? 'bg-gray-400' : 'text-black bg-gray-100'}`} onClick={() => { handleCategoryChange('self-guided') }}>Self-Guided</div>
                 <Switch crossOrigin="anonymous" />
               </div>
               {!loadingUpcoming && upcomingChallenges.length === 0 &&
