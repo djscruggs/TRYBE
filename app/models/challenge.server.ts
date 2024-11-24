@@ -1,5 +1,5 @@
 import { prisma } from './prisma.server'
-import { Prisma } from '@prisma/client'
+import { type Prisma } from '@prisma/client'
 import type { Challenge, ChallengeSummary, MemberChallenge, CheckIn, ChallengeWithHost } from '~/utils/types'
 import { addDays, isFriday, isSaturday } from 'date-fns'
 import { deleteFromCloudinary } from '~/utils/uploadFile'
@@ -128,7 +128,7 @@ export const fetchChallenges = async (userId: string | number): Promise<Challeng
     }
   }) as unknown as Challenge[]
 }
-export const fetchChallengeSummaries = async (userId?: string | number, status?: string, category?: string | number | null): Promise<ChallengeSummary[]> => {
+export const fetchChallengeSummaries = async (userId?: number, status?: string, category?: string | number | null): Promise<ChallengeSummary[]> => {
   const uid = userId ? Number(userId) : undefined
   const where: any[] = [{ public: true }]
   switch (status) {
@@ -146,7 +146,7 @@ export const fetchChallengeSummaries = async (userId?: string | number, status?:
   if (uid) {
     where.push({ userId: uid })
   }
-  let queryCategory: number[] | null = null
+  let queryCategory: number[] = []
   if (typeof category === 'number') {
     queryCategory = [category]
   } else if (typeof category === 'string') {
@@ -156,7 +156,7 @@ export const fetchChallengeSummaries = async (userId?: string | number, status?:
     if (categoryIds) {
       queryCategory = categoryIds.map(c => c.id)
     }
-    if (Array.isArray(queryCategory) && queryCategory.length > 0) {
+    if (queryCategory.length > 0) {
       where.push({
         categories: {
           some: {
@@ -168,7 +168,7 @@ export const fetchChallengeSummaries = async (userId?: string | number, status?:
       })
     }
   }
-  const params: prisma.challengeFindManyArgs = {
+  const params: Prisma.ChallengeFindManyArgs = {
     where: {
       AND: where
     },
