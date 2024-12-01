@@ -22,7 +22,6 @@ export async function action (args: ActionFunctionArgs): Promise<any> {
     cleanData.userId = currentUser?.id
   }
   const categories = JSON.parse(cleanData.categories as string ?? [])
-  console.log('categories', categories)
   delete cleanData.categories
 
   try {
