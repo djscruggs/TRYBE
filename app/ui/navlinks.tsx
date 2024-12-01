@@ -2,7 +2,7 @@
 
 import { useLocation, useNavigation } from 'react-router-dom'
 import {
-  HomeIcon,
+  PlusCircleIcon,
   TrophyIcon,
   IdentificationIcon,
   ArchiveBoxIcon
@@ -21,19 +21,27 @@ const NavLinks = (): JSX.Element => {
   return (
       <>
       {currentUser &&
-        <div className="flex flex-col justify-start items-center min-h-full">
+        <div className="flex flex-col justify-start items-center h-screen min-h-full relative">
           {/* <div className={`w-24 flex items-center flex-col text-darkgrey text-center mb-4 p-2 rounded-lg ${location.pathname === '/' ? 'bg-gray-100' : 'hover:bg-gray-300'}`}>
             <Link to="/challenges" className='flex items-center flex-col' prefetch='render'>
               <HomeIcon className='className="h-8 w-8 cursor-pointer mb-1' />
               <span className="cursor-pointer ">Home</span>
             </Link>
           </div> */}
-          <div className={`w-24 h-20 flex items-center justify-center flex-col text-darkgrey text-center mb-4 p-2 rounded-lg ${location.pathname === '/challenges' ? 'bg-gray-100' : 'hover:bg-gray-300'}`}>
+          <div className={`w-24 h-20 flex items-center justify-center flex-col text-darkgrey text-center mt-4 mb-4 p-2 rounded-lg ${location.pathname === '/challenges' ? 'bg-gray-100' : 'hover:bg-gray-300'}`}>
             <Link to="/challenges" className='flex items-center flex-col' prefetch='render'>
               <TrophyIcon className='h-8 w-8 cursor-pointer mb-1y' />
               <span className="cursor-pointer">Home</span>
             </Link>
           </div>
+          {currentUser?.role === 'ADMIN' &&
+            <div className={`w-24 h-20 flex items-center justify-center flex-col text-darkgrey text-center mt-4 mb-4 p-2 rounded-lg ${location.pathname === '/challenges' ? 'bg-gray-100' : 'hover:bg-gray-300'}`}>
+              <Link to="/challenges/new" className='flex items-center flex-col' prefetch='render'>
+                <PlusCircleIcon className='h-8 w-8 cursor-pointer mb-1y text-red' />
+                <span className="cursor-pointer">Create</span>
+              </Link>
+            </div>
+          }
           {/* <div className={`w-24 h-20 flex items-center justify-center flex-col text-darkgrey text-center mb-4 p-2 rounded-lg ${location.pathname === '/community' ? 'bg-gray-100' : 'hover:bg-gray-300'}`}>
             <Link to="/community" className='flex items-center flex-col'>
               <UsersIcon className='h-8 w-8 cursor-pointer mb-1' />
@@ -51,13 +59,13 @@ const NavLinks = (): JSX.Element => {
               <EnvelopeIcon className='h-8 w-8 cursor-pointer mb-1' />
               <span className="cursor-pointer">Messages</span>
             </Link>
-          </div> */}
-          {/* <div className={`w-24 h-20 flex items-center justify-center flex-col text-darkgrey text-center mb-4 p-2 rounded-lg ${location.pathname.includes(`/members/${currentUser?.id}/content`) ? 'bg-gray-100' : 'hover:bg-gray-300'}`}>
+          </div>
+          {<div className={`w-24 h-20 flex items-center justify-center flex-col text-darkgrey text-center mb-4 p-2 rounded-lg ${location.pathname.includes(`/members/${currentUser?.id}/content`) ? 'bg-gray-100' : 'hover:bg-gray-300'}`}>
             <Link to={`/members/${currentUser?.id}/content`} className='flex items-center flex-col'>
               <ArchiveBoxIcon className='h-8 w-8 cursor-pointer mb-1' />
               <span className="cursor-pointer">My Stuff</span>
             </Link>
-          </div> */}
+          </div> *
           <div className={`w-24 h-20 flex items-center justify-center flex-col text-darkgrey text-center mb-4 p-2 rounded-lg ${location.pathname === '/profile' ? 'bg-gray-100' : 'hover:bg-gray-300'}`}>
             <Link to="/profile" className='flex items-center flex-col' prefetch='render'>
               <IdentificationIcon className='h-8 w-8 cursor-pointer mb-1' />
@@ -72,9 +80,9 @@ const NavLinks = (): JSX.Element => {
               </Button>
             </Form>
           </div> */}
-          <div className={`w-24 h-20 flex items-center justify-center flex-col text-darkgrey text-center mb-4 p-2 rounded-lg ${location.pathname === '/profile' ? 'bg-gray-100' : 'hover:bg-gray-300'}`}>
+          <div className='absolute bottom-10 left-0 w-24 h-20 text-darkgrey text-center mb-4 rounded-lg hover:bg-gray-300 flex flex-col items-center justify-center'>
             <HiOutlineLogout className='h-8 w-8 cursor-pointer mb-1 text-darkgrey' onClick={signOut}/>
-            <span className="cursor-pointer">Logout</span>
+            <div className="cursor-pointer">Logout</div>
           </div>
           {navigation.state === 'loading' && <Spinner />}
         </div>

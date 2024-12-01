@@ -247,9 +247,16 @@ export default function FormChallenge ({ challenge }: { challenge: ChallengeInpu
                     error={errors?.name}
                     label="Name of Challenge" />
                 </div>
+
                 <fieldset className="mb-4">
                   <legend className="text-lg mb-2">Categories</legend>
+                  {errors?.categories && (
+                  <div className="text-xs font-semibold text-left tracking-wide text-red w-full mb-4">
+                    {errors?.categories}
+                  </div>
+                  )}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-1">
+
                     {categories.map((category: Category) => (
                       <div key={category.id} className="flex items-center mb-2">
                         <Checkbox
