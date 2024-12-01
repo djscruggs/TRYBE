@@ -4,7 +4,7 @@ import { type ChallengeSummary } from '~/utils/types'
 import { colorToClassName } from '~/utils/helpers'
 import { CurrentUserContext } from '~/utils/CurrentUserContext'
 import { useNavigate } from '@remix-run/react'
-import { differenceInCalendarDays, isPast } from 'date-fns'
+import { differenceInCalendarDays, differenceInWeeks, differenceInBusinessDays, isPast } from 'date-fns'
 import ShareMenu from './shareMenu'
 import ChallengeIcon from './challengeIcon'
 import { CheckInButton } from './checkinButton'
@@ -38,6 +38,14 @@ export default function CardChallengeHome ({ challenge, isMember, isPreview }: C
       localStorage.setItem('redirect', url)
       navigate('/signup')
     }
+  }
+  let challengeLength = ''
+  if (challenge.frequency === 'WEEKLY') {
+    challengeLength = differenceInWeeks(challenge.endAt ?? new Date('1970-01-01'), challenge.startAt ?? new Date('1970-01-01')) + ' wks'
+  } else if (challenge.frequency === 'DAILY') {
+    challengeLength = differenceInCalendarDays(challenge.endAt ?? new Date('1970-01-01'), challenge.startAt ?? new Date('1970-01-01')) + ' days'
+  } else {
+    challengeLength = differenceInBusinessDays(challenge.endAt ?? new Date('1970-01-01'), challenge.startAt ?? new Date('1970-01-01')) + ' days'
   }
 
   const howLongToStart = (): string => {
@@ -75,7 +83,11 @@ export default function CardChallengeHome ({ challenge, isMember, isPreview }: C
           <div onClick={goToChallenge} className='md:col-span-2 rounded-xl'>
             <div className="w-full flex">
               <div className='w-1/5 flex items-center justify-center'>
-                <div className={`border rounded-md border-${bgColor}`}>
+                <div className={`relative border rounded-md border-${bgColor}`}>
+                {challengeLength !== '' &&
+                    <div className="absolute -right-3 text-center -mt-3 capitalize p-1 px-2 rounded-md shadow-lg shadow-darkgrey w-[60px] bg-teal text-[0.6rem] text-white">{challengeLength}</div>
+
+                }
                   <ChallengeIcon icon={challenge.icon as string | undefined} />
                 </div>
               </div>
