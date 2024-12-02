@@ -27,7 +27,6 @@ const NavLinks = (): JSX.Element => {
   const toggleNewOpen = (): void => {
     setIsNewOpen(!isNewOpen)
   }
-  console.log(location.pathname)
   return (
       <>
       {currentUser &&
