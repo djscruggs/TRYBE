@@ -75,16 +75,20 @@ export default function ChallengesIndex (): JSX.Element {
   const categories = ['Meditation', 'Journal', 'Creativity', 'Health']
   return (
         <div className="w-full">
-          <div className='text-lg py-2 flex items-center justify-start w-full relative'>
-            <div className='text-red cursor-pointer' onClick={() => { handleStatusChange('active') }}>My Challenges</div>
-            <div className={`absolute right-2 text-xs text-gray-500 underline cursor-pointer ${status === 'archived' ? 'text-red' : ''}`} onClick={() => { handleStatusChange('archived') }}>Archived</div>
-          </div>
-          <div className="flex flex-col items-center max-w-lg w-full">
-            {!loading && myChallenges.length === 0 &&
-              <div className="text-center mt-10">No {status !== 'mine' ? status : ''} challenges found</div>
-            }
-            <ChallengeList challenges={myChallenges} memberships={memberships} isLoading={loading} />
-          </div>
+          {!loading && myChallenges.length > 0 &&
+            <>
+              <div className='text-lg py-2 flex items-center justify-start w-full relative'>
+              <div className='text-red cursor-pointer' onClick={() => { handleStatusChange('active') }}>My Challenges</div>
+              <div className={`absolute right-2 text-xs text-gray-500 underline cursor-pointer ${status === 'archived' ? 'text-red' : ''}`} onClick={() => { handleStatusChange('archived') }}>Archived</div>
+            </div>
+            <div className="flex flex-col items-center max-w-lg w-full">
+              {!loading && myChallenges.length === 0 &&
+                <div className="text-center mt-10">No {status !== 'mine' ? status : ''} challenges found</div>
+              }
+              <ChallengeList challenges={myChallenges} memberships={memberships} isLoading={loading} />
+              </div>
+            </>
+          }
           {!loading &&
             <>
               <div className='text-red'>Browse Challenges</div>
