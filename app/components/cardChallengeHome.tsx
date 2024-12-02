@@ -26,6 +26,7 @@ export default function CardChallengeHome ({ challenge, isMember, isPreview }: C
   const memberCount = challenge?._count?.members ?? 0
   const isExpired = isPast(challenge.endAt ?? new Date('1970-01-01'))
   const isStarted = !isExpired && challenge.startAt ? isPast(challenge.startAt) : false
+  const checkInButtonDisabled = isExpired || !isStarted
   const goToChallenge = (event: any): void => {
     event.stopPropagation()
     if (isPreview) {
@@ -83,23 +84,23 @@ export default function CardChallengeHome ({ challenge, isMember, isPreview }: C
           <div onClick={goToChallenge} className='md:col-span-2 rounded-xl'>
             <div className="w-full flex">
               <div className='w-1/5 flex items-center justify-center'>
-                <div className={`relative border rounded-md border-${bgColor}`}>
+                <div className={`relative border rounded-md p-2 pb-1 border-${bgColor}`}>
                 {challengeLength !== '' &&
-                    <div className="absolute -right-3 text-center -mt-3 capitalize p-1 px-2 rounded-md shadow-lg shadow-darkgrey w-[60px] bg-teal text-[0.6rem] text-white">{challengeLength}</div>
+                    <div className="absolute -right-3 text-center -mt-5 capitalize p-1 px-2 rounded-md shadow-lg shadow-darkgrey w-[60px] bg-teal text-[0.6rem] text-white">{challengeLength}</div>
 
                 }
                   <ChallengeIcon icon={challenge.icon as string | undefined} />
                 </div>
               </div>
-              <div className="w-4/5 border-0 mb-2 pt-2 pl-4">
-                {isMember && isStarted &&
+              <div className="w-4/5 border-0 mb-2 pt-2 pl-5">
+                {isMember && !checkInButtonDisabled &&
                   <div onClick={(event) => { event.stopPropagation() }}>
-                    <CheckInButton challenge={challenge} className={`float-right w-fit bg-red hover:bg-green-500 text-white rounded-md p-1 justify-center text-xs disabled:bg-gray-400 ${isExpired ? 'opacity-50 cursor-not-allowed' : ''}`} />
+                    <CheckInButton challenge={challenge} className={`shadow-lg shadow-darkgrey float-right w-fit bg-red hover:bg-green-500 text-white rounded-md p-2 justify-center text-xs italic disabled:bg-gray-400 ${checkInButtonDisabled ? 'opacity-50 cursor-not-allowed' : ''}`} />
                   </div>
                 }
                 <div className='font-bold mb-1 text-start text-black'>
 
-                  <div className='text-xs text-grey flex items-center justify-start'>
+                  <div className='text-xs text-darkgrey flex items-center justify-start'>
                     <span className='text-black text-lg'>{challenge.name}</span>
                     {isHost &&
                       <> <span className='mx-2'>| </span> <span className='text-xs font-taprom text-blue'>Hosting</span></>
@@ -109,12 +110,12 @@ export default function CardChallengeHome ({ challenge, isMember, isPreview }: C
                 </div>
 
                 <div className=''>
-                  <FaUserFriends className='h-4 w-4 text-grey inline' />
-                  <span className='text-xs pl-2 text-grey inline'>{memberCount} joined</span>
+                  <FaUserFriends className='h-4 w-4 text-darkgrey inline' />
+                  <span className='text-xs pl-2 text-darkgrey inline'>{memberCount} joined</span>
                 </div>
                 <div className=''>
-                  <FaRegCalendarAlt className='h-4 w-4 text-grey inline' />
-                  <span className='text-xs pl-1 text-grey inline'>{howLongToStart()}</span>
+                  <FaRegCalendarAlt className='h-4 w-4 text-darkgrey inline' />
+                  <span className='text-xs pl-1 text-darkgrey inline'>{howLongToStart()}</span>
                 </div>
 
               </div>
