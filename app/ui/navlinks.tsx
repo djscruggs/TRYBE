@@ -9,15 +9,25 @@ import {
 } from '@heroicons/react/24/outline'
 import { HiOutlineLogout } from 'react-icons/hi'
 import { CurrentUserContext } from '~/utils/CurrentUserContext'
-import { useContext } from 'react'
+import { useContext, useState } from 'react'
 import { Spinner } from '@material-tailwind/react'
-import { Link } from '@remix-run/react'
+import { Link, useNavigate } from '@remix-run/react'
 import { useClerk } from '@clerk/remix'
 const NavLinks = (): JSX.Element => {
   const { currentUser } = useContext(CurrentUserContext)
   const location = useLocation()
   const { signOut } = useClerk()
+  const [isNewOpen, setIsNewOpen] = useState(false)
   const navigation = useNavigation()
+  const navigate = useNavigate()
+  const handleNewOpt = (path: string, event: any) => {
+    event.stopPropagation()
+    setIsNewOpen(false)
+    navigate(path)
+  }
+  const toggleNewOpen = () => {
+    setIsNewOpen(!isNewOpen)
+  }
   return (
       <>
       {currentUser &&
@@ -36,10 +46,23 @@ const NavLinks = (): JSX.Element => {
           </div>
           {currentUser?.role === 'ADMIN' &&
             <div className={`w-24 h-20 flex items-center justify-center flex-col text-darkgrey text-center mt-4 mb-4 p-2 rounded-lg ${location.pathname === '/challenges' ? 'bg-gray-100' : 'hover:bg-gray-300'}`}>
-              <Link to="/challenges/new" className='flex items-center flex-col' prefetch='render'>
-                <PlusCircleIcon className='h-8 w-8 cursor-pointer mb-1y text-red' />
+
+                <PlusCircleIcon className='h-8 w-8 cursor-pointer mb-1y text-red' onClick={toggleNewOpen} />
                 <span className="cursor-pointer">Create</span>
-              </Link>
+                {isNewOpen &&
+                <div className='ml-60 z-50 relative border border-black'>
+                  <div onClick={(event) => { handleNewOpt('/challenges/new', event) }} className="absolute top-[10px] left-[40px] transform -translate-x-1/2 flex flex-col items-center justify-center w-16 h-16 rounded-full border border-black bg-[#FDC94C] cursor-pointer text-xs p-3">
+                    <TrophyIcon />
+                    <span className="cursor-pointer text-xs mt-0">Challenge</span>
+                  </div>
+                  <div onClick={(event) => { handleNewOpt('/challenges/new-template', event) }} className="absolute top-[6  0px] left-[40px] flex flex-col items-center justify-center w-16 h-16 rounded-full border border-black bg-[#FDC94C] ml-20 mx-2 cursor-pointer text-xxs p-3">
+                    <TrophyIcon />
+                    <span className="cursor-pointer text-xs mt-0">Template</span>
+                  </div>
+                </div>
+
+                }
+
             </div>
           }
           {/* <div className={`w-24 h-20 flex items-center justify-center flex-col text-darkgrey text-center mb-4 p-2 rounded-lg ${location.pathname === '/community' ? 'bg-gray-100' : 'hover:bg-gray-300'}`}>
