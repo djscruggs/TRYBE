@@ -107,14 +107,17 @@ export interface PostSummary extends Post {
   _count?: CountType
 }
 
+export type ChallengeType = 'SCHEDULED' | 'SELF_LED'
 export interface Challenge {
   id: number | undefined
   template: boolean
   name: string | null | undefined
   description: string | null | undefined
   mission: string | null | undefined
-  startAt: Date | null
-  endAt: Date | null
+  startAt?: Date | null
+  endAt?: Date | null
+  numDays?: number | null
+  type: ChallengeType
   frequency: 'DAILY' | 'WEEKDAYS' | 'ALTERNATING' | 'WEEKLY' | 'CUSTOM'
   coverPhotoMeta: CloudinaryMeta | null
   videoMeta: CloudinaryMeta | null
