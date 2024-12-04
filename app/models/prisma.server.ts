@@ -13,7 +13,7 @@ function extendPrisma (prisma: PrismaClient): PrismaClient {
         fullName: {
           needs: { firstName: true, lastName: true },
           compute (profile) {
-            return `${profile.firstName} ${profile.lastName}`
+            return `${profile.firstName ?? ''} ${profile.lastName ?? ''}`.trim()
           }
         }
       }
