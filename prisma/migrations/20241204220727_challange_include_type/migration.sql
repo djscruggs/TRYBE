@@ -1,0 +1,5 @@
+-- AlterTable
+ALTER TABLE "Challenge" ADD COLUMN     "numDays" INTEGER,
+ADD COLUMN     "type" "ChallengeType" NOT NULL DEFAULT 'SCHEDULED',
+ALTER COLUMN "startAt" DROP NOT NULL,
+ALTER COLUMN "startAt" DROP DEFAULT;

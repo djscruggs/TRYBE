@@ -2,6 +2,8 @@
 
 export type Role = "USER" | "ADMIN";
 
+export type ChallengeType = "SCHEDULED" | "SELF_LED";
+
 export type Frequency = "DAILY" | "WEEKDAYS" | "ALTERNATING" | "WEEKLY" | "CUSTOM";
 
 export interface User {
@@ -137,9 +139,11 @@ export interface Challenge {
   color: string | null;
   description: string | null;
   endAt: Date | null;
+  numDays: number | null;
   icon: string | null;
+  type: ChallengeType;
   reminders: boolean;
-  startAt: Date;
+  startAt: Date | null;
   syncCalendar: boolean;
   frequency: Frequency;
   mission: string | null;

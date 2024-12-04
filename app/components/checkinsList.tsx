@@ -58,6 +58,7 @@ export default function CheckinsList ({ checkIns, posts, comments, newestComment
     return acc
   }, {})
   const allDates = new Set([...Object.keys(checkInsByDay), ...Object.keys(postsByDay), ...Object.keys(commentsByDay ?? {})])
+  // return <></>
   return (
     <div className='text-left flex flex-col w-full' id={id ?? 'checkins-list'}>
       {Array.from(allDates).map(date => {

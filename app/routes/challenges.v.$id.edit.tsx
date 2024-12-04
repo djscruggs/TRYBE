@@ -13,6 +13,7 @@ export default function EditChallenge (): JSX.Element {
   useEffect(() => {
     const loadChallenge = async (): Promise<void> => {
       const response = await axios.get('/api/challenges/v/' + params.id)
+      console.log('response', response)
       setChallenge(response.data as ChallengeInputs)
     }
     void loadChallenge()

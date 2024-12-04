@@ -10,6 +10,7 @@ import {
 import { convertStringValues } from '~/utils/helpers'
 import { uploadHandler, saveToCloudinary, deleteFromCloudinary } from '~/utils/uploadFile'
 import { prisma } from '~/models/prisma.server'
+import { differenceInDays } from 'date-fns'
 
 export async function action (args: ActionFunctionArgs): Promise<any> {
   const currentUser = await requireCurrentUser(args)
@@ -23,7 +24,6 @@ export async function action (args: ActionFunctionArgs): Promise<any> {
   }
   const categories = JSON.parse(cleanData.categories as string ?? [])
   delete cleanData.categories
-
   try {
     const converted = cleanData
     delete converted.image
@@ -34,6 +34,15 @@ export async function action (args: ActionFunctionArgs): Promise<any> {
     converted.endAt = converted.endAt ? new Date(converted.endAt as Date).toISOString() : null
     converted.startAt = converted.startAt ? new Date(converted.startAt as Date).toISOString() : null
     converted.publishAt = converted.publishAt ? new Date(converted.publishAt as Date).toISOString() : new Date().toISOString()
+
+    // Calculate numDays if type is "SCHEDULED"
+    if (converted.type === 'SCHEDULED' && converted.startAt && converted.endAt) {
+      const startDate = new Date(converted.startAt as string)
+      const endDate = new Date(converted.endAt as string)
+      const numDays = differenceInDays(endDate, startDate)
+      converted.numDays = numDays
+    }
+
     let data: any
     if (converted.id) {
       data = await updateChallenge(converted)
@@ -69,6 +78,7 @@ export async function action (args: ActionFunctionArgs): Promise<any> {
     })
     // reload challenge with all the extra info
     const updatedChallenge = await loadChallengeSummary(Number(data.id))
+    console.log('updatedChallenge', updatedChallenge)
     return updatedChallenge
   } catch (error) {
     console.error('error', error)

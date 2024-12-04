@@ -156,9 +156,11 @@ model Challenge {
   color          String?
   description    String?
   endAt          DateTime?
+  numDays        Int?
   icon           String?
+  type           ChallengeType     @default(SCHEDULED)
   reminders      Boolean           @default(false)
-  startAt        DateTime          @default(now())
+  startAt        DateTime?
   syncCalendar   Boolean           @default(false)
   frequency      Frequency         @default(DAILY)
   mission        String?
@@ -303,6 +305,11 @@ model Like {
 enum Role {
   USER
   ADMIN
+}
+
+enum ChallengeType {
+  SCHEDULED
+  SELF_LED
 }
 
 enum Frequency {

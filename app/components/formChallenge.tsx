@@ -7,7 +7,7 @@ import React, {
 } from 'react'
 import { Form, useNavigate } from '@remix-run/react'
 import axios from 'axios'
-import type { Category, Challenge } from '~/utils/types'
+import type { Category, Challenge, ChallengeType } from '~/utils/types'
 import { Button, Select, Option, Radio, Menu, MenuHandler, MenuItem, MenuList, Checkbox } from '@material-tailwind/react'
 import { FormField } from '~/components/formField'
 import DatePicker from 'react-datepicker'
@@ -28,6 +28,7 @@ interface Errors {
   endAt?: string
   coverPhoto?: string
   categories?: string
+  numDays?: string
 }
 
 interface ChallengeInputs extends Challenge {
@@ -44,9 +45,9 @@ export default function FormChallenge ({ challenge }: { challenge: ChallengeInpu
   if (challenge?._count) {
     delete challenge._count
   }
+  const defaults = { deleteImage: false, numDays: 30, type: 'SCHEDULED' as ChallengeType }
   const [formData, setFormData] = useState<Partial<ChallengeInputs>>({
-    deleteImage: false,
-    ...(typeof challenge === 'object' && challenge !== null ? challenge : {})
+    ...(typeof challenge === 'object' && challenge !== null ? { ...defaults, ...challenge } : { ...defaults })
   })
   const { currentUser } = useContext(CurrentUserContext)
   const localDateFormat = currentUser?.locale === 'en-US' ? 'M-dd-YYYY' : 'dd-M-YYYY'
@@ -88,17 +89,19 @@ export default function FormChallenge ({ challenge }: { challenge: ChallengeInpu
       [name]: value
     }))
   }
-  function handleTemplateChange (event: ChangeEvent<HTMLInputElement>): void {
+  function handleTypeChange (event: ChangeEvent<HTMLInputElement>): void {
     setFormData((prevFormData) => ({
       ...prevFormData,
-      template: event.target.checked
+      type: event.target.checked ? 'SELF_LED' : 'SCHEDULED'
     }))
   }
-  function handleSelect (value: Challenge['frequency']): void {
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      frequency: value
-    }))
+  function handleSelect (value: string | undefined): void {
+    if (value && ['DAILY', 'WEEKDAYS', 'ALTERNATING', 'WEEKLY', 'CUSTOM'].includes(value)) {
+      setFormData((prevFormData) => ({
+        ...prevFormData,
+        frequency: value as Challenge['frequency']
+      }))
+    }
   }
   function handleIconChange (value: string): void {
     setFormData((prevFormData) => ({
@@ -147,8 +150,12 @@ export default function FormChallenge ({ challenge }: { challenge: ChallengeInpu
     const validation: Errors = {}
     if (formData.name?.trim() === '') { validation.name = 'Name is required' }
     if (formData.description?.trim() === '') { validation.description = 'Description is required' }
-    if (!formData.startAt) { validation.startAt = 'Start date is required' }
-    if (!formData.endAt) { validation.endAt = 'End date is required' }
+    if (formData.type === 'SCHEDULED') {
+      if (!formData.startAt) { validation.startAt = 'Start date is required' }
+      if (!formData.endAt) { validation.endAt = 'End date is required' }
+    } else {
+      if (!formData.numDays) { validation.numDays = 'Number of Days is required' }
+    }
     if (!formData.icon) { validation.icon = 'Icon is required' }
     if (formData.categories?.length === 0) { validation.categories = 'Category is required' }
     if (Object.keys(validation).length > 0) {
@@ -229,6 +236,7 @@ export default function FormChallenge ({ challenge }: { challenge: ChallengeInpu
       }))
     }
   }
+  console.log('formData', formData)
   return (
       <>
         <div className='w-full flex justify-center md:justify-start'>
@@ -247,7 +255,19 @@ export default function FormChallenge ({ challenge }: { challenge: ChallengeInpu
                     error={errors?.name}
                     label="Name of Challenge" />
                 </div>
-
+                <div className="relative max-w-[400px]">
+                  <FormField
+                    name='description'
+                    placeholder='Share a short description of what this challenge is all about'
+                    required={true}
+                    type="textarea"
+                    rows={3}
+                    value={formData.description}
+                    onChange={handleChange}
+                    error={errors?.description}
+                    label="Description"
+                  />
+                </div>
                 <fieldset className="mb-4">
                   <legend className="text-lg mb-2">Categories</legend>
                   {errors?.categories && (
@@ -274,8 +294,94 @@ export default function FormChallenge ({ challenge }: { challenge: ChallengeInpu
                     ))}
                   </div>
                 </fieldset>
-                {/* material-tailwind <Select> element doesn't populate an actual HTML input element, so this hidden field captres the value for submission */}
-                <input type="hidden" name='frequency' value={formData.frequency} />
+                <div className="max-w-[400px] relative flex mb-2">
+                  {/* material-tailwind <Select> element doesn't populate an actual HTML input element, so this hidden field captres the value for submission */}
+                  <input type="hidden" name='frequency' value={formData.frequency} />
+                  <Select
+                    label="Select frequency"
+                    placeholder='frequency'
+                    name="_frequency"
+                    value={formData.frequency}
+                    onChange={handleSelect}
+                    >
+                    {frequencies.map((frequency: Challenge['frequency'], index: number) => (
+                        <Option key={index} value={frequency}>{frequency.charAt(0).toUpperCase() + frequency.slice(1).toLowerCase()}</Option>
+                    ))
+                    }
+                  </Select>
+                </div>
+                {currentUser?.role === 'ADMIN' &&
+                  <fieldset className='border-grey border rounded-md p-2 mb-2'>
+                    <legend className="text-md">Scheduled or Self-Directed?</legend>
+
+                      <Checkbox
+                        name='type'
+                        label='Check to allow members to start on their own schedule'
+                        checked={formData.type === 'SELF_LED'}
+                        onChange={handleTypeChange}
+                        crossOrigin={undefined}
+                      />
+
+                    {formData.type === 'SELF_LED' &&
+                      <div className="relative flex flex-row items-center mr-2 ">
+                        <label className='mx-2'>Number of Days in Challenge</label>
+                        <input
+                          name='numDays'
+                          type='number'
+                          min={5}
+                          max={60}
+                          value={Number(formData.numDays)}
+                          onChange={(e: ChangeEvent<HTMLInputElement>) => { setFormData((prevFormData) => ({ ...prevFormData, numDays: Number(e.target.value) })) }}
+                          className={`max-w-[100px] p-1 border rounded-md pl-2 ${errors?.numDays ? 'border-red' : 'border-slate-gray-500'}`}
+                        />
+                        {errors?.numDays && (
+                          <div className="text-xs font-semibold text-left tracking-wide text-red w-full mb-4">
+                            {errors?.numDays}
+                          </div>
+                        )}
+                      </div>
+                    }
+                  </fieldset>
+                }
+                {formData.type === 'SCHEDULED' &&
+                  <div className="relative flex flex-col mb-2 md:flex-row md:space-x-2">
+                    <div className="relative max-w-[160px] mr-2">
+                      <label>Start Date</label>
+
+                    <DatePicker
+                      name='startAt'
+                      required={true}
+                      dateFormat={localDateFormat}
+                      minDate={new Date()}
+                      selected={formData.startAt ? new Date(formData.startAt) : null}
+                      onChange={(date: Date) => { selectDate('startAt', date) }}
+                      className={`p-1 border rounded-md pl-2 ${errors?.startAt ? 'border-red' : 'border-slate-gray-500'}`}
+                      />
+                    {errors?.startAt && (
+                      <div className="text-xs font-semibold text-left tracking-wide text-red w-full mb-4">
+                        {errors?.startAt}
+                      </div>
+                    )}
+                  </div>
+                  <div className="relative max-w-[160px] mr-2">
+                    <label>End Date</label>
+                    <DatePicker
+                      name='endAt'
+                      required={true}
+                      dateFormat={localDateFormat}
+                      minDate={formData.startAt ? addDays(new Date(formData.startAt), 7) : addDays(new Date(), 7)}
+                      selected={formData.endAt ? new Date(formData.endAt) : null}
+                      onChange={(date: Date) => { selectDate('endAt', date) }}
+                      className={`p-1 border rounded-md pl-2 ${errors?.endAt ? 'border-red' : 'border-slate-gray-500'}`}
+                      />
+                    {errors?.endAt && (
+                      <div className="text-xs font-semibold text-left tracking-wide text-red w-full mb-4">
+                        {errors?.endAt}
+                      </div>
+                    )}
+                  </div>
+                  </div>
+                }
                 <div className="relative mb-2 max-w-[400px] text-sm">
                   <label htmlFor='public'>Who can join?</label>
                   <div className="flex items-center space-x-2">
@@ -300,71 +406,7 @@ export default function FormChallenge ({ challenge }: { challenge: ChallengeInpu
                     />
                   </div>
                 </div>
-                <div className="max-w-[400px] relative flex mb-2">
-                  <Select
-                    label="Select frequency"
-                    placeholder='frequency'
-                    name="_frequency"
-                    value={formData.frequency}
-                    onChange={handleSelect}
-                    >
-                    {frequencies.map((frequency: Challenge['frequency'], index: number) => (
-                        <Option key={index} value={frequency}>{frequency.charAt(0).toUpperCase() + frequency.slice(1).toLowerCase()}</Option>
-                    ))
-                    }
-                  </Select>
-                </div>
-                <div className="relative flex flex-col mb-2 md:flex-row md:space-x-2">
-                  <div className="relative max-w-[200px] mr-2">
-                    <label>Start Date</label>
 
-                    <DatePicker
-                      name='startAt'
-                      required={true}
-                      dateFormat={localDateFormat}
-                      minDate={new Date()}
-                      selected={formData.startAt ? new Date(formData.startAt) : null}
-                      onChange={(date: Date) => { selectDate('startAt', date) }}
-                      className={`p-1 border rounded-md pl-2 ${errors?.startAt ? 'border-red' : 'border-slate-gray-500'}`}
-                      />
-                    {errors?.startAt && (
-                      <div className="text-xs font-semibold text-left tracking-wide text-red w-full mb-4">
-                        {errors?.startAt}
-                      </div>
-                    )}
-                  </div>
-                  <div className="relative max-w-[200px] mr-2">
-                    <label>End Date</label>
-                    <DatePicker
-                      name='endAt'
-                      required={true}
-                      dateFormat={localDateFormat}
-                      minDate={formData.startAt ? addDays(new Date(formData.startAt), 7) : addDays(new Date(), 7)}
-                      selected={formData.endAt ? new Date(formData.endAt) : null}
-                      onChange={(date: Date) => { selectDate('endAt', date) }}
-                      className={`p-1 border rounded-md pl-2 ${errors?.endAt ? 'border-red' : 'border-slate-gray-500'}`}
-                      />
-                    {errors?.endAt && (
-                      <div className="text-xs font-semibold text-left tracking-wide text-red w-full mb-4">
-                        {errors?.endAt}
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                <div className="relative max-w-[400px]">
-                  <FormField
-                    name='description'
-                    placeholder='Share a short description of what this challenge is all about'
-                    required={true}
-                    type="textarea"
-                    rows={3}
-                    value={formData.description}
-                    onChange={handleChange}
-                    error={errors?.description}
-                    label="Description"
-                  />
-                </div>
                 <div className="max-w-[400px] relative flex flex-wrap">
                   <label className='w-full block mb-2 text-left'>Color</label>
                   {colorOptions.map((option, index) => (
@@ -409,17 +451,7 @@ export default function FormChallenge ({ challenge }: { challenge: ChallengeInpu
                 </div>
               </div>
             </div>
-            {currentUser?.role === 'ADMIN' &&
-              <div className='mt-4'>
-                <Checkbox
-                  name='template'
-                  label='Save as a template'
-                  checked={formData.template}
-                  onChange={handleTemplateChange}
-                  crossOrigin={undefined}
-                />
-              </div>
-            }
+
             <div className="mt-8 flex justify-left">
               <Button type="submit" onClick={handleSubmit} placeholder='Save' className="bg-red hover:bg-green-500 rounded-full">Save Challenge</Button>
               <button onClick={handleCancel} className="underline ml-4 4 hover:text-red">cancel</button>
