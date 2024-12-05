@@ -67,18 +67,17 @@ export async function action (args: ActionFunctionArgs): Promise<any> {
       const coverPhotoMeta = await saveToCloudinary(newCoverPhoto, nameNoExt)
       data.coverPhotoMeta = coverPhotoMeta
     }
-    await updateChallenge(data)
+    const updatedData = await updateChallenge(data)
     // insert categories
     // delete existing categories first
     await prisma.categoriesOnChallenges.deleteMany({
-      where: { challengeId: cleanData.id }
+      where: { challengeId: updatedData.id }
     })
     await prisma.categoriesOnChallenges.createMany({
-      data: categories.map((category: any) => ({ categoryId: category, challengeId: cleanData.id }))
+      data: categories.map((category: any) => ({ categoryId: category, challengeId: updatedData.id }))
     })
     // reload challenge with all the extra info
     const updatedChallenge = await loadChallengeSummary(Number(data.id))
-    console.log('updatedChallenge', updatedChallenge)
     return updatedChallenge
   } catch (error) {
     console.error('error', error)

@@ -25,9 +25,9 @@ export const action: ActionFunction = async (args) => {
   cleanData.body = body
   // if this is for a challenge, load it and check whether it's public
   const challengeId = rawData.get('challengeId') ? Number(rawData.get('challengeId')) : null
-  let challenge
+  let challenge: Challenge | null = null
   if (challengeId) {
-    challenge = await loadChallenge(challengeId) as Challenge
+    challenge = await loadChallenge(challengeId) as Challenge | null
   }
   const data: Partial<Post> = {
     body: cleanData.body ?? null,
@@ -36,7 +36,8 @@ export const action: ActionFunction = async (args) => {
     public: cleanData.public,
     publishAt: cleanData.publishAt ? cleanData.publishAt : null,
     published: cleanData.published,
-    notifyMembers: cleanData.notifyMembers
+    notifyMembers: cleanData.notifyMembers,
+    publishOnDayNumber: cleanData.publishOnDayNumber
   }
   // if draft or unpublishing, published will be false, so reset notificationSentOn to null
   if (!data.published) {
@@ -45,6 +46,10 @@ export const action: ActionFunction = async (args) => {
   if (challenge) {
     data.challengeId = challenge.id
     data.public = Boolean(challenge.public)
+    if (challenge.type === 'SELF_LED') {
+      data.publishAt = null
+      data.published = false // self-led challenges are never published
+    }
   }
   // save what we have so far
   let result

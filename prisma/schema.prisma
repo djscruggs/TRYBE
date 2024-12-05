@@ -103,6 +103,7 @@ model Post {
   published          Boolean    @default(false)
   body               String?
   publishAt          DateTime?
+  publishOnDayNumber Int?
   userId             Int
   challengeId        Int?
   embed              String?

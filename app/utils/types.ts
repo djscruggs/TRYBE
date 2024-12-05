@@ -91,6 +91,7 @@ export interface Post {
   challengeId?: number | null
   published: boolean
   publishAt?: Date | null
+  publishOnDayNumber?: number | null
   createdAt?: Date
   updatedAt?: Date
   challenge?: Challenge
