@@ -45,7 +45,7 @@ export default function FormChallenge ({ challenge }: { challenge: ChallengeInpu
   if (challenge?._count) {
     delete challenge._count
   }
-  const defaults = { deleteImage: false, numDays: 30, type: 'SCHEDULED' as ChallengeType }
+  const defaults = { deleteImage: false, numDays: 30, type: 'SCHEDULED' as ChallengeType, frequency: 'DAILY' as Challenge['frequency'] }
   const [formData, setFormData] = useState<Partial<ChallengeInputs>>({
     ...(typeof challenge === 'object' && challenge !== null ? { ...defaults, ...challenge } : { ...defaults })
   })
@@ -87,12 +87,6 @@ export default function FormChallenge ({ challenge }: { challenge: ChallengeInpu
     setFormData((prevFormData) => ({
       ...prevFormData,
       [name]: value
-    }))
-  }
-  function handleTypeChange (event: ChangeEvent<HTMLInputElement>): void {
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      type: event.target.checked ? 'SELF_LED' : 'SCHEDULED'
     }))
   }
   function handleSelect (value: string | undefined): void {
@@ -157,7 +151,7 @@ export default function FormChallenge ({ challenge }: { challenge: ChallengeInpu
       if (!formData.numDays) { validation.numDays = 'Number of Days is required' }
     }
     if (!formData.icon) { validation.icon = 'Icon is required' }
-    if (formData.categories?.length === 0) { validation.categories = 'Category is required' }
+    if (!formData.categories || formData.categories?.length === 0) { validation.categories = 'Category is required' }
     if (Object.keys(validation).length > 0) {
       setErrors(validation)
       return
@@ -236,13 +230,10 @@ export default function FormChallenge ({ challenge }: { challenge: ChallengeInpu
       }))
     }
   }
-  console.log('formData', formData)
   return (
       <>
         <div className='w-full flex justify-center md:justify-start'>
           <Form method="post" ref={challengeForm} encType="multipart/form-data" onSubmit={handleSubmit}>
-            {/* this is here so tailwind generates the correct classes, should be moveed to tailwind.config.js file */}
-
             <div className="w-full max-w-[600px] md:max-w-[1200px] px-2 grid grid-cols-1 md:grid-cols-2  ">
               <div className="col-span-2 w-full lg:col-span-1">
                 <div className="relative mb-2 max-w-[400px]">
@@ -294,7 +285,7 @@ export default function FormChallenge ({ challenge }: { challenge: ChallengeInpu
                     ))}
                   </div>
                 </fieldset>
-                <div className="max-w-[400px] relative flex mb-2">
+                <div className="max-w-[400px] relative flex mb-4">
                   {/* material-tailwind <Select> element doesn't populate an actual HTML input element, so this hidden field captres the value for submission */}
                   <input type="hidden" name='frequency' value={formData.frequency} />
                   <Select
@@ -311,19 +302,32 @@ export default function FormChallenge ({ challenge }: { challenge: ChallengeInpu
                   </Select>
                 </div>
                 {currentUser?.role === 'ADMIN' &&
-                  <fieldset className='border-grey border rounded-md p-2 mb-2'>
+                  <fieldset className='border-grey border rounded-md p-2 pb-4 mb-4 max-w-[400px]'>
                     <legend className="text-md">Scheduled or Self-Directed?</legend>
-
-                      <Checkbox
+                    <p className='text-xs'>Scheduled challenges happen on specific dates. Self-directed challenges can be started at any time.</p>
+                    <div className="flex items-center space-x-2">
+                      <Radio
                         name='type'
-                        label='Check to allow members to start on their own schedule'
-                        checked={formData.type === 'SELF_LED'}
-                        onChange={handleTypeChange}
+                        value='SCHEDULED'
+                        label='Scheduled'
+                        checked={formData.type === 'SCHEDULED'}
+                        onChange={handleChange}
                         crossOrigin={undefined}
                       />
 
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Radio
+                        name='type'
+                        value='SELF_LED'
+                        label='Self-Directed'
+                        checked={formData.type === 'SELF_LED'}
+                        onChange={handleChange}
+                        crossOrigin={undefined}
+                      />
+                  </div>
                     {formData.type === 'SELF_LED' &&
-                      <div className="relative flex flex-row items-center mr-2 ">
+                      <div className="relative flex flex-row items-center mr-2">
                         <label className='mx-2'>Number of Days in Challenge</label>
                         <input
                           name='numDays'
@@ -334,54 +338,56 @@ export default function FormChallenge ({ challenge }: { challenge: ChallengeInpu
                           onChange={(e: ChangeEvent<HTMLInputElement>) => { setFormData((prevFormData) => ({ ...prevFormData, numDays: Number(e.target.value) })) }}
                           className={`max-w-[100px] p-1 border rounded-md pl-2 ${errors?.numDays ? 'border-red' : 'border-slate-gray-500'}`}
                         />
-                        {errors?.numDays && (
-                          <div className="text-xs font-semibold text-left tracking-wide text-red w-full mb-4">
+
+                      </div>
+                    }
+                    {errors?.numDays && (
+                          <div className="block text-xs font-semibold text-left tracking-wide text-red w-full ml-2">
                             {errors?.numDays}
                           </div>
+                    )}
+                    {formData.type === 'SCHEDULED' &&
+                      <div className="relative flex flex-col mb-2 md:flex-row md:space-x-2">
+                        <div className="relative max-w-[160px] mr-2">
+                          <label>Start Date</label>
+
+                        <DatePicker
+                          name='startAt'
+                          required={true}
+                          dateFormat={localDateFormat}
+                          minDate={new Date()}
+                          selected={formData.startAt ? new Date(formData.startAt) : null}
+                          onChange={(date: Date) => { selectDate('startAt', date) }}
+                          className={`p-1 border rounded-md pl-2 ${errors?.startAt ? 'border-red' : 'border-slate-gray-500'}`}
+                          />
+                        {errors?.startAt && (
+                          <div className="text-xs font-semibold text-left tracking-wide text-red w-full mb-4">
+                            {errors?.startAt}
+                          </div>
                         )}
+                      </div>
+                      <div className="relative max-w-[160px] mr-2">
+                        <label>End Date</label>
+                        <DatePicker
+                          name='endAt'
+                          required={true}
+                          dateFormat={localDateFormat}
+                          minDate={formData.startAt ? addDays(new Date(formData.startAt), 7) : addDays(new Date(), 7)}
+                          selected={formData.endAt ? new Date(formData.endAt) : null}
+                          onChange={(date: Date) => { selectDate('endAt', date) }}
+                          className={`p-1 border rounded-md pl-2 ${errors?.endAt ? 'border-red' : 'border-slate-gray-500'}`}
+                          />
+                        {errors?.endAt && (
+                          <div className="text-xs font-semibold text-left tracking-wide text-red w-full mb-4">
+                            {errors?.endAt}
+                          </div>
+                        )}
+                      </div>
                       </div>
                     }
                   </fieldset>
                 }
-                {formData.type === 'SCHEDULED' &&
-                  <div className="relative flex flex-col mb-2 md:flex-row md:space-x-2">
-                    <div className="relative max-w-[160px] mr-2">
-                      <label>Start Date</label>
 
-                    <DatePicker
-                      name='startAt'
-                      required={true}
-                      dateFormat={localDateFormat}
-                      minDate={new Date()}
-                      selected={formData.startAt ? new Date(formData.startAt) : null}
-                      onChange={(date: Date) => { selectDate('startAt', date) }}
-                      className={`p-1 border rounded-md pl-2 ${errors?.startAt ? 'border-red' : 'border-slate-gray-500'}`}
-                      />
-                    {errors?.startAt && (
-                      <div className="text-xs font-semibold text-left tracking-wide text-red w-full mb-4">
-                        {errors?.startAt}
-                      </div>
-                    )}
-                  </div>
-                  <div className="relative max-w-[160px] mr-2">
-                    <label>End Date</label>
-                    <DatePicker
-                      name='endAt'
-                      required={true}
-                      dateFormat={localDateFormat}
-                      minDate={formData.startAt ? addDays(new Date(formData.startAt), 7) : addDays(new Date(), 7)}
-                      selected={formData.endAt ? new Date(formData.endAt) : null}
-                      onChange={(date: Date) => { selectDate('endAt', date) }}
-                      className={`p-1 border rounded-md pl-2 ${errors?.endAt ? 'border-red' : 'border-slate-gray-500'}`}
-                      />
-                    {errors?.endAt && (
-                      <div className="text-xs font-semibold text-left tracking-wide text-red w-full mb-4">
-                        {errors?.endAt}
-                      </div>
-                    )}
-                  </div>
-                  </div>
-                }
                 <div className="relative mb-2 max-w-[400px] text-sm">
                   <label htmlFor='public'>Who can join?</label>
                   <div className="flex items-center space-x-2">
