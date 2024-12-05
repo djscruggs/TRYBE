@@ -98,13 +98,19 @@ export default function CardPost (props: CardPostProps): JSX.Element {
     <>
     {editing
       ? <>
-      <FormPost post={post} onCancel={() => { setEditing(false) }} afterSave={afterSave} />
+      <FormPost post={post} challenge={post.challenge} onCancel={() => { setEditing(false) }} afterSave={afterSave} />
 
       </>
       : <div className={'mt-2 w-full border-0  drop-shadow-none mr-2'}>
       <div className={`drop-shadow-none ${!isOwnRoute ? 'cursor-pointer' : ''}`} >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Card className={`md:col-span-2 p-2  relative ${isChat ? 'shadow-none' : 'border-1 drop-shadow-lg  border border-gray rounded-md'}`}>
+            {post.challenge?.type === 'SELF_LED'
+              ? <>
+              <div className='bg-yellow w-full p-0 text-center absolute left-0 top-0 b-4 rounded-t-md'>This post is sent to members on Day {post.publishOnDayNumber}</div>
+              <div className='h-6'> </div>
+              </>
+              : <>
             {!post.published &&
               <>
               <div className='bg-yellow w-full p-0 text-center absolute left-0 top-0 b-4 rounded-t-md'>Draft</div>
@@ -117,6 +123,8 @@ export default function CardPost (props: CardPostProps): JSX.Element {
                 <div className='bg-green-500 w-full p-0 text-white text-center absolute left-0 top-0 b-4 rounded-t-md'>Scheduled for {format(post.publishAt, dateTimeFormat)}</div>
                 <div className='h-6'> </div>
               </>
+            }
+            </>
             }
             <PostContent post={post} fullPost={fullPost ?? false} handlePhotoClick={handlePhotoClick}>
               {currentUser?.id === post.userId && !isShare &&

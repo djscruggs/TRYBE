@@ -25,6 +25,33 @@ export default function ChallengeSchedule ({ challenge, posts, isSchedule = fals
   // Need to capture any dangling posts that are unscheduled in the date range
   const unscheduled: Post[] = []
   // create arrays of posts by day number and those that are unscheduled
+  const { currentUser } = useContext(CurrentUserContext)
+  const userIsCreator = currentUser?.id === challenge.userId
+  return (
+    <div className={`max-w-sm  ${isSchedule ? 'md:max-w-xl lg:max-w-2xl' : 'md:max-w-md lg:max-w-lg'}`}>
+      {isSchedule &&
+         <>
+          <ScheduleDateRange challenge={challenge} />
+          {userIsCreator &&
+            <UnscheduledPosts posts={unscheduled} />
+          }
+        </>
+      }
+      {challenge.type === 'SCHEDULED' &&
+        <DateSchedule challenge={challenge} posts={posts} isSchedule={isSchedule} />
+      }
+      {challenge.type === 'SELF_LED' &&
+        <NumberSchedule challenge={challenge} posts={posts} isSchedule={isSchedule} />
+      }
+
+    </div>
+  )
+}
+
+const DateSchedule = ({ challenge, posts, isSchedule }: { challenge: Challenge, posts: Post[], isSchedule: boolean }): JSX.Element => {
+  // Need to capture any dangling posts that are unscheduled in the date range
+  const unscheduled: Post[] = []
+  // create arrays of posts by day number and those that are unscheduled
   const postsByDayNum = posts.reduce<Record<number, Post[]>>((acc, post) => {
     const date = post.publishAt ? new Date(post.publishAt) : new Date(post.createdAt)
     const day = differenceInDays(date, new Date(challenge.startAt as unknown as Date)) + 1// Calculate days since challenge.startAt
@@ -48,15 +75,6 @@ export default function ChallengeSchedule ({ challenge, posts, isSchedule = fals
   const userIsCreator = currentUser?.id === challenge.userId
   return (
     <div className={`max-w-sm  ${isSchedule ? 'md:max-w-xl lg:max-w-2xl' : 'md:max-w-md lg:max-w-lg'}`}>
-      {isSchedule &&
-         <>
-          <ScheduleDateRange challenge={challenge} />
-          {userIsCreator &&
-            <UnscheduledPosts posts={unscheduled} />
-          }
-        </>
-    }
-
       <div className={`${isSchedule ? 'md:grid' : ''}  grid-cols-7 gap-0 w-full mt-4 `}>
         {/* only show the days if we're on the schedule page */}
         {weekDays.map((day) => (
@@ -106,6 +124,34 @@ export default function ChallengeSchedule ({ challenge, posts, isSchedule = fals
   )
 }
 
+const NumberSchedule = ({ challenge, posts, isSchedule }: { challenge: Challenge, posts: Post[], isSchedule: boolean }): JSX.Element => {
+  const postsByDayNum = posts.reduce<Record<number, Post[]>>((acc, post) => {
+    const publishOnDayNumber = post.publishOnDayNumber // Assuming this property exists
+    if (Number(publishOnDayNumber) > 0) {
+      if (!acc[Number(publishOnDayNumber)]) {
+        acc[Number(publishOnDayNumber)] = []
+      }
+      acc[Number(publishOnDayNumber)].push(post)
+    }
+    return acc
+  }, {})
+  const numDays = challenge.numDays ?? 0 // Default to 0 if numDays is null or undefined
+  return (
+    <div className={`max-w-sm  ${isSchedule ? 'md:max-w-xl lg:max-w-2xl' : 'md:max-w-md lg:max-w-lg'}`}>
+    <div className={`${isSchedule ? 'md:grid' : ''}  grid-cols-7 gap-2 w-full mt-4 `}>
+      {Array.from({ length: numDays }, (_, index) => (
+        <div key={index} className="p-2 border border-gray-300 text-center  relative  h-24 bg-lightgrey  border-[#CECECE]'">
+          Day {index + 1}
+          {postsByDayNum[index + 1]?.map((post) => (
+              <PostsBlock post={post} isSchedule={isSchedule} challenge={challenge} key={post.id} />
+          ))}
+        </div>
+      ))}
+    </div>
+    </div>
+  )
+}
+
 const PostsBlock = ({ post, challenge, isSchedule }: { post: Post, challenge: Challenge, isSchedule: boolean }): JSX.Element => {
   const { currentUser } = useContext(CurrentUserContext)
   const navigate = useNavigate()
@@ -125,7 +171,7 @@ const PostsBlock = ({ post, challenge, isSchedule }: { post: Post, challenge: Ch
             className={`${isSchedule ? 'text-xs' : 'text-xl h-full flex items-center'} overflow-hidden text-black font-bold w-full text-ellipsis mb-1 ${linkable ? 'cursor-pointer' : ''}`}
             onClick={linkable ? goToPost : undefined}
           >
-            {!post.published
+            {!post.published && challenge.type === 'SCHEDULED'
               ? <div className='bg-red text-white text-center p-1 rounded-md'>Draft</div>
               : post.title
             }
@@ -141,6 +187,7 @@ const NewPostLink = ({ day, challenge }: { day: number, challenge: Challenge }):
       state: {
         title: `Day ${day}`,
         publishAt: format(new Date(challenge.startAt as unknown as Date).setDate(day), 'yyyy-MM-dd 08:00:00'),
+        dayNumber: day,
         notifyMembers: true
       }
     })
@@ -175,6 +222,9 @@ const UnscheduledPosts = ({ posts }: { posts: Post[] }): JSX.Element => {
 }
 
 const ScheduleDateRange = ({ challenge }: { challenge: Challenge }): JSX.Element => {
+  if (challenge.type !== 'SCHEDULED') {
+    return <></>
+  }
   const { currentUser } = useContext(CurrentUserContext)
   const locale = userLocale(currentUser)
   // function to format the date for the challenge start and end dates

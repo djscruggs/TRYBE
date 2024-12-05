@@ -89,6 +89,7 @@ export interface Post {
   published: boolean;
   body: string | null;
   publishAt: Date | null;
+  publishOnDayNumber: number | null;
   userId: number;
   challengeId: number | null;
   embed: string | null;
@@ -138,12 +139,12 @@ export interface Challenge {
   userId: number;
   color: string | null;
   description: string | null;
+  startAt: Date | null;
   endAt: Date | null;
   numDays: number | null;
   icon: string | null;
   type: ChallengeType;
   reminders: boolean;
-  startAt: Date | null;
   syncCalendar: boolean;
   frequency: Frequency;
   mission: string | null;

@@ -34,6 +34,7 @@ export default function PostsNew (props: PostsNewProps): JSX.Element {
   const { challenge } = data
   const location = useLocation()
   const publishAt = location.state?.publishAt ?? null
+  const dayNumber = location.state?.dayNumber ?? null
   const title = location.state?.title ?? null
   const notifyMembers = location.state?.notifyMembers ?? false
 
@@ -58,6 +59,7 @@ export default function PostsNew (props: PostsNewProps): JSX.Element {
                     publishAt={publishAt}
                     title={title}
                     notifyMembers={notifyMembers}
+                    dayNumber={dayNumber}
                   />
               : <FormPost
                   publishAt={publishAt}
