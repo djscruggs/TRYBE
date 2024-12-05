@@ -155,12 +155,12 @@ model Challenge {
   userId         Int
   color          String?
   description    String?
+  startAt        DateTime?
   endAt          DateTime?
   numDays        Int?
   icon           String?
   type           ChallengeType     @default(SCHEDULED)
   reminders      Boolean           @default(false)
-  startAt        DateTime?
   syncCalendar   Boolean           @default(false)
   frequency      Frequency         @default(DAILY)
   mission        String?
