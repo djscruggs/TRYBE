@@ -7,7 +7,7 @@ import React, {
 } from 'react'
 import { Form, useNavigate } from '@remix-run/react'
 import axios from 'axios'
-import type { Category, Challenge, ChallengeType } from '~/utils/types'
+import type { Category, Challenge, ChallengeType, ChallengeStatus } from '~/utils/types'
 import { Button, Select, Option, Radio, Menu, MenuHandler, MenuItem, MenuList, Checkbox } from '@material-tailwind/react'
 import { FormField } from '~/components/formField'
 import DatePicker from 'react-datepicker'
@@ -45,7 +45,7 @@ export default function FormChallenge ({ challenge }: { challenge: ChallengeInpu
   if (challenge?._count) {
     delete challenge._count
   }
-  const defaults = { deleteImage: false, numDays: 30, type: 'SCHEDULED' as ChallengeType, frequency: 'DAILY' as Challenge['frequency'] }
+  const defaults = { deleteImage: false, numDays: 30, type: 'SCHEDULED' as ChallengeType, frequency: 'DAILY' as Challenge['frequency'], status: 'DRAFT' as ChallengeStatus }
   const [formData, setFormData] = useState<Partial<ChallengeInputs>>({
     ...(typeof challenge === 'object' && challenge !== null ? { ...defaults, ...challenge } : { ...defaults })
   })
@@ -399,9 +399,6 @@ export default function FormChallenge ({ challenge }: { challenge: ChallengeInpu
                       onChange={handleChange}
                       crossOrigin={undefined}
                     />
-
-                  </div>
-                  <div className="flex items-center space-x-2">
                     <Radio
                       name='public'
                       value='false'
@@ -412,13 +409,38 @@ export default function FormChallenge ({ challenge }: { challenge: ChallengeInpu
                     />
                   </div>
                 </div>
+                <div className="relative mb-2 max-w-[400px] text-sm">
+                  <label htmlFor='status'>Publication Status</label>
+                  <div className="flex items-center space-x-2">
+                    <Radio
+                      name='status'
+                      value='PUBLISHED'
+                      label='Published'
+                      checked={formData.status === 'PUBLISHED'}
+                      onChange={handleChange}
+                      crossOrigin={undefined}
+                    />
+                    <Radio
+                      name='status'
+                      value='DRAFT'
+                      label='Draft'
+                      checked={formData.status === 'DRAFT'}
+                      onChange={handleChange}
+                      crossOrigin={undefined}
+                    />
+                    <Radio
+                      name='status'
+                      value='ARCHIVED'
+                      label='Archived'
+                      checked={formData.status === 'ARCHIVED'}
+                      onChange={handleChange}
+                      crossOrigin={undefined}
+                    />
 
-                <div className="max-w-[400px] relative flex flex-wrap">
-                  <label className='w-full block mb-2 text-left'>Color</label>
-                  {colorOptions.map((option, index) => (
-                    <div key={index} onClick={() => { handleColorChange(option) }} className={`w-10 h-10 cursor-pointer rounded-full bg-${colorToClassName(option, 'red')} mr-2 mb-2 ${formData.color === option ? 'outline outline-2 outline-offset-2 outline-darkgrey' : ''}`}></div>
-                  ))}
+                  </div>
+
                 </div>
+
                 {/* <div className='w-full mt-4'>
                   <CoverPhotoHandler formData={formData} setFormData={setFormData} image={image} setImage={setImage} />
                 </div> */}
@@ -428,7 +450,12 @@ export default function FormChallenge ({ challenge }: { challenge: ChallengeInpu
                 <label>Preview</label>
                 <Preview data={formData}/>
                 </div>
-
+                <div className="max-w-[400px] relative flex flex-wrap">
+                  <label className='w-full block mb-2 text-left'>Color</label>
+                  {colorOptions.map((option, index) => (
+                    <div key={index} onClick={() => { handleColorChange(option) }} className={`w-10 h-10 cursor-pointer rounded-full bg-${colorToClassName(option, 'red')} mr-2 mb-2 ${formData.color === option ? 'outline outline-2 outline-offset-2 outline-darkgrey' : ''}`}></div>
+                  ))}
+                </div>
                 <div className="mt-4 max-w-[400px]">
                   {errors?.icon && (
                       <div className="text-xs font-semibold text-left tracking-wide text-red w-full mb-4">
