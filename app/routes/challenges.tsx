@@ -9,11 +9,11 @@ export const meta: MetaFunction = () => {
 export default function ChallengesIndex (): JSX.Element {
   const navigate = useNavigate()
   const location = useLocation()
-  const { status } = useParams()
+  const { range } = useParams()
   const routeExceptions = ['/new', '/v/', '/templates']
   const isRouteException = routeExceptions.some(fragment => location.pathname.includes(fragment))
   useEffect(() => {
-    if (!status && !isRouteException) {
+    if (!range && !isRouteException) {
       navigate('/challenges/active')
     }
   }, [location.pathname])

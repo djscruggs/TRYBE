@@ -109,6 +109,7 @@ export interface PostSummary extends Post {
 }
 
 export type ChallengeType = 'SCHEDULED' | 'SELF_LED'
+export type ChallengeStatus = 'PUBLISHED' | 'DRAFT' | 'ARCHIVED'
 export interface Challenge {
   id: number | undefined
   template: boolean
@@ -119,6 +120,7 @@ export interface Challenge {
   endAt?: Date | null
   numDays?: number | null
   type: ChallengeType
+  status: ChallengeStatus
   frequency: 'DAILY' | 'WEEKDAYS' | 'ALTERNATING' | 'WEEKLY' | 'CUSTOM'
   coverPhotoMeta: CloudinaryMeta | null
   videoMeta: CloudinaryMeta | null

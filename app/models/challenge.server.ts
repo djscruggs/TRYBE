@@ -128,20 +128,36 @@ export const fetchChallenges = async (userId: string | number): Promise<Challeng
     }
   }) as unknown as Challenge[]
 }
-export const fetchChallengeSummaries = async (userId?: number, status?: string, category?: string | number | null): Promise<ChallengeSummary[]> => {
+
+interface FetchChallengeSummariesParams {
+  userId?: number
+  range?: string
+  category?: string | number | null
+  SELF_LED?: boolean
+}
+
+export const fetchChallengeSummaries = async ({
+  userId,
+  range,
+  category,
+  SELF_LED
+}: FetchChallengeSummariesParams): Promise<ChallengeSummary[]> => {
   const uid = userId ? Number(userId) : undefined
   const where: any[] = [{ public: true }]
-  switch (status) {
+  switch (range) {
     case 'upcoming':
-      where.push({ startAt: { gt: new Date() } })
+      where.push({ startAt: { gt: new Date() }, status: 'PUBLISHED' })
       break
     case 'archived':
-      where.push({ endAt: { lt: new Date() } })
+      where.push({ OR: [{ endAt: { lt: new Date() } }, { status: 'ARCHIVED' }] })
       break
     case 'active':
-      where.push({ startAt: { lt: new Date() } })
+      where.push({ startAt: { lt: new Date() }, status: 'PUBLISHED' })
       where.push({ endAt: { gte: new Date() } })
       break
+  }
+  if (SELF_LED) {
+    where.push({ type: 'SELF_LED' })
   }
   if (uid) {
     where.push({ userId: uid })
@@ -168,6 +184,7 @@ export const fetchChallengeSummaries = async (userId?: number, status?: string, 
       })
     }
   }
+
   const params: Prisma.ChallengeFindManyArgs = {
     where: {
       AND: where
@@ -212,12 +229,32 @@ export async function updateCheckin (checkin: CheckIn): Promise<CheckIn> {
     data
   }) as unknown as CheckIn
 }
-export const fetchUserChallengesAndMemberships = async (userId: string | number): Promise<ChallengeSummary[]> => {
+interface FetchUserChallengesAndMembershipsParams {
+  userId: number
+  SELF_LED?: boolean
+}
+export const fetchUserChallengesAndMemberships = async ({ userId, SELF_LED }: FetchUserChallengesAndMembershipsParams): Promise<ChallengeSummary[]> => {
   const uid = Number(userId)
+  const memberChallengeWhere: Prisma.MemberChallengeWhereInput = { userId: uid }
+  const memberChallenges = await prisma.memberChallenge.findMany(
+    {
+      where: memberChallengeWhere,
+      include: {
+        challenge: true
+      }
+    }
+  )
+  const memberships = memberChallenges.map(memberChallenge => {
+    const challenge = memberChallenge.challenge as unknown as ChallengeSummary
+    challenge.isMember = true
+    return challenge
+  })
+  const challengeWhere: Prisma.ChallengeWhereInput = { userId: uid }
+  if (SELF_LED) {
+    challengeWhere.type = 'SELF_LED'
+  }
   const ownedChallenges = await prisma.challenge.findMany({
-    where: {
-      userId: uid
-    },
+    where: challengeWhere,
     include: {
       _count: {
         select: { members: true, comments: true, likes: true }
@@ -229,19 +266,7 @@ export const fetchUserChallengesAndMemberships = async (userId: string | number)
       }
     }
   })
-  const memberChallenges = await prisma.memberChallenge.findMany(
-    {
-      where: { userId: uid },
-      include: {
-        challenge: true
-      }
-    }
-  )
-  const memberships = memberChallenges.map(memberChallenge => {
-    const challenge = memberChallenge.challenge as unknown as ChallengeSummary
-    challenge.isMember = true
-    return challenge
-  })
+
   // de-dupe any overlap
   const uniqueChallenges = [...new Map([...ownedChallenges, ...memberships].map(item => [item.id, item])).values()] as ChallengeSummary[]
   return uniqueChallenges

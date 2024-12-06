@@ -4,6 +4,8 @@ export type Role = "USER" | "ADMIN";
 
 export type ChallengeType = "SCHEDULED" | "SELF_LED";
 
+export type ChallengeStatus = "PUBLISHED" | "DRAFT" | "ARCHIVED";
+
 export type Frequency = "DAILY" | "WEEKDAYS" | "ALTERNATING" | "WEEKLY" | "CUSTOM";
 
 export interface User {
@@ -135,7 +137,7 @@ export interface Challenge {
   publishAt: Date;
   name: string;
   categories?: CategoriesOnChallenges[];
-  published: boolean;
+  status: ChallengeStatus;
   userId: number;
   color: string | null;
   description: string | null;

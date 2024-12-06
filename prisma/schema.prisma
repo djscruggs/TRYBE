@@ -152,7 +152,7 @@ model Challenge {
   publishAt      DateTime          @default(now())
   name           String
   categories     CategoriesOnChallenges[]
-  published      Boolean           @default(false)
+  status         ChallengeStatus   @default(DRAFT)
   userId         Int
   color          String?
   description    String?
@@ -311,6 +311,12 @@ enum Role {
 enum ChallengeType {
   SCHEDULED
   SELF_LED
+}
+
+enum ChallengeStatus {
+  PUBLISHED
+  DRAFT
+  ARCHIVED
 }
 
 enum Frequency {

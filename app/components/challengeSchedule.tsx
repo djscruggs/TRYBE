@@ -135,16 +135,21 @@ const NumberSchedule = ({ challenge, posts, isSchedule }: { challenge: Challenge
     }
     return acc
   }, {})
+  const { currentUser } = useContext(CurrentUserContext)
+  const userIsCreator = currentUser?.id === challenge.userId
   const numDays = challenge.numDays ?? 0 // Default to 0 if numDays is null or undefined
   return (
     <div className={`max-w-sm  ${isSchedule ? 'md:max-w-xl lg:max-w-2xl' : 'md:max-w-md lg:max-w-lg'}`}>
     <div className={`${isSchedule ? 'md:grid' : ''}  grid-cols-7 gap-2 w-full mt-4 `}>
       {Array.from({ length: numDays }, (_, index) => (
-        <div key={index} className="p-2 border border-gray-300 text-center  relative  h-24 bg-lightgrey  border-[#CECECE]'">
-          Day {index + 1}
+        <div key={index} className="flex flex-col items-center justify-center p-2 border border-gray-300 text-center  relative  h-24 bg-lightgrey  border-[#CECECE]'">
+          <div className={`${postsByDayNum[index + 1] ? 'absolute top-0 text-xs' : ''}`}>Day {index + 1}</div>
           {postsByDayNum[index + 1]?.map((post) => (
               <PostsBlock post={post} isSchedule={isSchedule} challenge={challenge} key={post.id} />
           ))}
+          {isSchedule && !postsByDayNum[index + 1] && userIsCreator &&
+            <NewPostLink day={index + 1} challenge={challenge} />
+          }
         </div>
       ))}
     </div>
@@ -168,7 +173,7 @@ const PostsBlock = ({ post, challenge, isSchedule }: { post: Post, challenge: Ch
       {((post.publishAt ?? post.published) || currentUser?.id === challenge.userId) &&
           <div
             key={post.id}
-            className={`${isSchedule ? 'text-xs' : 'text-xl h-full flex items-center'} overflow-hidden text-black font-bold w-full text-ellipsis mb-1 ${linkable ? 'cursor-pointer' : ''}`}
+            className={`${isSchedule ? 'text-xs' : 'text-xl h-full flex items-center'} overflow-hidden text-black w-full underline text-ellipsis mb-1 ${linkable ? 'cursor-pointer' : ''}`}
             onClick={linkable ? goToPost : undefined}
           >
             {!post.published && challenge.type === 'SCHEDULED'
@@ -222,7 +227,7 @@ const UnscheduledPosts = ({ posts }: { posts: Post[] }): JSX.Element => {
 }
 
 const ScheduleDateRange = ({ challenge }: { challenge: Challenge }): JSX.Element => {
-  if (challenge.type !== 'SCHEDULED') {
+  if (challenge.type === 'SELF_LED') {
     return <></>
   }
   const { currentUser } = useContext(CurrentUserContext)

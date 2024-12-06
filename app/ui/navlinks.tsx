@@ -44,35 +44,11 @@ const NavLinks = (): JSX.Element => {
             </Link>
           </div>
 
-          {currentUser?.role === 'ADMIN' &&
-          <div className={`w-24 h-20 flex items-center justify-center flex-col text-darkgrey text-center mt-4 mb-4 p-2 rounded-lg ${location.pathname === '/challenges/templates' ? 'bg-gray-100' : 'hover:bg-gray-300'}`}>
-            <Link to="/challenges/templates" className='flex items-center flex-col' prefetch='render'>
-              <HiOutlineTemplate className="h-8 w-8 cursor-pointer mb-1"/>
-              Templates
-            </Link>
-          </div>
-          }
           {currentUser?.role === 'ADMIN' && !location.pathname.includes('/challenges/new') &&
           <div className='relative' onMouseEnter={toggleNewOpen} onMouseLeave={toggleNewOpen}>
-            <div className={`w-24 h-20 flex items-center justify-center flex-col text-darkgrey text-center mt-4 mb-4 p-2 rounded-lg ${!isNewOpen ? 'hover:bg-gray-300' : ''} ${isNewOpen ? 'text-black opacity-50' : ''}`}>
-              {isNewOpen
-                ? <MinusCircleIcon className='h-8 w-8 cursor-pointer mb-1y text-red' onClick={toggleNewOpen} />
-                : <PlusCircleIcon className='h-8 w-8 cursor-pointer mb-1y text-red' onClick={toggleNewOpen} />}
-                <span className="cursor-pointer">Create</span>
+            <div className={'w-24 h-20 flex items-center justify-center flex-col text-darkgrey text-center mt-4 mb-4 p-2 rounded-lg'}>
+              <PlusCircleIcon className='h-8 w-8 cursor-pointer mb-1y text-red' onClick={() => { navigate('/challenges/new') }} />
             </div>
-
-            {isNewOpen &&
-              <div className={`absolute -top-7 flex flex-col items-center justify-center ml-14 transition-opacity duration-300 ease-in-out ${isNewOpen ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}>
-                <div onClick={(event) => { handleNewOpt('/challenges/new', event) }} className='cursor-pointer hover:bg-gray-200 p-2 pb-1 rounded-lg'>
-                  <TrophyIcon className="w-12 h-12 rounded-full border border-black bg-[#FDC94C] text-xs p-3"/>
-                  <div className="cursor-pointer text-xs mt-0">Challenge</div>
-                </div>
-                <div onClick={(event) => { handleNewOpt('/challenges/new-template', event) }} className="cursor-pointer hover:bg-gray-200 p-2 pb-1 rounded-lg">
-                  <HiOutlineTemplate className="w-12 h-12 rounded-full border border-black bg-[#FDC94C] text-xs p-3"/>
-                  <div className="cursor-pointer text-xs mt-0">Template</div>
-                </div>
-              </div>
-            }
           </div>
           }
           {/* <div className={`w-24 h-20 flex items-center justify-center flex-col text-darkgrey text-center mb-4 p-2 rounded-lg ${location.pathname === '/community' ? 'bg-gray-100' : 'hover:bg-gray-300'}`}>
