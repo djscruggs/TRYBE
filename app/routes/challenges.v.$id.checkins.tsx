@@ -1,5 +1,5 @@
 import { requireCurrentUser } from '~/models/auth.server'
-import { type LoaderFunction, json } from '@remix-run/node'
+import { type LoaderFunction, type MetaFunction, json } from '@remix-run/node'
 import { useLoaderData, useRouteLoaderData } from '@remix-run/react'
 import { fetchCheckIns } from '~/models/challenge.server'
 import type { Challenge, MemberChallenge } from '~/utils/types'
@@ -15,6 +15,15 @@ export const loader: LoaderFunction = async (args) => {
   const challengeId = Number(args.params.id)
   const checkIns = await fetchCheckIns({ userId, challengeId }) as { error?: string }
   return json({ checkIns })
+}
+export const meta: MetaFunction = () => {
+  return [
+    { title: 'Checkins' },
+    {
+      property: 'og:title',
+      content: 'Checkins'
+    }
+  ]
 }
 export default function MyCheckIns (): JSX.Element {
   const { checkIns, error } = useLoaderData<typeof loader>()

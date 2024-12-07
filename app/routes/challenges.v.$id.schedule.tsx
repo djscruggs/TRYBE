@@ -1,7 +1,7 @@
-import { useLoaderData, useRouteLoaderData, useNavigate, Link } from '@remix-run/react'
+import { useLoaderData, useRouteLoaderData } from '@remix-run/react'
 import { requireCurrentUser } from '~/models/auth.server'
 import { type Post } from '@prisma/client'
-import { type LoaderFunction, type LoaderFunctionArgs } from '@remix-run/node'
+import { type MetaFunction, type LoaderFunction, type LoaderFunctionArgs } from '@remix-run/node'
 import { prisma } from '~/models/prisma.server'
 import { type Challenge } from '~/utils/types'
 import ChallengeSchedule from '~/components/challengeSchedule'
@@ -29,6 +29,15 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs): Promise<
     }))
   }
   return data
+}
+export const meta: MetaFunction = () => {
+  return [
+    { title: 'Schedule' },
+    {
+      property: 'og:title',
+      content: 'Schedule'
+    }
+  ]
 }
 export default function Schedule (): JSX.Element {
   const { challenge } = useRouteLoaderData<typeof useRouteLoaderData>('routes/challenges.v.$id') as { challenge: Challenge }
