@@ -112,7 +112,6 @@ export type ChallengeType = 'SCHEDULED' | 'SELF_LED'
 export type ChallengeStatus = 'PUBLISHED' | 'DRAFT' | 'ARCHIVED'
 export interface Challenge {
   id: number | undefined
-  template: boolean
   name: string | null | undefined
   description: string | null | undefined
   mission: string | null | undefined

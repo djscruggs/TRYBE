@@ -3,10 +3,9 @@
 import { useLocation, useNavigation } from 'react-router-dom'
 import {
   PlusCircleIcon,
-  MinusCircleIcon,
   TrophyIcon
 } from '@heroicons/react/24/outline'
-import { HiOutlineTemplate, HiOutlineLogout } from 'react-icons/hi'
+import { HiOutlineLogout } from 'react-icons/hi'
 import { CurrentUserContext } from '~/utils/CurrentUserContext'
 import { useContext, useState } from 'react'
 import { Spinner } from '@material-tailwind/react'
@@ -19,11 +18,6 @@ const NavLinks = (): JSX.Element => {
   const [isNewOpen, setIsNewOpen] = useState(false)
   const navigation = useNavigation()
   const navigate = useNavigate()
-  const handleNewOpt = (path: string, event: any): void => {
-    event.stopPropagation()
-    setIsNewOpen(false)
-    navigate(path)
-  }
   const toggleNewOpen = (): void => {
     setIsNewOpen(!isNewOpen)
   }

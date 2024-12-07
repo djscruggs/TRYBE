@@ -21,7 +21,6 @@ model User {
   clerkId          String?
   lastLogin        DateTime?
   challenges       Challenge[]
-  challengeTemplates       ChallengeTemplate[]
   checkIns         CheckIn[]
   comments         Comment[]
   threads          Thread[]
@@ -124,27 +123,6 @@ model Post {
   @@index([userId, createdAt])
 }
 
-model ChallengeTemplate {
-  id             Int               @id @default(autoincrement())
-  createdAt      DateTime          @default(now())
-  updatedAt      DateTime          @updatedAt
-  publishAt      DateTime          @default(now())
-  name           String
-  categories     CategoriesOnChallengeTemplates[]
-  published      Boolean           @default(false)
-  userId         Int
-  numDays        Int               @default(30)
-  color          String?
-  description    String?
-  icon           String?
-  frequency      Frequency         @default(DAILY)
-  mission        String?
-  video          String?
-  coverPhotoMeta Json?
-  videoMeta      Json?
-  user           User              @relation(fields: [userId], references: [id])
-}
-
 model Challenge {
   id             Int               @id @default(autoincrement())
   createdAt      DateTime          @default(now())
@@ -172,7 +150,6 @@ model Challenge {
   coverPhotoMeta Json?
   videoMeta      Json?
   user           User              @relation(fields: [userId], references: [id])
-  template       Boolean           @default(false)
   checkIns       CheckIn[]
   comments       Comment[]
   likes          Like[]
@@ -258,7 +235,6 @@ model Category {
   id   Int    @id @default(autoincrement())
   name String
   challenges CategoriesOnChallenges[]
-  challengeTemplates CategoriesOnChallengeTemplates[]
 }
 model CategoriesOnChallenges {
   challenge       Challenge     @relation(fields: [challengeId], references: [id], onDelete: Cascade)
@@ -267,14 +243,6 @@ model CategoriesOnChallenges {
   categoryId Int // relation scalar field (used in the `@relation` attribute above)
   
   @@id([challengeId, categoryId])
-}
-model CategoriesOnChallengeTemplates {
-  challengeTemplate       ChallengeTemplate     @relation(fields: [challengeTemplateId], references: [id])
-  challengeTemplateId     Int // relation scalar field (used in the `@relation` attribute above)
-  category   Category @relation(fields: [categoryId], references: [id])
-  categoryId Int // relation scalar field (used in the `@relation` attribute above)
-  
-  @@id([challengeTemplateId, categoryId])
 }
 
 model Like {

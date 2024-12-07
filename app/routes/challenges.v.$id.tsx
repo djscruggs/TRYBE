@@ -130,23 +130,24 @@ export default function ViewChallenge (): JSX.Element {
   return (
     <div className='flex flex-col'>
       <div className='max-w-sm md:max-w-md lg:max-w-lg relative'>
-        <ChallengeHeader challenge={challenge} size='small' />
+        <ChallengeHeader challenge={challenge} size='small' className='mb-4' />
+        {challenge.status === 'DRAFT' && <div className='bg-yellow text-center mb-4 rounded-md'>DRAFT</div>}
         <div className='relative'>
           {parsedDescription}
         </div>
-        {!challenge.template && <button className='cursor-pointer  bg-green-500 hover:bg-red float-right text-white text-xs p-1 px-2 rounded-full' onClick={() => { navigate(`/challenges/v/${challenge.id}/contact`) }}>Contact Host</button>}
+        {challenge.type === 'SCHEDULED' && <button className='cursor-pointer  bg-green-500 hover:bg-red float-right text-white text-xs p-1 px-2 rounded-full' onClick={() => { navigate(`/challenges/v/${challenge.id}/contact`) }}>Contact Host</button>}
         <div className='text-lg py-2 flex items-center justify-center w-full gap-4'>
           <div className={`w-fit ${isOverview ? 'border-b-2 border-red' : 'cursor-pointer'}`} onClick={() => { navigate(`/challenges/v/${challenge.id}`) }}>Overview</div>
           <div className={`w-fit ${isProgram ? 'border-b-2 border-red' : 'cursor-pointer'}`} onClick={() => { navigate(`/challenges/v/${challenge.id}/program`) }}>Program</div>
-          {!challenge.template && <div className={`w-fit ${isPosts ? 'border-b-2 border-red' : 'cursor-pointer'}`} onClick={() => { navigate(`/challenges/v/${challenge.id}/chat`) }}>Chat</div>}
+          {challenge.type === 'SCHEDULED' && <div className={`w-fit ${isPosts ? 'border-b-2 border-red' : 'cursor-pointer'}`} onClick={() => { navigate(`/challenges/v/${challenge.id}/chat`) }}>Chat</div>}
         </div>
         {isOverview &&
-          <div className={`${challenge.template ? 'mt-0' : 'mt-4'}`}>
+          <div className={`${challenge.type === 'SELF_LED' ? 'mt-0' : 'mt-4'}`}>
             <ChallengeOverview challenge={challenge} />
           </div>
         }
       </div>
-      {isOverview && !challenge.template &&
+      {isOverview && challenge.type === 'SCHEDULED' &&
         <div className="max-w-sm md:max-w-md lg:max-w-lg text-center">
           {challenge?.userId !== currentUser?.id && !isExpired && (
             <>
@@ -191,7 +192,7 @@ export default function ViewChallenge (): JSX.Element {
       }
 
       <Outlet />
-      {!challenge.template && (membership || challenge.userId === currentUser?.id) &&
+      {challenge.type === 'SCHEDULED' && (membership || challenge.userId === currentUser?.id) &&
       <div className='mb-20 max-w-sm md:max-w-md lg:max-w-lg'>
          {!isStarted && <div className='text-center text-grey mt-2'>You can check in and view progress once the challenge starts.</div>}
          <div className='flex justify-between mt-2'>
@@ -219,8 +220,8 @@ export default function ViewChallenge (): JSX.Element {
 }
 
 function ChallengeOverview ({ challenge }: { challenge: Challenge | ChallengeSummary }): JSX.Element {
-  const isExpired = isPast(challenge?.endAt)
-  const isStarted = isPast(challenge?.startAt)
+  const isExpired = challenge?.endAt ? isPast(challenge?.endAt) : false
+  const isStarted = challenge?.startAt ? isPast(challenge?.startAt) : false
   const { currentUser } = useContext(CurrentUserContext)
   const locale = userLocale(currentUser)
   const dateOptions: DateTimeFormatOptions = {
@@ -230,7 +231,7 @@ function ChallengeOverview ({ challenge }: { challenge: Challenge | ChallengeSum
   }
   return (
     <div className='md:px-0 justify-start'>
-      {challenge.template
+      {challenge.type === 'SELF_LED'
         ? (
         <>
 
@@ -248,7 +249,7 @@ function ChallengeOverview ({ challenge }: { challenge: Challenge | ChallengeSum
           </div>
           {differenceInDays(challenge.endAt ?? new Date(), challenge.startAt ?? new Date())} days
         </div>
-        <div className='text-red text-center mb-4'>This is a template. Click program to view the schedule.</div>
+        <div className='text-red text-center mb-4'>This is a self-guided challenge. Click program to view the schedule.</div>
         </>
           )
         : (
@@ -260,13 +261,13 @@ function ChallengeOverview ({ challenge }: { challenge: Challenge | ChallengeSum
           <div className="font-bold">
             {isExpired || isStarted ? 'Started' : 'Starts'}
           </div>
-          {new Date(challenge.startAt).toLocaleDateString(locale, dateOptions)}
+          {challenge.startAt ? new Date(challenge.startAt).toLocaleDateString(locale, dateOptions) : ''}
         </div>
             <div className="w-1/3">
               <div className="font-bold">
                 {isExpired ? 'Ended' : 'Ends'}
               </div>
-              {new Date(challenge.endAt ?? '').toLocaleDateString(locale, dateOptions)}
+              {challenge.endAt ? new Date(challenge.endAt).toLocaleDateString(locale, dateOptions) : ''}
             </div>
             <div className="w-1/3">
               <div className="font-bold">
