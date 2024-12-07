@@ -18,7 +18,6 @@ export interface User {
   clerkId: string | null;
   lastLogin: Date | null;
   challenges?: Challenge[];
-  challengeTemplates?: ChallengeTemplate[];
   checkIns?: CheckIn[];
   comments?: Comment[];
   threads?: Thread[];
@@ -109,27 +108,6 @@ export interface Post {
   user?: User;
 }
 
-export interface ChallengeTemplate {
-  id: number;
-  createdAt: Date;
-  updatedAt: Date;
-  publishAt: Date;
-  name: string;
-  categories?: CategoriesOnChallengeTemplates[];
-  published: boolean;
-  userId: number;
-  numDays: number;
-  color: string | null;
-  description: string | null;
-  icon: string | null;
-  frequency: Frequency;
-  mission: string | null;
-  video: string | null;
-  coverPhotoMeta: JsonValue | null;
-  videoMeta: JsonValue | null;
-  user?: User;
-}
-
 export interface Challenge {
   id: number;
   createdAt: Date;
@@ -157,7 +135,6 @@ export interface Challenge {
   coverPhotoMeta: JsonValue | null;
   videoMeta: JsonValue | null;
   user?: User;
-  template: boolean;
   checkIns?: CheckIn[];
   comments?: Comment[];
   likes?: Like[];
@@ -230,19 +207,11 @@ export interface Category {
   id: number;
   name: string;
   challenges?: CategoriesOnChallenges[];
-  challengeTemplates?: CategoriesOnChallengeTemplates[];
 }
 
 export interface CategoriesOnChallenges {
   challenge?: Challenge;
   challengeId: number;
-  category?: Category;
-  categoryId: number;
-}
-
-export interface CategoriesOnChallengeTemplates {
-  challengeTemplate?: ChallengeTemplate;
-  challengeTemplateId: number;
   category?: Category;
   categoryId: number;
 }

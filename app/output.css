@@ -3337,6 +3337,10 @@ video {
   text-align: start;
 }
 
+.align-top {
+  vertical-align: top;
+}
+
 .align-middle {
   vertical-align: middle;
 }
