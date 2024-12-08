@@ -168,6 +168,7 @@ model MemberChallenge {
   createdAt   DateTime  @default(now())
   nextCheckIn DateTime?
   lastCheckIn DateTime?
+  dayNumber   Int       @default(1)
   id          Int       @id @default(autoincrement())
   checkIns    CheckIn[]
   challenge   Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
