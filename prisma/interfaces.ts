@@ -150,6 +150,7 @@ export interface MemberChallenge {
   createdAt: Date;
   nextCheckIn: Date | null;
   lastCheckIn: Date | null;
+  dayNumber: number;
   id: number;
   checkIns?: CheckIn[];
   challenge?: Challenge;

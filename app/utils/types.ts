@@ -169,6 +169,7 @@ export interface MemberChallenge {
   challenge: Challenge | ChallengeSummary
   lastCheckIn: Date
   nextCheckIn: Date
+  dayNumber: number
   _count?: {
     checkIns?: number
   }

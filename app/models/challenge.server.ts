@@ -1,4 +1,4 @@
-import { prisma } from './prisma.server'
+import { prisma, PrismaClient } from './prisma.server'
 import { type Prisma } from '@prisma/client'
 import type { Challenge, ChallengeSummary, MemberChallenge, CheckIn, ChallengeWithHost } from '~/utils/types'
 import { addDays, isFriday, isSaturday } from 'date-fns'
@@ -17,11 +17,11 @@ export const createChallenge = async (challenge: prisma.challengeCreateInput): P
   })
   return newChallenge as Challenge
 }
-export const updateChallenge = async (challenge: prisma.challengeCreateInput): Promise<Challenge> => {
+export const updateChallenge = async (challenge: Partial<Challenge>): Promise<Challenge> => {
   const { id, userId, ...data } = challenge
   return await prisma.challenge.update({
     where: { id },
-    data
+    data: data as Prisma.ChallengeUpdateInput
   }) as unknown as Challenge
 }
 export const loadChallenge = async (challengeId: number, userId?: number): Promise<Challenge | null> => {
@@ -75,7 +75,7 @@ export const loadChallengeSummary = async (challengeId: string | number): Promis
   challenge.categories = challenge.categories.map(c => c.category)
   return challenge
 }
-export const loadUserCreatedChallenges = async (userId: string | number) => {
+export const loadUserCreatedChallenges = async (userId: string | number): Promise<Challenge[]> => {
   const uid = Number(userId)
   return await prisma.challenge.findMany({
     where: {
@@ -89,7 +89,7 @@ export const loadUserCreatedChallenges = async (userId: string | number) => {
   })
 }
 
-export const deleteChallenge = async (challengeId: string | number, userId: string | number): Promise<prisma.challenge> => {
+export const deleteChallenge = async (challengeId: string | number, userId: string | number): Promise<Challenge> => {
   const id = Number(challengeId)
   const uid = Number(userId)
   // load the challenge first so you can get a handle to the coverPhoto
@@ -118,7 +118,7 @@ export const deleteChallenge = async (challengeId: string | number, userId: stri
       id,
       userId: uid
     }
-  })
+  }) as unknown as Challenge
 }
 export const fetchChallenges = async (userId: string | number): Promise<Challenge[]> => {
   const uid = userId ? Number(userId) : undefined
@@ -226,7 +226,7 @@ export async function updateCheckin (checkin: CheckIn): Promise<CheckIn> {
   const { id, memberChallenge, challenge, user, ...data } = checkin
   return await prisma.checkIn.update({
     where: { id },
-    data
+    data: data as Prisma.CheckInUpdateInput
   }) as unknown as CheckIn
 }
 interface FetchUserChallengesAndMembershipsParams {
@@ -319,7 +319,7 @@ export const loadMemberChallenge = async (userId: number, challengeId: number): 
   }) as MemberChallenge | null
 }
 export const fetchChallengeMembers = async (cId: string | number): Promise<MemberChallenge[]> => {
-  const params: prisma.memberChallengeFindManyArgs = {
+  const params: Prisma.MemberChallengeFindManyArgs = {
     where: { challengeId: Number(cId.toString()) },
     include: {
       challenge: true,
@@ -333,12 +333,16 @@ export const fetchChallengeMembers = async (cId: string | number): Promise<Membe
   // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
   return await prisma.memberChallenge.findMany(params) as unknown as MemberChallenge[]
 }
-export const joinChallenge = async (userId: number, challengeId: number): Promise<MemberChallenge> => {
+export const joinChallenge = async (userId: number, challengeId: number): Promise<Prisma.MemberChallenge> => {
   // Check if the member challenge already exists
   const existingMemberChallenge = await prisma.memberChallenge.findFirst({
     where: {
       userId,
       challengeId
+    },
+    include: {
+      challenge: true,
+      user: true
     },
     orderBy: {
       createdAt: 'desc'
