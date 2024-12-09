@@ -1,9 +1,8 @@
 import { prisma } from './prisma.server'
 import { createUser, getUserByClerkId } from './user.server'
 import { type RegisterForm, type LoginForm, type CurrentUser } from '~/utils/types'
-import { type LoaderFunctionArgs } from '@remix-run/node'
+import { type LoaderFunctionArgs, redirect, json, createCookieSessionStorage, type Session } from '@remix-run/node'
 import bcrypt from 'bcryptjs'
-import { redirect, json, createCookieSessionStorage } from '@remix-run/node'
 import { getAuth } from '@clerk/remix/ssr.server'
 import { URL } from 'url'
 
@@ -70,8 +69,7 @@ export async function login ({ email, password, request }: LoginForm): Promise<R
   }
   return await createUserSession(currentUser.id, redirect)
 }
-
-export async function requireCurrentUser (args: LoaderFunctionArgs): Promise<CurrentUser | null> {
+export async function getCurrentUser (args: LoaderFunctionArgs): Promise<CurrentUser | null> {
   const request = args.request
   const clerkUser = await getAuth(args)
   let dbUser
@@ -80,7 +78,11 @@ export async function requireCurrentUser (args: LoaderFunctionArgs): Promise<Cur
   } else {
     dbUser = await getUserByClerkId(clerkUser.userId)
   }
-  const currentUser = dbUser
+  return dbUser
+}
+export async function requireCurrentUser (args: LoaderFunctionArgs): Promise<CurrentUser | null> {
+  const request = args.request
+  const currentUser = await getCurrentUser(args)
 
   const path = new URL(request.url).pathname
   if (!currentUser) {
@@ -98,7 +100,7 @@ export async function requireCurrentUser (args: LoaderFunctionArgs): Promise<Cur
 }
 
 export async function getUserSession (request: Request): Promise<Session> {
-  return await storage.getSession(request?.headers.get('Cookie'))
+  return await storage.getSession(request.headers.get('Cookie'))
 }
 
 async function getUserId (request: Request): Promise<string | null> {
@@ -128,7 +130,7 @@ export async function getUser (request: Request): Promise<CurrentUser | null> {
   }
 }
 
-export async function logout (args: any): Promise<Response> {
+export async function logout (args: { request: Request }): Promise<Response> {
   const session = await getUserSession(args.request)
   await storage.destroySession(session)
   return redirect('/signin', {

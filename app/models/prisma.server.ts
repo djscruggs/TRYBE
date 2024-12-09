@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client'
 import { isAfter, isEqual } from 'date-fns'
+import { MockPrismaClient } from '../../prisma/mockPrismaClient'
 let prisma: PrismaClient
 declare global {
   // eslint-disable-next-line no-var, @typescript-eslint/naming-convention
@@ -38,7 +39,9 @@ function extendPrisma (prisma: PrismaClient): PrismaClient {
     }
   })
 }
-if (process.env.NODE_ENV === 'production') {
+if (process.env.NODE_ENV === 'test') {
+  prisma = new MockPrismaClient() as unknown as PrismaClient
+} else if (process.env.NODE_ENV === 'production') {
   void (async () => {
     prisma = extendPrisma(new PrismaClient())
     await prisma.$connect()

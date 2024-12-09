@@ -1,5 +1,5 @@
 import { CurrentUserContext } from '~/utils/CurrentUserContext'
-import { requireCurrentUser } from '~/models/auth.server'
+import { getCurrentUser } from '~/models/auth.server'
 import { likesByType } from '~/models/like.server'
 import { useContext, useState, useEffect } from 'react'
 import UserAvatar from '~/components/useravatar'
@@ -23,7 +23,7 @@ export const meta: MetaFunction = () => {
 }
 
 export const loader: LoaderFunction = async (args): Promise<FeedLoaderData> => {
-  const currentUser = await requireCurrentUser(args)
+  const currentUser = await getCurrentUser(args)
   const challenges = await prisma.challenge.findMany({
     orderBy: [{ createdAt: 'desc' }],
     where: {
@@ -138,7 +138,7 @@ export default function Home (): JSX.Element {
   const onSaveNote = (newNote: NoteSummary): void => {
     setNotes([newNote, ...notes])
   }
-  if (!currentUser || !feedItems) {
+  if (!feedItems) {
     return <p>Loading...</p>
   }
 

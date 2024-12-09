@@ -1,22 +1,28 @@
-import { type Post } from '@prisma/client'
+import { type Post, type Prisma } from '@prisma/client'
 import { prisma } from './prisma.server'
-import { deleteFromCloudinary } from '~/utils/uploadFile'
+import { deleteFromCloudinary } from '../utils/uploadFile'
+type ExtendedPost = Post & {
+  videoMeta?: Prisma.JsonValue
+  imageMeta?: Prisma.JsonValue
+}
 export const createPost = async (
   post: Pick<Post, 'title' | 'body' | 'userId'>
-) => {
+): Promise<Post> => {
   return await prisma.post.create({
     data: post
   })
 }
-export const updatePost = async (post: prisma.postCreateInput): Promise<Post> => {
-  // extract id, computed and other fields that prisma sqawks about on updated
+export const updatePost = async (
+  post: Prisma.PostUpdateInput & Record<string, any>
+): Promise<Post> => {
+  // extract id, computed and other fields that prisma squawks about on update
   const { id, challengeId, userId, live, ...data } = post
   return await prisma.post.update({
     where: { id },
     data
   })
 }
-export const loadPost = async (postId: string | number): Promise<Post | null> => {
+export const loadPost = async (postId: string | number): Promise<ExtendedPost | null> => {
   const id = Number(postId)
   return await prisma.post.findUnique({
     where: {
@@ -59,15 +65,17 @@ export const loadUserPosts = async (userId: string | number): Promise<Post[]> =>
     }
   })
 }
-export const deletePost = async (postId: number, userId: number): Promise<Post> => {
+export const deletePost = async (postId: number, userId: number): Promise<ExtendedPost> => {
   const id = Number(postId)
   const uid = Number(userId)
-  const post = await loadPost(id)
-  if (post?.videoMeta?.public_id) {
-    await deleteFromCloudinary(post.videoMeta.public_id as string, 'video')
+  const post: ExtendedPost | null = await loadPost(id)
+
+  if (post?.videoMeta && typeof post.videoMeta === 'object' && 'public_id' in post.videoMeta) {
+    await deleteFromCloudinary((post.videoMeta as { public_id: string }).public_id, 'video')
   }
-  if (post?.imageMeta?.public_id) {
-    await deleteFromCloudinary(post.imageMeta.public_id as string, 'image')
+
+  if (post?.imageMeta && typeof post.imageMeta === 'object' && 'public_id' in post.imageMeta) {
+    await deleteFromCloudinary((post.imageMeta as { public_id: string }).public_id, 'image')
   }
 
   return await prisma.post.delete({
@@ -75,7 +83,7 @@ export const deletePost = async (postId: number, userId: number): Promise<Post> 
       id,
       userId: uid
     }
-  })
+  }) as ExtendedPost
 }
 export const fetchPosts = async (): Promise<Post[]> => {
   return await prisma.post.findMany({
@@ -90,7 +98,7 @@ export const fetchPosts = async (): Promise<Post[]> => {
   })
 }
 
-export const fetchUserPosts = async (userId: number, includeDrafts = false): Promise<Post[]> => {
+export const fetchUserPosts = async (userId: number): Promise<Post[]> => {
   return await prisma.post.findMany({
     where: {
       userId

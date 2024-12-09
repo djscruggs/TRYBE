@@ -14,7 +14,8 @@
     "baseUrl": ".",
     "types": ["vitest/globals"], 
     "paths": {
-      "~/*": ["./app/*"]
+      "~/*": ["./app/*"],
+      "@/*": ["./app/*"]
     },
     "module": "ES2022",
     

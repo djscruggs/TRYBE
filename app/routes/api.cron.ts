@@ -2,8 +2,16 @@ import { prisma } from '~/models/prisma.server'
 import { mailPost } from '~/utils/mailer'
 import type { LoaderFunction } from '@remix-run/node'
 import { json } from '@remix-run/node'
+import type { Post } from '@prisma/client'
 
 export const loader: LoaderFunction = async (args) => {
+  const scheduledPosts = await sendScheduledPosts()
+  const dayNumberPosts = await sendDayNumberPosts()
+
+  return json({ scheduledPosts, dayNumberPosts }, 200)
+}
+
+export const sendScheduledPosts = async (): Promise<Post[]> => {
   const posts = await prisma.post.findMany({
     where: {
       published: true,
@@ -49,7 +57,7 @@ export const loader: LoaderFunction = async (args) => {
           replyTo: post.user.email,
           fromName: 'Trybe',
           dynamic_template_data: {
-            name: post.user.profile?.fullName ?? '',
+            name: (`${post.user.profile?.firstName ?? ''} ${post.user.profile?.lastName ?? ''}`).trim(),
             post_url: postLink,
             date: post.publishAt?.toLocaleDateString() ?? post.createdAt.toLocaleDateString(),
             subject: `${post.challenge?.name}: ${post.title}`,
@@ -74,10 +82,104 @@ export const loader: LoaderFunction = async (args) => {
       }))
     }
   }))
+  return posts
+}
 
-  // send email
+export const sendDayNumberPosts = async (): Promise<Post[]> => {
+  // Step 1: Get challenges with status PUBLISHED and type SELF_LED
+  const challenges = await prisma.challenge.findMany({
+    where: {
+      status: 'PUBLISHED',
+      type: 'SELF_LED'
+    },
+    include: {
+      members: {
+        include: {
+          user: {
+            include: {
+              profile: true
+            }
+          }
+        }
+      }
+    }
+  })
 
-  return json({ posts }, 200)
+  // Step 2: Organize memberChallenges by dayNumber
+  const dayNumberHash: Record<number, any[]> = {}
+  challenges.forEach(challenge => {
+    challenge.members.forEach(member => {
+      if (!dayNumberHash[member.dayNumber]) {
+        dayNumberHash[member.dayNumber] = []
+      }
+      dayNumberHash[member.dayNumber].push(member)
+    })
+  })
+
+  // Step 3: Find posts for each challengeId scheduled for the days in the hash
+  const posts = await prisma.post.findMany({
+    where: {
+      challengeId: {
+        in: challenges.map(challenge => challenge.id)
+      },
+      publishOnDayNumber: {
+        in: Object.keys(dayNumberHash).map(Number)
+      },
+      published: true
+    },
+    include: {
+      user: {
+        include: {
+          profile: true
+        }
+      }
+    }
+  })
+
+  // Step 4: Email the correct post to each member
+  await Promise.all(posts.map(async post => {
+    // Skip if publishOnDayNumber is null
+    if (post.publishOnDayNumber === null) {
+      return
+    }
+
+    const members = dayNumberHash[post.publishOnDayNumber]
+    if (members) {
+      await Promise.all(members.map(async member => {
+        const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https'
+        const host = process.env.NODE_ENV === 'development' ? 'localhost:3000' : 'app.jointhetrybe.com'
+        const postLink = `${protocol}://${host}/challenges/v/${post.challengeId}/chat#post-${post.id}`
+        const props = {
+          to: member.user.email,
+          replyTo: post.user.email,
+          fromName: 'Trybe',
+          dynamic_template_data: {
+            name: (`${post.user.profile?.firstName ?? ''} ${post.user.profile?.lastName ?? ''}`).trim(),
+            post_url: postLink,
+            date: post.publishAt?.toLocaleDateString() ?? post.createdAt.toLocaleDateString(),
+            subject: `${post.title}`,
+            title: post.title,
+            body: convertYouTubeLinksToImages(post.body ?? '', postLink)
+          }
+        }
+        try {
+          await mailPost(props)
+          // Step 5: Increment memberChallenge.dayNumber by 1
+          await prisma.memberChallenge.update({
+            where: {
+              id: member.id
+            },
+            data: {
+              dayNumber: member.dayNumber + 1
+            }
+          })
+        } catch (err) {
+          console.error('Error sending notification', err)
+        }
+      }))
+    }
+  }))
+  return posts
 }
 
 export function convertYouTubeLinksToImages (body: string, postLink: string = ''): string {
