@@ -841,6 +841,14 @@ video {
   top: -1.75rem;
 }
 
+.top-\[-140px\] {
+  top: -140px;
+}
+
+.top-\[-120px\] {
+  top: -120px;
+}
+
 .z-10 {
   z-index: 10;
 }
