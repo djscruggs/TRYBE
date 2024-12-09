@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { SignedIn, SignedOut, UserButton } from '@clerk/remix'
+import { SignedIn, SignedOut, useClerk, UserButton } from '@clerk/remix'
 import useHasLoaded from '~/utils/useHasLoaded'
 import { useLocation, Outlet, useNavigate, Link } from '@remix-run/react'
 
@@ -58,6 +58,7 @@ export const FullLayout = (): JSX.Element => {
   const [showNav, setShowNav] = useState(true)
   const isInterior = location.pathname.includes('/v/')
   const isWelcome = location.pathname.includes('/challenges/')
+  const { signOut } = useClerk()
   useEffect(() => {
     if (['/', '/register', '/login', '/signup', '/signin'].includes(location.pathname)) {
       setShowNav(false)
@@ -198,11 +199,11 @@ export const FullLayout = (): JSX.Element => {
                                 exit={{ opacity: 0 }}
                                 transition={{ duration: 0.4 }}
                                 >
-                                <div className="flex absolute top-[-100px] left-1/2 transform -translate-x-1/2">
-                                    <div onClick={(event) => { handleNewOpt('/posts/new', event) }} className="flex flex-col items-center justify-center w-16 h-16 rounded-full border border-black bg-[#FDC94C] mx-2 cursor-pointer text-sm p-2">
+                                <div className="flex absolute top-[-120px] left-1/2 transform -translate-x-1/2">
+                                    {/* <div onClick={(event) => { handleNewOpt('/posts/new', event) }} className="flex flex-col items-center justify-center w-16 h-16 rounded-full border border-black bg-[#FDC94C] mx-2 cursor-pointer text-sm p-2">
                                     <ChatBubbleLeftEllipsisIcon className='-scale-x-100' />
                                         <span className="cursor-pointer text-xs">Post</span>
-                                    </div>
+                                    </div> */}
 
                                     <div onClick={(event) => { handleNewOpt('/challenges/new', event) }} className="flex flex-col items-center justify-center w-16 h-16 rounded-full border border-black bg-[#FDC94C] mx-2 cursor-pointer text-xxs p-3">
                                         <TrophyIcon />
@@ -229,9 +230,10 @@ export const FullLayout = (): JSX.Element => {
                       <Link to={`/members/${currentUser?.id}/content`} className='w-8 h-8 flex justify-center items-center'>
                         <ArchiveBoxIcon className='cursor-pointer w-8 h-8' />
                       </Link>
-                      <Link to="/profile" className='w-8 h-8 mr-6 flex justify-center items-center'>
+                      <Link to="/profile" className='w-8 h-8 mr-2 flex justify-center items-center'>
                         <IdentificationIcon className='cursor-pointer w-8 h-8' />
                       </Link>
+
                   </div>
                 }
             </div>
