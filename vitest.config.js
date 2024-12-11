@@ -1,22 +1,16 @@
 import react from '@vitejs/plugin-react'
-import path from 'path'
 import { defineConfig } from 'vite'
+import tsconfigPaths from 'vite-tsconfig-paths'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), tsconfigPaths()],
   test: {
     globals: true,
+    threads: false,
     environment: 'jsdom',
-    setupFiles: './test/setup.ts',
-    include: ['**/*.test.ts'],
-    resolve: {
-      alias: {
-        '~': path.resolve(__dirname, 'app')
-      }
-    }
-    // you might want to disable it, if you don't have tests that rely on CSS
-    // since parsing CSS is slow
-    // css: true
+    setupFiles: ['./test/setup.ts', './test/setup.integration.ts'],
+    include: ['**/*.test.ts', './app/**/integration/*.test.ts']
+
   }
 })

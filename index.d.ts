@@ -1,5 +1,4 @@
-import type * as vitest from 'vitest'
-import type * as integration from './tests/factory'
+import type * as integration from './test/factory'
 
 declare module 'vitest' {
   export interface TestContext {

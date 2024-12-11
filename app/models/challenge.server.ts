@@ -1,4 +1,4 @@
-import { prisma, PrismaClient } from './prisma.server'
+import { prisma } from './prisma.server'
 import { type Prisma } from '@prisma/client'
 import type { Challenge, ChallengeSummary, MemberChallenge, CheckIn, ChallengeWithHost } from '~/utils/types'
 import { addDays, isFriday, isSaturday } from 'date-fns'

@@ -1,5 +1,5 @@
-import { prisma } from '~/models/prisma.server'
-import { mailPost } from '~/utils/mailer'
+import { prisma } from '../models/prisma.server'
+import { mailPost } from '../utils/mailer'
 import type { LoaderFunction } from '@remix-run/node'
 import { json } from '@remix-run/node'
 import type { Post } from '@prisma/client'
@@ -76,6 +76,8 @@ export const sendScheduledPosts = async (): Promise<Post[]> => {
               notificationSentOn: new Date()
             }
           })
+          post.notificationSentOn = new Date()
+          console.log('notificationSentOn', post.notificationSentOn)
         } catch (err) {
           console.error('Error sending notification', err)
         }

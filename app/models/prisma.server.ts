@@ -39,9 +39,7 @@ function extendPrisma (prisma: PrismaClient): PrismaClient {
     }
   })
 }
-if (process.env.NODE_ENV === 'test') {
-  prisma = new MockPrismaClient() as unknown as PrismaClient
-} else if (process.env.NODE_ENV === 'production') {
+if (process.env.NODE_ENV === 'production') {
   void (async () => {
     prisma = extendPrisma(new PrismaClient())
     await prisma.$connect()

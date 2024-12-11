@@ -1,4 +1,5 @@
 import sgMail from '@sendgrid/mail'
+import { AxiosHeaders } from 'axios'
 
 // const example_data = {
 //   to: 'me@derekscruggs.com', // Change to your recipient
@@ -31,6 +32,10 @@ const TEMPLATES = {
 }
 
 export async function mailPost (props: PostMailerProps): Promise<any> {
+  if (process.env.NODE_ENV === 'test') {
+    return mockSendgridResponse()
+  }
+
   if (!process.env.SENDGRID_API_KEY) {
     throw new Error('SENDGRID_API_KEY must be set in environment to use this hook')
   }
@@ -47,7 +52,10 @@ export async function mailPost (props: PostMailerProps): Promise<any> {
     templateId: TEMPLATES.POST,
     dynamic_template_data,
     asm: {
-      group_id: 29180
+      groupId: 29180
+    },
+    sandbox_mode: {
+      enable: process.env.NODE_ENV === 'test'
     }
   }
   const result = await sgMail.send(msg)
@@ -65,6 +73,9 @@ export interface HostMailerProps {
 }
 
 export async function contactHost (props: HostMailerProps): Promise<any> {
+  if (process.env.NODE_ENV === 'test') {
+    return mockSendgridResponse()
+  }
   if (!process.env.SENDGRID_API_KEY) {
     throw new Error('SENDGRID_API_KEY must be set in environment to use this hook')
   }
@@ -83,4 +94,24 @@ export async function contactHost (props: HostMailerProps): Promise<any> {
   }
   const result = await sgMail.send(msg)
   return result[0]
+}
+
+const mockSendgridResponse = (): any => {
+  return {
+    statusCode: 202,
+    body: '',
+    headers: {
+      server: 'nginx',
+      date: new Date().toUTCString(),
+      'content-length': '0',
+      connection: 'keep-alive',
+      'x-message-id': 'NsNyHxBsRlm03Du1je8aIA',
+      'access-control-allow-origin': 'https://sendgrid.api-docs.io',
+      'access-control-allow-methods': 'POST',
+      'access-control-allow-headers': 'Authorization, Content-Type, On-behalf-of, x-sg-elas-acl',
+      'access-control-max-age': '600',
+      'x-no-cors-reason': 'https://sendgrid.com/docs/Classroom/Basics/API/cors.html',
+      'strict-transport-security': 'max-age=600; includeSubDomains'
+    }
+  }
 }
