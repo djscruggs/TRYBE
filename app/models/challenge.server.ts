@@ -1,10 +1,11 @@
-import { prisma } from './prisma.server'
+import { prisma, PrismaClient } from './prisma.server'
 import { type Prisma } from '@prisma/client'
 import type { Challenge, ChallengeSummary, MemberChallenge, CheckIn, ChallengeWithHost } from '~/utils/types'
 import { addDays, isFriday, isSaturday } from 'date-fns'
 import { deleteFromCloudinary } from '~/utils/uploadFile'
 
 export const createChallenge = async (challenge: prisma.challengeCreateInput): Promise<Challenge> => {
+  console.log('challenge data', challenge)
   const newChallenge = await prisma.challenge.create({
     data: challenge
   })

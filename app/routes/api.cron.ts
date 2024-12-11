@@ -77,7 +77,6 @@ export const sendScheduledPosts = async (): Promise<Post[]> => {
             }
           })
           post.notificationSentOn = new Date()
-          console.log('notificationSentOn', post.notificationSentOn)
         } catch (err) {
           console.error('Error sending notification', err)
         }
