@@ -15,7 +15,7 @@ export default function Profile (): JSX.Element {
   return (
     <div className='min-h-screen w-screen flex flex-col items-center justify-center pt-4 md:pt-12 md:items-start md:justify-start relative'>
       <SignedIn>
-        <div className='flex flex-col items-center justify-center w-screen'>
+        <div className='flex flex-col items-center justify-center md:items-start w-screen'>
           <div className="cursor-pointer flex flex-col md:hidden items-center justify-center mb-2" onClick={() => { void signOut() }} >
             <HiOutlineLogout className='cursor-pointer w-8 h-8'/>
             Logout
