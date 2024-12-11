@@ -2,7 +2,6 @@ import { prisma } from '../models/prisma.server'
 import { mailPost } from '../utils/mailer'
 import type { LoaderFunction } from '@remix-run/node'
 import { json } from '@remix-run/node'
-import type { Post } from '@prisma/client'
 
 export const loader: LoaderFunction = async (args) => {
   const scheduledPosts = await sendScheduledPosts()
@@ -11,7 +10,7 @@ export const loader: LoaderFunction = async (args) => {
   return json({ scheduledPosts, dayNumberPosts }, 200)
 }
 
-export const sendScheduledPosts = async (): Promise<Post[]> => {
+export const sendScheduledPosts = async (): Promise<number> => {
   const posts = await prisma.post.findMany({
     where: {
       published: true,
@@ -83,10 +82,10 @@ export const sendScheduledPosts = async (): Promise<Post[]> => {
       }))
     }
   }))
-  return posts
+  return posts.length
 }
 
-export const sendDayNumberPosts = async (): Promise<Post[]> => {
+export const sendDayNumberPosts = async (): Promise<number> => {
   // Step 1: Get challenges with status PUBLISHED and type SELF_LED
   const challenges = await prisma.challenge.findMany({
     where: {
@@ -116,7 +115,6 @@ export const sendDayNumberPosts = async (): Promise<Post[]> => {
       dayNumberHash[member.dayNumber].push(member)
     })
   })
-
   // Step 3: Find posts for each challengeId scheduled for the days in the hash
   const posts = await prisma.post.findMany({
     where: {
@@ -136,7 +134,6 @@ export const sendDayNumberPosts = async (): Promise<Post[]> => {
       }
     }
   })
-
   // Step 4: Email the correct post to each member
   await Promise.all(posts.map(async post => {
     // Skip if publishOnDayNumber is null
@@ -165,22 +162,28 @@ export const sendDayNumberPosts = async (): Promise<Post[]> => {
         }
         try {
           await mailPost(props)
-          // Step 5: Increment memberChallenge.dayNumber by 1
-          await prisma.memberChallenge.update({
-            where: {
-              id: member.id
-            },
-            data: {
-              dayNumber: member.dayNumber + 1
-            }
-          })
         } catch (err) {
           console.error('Error sending notification', err)
         }
       }))
     }
   }))
-  return posts
+  // Step 5: Increment memberChallenge.dayNumber by 1
+  // Update all memberChallenges for SELF_LED and PUBLISHED challenges
+  await prisma.memberChallenge.updateMany({
+    where: {
+      challenge: {
+        type: 'SELF_LED',
+        status: 'PUBLISHED'
+      }
+    },
+    data: {
+      dayNumber: {
+        increment: 1
+      }
+    }
+  })
+  return posts.length
 }
 
 export function convertYouTubeLinksToImages (body: string, postLink: string = ''): string {
