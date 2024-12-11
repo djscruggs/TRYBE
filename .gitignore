@@ -5,6 +5,7 @@ node_modules
 /public/build
 .env
 .env*
+.env.test
 .env.*
 
 
