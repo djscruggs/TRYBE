@@ -84,7 +84,7 @@ const NavLinks = (): JSX.Element => {
             </Form>
           </div> */}
           <div className='absolute bottom-10 left-0 w-24 h-20 text-darkgrey text-center mb-4 rounded-lg hover:bg-gray-300 flex flex-col items-center justify-center'>
-            <HiOutlineLogout className='h-8 w-8 cursor-pointer mb-1 text-darkgrey' onClick={signOut}/>
+            <HiOutlineLogout className='h-8 w-8 cursor-pointer mb-1 text-darkgrey' onClick={() => { void signOut() }}/>
             <div className="cursor-pointer">Logout</div>
           </div>
           {navigation.state === 'loading' && <Spinner />}

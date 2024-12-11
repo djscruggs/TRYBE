@@ -185,27 +185,17 @@ export const FullLayout = (): JSX.Element => {
                 </div>
                 {showNav && !isInterior &&
                   <div className={`${wrapperVisible ? 'opacity-100' : 'opacity-30'} transition-opacity duration-500 fixed bottom-0 left-0 right-0 max-w-screen flex items-center w-full justify-between m-0 p-0 px-2 py-1 bg-gray-50 border-2 border-slate-200 z-10`}>
-                      <Link to="/" className='w-8 h-8 ml-6 flex justify-center items-center'>
+                      <Link to="/" className='w-8 h-8 ml-14 flex justify-center items-center'>
                         <HomeIcon className='cursor-pointer w-8 h-8' />
                       </Link>
-                      <Link to="/challenges" className='w-8 h-8 flex justify-center items-center' prefetch='render'>
-                        <TrophyIcon className='cursor-pointer w-8 h-8' />
-                      </Link>
                       <div className="flex items-center justify-center relative min-w-8" onClick={(event) => { handlePlusClick(event) }}>
-                           {/* Your plus sign */}
-                           <Link to="/challenges/new" prefetch='render'>
+                        <Link to="/challenges/new" prefetch='render'>
                           <PlusCircleIcon className='w-12 h-12 text-white rounded-full bg-red text-color-white cursor-pointer text-6xl' />
-                          </Link>
-
+                        </Link>
                       </div>
-
-                      {/* <Link to={`/members/${currentUser?.id}/content`} className='w-8 h-8 flex justify-center items-center'>
-                        <ArchiveBoxIcon className='cursor-pointer w-8 h-8' />
-                      </Link> */}
-                      <Link to="/profile" className='w-8 h-8 mr-2 flex justify-center items-center'>
+                      <Link to="/profile" className='w-8 h-8 mr-14 flex justify-center items-center'>
                         <IdentificationIcon className='cursor-pointer w-8 h-8' />
                       </Link>
-                      <HiOutlineLogout className='cursor-pointer w-8 h-8' onClick={() => { void signOut() }} />
 
                   </div>
 

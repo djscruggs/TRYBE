@@ -1128,6 +1128,26 @@ video {
   margin-top: 1px;
 }
 
+.mr-6 {
+  margin-right: 1.5rem;
+}
+
+.ml-8 {
+  margin-left: 2rem;
+}
+
+.mr-10 {
+  margin-right: 2.5rem;
+}
+
+.ml-14 {
+  margin-left: 3.5rem;
+}
+
+.mr-14 {
+  margin-right: 3.5rem;
+}
+
 .box-border {
   box-sizing: border-box;
 }
@@ -6788,6 +6808,10 @@ video {
 
   .md\:pt-10 {
     padding-top: 2.5rem;
+  }
+
+  .md\:pt-12 {
+    padding-top: 3rem;
   }
 
   .md\:text-5xl {
