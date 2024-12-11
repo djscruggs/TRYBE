@@ -20,6 +20,7 @@ import {
 } from '@heroicons/react/24/outline'
 import { AnimatePresence, motion } from 'framer-motion'
 import { FaChevronCircleLeft } from 'react-icons/fa'
+import { HiOutlineLogout } from 'react-icons/hi'
 export default function Layout (): JSX.Element {
   const hasLoaded = useHasLoaded()
   if (!hasLoaded) {
@@ -98,7 +99,7 @@ export const FullLayout = (): JSX.Element => {
 
   return (
       <>
-        <div className='hidden md:block w-screen'>
+        <div className='hidden md:block w-screen min-h-screen'>
           <div className='flex min-h-screen max-w-screen-2xl'>
             {currentUser &&
               <div className="hidden md:flex flex-col justify-start items-start mr-8">
@@ -141,7 +142,7 @@ export const FullLayout = (): JSX.Element => {
 
         </div>
         {/* mobile layout */}
-        <div className="md:hidden max-w-screen flex flex-col min-h-screen max-h-screen min-w-screen p-0" onClick={hideMenu}>
+        <div className="md:hidden max-w-sm px-1  flex flex-col min-h-screen min-w-screen p-0" onClick={hideMenu}>
 
                 {showNav &&
                 <>
@@ -167,6 +168,9 @@ export const FullLayout = (): JSX.Element => {
                         </div>
                     }
                     <Outlet />
+                    <div className='min-h-[100px]'>
+                      {/* this is a spacer so you can scroll to bottom and menu doesn't cover content */}
+                    </div>
                     {/* <AnimatePresence mode='wait' initial={false}>
                         <motion.main
                          key={useLocation().pathname}
@@ -189,52 +193,22 @@ export const FullLayout = (): JSX.Element => {
                       </Link>
                       <div className="flex items-center justify-center relative min-w-8" onClick={(event) => { handlePlusClick(event) }}>
                            {/* Your plus sign */}
-                          <PlusCircleIcon className='w-12 h-12 text-white rounded-full bg-red text-color-white cursor-pointer text-6xl -mt-10' />
-                          <AnimatePresence mode='wait' initial={false}>
-                            {newOpen && (
-                                <motion.main
-                                key={useLocation().pathname}
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                exit={{ opacity: 0 }}
-                                transition={{ duration: 0.4 }}
-                                >
-                                <div className="flex absolute top-[-120px] left-1/2 transform -translate-x-1/2">
-                                    {/* <div onClick={(event) => { handleNewOpt('/posts/new', event) }} className="flex flex-col items-center justify-center w-16 h-16 rounded-full border border-black bg-[#FDC94C] mx-2 cursor-pointer text-sm p-2">
-                                    <ChatBubbleLeftEllipsisIcon className='-scale-x-100' />
-                                        <span className="cursor-pointer text-xs">Post</span>
-                                    </div> */}
+                           <Link to="/challenges/new" prefetch='render'>
+                          <PlusCircleIcon className='w-12 h-12 text-white rounded-full bg-red text-color-white cursor-pointer text-6xl' />
+                          </Link>
 
-                                    <div onClick={(event) => { handleNewOpt('/challenges/new', event) }} className="flex flex-col items-center justify-center w-16 h-16 rounded-full border border-black bg-[#FDC94C] mx-2 cursor-pointer text-xxs p-3">
-                                        <TrophyIcon />
-                                        <span className="cursor-pointer text-xs mt-0">Challenge</span>
-                                    </div>
-                                  {/* <div onClick={(event) => { handleNewOpt('/groups/new', event) }} className="flex flex-col items-center justify-center w-16 h-16 rounded-full bg-[#FDC94C] mx-2 cursor-pointer text-sm p-1">
-                                        <UsersIcon />
-                                        <span className="cursor-pointer text-xs">Group</span>
-                                    </div>
-                                    <div onClick={(event) => { handleNewOpt('/posts/new', event) }} className="flex flex-col items-center justify-center w-16 h-16 rounded-full bg-[#FDC94C] mx-2  cursor-pointer text-sm p-1" style={{ marginTop: '-24px' }}>
-                                        <ChatBubbleLeftEllipsisIcon className='-scale-x-100' />
-                                        <span className="cursor-pointer text-xs">Post</span>
-                                    </div>
-                                    <div onClick={(event) => { handleNewOpt('/challenges/new', event) }} className="flex flex-col items-center justify-center w-16 h-16 rounded-full bg-[#FDC94C] mx-2 cursor-pointer text-xxs p-2">
-                                        <TrophyIcon />
-                                        <span className="cursor-pointer text-xs mt-0">Challenge</span>
-                                    </div> */}
-                                </div>
-                                </motion.main>
-                            )}
-                          </AnimatePresence>
                       </div>
 
-                      <Link to={`/members/${currentUser?.id}/content`} className='w-8 h-8 flex justify-center items-center'>
+                      {/* <Link to={`/members/${currentUser?.id}/content`} className='w-8 h-8 flex justify-center items-center'>
                         <ArchiveBoxIcon className='cursor-pointer w-8 h-8' />
-                      </Link>
+                      </Link> */}
                       <Link to="/profile" className='w-8 h-8 mr-2 flex justify-center items-center'>
                         <IdentificationIcon className='cursor-pointer w-8 h-8' />
                       </Link>
+                      <HiOutlineLogout className='cursor-pointer w-8 h-8' onClick={() => { void signOut() }} />
 
                   </div>
+
                 }
             </div>
       </>

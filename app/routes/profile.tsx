@@ -11,24 +11,19 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
 }
 
 export default function Profile (): JSX.Element {
-  const { signOut } = useClerk()
   return (
-    <div className='h-screen items-center pt-12 justify-center md:items-start  md:h-full md:justify-start md:flex'>
+    <div className='min-h-screen flex flex-col items-center pt-12 justify-center md:items-start md:justify-start md:flex relative'>
       <SignedIn>
         <div className='flex flex-col items-center justify-center'>
-        <UserProfile
-          appearance={{
-            variables: {
-              colorPrimary: '#EC5F5C'
-            }
-          }}
-        />
-        <div className='flex flex-col md:hidden items-center justify-center '>
-          <HiOutlineLogout className='h-8 w-8 cursor-pointer mt-4 text-darkgrey' onClick={signOut}/>
-          Sign Out
+          <UserProfile
+            appearance={{
+              variables: {
+                colorPrimary: '#EC5F5C'
+              }
+            }}
+          />
         </div>
-        </div>
-        </SignedIn>
+      </SignedIn>
 
       <SignedOut>
         <SignIn />

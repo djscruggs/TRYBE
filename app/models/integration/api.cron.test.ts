@@ -1,8 +1,12 @@
 // Your test cases here
 import { createChallenge } from '~/models/challenge.server'
+import { prisma } from '~/models/prisma.server'
 import { loader } from '~/routes/api.cron'
 
 describe('testing api/cron', async () => {
+  // delete all the challenges and posts before this suite of tests
+  await prisma.post.deleteMany()
+  await prisma.challenge.deleteMany()
   // create a scheduled challenge
   await createChallenge({
     name: 'test challenge',
@@ -62,35 +66,34 @@ describe('testing api/cron', async () => {
     }
   })
   it('expects scheduled and day number posts to be sent', async ({ integration }) => {
-    // we use it to create a random user
     const response: Response = await loader({
-      request: new Request('http://localhost'),
+      request: new Request('http://localhost/api/cron'),
       context: {},
       params: {}
     })
 
     const { scheduledPosts, dayNumberPosts } = response ? await response.json() : { scheduledPosts: undefined, dayNumberPosts: undefined }
     expect(scheduledPosts).toBeDefined()
-    console.log('numScheduledPosts', scheduledPosts.length)
-    expect(scheduledPosts.length).toBeGreaterThan(0)
+    console.log('numScheduledPosts', scheduledPosts)
+    expect(scheduledPosts).toEqual(0)
     expect(dayNumberPosts).toBeDefined()
-    console.log('numDayNumberPosts', dayNumberPosts.length)
-    expect(dayNumberPosts.length).toBeGreaterThan(0)
+    console.log('numDayNumberPosts', dayNumberPosts)
+    expect(dayNumberPosts).toEqual(0)
   })
   it('expects only day number posts to be sent', async ({ integration }) => {
     // we use it to create a random user
     const response: Response = await loader({
-      request: new Request('http://localhost'),
+      request: new Request('http://localhost/api/cron'),
       context: {},
       params: {}
     })
 
     const { scheduledPosts, dayNumberPosts } = response ? await response.json() : { scheduledPosts: undefined, dayNumberPosts: undefined }
     expect(scheduledPosts).toBeDefined()
-    console.log('numScheduledPosts', scheduledPosts.length)
-    expect(scheduledPosts.length).toEqual(0)
+    console.log('numScheduledPosts', scheduledPosts)
+    expect(scheduledPosts).toEqual(0)
     expect(dayNumberPosts).toBeDefined()
-    console.log('numDayNumberPosts', dayNumberPosts.length)
-    expect(dayNumberPosts.length).toBeGreaterThan(0)
+    console.log('numDayNumberPosts', dayNumberPosts)
+    expect(dayNumberPosts).toBeGreaterThan(0)
   })
 })

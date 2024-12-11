@@ -44,7 +44,7 @@ export const sendScheduledPosts = async (): Promise<number> => {
       }
     }
   })
-
+  console.log('posts count', posts.length)
   await Promise.all(posts.map(async post => {
     if (post.challenge?.members) {
       await Promise.all(post.challenge?.members.map(async member => {

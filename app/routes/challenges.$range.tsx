@@ -89,7 +89,7 @@ export default function ChallengesIndex (): JSX.Element {
           {!loading &&
             <>
               <div className='text-red'>Browse Challenges</div>
-              <div className='py-2 space-x-2 flex items-center justify-between md:justify-start w-full relative text-white text-sm'>
+              <div className='py-2 space-x-2 flex items-center justify-between md:justify-start relative text-white text-xs md:text-sm'>
                 {categories.map((cat: string) => (
                   <div
                     key={cat}
@@ -99,9 +99,8 @@ export default function ChallengesIndex (): JSX.Element {
                     {cat}
                   </div>
                 ))}
-                <div className='w-fit mx-2 text-grey'> | </div>fct
-
-                <Switch crossOrigin="anonymous" label="Self-Guided" checked={SELF_LED} onChange={handleSelfGuidedChange}/>
+                  <div className='w-xs mx-2 text-grey'> | </div>
+                  <Switch className='text-xs md:text-sm' crossOrigin="anonymous" label="Self-Guided" checked={SELF_LED} onChange={handleSelfGuidedChange}/>
 
               </div>
               {!loadingUpcoming && upcomingChallenges.length === 0 &&
