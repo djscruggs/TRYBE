@@ -14,6 +14,7 @@ import { CheckInButton } from '~/components/checkinButton'
 import DateDivider from '~/components/dateDivider'
 import { isPast } from 'date-fns'
 import { FaChevronCircleLeft } from 'react-icons/fa'
+import axios, { type AxiosRequestConfig } from 'axios'
 interface ChallengeChatData {
   groupedData: Record<string, { posts: Post[], checkIns: { empty: CheckIn[], nonEmpty: CheckIn[] }, comments: Comment[] }>
 }
@@ -139,6 +140,7 @@ export default function ViewChallengeChat (): JSX.Element {
   const postRefs = useRef<Record<string, HTMLDivElement | null>>({})
   // find highlighted post in hash
   const [highlightedPostId, setHighlightedPostId] = useState(Number(window.location.hash.replace('#post-', '')))
+  const [highlightedCommentId, setHighlightedCommentId] = useState(Number(window.location.hash.replace('#comment-', '')))
   const _highlightedPost = Object.entries(groupedData).find(([date, { posts }]) => posts.some(p => p.id === highlightedPostId))
   const highlightedPost = _highlightedPost ? _highlightedPost[1].posts.find(p => p.id === highlightedPostId) : null
   const [showHighlightedPost, setShowHighlightedPost] = useState(Boolean(highlightedPost))
@@ -298,6 +300,7 @@ export default function ViewChallengeChat (): JSX.Element {
             checkIns={[...checkIns.empty, ...checkIns.nonEmpty] as CheckIn[]}
             allowComments={true}
             date={date}
+            highlightedCommentId={highlightedCommentId}
           />
         </div>
       ))}
@@ -337,6 +340,7 @@ export default function ViewChallengeChat (): JSX.Element {
           }
         </DialogPost>
       )}
+
       {/* this is a spacer at the bottom that the app scrolls to on load */}
       <div ref={bottomRef} className={`min-h-[${hasCheckedInToday ? '50px' : '100px'}]`}>
 

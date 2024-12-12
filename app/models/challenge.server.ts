@@ -131,7 +131,7 @@ export const fetchChallenges = async (userId: string | number): Promise<Challeng
 }
 
 interface FetchChallengeSummariesParams {
-  userId?: number
+  userId?: number | null
   range?: string
   category?: string | number | null
   SELF_LED?: boolean
@@ -145,17 +145,21 @@ export const fetchChallengeSummaries = async ({
 }: FetchChallengeSummariesParams): Promise<ChallengeSummary[]> => {
   const uid = userId ? Number(userId) : undefined
   const where: any[] = [{ public: true }]
-  switch (range) {
-    case 'upcoming':
-      where.push({ startAt: { gt: new Date() }, status: 'PUBLISHED' })
-      break
-    case 'archived':
-      where.push({ OR: [{ endAt: { lt: new Date() } }, { status: 'ARCHIVED' }] })
-      break
-    case 'active':
-      where.push({ startAt: { lt: new Date() }, status: 'PUBLISHED' })
-      where.push({ endAt: { gte: new Date() } })
-      break
+  if (SELF_LED) {
+    where.push({ type: 'SELF_LED' })
+  } else {
+    switch (range) {
+      case 'upcoming':
+        where.push({ startAt: { gt: new Date() }, status: 'PUBLISHED' })
+        break
+      case 'archived':
+        where.push({ OR: [{ endAt: { lt: new Date() } }, { status: 'ARCHIVED' }] })
+        break
+      case 'active':
+        where.push({ startAt: { lt: new Date() }, status: 'PUBLISHED' })
+        where.push({ endAt: { gte: new Date() } })
+        break
+    }
   }
   if (SELF_LED) {
     where.push({ type: 'SELF_LED' })
@@ -231,7 +235,7 @@ export async function updateCheckin (checkin: CheckIn): Promise<CheckIn> {
   }) as unknown as CheckIn
 }
 interface FetchUserChallengesAndMembershipsParams {
-  userId: number
+  userId: number | null
   SELF_LED?: boolean
 }
 export const fetchUserChallengesAndMemberships = async ({ userId, SELF_LED }: FetchUserChallengesAndMembershipsParams): Promise<ChallengeSummary[]> => {

@@ -1,9 +1,12 @@
 import { createComment, updateComment, loadComment, deleteComment } from '~/models/comment.server'
 import type { prisma } from '~/models/prisma.server'
+import { sendCommentReplyNotification } from '~/utils/mailer'
 import { requireCurrentUser } from '~/models/auth.server'
 import { json, type LoaderFunction, type ActionFunction } from '@remix-run/node'
 import { unstable_parseMultipartFormData } from '@remix-run/node'
 import { uploadHandler, handleFormUpload } from '~/utils/uploadFile'
+import { generateUrl } from '~/utils/helpers'
+
 export const action: ActionFunction = async (args) => {
   const currentUser = await requireCurrentUser(args)
   const { request } = args
@@ -61,6 +64,23 @@ export const action: ActionFunction = async (args) => {
   await handleFormUpload({ formData: rawData, dataObj: result, nameSpace: 'comment', onUpdate: updateComment })
 
   const updated = await updateComment(result)
+  if (replyToId) {
+    const parentComment = await loadComment(replyToId as unknown as number)
+    const commentUrl = generateUrl(`/challenges/v/${parentComment.challenge?.id}/chat#comment-${parentComment.id}`)
+    void sendCommentReplyNotification({
+      to: parentComment.user.email,
+      replyTo: currentUser?.email,
+      dynamic_template_data: {
+        toName: parentComment.user.profile.firstName ?? 'Trybe Friend',
+        fromName: currentUser?.profile?.fullName ?? 'Anonymous',
+        body: result.body as string,
+        challenge_name: parentComment.challenge?.name,
+        comment_url: commentUrl,
+        subject: 'Reply to your comment'
+      }
+    })
+  }
+
   // refresh the comment to include user info attached
   const comment = await loadComment(updated.id as number, updated.userId as number)
   return json(comment)

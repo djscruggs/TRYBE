@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import FormChat from './formChat'
 import { textToJSX } from '~/utils/helpers'
 import type { Comment } from '~/utils/types'
@@ -12,12 +12,14 @@ import ActionsPopupMenu from './actionsPopupMenu'
 interface CommentsProps {
   comment: Comment | null
   allowReply?: boolean
+  highlightedCommentId?: number | null
 }
 
 export default function ChatItem (props: CommentsProps): JSX.Element {
   const [comment, setComment] = useState<Comment | null>(props.comment ?? null)
   const [deleted, setDeleted] = useState(false)
-  const [showReplies, setShowReplies] = useState(false)
+  const [showReplies, setShowReplies] = useState(Boolean(props.highlightedCommentId) || false)
+  console.log('chatItem', props.highlightedCommentId)
   const allowReply = props.allowReply ?? false
   const [showLightbox, setShowLightbox] = useState(false)
   const [showForm, setShowForm] = useState(false)
@@ -74,11 +76,14 @@ export default function ChatItem (props: CommentsProps): JSX.Element {
                     type='comment'
                     commentCount={comment.replyCount}
                     >
-                    <CommentContent
-                      comment={comment}
-                      showLightbox={showLightbox}
-                      setShowLightbox={setShowLightbox}
-                    />
+
+                      <CommentContent
+                        comment={comment}
+                        showLightbox={showLightbox}
+                        setShowLightbox={setShowLightbox}
+                        isDrawerTop={props.highlightedCommentId === comment.id}
+                      />
+
                   </ChatDrawer>
                 </>
               }
@@ -100,11 +105,16 @@ export default function ChatItem (props: CommentsProps): JSX.Element {
   )
 }
 
-const CommentContent = (props: { comment: Comment, showLightbox: boolean, setShowLightbox: (showLightbox: boolean) => void }): JSX.Element => {
-  const { comment, showLightbox, setShowLightbox } = props
+const CommentContent = (props: {
+  comment: Comment
+  showLightbox: boolean
+  setShowLightbox: (showLightbox: boolean) => void
+  isDrawerTop?: boolean
+}): JSX.Element => {
+  const { comment, showLightbox, setShowLightbox, isDrawerTop } = props
   return (
     <>
-      <div className='flex'>
+      <div className={`flex ${isDrawerTop ? 'pl-2' : ''}`}>
         <div className='flex-shrink-0'>
           <AvatarLoader object={comment} clickable={true} size='sm' shape='circle' marginClass='mr-2'/>
         </div>

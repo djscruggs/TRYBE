@@ -1,6 +1,5 @@
 import sgMail from '@sendgrid/mail'
 import { AxiosHeaders } from 'axios'
-
 // const example_data = {
 //   to: 'me@derekscruggs.com', // Change to your recipient
 //   dynamic_template_data: {
@@ -28,7 +27,8 @@ interface PostMailerProps {
 }
 const TEMPLATES = {
   POST: 'd-139902a1da0942a5bd08308598092164',
-  CONTACT_HOST: 'd-149674868c814ae795698747d3c71a65'
+  CONTACT_HOST: 'd-149674868c814ae795698747d3c71a65',
+  REPLY_NOTIFICATION: 'd-6a5d461f89a1417ab36ebea0a50b64be'
 }
 
 export async function mailPost (props: PostMailerProps): Promise<any> {
@@ -55,7 +55,7 @@ export async function mailPost (props: PostMailerProps): Promise<any> {
       groupId: 29180
     },
     sandbox_mode: {
-      enable: process.env.NODE_ENV === 'test'
+      enable: !['test', 'development'].includes(process.env.NODE_ENV)
     }
   }
   const result = await sgMail.send(msg)
@@ -90,6 +90,41 @@ export async function contactHost (props: HostMailerProps): Promise<any> {
     replyTo,
     to,
     templateId: TEMPLATES.CONTACT_HOST,
+    dynamic_template_data
+  }
+  const result = await sgMail.send(msg)
+  return result[0]
+}
+export interface CommentReplyMailerProps {
+  to: string
+  replyTo?: string
+  dynamic_template_data: {
+    toName: string
+    fromName: string
+    body: string
+    challenge_name: string
+    comment_url: string
+    subject: string
+  }
+}
+export async function sendCommentReplyNotification (props: CommentReplyMailerProps): Promise<any> {
+  if (process.env.NODE_ENV === 'test') {
+    return mockSendgridResponse()
+  }
+  if (!process.env.SENDGRID_API_KEY) {
+    throw new Error('SENDGRID_API_KEY must be set in environment to use this hook')
+  }
+  if (!process.env.SENDGRID_FROM_EMAIL) {
+    throw new Error('SENDGRID_FROM_EMAIL must be set in environment to use this hook')
+  }
+  sgMail.setApiKey(process.env.SENDGRID_API_KEY)
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  const { to, dynamic_template_data, replyTo } = props
+  const msg = {
+    from: process.env.SENDGRID_FROM_EMAIL,
+    replyTo,
+    to,
+    templateId: TEMPLATES.REPLY_NOTIFICATION,
     dynamic_template_data
   }
   const result = await sgMail.send(msg)

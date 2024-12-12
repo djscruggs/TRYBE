@@ -49,7 +49,7 @@ export function FormField ({
   if (type === 'password' && passwordVisible) {
     localType = 'text'
   }
-  const textRef = inputRef ?? useRef<HTMLTextAreaElement | HTMLInputElement>(null)
+  const textRef = inputRef ?? useRef<HTMLTextAreaElement | HTMLInputElement | HTMLDivElement>(null)
   useEffect(() => {
     if (textRef.current && autoResize) {
       textRef.current.style.height = `${rows * 2}rem`

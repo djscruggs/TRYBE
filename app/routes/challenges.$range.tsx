@@ -1,4 +1,4 @@
-import { useNavigate, useParams, useSearchParams } from '@remix-run/react'
+import { useNavigate, useParams } from '@remix-run/react'
 import { useEffect, useState, useContext } from 'react'
 import type { ChallengeSummary, MemberChallenge } from '~/utils/types'
 import ChallengeList from '~/components/challengeList'
@@ -15,7 +15,9 @@ export default function ChallengesIndex (): JSX.Element {
   const [loadingUpcoming, setLoadingUpcoming] = useState(true)
   const navigate = useNavigate()
   const [memberships, setMemberships] = useState<MemberChallenge[]>([])
-  const [SELF_LED, setSELF_LED] = useState(false)
+  // variable name matches the way it's used in the db
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  const [selfGuided, setSelfGuided] = useState(false)
   const { currentUser } = useContext(CurrentUserContext)
   const handleStatusChange = (newStatus: string): void => {
     setStatus(newStatus)
@@ -45,30 +47,35 @@ export default function ChallengesIndex (): JSX.Element {
     setLoading(false)
   }
   const handleSelfGuidedChange = (): void => {
-    setSELF_LED(prev => !prev)
+    setSelfGuided(prev => !prev)
   }
   const loadUpcomingChallenges = async (): Promise<void> => {
-    // if (upcomingChallengesCache) {
-    //   setUpcomingChallenges(upcomingChallengesCache)
-    //   return
-    // }
     setLoadingUpcoming(true)
     const url = '/api/challenges/upcoming'
-    const params: AxiosRequestConfig['params'] = { SELF_LED }
+    const params: AxiosRequestConfig['params'] = { SELF_LED: selfGuided }
     if (categoryFilter.length > 0) {
       params.category = categoryFilter.join(',')
     }
     const response = await axios.get(url, { params })
-    setUpcomingChallenges(response.data.challenges as ChallengeSummary[])
+
+    // Filter out challenges where the user is already a member
+    const allUpcomingChallenges = response.data.challenges as ChallengeSummary[]
+    const filteredUpcomingChallenges = allUpcomingChallenges.filter(challenge =>
+      !memberships.some(membership => membership.challengeId === challenge.id) &&
+      challenge.userId !== currentUser?.id
+    )
+
+    setUpcomingChallenges(filteredUpcomingChallenges)
     setLoadingUpcoming(false)
   }
   useEffect(() => {
-    void loadData()
-    void loadUpcomingChallenges()
+    void loadData().then(() => {
+      void loadUpcomingChallenges()
+    }).catch(console.error)
   }, [status])
   useEffect(() => {
     void loadUpcomingChallenges()
-  }, [categoryFilter, SELF_LED])
+  }, [categoryFilter, selfGuided])
   const categories = ['Meditation', 'Journal', 'Creativity', 'Health']
   return (
         <div className="w-full">
@@ -100,11 +107,11 @@ export default function ChallengesIndex (): JSX.Element {
                   </div>
                 ))}
                   <div className='w-xs mx-2 text-grey'> | </div>
-                  <Switch className='text-xs md:text-sm' crossOrigin="anonymous" label="Self-Guided" checked={SELF_LED} onChange={handleSelfGuidedChange}/>
+                  <Switch className='text-xs md:text-sm' crossOrigin="anonymous" label="Self-Guided" checked={selfGuided} onChange={handleSelfGuidedChange}/>
 
               </div>
               {!loadingUpcoming && upcomingChallenges.length === 0 &&
-                <p className='text-left text-gray-500 mt-4'>No {SELF_LED ? 'self-guided' : 'scheduled'} challenges in this category.</p>
+                <p className='text-left text-gray-500 mt-4'>No {selfGuided ? 'self-guided' : 'scheduled'} challenges in this category.</p>
               }
               <div className="flex flex-col items-center max-w-lg w-full">
                 <ChallengeList challenges={upcomingChallenges} memberships={memberships} isLoading={loadingUpcoming} />

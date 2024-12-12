@@ -4,18 +4,16 @@ import {
   fetchChallengeSummaries,
   fetchUserChallengesAndMemberships
 } from '~/models/challenge.server'
-import { requireCurrentUser } from '~/models/auth.server'
+import { getCurrentUser } from '~/models/auth.server'
 import { json, type LoaderFunction } from '@remix-run/node'
 
 export const loader: LoaderFunction = async (args) => {
   const { range } = args.params ?? 'active'
-  console.log('from url', new URL(args.request.url).searchParams.get('SELF_LED'))
   const SELF_LED = new URL(args.request.url).searchParams.get('SELF_LED') === 'true'
-  console.log('SELF_LED', SELF_LED)
   const category = new URL(args.request.url).searchParams.get('category')
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const currentUser = await requireCurrentUser(args)
-  const uid = Number(currentUser?.id)
+  const currentUser = await getCurrentUser(args)
+  const uid = currentUser?.id ? Number(currentUser.id) : null
   let challenges
   if (range === 'mine') {
     challenges = await fetchUserChallengesAndMemberships({ userId: uid, SELF_LED }) as { error?: string }

@@ -2,11 +2,11 @@ import { prisma } from '../models/prisma.server'
 import { mailPost } from '../utils/mailer'
 import type { LoaderFunction } from '@remix-run/node'
 import { json } from '@remix-run/node'
-
+import { generateUrl } from '~/utils/helpers'
 export const loader: LoaderFunction = async (args) => {
   const scheduledPosts = await sendScheduledPosts()
-  const dayNumberPosts = await sendDayNumberPosts()
-
+  // const dayNumberPosts = await sendDayNumberPosts()
+  const dayNumberPosts = 0
   return json({ scheduledPosts, dayNumberPosts }, 200)
 }
 
@@ -44,13 +44,10 @@ export const sendScheduledPosts = async (): Promise<number> => {
       }
     }
   })
-  console.log('posts count', posts.length)
   await Promise.all(posts.map(async post => {
     if (post.challenge?.members) {
       await Promise.all(post.challenge?.members.map(async member => {
-        const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https'
-        const host = process.env.NODE_ENV === 'development' ? 'localhost:3000' : 'app.jointhetrybe.com'
-        const postLink = `${protocol}://${host}/challenges/v/${post.challenge?.id}/chat#post-${post.id}`
+        const postLink = generateUrl(`/challenges/v/${post.challenge?.id}/chat#post-${post.id}`)
         const props = {
           to: member.user.email,
           replyTo: post.user.email,

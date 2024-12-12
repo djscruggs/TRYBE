@@ -1,8 +1,7 @@
 import { fetchComments } from '~/models/comment.server'
 import { json, type LoaderFunction } from '@remix-run/node'
-import { requireCurrentUser } from '~/models/auth.server'
+
 export const loader: LoaderFunction = async (args) => {
-  await requireCurrentUser(args)
   const { type, id } = args.params
   let query = {}
 

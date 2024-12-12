@@ -97,6 +97,12 @@ export function textColorFromContainer (containerColor: string | undefined, defa
   }
 }
 
+export function generateUrl (path: string): string {
+  const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https'
+  const host = process.env.NODE_ENV === 'development' ? 'localhost:3000' : 'app.jointhetrybe.com'
+  return `${protocol}://${host}${path}`
+}
+
 export function iconStyle (color: string | undefined): string {
   const bgColor = colorToClassName(color, 'red')
   const textColor = ['yellow'].includes(bgColor) ? 'black' : 'white'

@@ -50,7 +50,7 @@ export default function CardChallengeHome ({ challenge, isMember, isPreview }: C
   }
 
   const howLongToStart = (): string => {
-    if (!challenge.startAt) {
+    if (!challenge.startAt || challenge.type === 'SELF_LED') {
       return ''
     }
     const daysUntilStart = differenceInCalendarDays(challenge.startAt, new Date())
@@ -108,15 +108,20 @@ export default function CardChallengeHome ({ challenge, isMember, isPreview }: C
                     <ShareMenu className='ml-2' noText={true} copyUrl={getFullUrl()} itemType='challenge' itemId={Number(challenge.id)} isPreview={isPreview} />
                   </div>
                 </div>
+                {challenge.type === 'SELF_LED'
+                  ? <div className='text-xs text-darkgrey'>Self-Guided</div>
 
-                <div className=''>
-                  <FaUserFriends className='h-4 w-4 text-darkgrey inline' />
-                  <span className='text-xs pl-2 text-darkgrey inline'>{memberCount} joined</span>
-                </div>
-                <div className=''>
-                  <FaRegCalendarAlt className='h-4 w-4 text-darkgrey inline' />
-                  <span className='text-xs pl-1 text-darkgrey inline'>{howLongToStart()}</span>
-                </div>
+                  : <>
+                    <div className=''>
+                      <FaUserFriends className='h-4 w-4 text-darkgrey inline' />
+                      <span className='text-xs pl-2 text-darkgrey inline'>{memberCount} joined</span>
+                    </div>
+                  <div className=''>
+                      <FaRegCalendarAlt className='h-4 w-4 text-darkgrey inline' />
+                      <span className='text-xs pl-1 text-darkgrey inline'>{howLongToStart()}</span>
+                    </div>
+                  </>
+                }
 
               </div>
             </div>

@@ -24,9 +24,10 @@ interface CheckinsListProps {
   allowComments: boolean
   id?: string
   date?: string
+  highlightedCommentId?: number | null
 }
 
-export default function CheckinsList ({ checkIns, posts, comments, newestComment, allowComments, id, date }: CheckinsListProps): JSX.Element {
+export default function CheckinsList ({ checkIns, posts, comments, newestComment, allowComments, id, date, highlightedCommentId }: CheckinsListProps): JSX.Element {
   const [checkInsArr, setCheckInsArr] = useState(checkIns)
   const handleDelete = (deletedCheckIn: CheckIn): void => {
     setCheckInsArr(checkInsArr.filter(checkIn => checkIn.id !== deletedCheckIn.id))
@@ -78,7 +79,7 @@ export default function CheckinsList ({ checkIns, posts, comments, newestComment
               return (
                 <div key={checkIn.id} className={`relative pt-2 ${index === 0 ? '' : 'border-t'}`}>
                   <div className='mt-2'>
-                    <CheckinRow checkIn={checkIn} comments={[]} allowComments={allowComments} afterDelete={handleDelete} />
+                    <CheckinRow checkIn={checkIn} comments={[]} allowComments={allowComments} highlightedCommentId={highlightedCommentId} afterDelete={handleDelete} />
                   </div>
                 </div>
               )
@@ -95,6 +96,7 @@ export default function CheckinsList ({ checkIns, posts, comments, newestComment
                   comments={commentsByDay[date] || []}
                   newestComment={newestComment}
                   allowReplies={true}
+                  highlightedCommentId={highlightedCommentId}
                 />
               </>
             }
@@ -110,15 +112,17 @@ interface CheckinRowProps {
   comments?: Comment[]
   allowComments: boolean
   afterDelete: (deletedCheckIn: CheckIn) => void
-
+  highlightedCommentId?: number | null
 }
 export function CheckinRow (props: CheckinRowProps): JSX.Element {
+  console.log('props', props)
   const { currentUser } = useContext(CurrentUserContext)
   const locale = userLocale(currentUser)
   const { allowComments, comments, checkIn } = props
   const [checkInObj, setCheckInObj] = useState<CheckIn>(checkIn)
   const [deleted, setDeleted] = useState(false)
-  const [showComments, setShowComments] = useState(false)
+  const [showComments, setShowComments] = useState(Boolean(props?.highlightedCommentId))
+  console.log('showComments', showComments)
   const onClose = (): void => {
     setShowComments(false)
   }

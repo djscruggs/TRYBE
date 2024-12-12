@@ -225,7 +225,7 @@ export default function FormChat (props: FormChatProps): JSX.Element {
           placeholder={props.prompt ?? 'Reply...'}
           type='textarea'
           rows={2}
-          inputRef={inputRef}
+          inputRef={inputRef as React.RefObject<HTMLTextAreaElement>}
           required={true}
           autoFocus={props.autoFocus ?? true}
           value={state.body}

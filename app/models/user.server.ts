@@ -38,7 +38,10 @@ export const loadUser = async (userId: string | number | undefined): Promise<pri
   }
 }
 
-export const fetchMemberChallenges = async (userId: number) => {
+export const fetchMemberChallenges = async (userId?: number | null): Promise<prisma.MemberChallenge[] | []> => {
+  if (!userId) {
+    return []
+  }
   return await prisma.memberChallenge.findMany(
     {
       where: { userId },
