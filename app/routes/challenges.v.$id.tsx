@@ -212,11 +212,11 @@ export default function ViewChallenge (): JSX.Element {
           />
          </div>
          <div className='flex items-center md:hidden justify-center w-full my-1'>
-            <FaChevronCircleLeft
-              className='w-6 h-6 text-grey cursor-pointer'
-              onClick={() => { navigate('/challenges/') }}
-            />
-          </div>
+          <FaChevronCircleLeft
+            className='w-6 h-6 text-grey cursor-pointer'
+            onClick={() => { navigate('/challenges/') }}
+          />
+        </div>
       </div>
       }
 
