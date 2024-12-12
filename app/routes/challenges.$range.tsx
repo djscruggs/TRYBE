@@ -10,7 +10,7 @@ export default function ChallengesIndex (): JSX.Element {
   const [categoryFilter, setCategoryFilter] = useState<string[]>('')
   const [upcomingChallenges, setUpcomingChallenges] = useState<ChallengeSummary[]>([])
   const params = useParams()
-  const [status, setStatus] = useState(params.status ?? 'active')
+  const [status, setStatus] = useState(params.range ?? 'active')
   const [loading, setLoading] = useState(true)
   const [loadingUpcoming, setLoadingUpcoming] = useState(true)
   const navigate = useNavigate()
@@ -29,7 +29,7 @@ export default function ChallengesIndex (): JSX.Element {
   const loadData = async (): Promise<void> => {
     setLoading(true)
     const url = `/api/challenges/${status}`
-
+    console.log('url', url)
     const response = await axios.get(url)
 
     const allChallenges = response.data.challenges as ChallengeSummary[]
