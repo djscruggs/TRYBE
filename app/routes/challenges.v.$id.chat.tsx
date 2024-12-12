@@ -1,4 +1,4 @@
-import { useLoaderData, useRouteLoaderData, useRevalidator } from '@remix-run/react'
+import { useLoaderData, useRouteLoaderData, useRevalidator, useNavigate } from '@remix-run/react'
 import { useEffect, useRef, useState, useContext } from 'react'
 import { requireCurrentUser } from '~/models/auth.server'
 import type { Post, CheckIn, Challenge, Comment, MemberChallenge } from '~/utils/types'
@@ -13,6 +13,7 @@ import DialogPost from '~/components/dialogPost'
 import { CheckInButton } from '~/components/checkinButton'
 import DateDivider from '~/components/dateDivider'
 import { isPast } from 'date-fns'
+import { FaChevronCircleLeft } from 'react-icons/fa'
 interface ChallengeChatData {
   groupedData: Record<string, { posts: Post[], checkIns: { empty: CheckIn[], nonEmpty: CheckIn[] }, comments: Comment[] }>
 }
@@ -133,7 +134,7 @@ export default function ViewChallengeChat (): JSX.Element {
   if (!groupedData) {
     return <p>No data.</p>
   }
-
+  const navigate = useNavigate()
   // have to resort the groupedData by date because the data from loader is not guaranteed to be in order
   const postRefs = useRef<Record<string, HTMLDivElement | null>>({})
   // find highlighted post in hash
@@ -276,7 +277,7 @@ export default function ViewChallengeChat (): JSX.Element {
     setDayCount(dayCount + 5)
   }
   return (
-    <div className='max-w-2xl'>
+    <div className='max-w-2xl pt-4'>
       {hasEarlierDays && <div className='text-center text-sm text-gray-500 mb-8 cursor-pointer' onClick={handleShowPreviousDays}>show previous days</div>}
       {limitedGroupedData && Object.entries(limitedGroupedData)?.map(([date, { posts, checkIns, comments }], index) => (
 
@@ -309,6 +310,13 @@ export default function ViewChallengeChat (): JSX.Element {
       )}
       {currentUser && (
         <div className='fixed w-full max-w-2xl bottom-0  bg-white bg-opacity-70 max-h-3/4' >
+          {/* back button for mobile */}
+          <div className='flex items-center md:hidden justify-center w-full my-1'>
+            <FaChevronCircleLeft
+              className='w-6 h-6 text-grey cursor-pointer'
+              onClick={() => { navigate(`/challenges/v/${challenge.id}`) }}
+            />
+          </div>
           <FormChat
             afterSave={afterSaveComment}
             prompt="Sound off..."
@@ -330,7 +338,9 @@ export default function ViewChallengeChat (): JSX.Element {
         </DialogPost>
       )}
       {/* this is a spacer at the bottom that the app scrolls to on load */}
-      <div ref={bottomRef} className={`min-h-[${hasCheckedInToday ? '50px' : '100px'}]`}></div>
+      <div ref={bottomRef} className={`min-h-[${hasCheckedInToday ? '50px' : '100px'}]`}>
+
+      </div>
     </div>
   )
 }

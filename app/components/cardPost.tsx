@@ -198,7 +198,7 @@ export const PostContent = (props: { post: PostSummary, fullPost: boolean, child
   const [showFullBody, setShowFullBody] = useState(fullPost)
 
   return (
-    <div className="flex items-start">
+    <div className="flex items-start w-full">
       <AvatarLoader object={post} marginClass='mr-2'/>
       <div className="flex flex-col w-full h-full">
       <div className='font-bold my-2'>{post.title}</div>

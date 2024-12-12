@@ -121,7 +121,7 @@ export default function ViewChallenge (): JSX.Element {
       <div className='flex flex-col mt-2 md:mt-0'>
         <ChallengeHeader challenge={challenge} size='small' />
         <div className='mb-16'>
-        <Outlet />
+          <Outlet />
         </div>
       </div>
     )
