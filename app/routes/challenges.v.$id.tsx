@@ -4,6 +4,7 @@ import { useContext, useState } from 'react'
 import { requireCurrentUser } from '~/models/auth.server'
 import type { MemberChallenge, Challenge, ChallengeSummary, CheckIn } from '~/utils/types'
 import { type LoaderFunction, type LoaderFunctionArgs } from '@remix-run/node'
+import { FaChevronCircleLeft } from 'react-icons/fa'
 import axios from 'axios'
 import {
   textToJSX,
@@ -206,12 +207,16 @@ export default function ViewChallenge (): JSX.Element {
           <CheckInButton
             size='lg'
             challenge={challenge}
-            memberChallenge={membership}
             afterCheckIn={(checkIn: CheckIn) => { navigate(`/challenges/v/${challenge.id}/checkins`) }}
-            showDetails={false}
             disabled={!isStarted}
           />
          </div>
+         <div className='flex items-center md:hidden justify-center w-full my-1'>
+            <FaChevronCircleLeft
+              className='w-6 h-6 text-grey cursor-pointer'
+              onClick={() => { navigate('/challenges/') }}
+            />
+          </div>
       </div>
       }
 
@@ -223,6 +228,7 @@ function ChallengeOverview ({ challenge }: { challenge: Challenge | ChallengeSum
   const isExpired = challenge?.endAt ? isPast(challenge?.endAt) : false
   const isStarted = challenge?.startAt ? isPast(challenge?.startAt) : false
   const { currentUser } = useContext(CurrentUserContext)
+  const navigate = useNavigate()
   const locale = userLocale(currentUser)
   const dateOptions: DateTimeFormatOptions = {
     weekday: 'short',
@@ -257,12 +263,12 @@ function ChallengeOverview ({ challenge }: { challenge: Challenge | ChallengeSum
           {isExpired && <div className='text-red text-center'>This challenge has ended</div>}
 
           <div className="mb-2 flex flex-cols">
-        <div className="w-1/3">
-          <div className="font-bold">
-            {isExpired || isStarted ? 'Started' : 'Starts'}
-          </div>
-          {challenge.startAt ? new Date(challenge.startAt).toLocaleDateString(locale, dateOptions) : ''}
-        </div>
+            <div className="w-1/3">
+              <div className="font-bold">
+                {isExpired || isStarted ? 'Started' : 'Starts'}
+              </div>
+              {challenge.startAt ? new Date(challenge.startAt).toLocaleDateString(locale, dateOptions) : ''}
+            </div>
             <div className="w-1/3">
               <div className="font-bold">
                 {isExpired ? 'Ended' : 'Ends'}
@@ -277,9 +283,10 @@ function ChallengeOverview ({ challenge }: { challenge: Challenge | ChallengeSum
                   {challenge?.frequency?.toLowerCase()}
               </div>
             </div>
-            </div>
-          </>
+          </div>
+        </>
           )}
+
     </div>
   )
 }
