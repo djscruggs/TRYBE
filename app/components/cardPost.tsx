@@ -27,6 +27,8 @@ interface CardPostProps {
   hideMeta?: boolean
   revalidator?: Revalidator
   isChat?: boolean
+  highlightedObject?: string | null
+  highlightedId?: number | null
 }
 interface Revalidator {
   revalidate: () => void
@@ -37,7 +39,7 @@ export default function CardPost (props: CardPostProps): JSX.Element {
   const { fullPost, isShare, hideMeta, revalidator, isChat } = props
   const dateTimeFormat = currentUser?.dateTimeFormat ? currentUser.dateTimeFormat : 'M-dd-yyyy @ h:mm a'
   const [post, setPost] = useState(props.post)
-  const [showComments, setShowComments] = useState(false)
+  const [showComments, setShowComments] = useState(props.highlightedObject === 'post' && props.highlightedId === post?.id)
   if (!post) return <></>
   const [showLightbox, setShowLightbox] = useState(false)
   const [editing, setEditing] = useState(false)

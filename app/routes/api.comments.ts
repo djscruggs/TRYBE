@@ -1,11 +1,13 @@
 import { createComment, updateComment, loadComment, deleteComment } from '~/models/comment.server'
-import type { prisma } from '~/models/prisma.server'
 import { sendCommentReplyNotification } from '~/utils/mailer'
 import { requireCurrentUser } from '~/models/auth.server'
 import { json, type LoaderFunction, type ActionFunction } from '@remix-run/node'
 import { unstable_parseMultipartFormData } from '@remix-run/node'
 import { uploadHandler, handleFormUpload } from '~/utils/uploadFile'
 import { generateUrl } from '~/utils/helpers'
+import { loadCheckIn, loadChallengeSummary } from '~/models/challenge.server'
+import { loadPost } from '~/models/post.server'
+import { loadThread } from '~/models/thread.server'
 
 export const action: ActionFunction = async (args) => {
   const currentUser = await requireCurrentUser(args)
@@ -64,21 +66,45 @@ export const action: ActionFunction = async (args) => {
   await handleFormUpload({ formData: rawData, dataObj: result, nameSpace: 'comment', onUpdate: updateComment })
 
   const updated = await updateComment(result)
-  if (replyToId) {
-    const parentComment = await loadComment(replyToId as unknown as number)
-    const commentUrl = generateUrl(`/challenges/v/${parentComment.challenge?.id}/chat#comment-${parentComment.id}`)
-    void sendCommentReplyNotification({
-      to: parentComment.user.email,
-      replyTo: currentUser?.email,
-      dynamic_template_data: {
-        toName: parentComment.user.profile.firstName ?? 'Trybe Friend',
-        fromName: currentUser?.profile?.fullName ?? 'Anonymous',
-        body: result.body as string,
-        challenge_name: parentComment.challenge?.name,
-        comment_url: commentUrl,
-        subject: 'Reply to your comment'
-      }
-    })
+  if (updated.replyToId || updated.checkInId || updated.postId || updated.challengeId || updated.threadId) {
+    let parent
+    let type = ''
+    let sendNotification = false
+    if (updated.replyToId) {
+      parent = await loadComment(updated.replyToId as unknown as number)
+      type = 'comment'
+    } else if (updated.postId) {
+      parent = await loadPost(Number(updated.postId))
+      type = 'post'
+    } else if (updated.challengeId) {
+      parent = await loadChallengeSummary(Number(updated.challengeId))
+      type = 'challenge'
+    } else if (updated.threadId) {
+      parent = await loadThread(Number(updated.threadId))
+      type = 'thread'
+    } else if (updated.checkInId) {
+      parent = await loadCheckIn(Number(updated.checkInId))
+      type = 'checkIn'
+    }
+    const challengeId = parent?.challengeId
+    // only send notification if they are replying to a comment, post checkin or thread
+    if (parent && challengeId && (updated.postId || updated.replyToId || updated.threadId || updated.checkInId)) {
+      sendNotification = true
+    }
+    if (sendNotification) {
+      const commentUrl = generateUrl(`/challenges/v/${challengeId}/chat#${type}-${parent.id}`)
+      void sendCommentReplyNotification({
+        to: parent?.user?.email,
+        dynamic_template_data: {
+          toName: parent?.user.profile.firstName ?? 'Trybe Friend',
+          fromName: currentUser?.profile?.fullName ?? 'Anonymous',
+          body: result.body as string,
+          challenge_name: parent?.name,
+          comment_url: commentUrl,
+          subject: updated.replyToId ? 'Reply to your comment' : 'New comment on your challenge'
+        }
+      })
+    }
   }
 
   // refresh the comment to include user info attached

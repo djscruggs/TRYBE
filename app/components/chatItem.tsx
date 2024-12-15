@@ -12,14 +12,14 @@ import ActionsPopupMenu from './actionsPopupMenu'
 interface CommentsProps {
   comment: Comment | null
   allowReply?: boolean
-  highlightedCommentId?: number | null
+  highlightedObject?: string | null
+  highlightedId?: number | null
 }
 
 export default function ChatItem (props: CommentsProps): JSX.Element {
   const [comment, setComment] = useState<Comment | null>(props.comment ?? null)
   const [deleted, setDeleted] = useState(false)
-  const [showReplies, setShowReplies] = useState(Boolean(props.highlightedCommentId) || false)
-  console.log('chatItem', props.highlightedCommentId)
+  const [showReplies, setShowReplies] = useState(Boolean(props.highlightedObject === 'comment' && props.highlightedId === comment?.id) || false)
   const allowReply = props.allowReply ?? false
   const [showLightbox, setShowLightbox] = useState(false)
   const [showForm, setShowForm] = useState(false)
@@ -81,7 +81,7 @@ export default function ChatItem (props: CommentsProps): JSX.Element {
                         comment={comment}
                         showLightbox={showLightbox}
                         setShowLightbox={setShowLightbox}
-                        isDrawerTop={props.highlightedCommentId === comment.id}
+                        isDrawerTop={props.highlightedObject === 'comment' && props.highlightedId === comment.id}
                       />
 
                   </ChatDrawer>

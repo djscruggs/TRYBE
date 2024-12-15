@@ -31,6 +31,11 @@ export const loadPost = async (postId: string | number): Promise<ExtendedPost | 
     include: {
       _count: {
         select: { comments: true, likes: true }
+      },
+      user: {
+        include: {
+          profile: true
+        }
       }
     }
   })

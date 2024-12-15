@@ -39,20 +39,22 @@ const NavLinks = (): JSX.Element => {
             </Link>
           </div>
 
-          {currentUser?.role === 'ADMIN' && !location.pathname.includes('/challenges/new') &&
+          {currentUser?.role === 'ADMIN' &&
             <>
               <div className={`w-24 h-20 flex items-center justify-center flex-col text-darkgrey text-center mt-4 mb-4 p-2 rounded-lg ${location.pathname === '/challenges' ? 'bg-gray-100' : 'hover:bg-gray-300'}`}>
-                <Link to="/challenges/all" className='flex items-center flex-col' prefetch='render'>
+                <Link to="/challenges/mine" className='flex items-center flex-col' prefetch='render'>
                   <TrophyIcon className='h-8 w-8 cursor-pointer mb-1y' />
-                  <div className="cursor-pointer">All</div>
+                  <div className="cursor-pointer">My</div>
                   <div className="cursor-pointer text-xs">(admins)</div>
                 </Link>
               </div>
-              <div className='relative' onMouseEnter={toggleNewOpen} onMouseLeave={toggleNewOpen}>
-                <div className={'w-24 h-20 flex items-center justify-center flex-col text-darkgrey text-center mt-4 mb-4 p-2 rounded-lg'}>
-                  <PlusCircleIcon className='h-8 w-8 cursor-pointer mb-1y text-red' onClick={() => { navigate('/challenges/new') }} />
+              {!location.pathname.includes('/challenges/new') &&
+                <div className='relative' onMouseEnter={toggleNewOpen} onMouseLeave={toggleNewOpen}>
+                  <div className={'w-24 h-20 flex items-center justify-center flex-col text-darkgrey text-center mt-4 mb-4 p-2 rounded-lg'}>
+                    <PlusCircleIcon className='h-8 w-8 cursor-pointer mb-1y text-red' onClick={() => { navigate('/challenges/new') }} />
+                  </div>
                 </div>
-              </div>
+              }
             </>
           }
           {/* <div className={`w-24 h-20 flex items-center justify-center flex-col text-darkgrey text-center mb-4 p-2 rounded-lg ${location.pathname === '/community' ? 'bg-gray-100' : 'hover:bg-gray-300'}`}>

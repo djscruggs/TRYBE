@@ -12,6 +12,27 @@ import { AxiosHeaders } from 'axios'
 //   }
 // }
 
+const TEMPLATES = {
+  POST: 'd-139902a1da0942a5bd08308598092164',
+  CONTACT_HOST: 'd-149674868c814ae795698747d3c71a65',
+  REPLY_NOTIFICATION: 'd-6a5d461f89a1417ab36ebea0a50b64be'
+}
+
+function setupEnvironment (): void {
+  if (process.env.NODE_ENV === 'development' && !process.env.EMAIL_NOTIFICATIONS_TO) {
+    throw new Error('EMAIL_NOTIFICATIONS_TO must be set in development mode')
+  }
+  if (process.env.NODE_ENV === 'test') {
+    throw new Error('Test environment detected')
+  }
+  if (!process.env.SENDGRID_API_KEY) {
+    throw new Error('SENDGRID_API_KEY must be set in environment to use this hook')
+  }
+  if (!process.env.SENDGRID_FROM_EMAIL) {
+    throw new Error('SENDGRID_FROM_EMAIL must be set in environment to use this hook')
+  }
+  sgMail.setApiKey(process.env.SENDGRID_API_KEY)
+}
 interface PostMailerProps {
   to: string
   replyTo?: string
@@ -25,30 +46,18 @@ interface PostMailerProps {
     body: string
   }
 }
-const TEMPLATES = {
-  POST: 'd-139902a1da0942a5bd08308598092164',
-  CONTACT_HOST: 'd-149674868c814ae795698747d3c71a65',
-  REPLY_NOTIFICATION: 'd-6a5d461f89a1417ab36ebea0a50b64be'
-}
 
 export async function mailPost (props: PostMailerProps): Promise<any> {
+  setupEnvironment()
   if (process.env.NODE_ENV === 'test') {
     return mockSendgridResponse()
   }
-
-  if (!process.env.SENDGRID_API_KEY) {
-    throw new Error('SENDGRID_API_KEY must be set in environment to use this hook')
-  }
-  if (!process.env.SENDGRID_FROM_EMAIL) {
-    throw new Error('SENDGRID_FROM_EMAIL must be set in environment to use this hook')
-  }
-  sgMail.setApiKey(process.env.SENDGRID_API_KEY)
   // eslint-disable-next-line @typescript-eslint/naming-convention
   const { to, dynamic_template_data, replyTo, fromName } = props
   const msg = {
     from: fromName ? `${fromName} <${process.env.SENDGRID_FROM_EMAIL}>` : process.env.SENDGRID_FROM_EMAIL,
     replyTo,
-    to,
+    to: process.env.NODE_ENV === 'development' ? process.env.EMAIL_NOTIFICATIONS_TO : to,
     templateId: TEMPLATES.POST,
     dynamic_template_data,
     asm: {
@@ -73,22 +82,16 @@ export interface HostMailerProps {
 }
 
 export async function contactHost (props: HostMailerProps): Promise<any> {
+  setupEnvironment()
   if (process.env.NODE_ENV === 'test') {
     return mockSendgridResponse()
   }
-  if (!process.env.SENDGRID_API_KEY) {
-    throw new Error('SENDGRID_API_KEY must be set in environment to use this hook')
-  }
-  if (!process.env.SENDGRID_FROM_EMAIL) {
-    throw new Error('SENDGRID_FROM_EMAIL must be set in environment to use this hook')
-  }
-  sgMail.setApiKey(process.env.SENDGRID_API_KEY)
   // eslint-disable-next-line @typescript-eslint/naming-convention
   const { to, dynamic_template_data, replyTo } = props
   const msg = {
     from: process.env.SENDGRID_FROM_EMAIL,
-    replyTo,
-    to,
+    replyTo: replyTo ?? undefined,
+    to: process.env.NODE_ENV === 'development' ? process.env.EMAIL_NOTIFICATIONS_TO : to,
     templateId: TEMPLATES.CONTACT_HOST,
     dynamic_template_data
   }
@@ -97,7 +100,6 @@ export async function contactHost (props: HostMailerProps): Promise<any> {
 }
 export interface CommentReplyMailerProps {
   to: string
-  replyTo?: string
   dynamic_template_data: {
     toName: string
     fromName: string
@@ -108,22 +110,16 @@ export interface CommentReplyMailerProps {
   }
 }
 export async function sendCommentReplyNotification (props: CommentReplyMailerProps): Promise<any> {
+  setupEnvironment()
   if (process.env.NODE_ENV === 'test') {
     return mockSendgridResponse()
   }
-  if (!process.env.SENDGRID_API_KEY) {
-    throw new Error('SENDGRID_API_KEY must be set in environment to use this hook')
-  }
-  if (!process.env.SENDGRID_FROM_EMAIL) {
-    throw new Error('SENDGRID_FROM_EMAIL must be set in environment to use this hook')
-  }
-  sgMail.setApiKey(process.env.SENDGRID_API_KEY)
+
   // eslint-disable-next-line @typescript-eslint/naming-convention
-  const { to, dynamic_template_data, replyTo } = props
+  const { to, dynamic_template_data } = props
   const msg = {
     from: process.env.SENDGRID_FROM_EMAIL,
-    replyTo,
-    to,
+    to: process.env.NODE_ENV === 'development' ? process.env.EMAIL_NOTIFICATIONS_TO : to,
     templateId: TEMPLATES.REPLY_NOTIFICATION,
     dynamic_template_data
   }

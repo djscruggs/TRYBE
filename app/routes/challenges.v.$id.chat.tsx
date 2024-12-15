@@ -14,7 +14,6 @@ import { CheckInButton } from '~/components/checkinButton'
 import DateDivider from '~/components/dateDivider'
 import { isPast } from 'date-fns'
 import { FaChevronCircleLeft } from 'react-icons/fa'
-import axios, { type AxiosRequestConfig } from 'axios'
 interface ChallengeChatData {
   groupedData: Record<string, { posts: Post[], checkIns: { empty: CheckIn[], nonEmpty: CheckIn[] }, comments: Comment[] }>
 }
@@ -139,11 +138,21 @@ export default function ViewChallengeChat (): JSX.Element {
   // have to resort the groupedData by date because the data from loader is not guaranteed to be in order
   const postRefs = useRef<Record<string, HTMLDivElement | null>>({})
   // find highlighted post in hash
-  const [highlightedPostId, setHighlightedPostId] = useState(Number(window.location.hash.replace('#post-', '')))
-  const [highlightedCommentId, setHighlightedCommentId] = useState(Number(window.location.hash.replace('#comment-', '')))
-  const _highlightedPost = Object.entries(groupedData).find(([date, { posts }]) => posts.some(p => p.id === highlightedPostId))
-  const highlightedPost = _highlightedPost ? _highlightedPost[1].posts.find(p => p.id === highlightedPostId) : null
-  const [showHighlightedPost, setShowHighlightedPost] = useState(Boolean(highlightedPost))
+  const [featuredPostId, setfeaturedPostId] = useState(Number(window.location.hash.replace('#featured-id-', '')))
+  const highlightedCommentId = Number(window.location.hash.replace('#comment-', ''))
+  const highlightedPostId = Number(window.location.hash.replace('#post-', ''))
+  const highlightedCheckInId = Number(window.location.hash.replace('#checkIn-', ''))
+  const highlightedObject = highlightedPostId
+    ? 'post'
+    : highlightedCheckInId
+      ? 'checkin'
+      : highlightedCommentId
+        ? 'comment'
+        : ''
+  const highlightedId = highlightedPostId || (highlightedCheckInId || (highlightedCommentId || 0))
+  const _featuredPost = Object.entries(groupedData).find(([date, { posts }]) => posts.some(p => p.id === featuredPostId))
+  const featuredPost = _featuredPost ? _featuredPost[1].posts.find(p => p.id === featuredPostId) : null
+  const [showfeaturedPost, setShowfeaturedPost] = useState(Boolean(featuredPost))
   const [dayCount, setDayCount] = useState(10)
   const [limitedGroupedData, setLimitedGroupedData] = useState<GroupedDataEntry>(getCorrectDays(groupedData))
   const [newestComment, setNewestComment] = useState<Comment | null>(null)
@@ -198,30 +207,15 @@ export default function ViewChallengeChat (): JSX.Element {
   // used to maintain the number of days we show after a fetch
   const isExpired = isPast(challenge.endAt ?? new Date('1970-01-01'))
   const [hasCheckedInToday, setHasCheckedInToday] = useState(checkedInToday())
-  // only show the checkin popup if the user is logged in and they haven't checked in today, the challenge isn't expired, and there's no highlighted post
-  const [showCheckinPopup, setShowCheckinPopup] = useState(hasStarted && currentUser && !hasCheckedInToday && !isExpired && !highlightedPost)
+  // only show the checkin popup if the user is logged in and they haven't checked in today, the challenge isn't expired, and there's no featured post
+  const [showCheckinPopup, setShowCheckinPopup] = useState(hasStarted && currentUser && !hasCheckedInToday && !isExpired && !featuredPost)
   const revalidator = useRevalidator()
   const handleAfterCheckIn = (checkIn: CheckIn): void => {
     setDayCount(dayCount + 1)
     setHasCheckedInToday(true)
     setHasToday(true)
     revalidator.revalidate()
-    // const date = new Date().toISOString().split('T')[0]
-    // const newGroupedData = { ...groupedData }
-    // if (!newGroupedData[date]) {
-    //   newGroupedData[date] = { posts: [], checkIns: { empty: [], nonEmpty: [] }, comments: [] }
-    // }
-    // if (checkIn.body !== null || checkIn.imageMeta !== null || checkIn.videoMeta !== null) {
-    //   newGroupedData[date].checkIns.nonEmpty.push(checkIn)
-    // } else {
-    //   newGroupedData[date].checkIns.empty.push(checkIn)
-    // }
-    // setGroupedData(newGroupedData)
-    // setLimitedGroupedData(getCorrectDays(newGroupedData))
-    // setHasCheckedInToday(true)
-    // setHasToday(true)
   }
-
   // flag to check if today is in the groupedData. if not we'll need to add an empty block to hold it
   const [hasToday, setHasToday] = useState(Object.keys(groupedData).includes(today))
   // Define the type for limitedGroupedData
@@ -230,8 +224,8 @@ export default function ViewChallengeChat (): JSX.Element {
   // BUT if they are linked to a post we want to show that day no matter what, everything else with it
   function getCorrectDays (data: GroupedDataEntry): GroupedDataEntry {
     let postDate: string | null = null
-    if (highlightedPost) {
-      postDate = highlightedPost.publishAt ? new Date(highlightedPost.publishAt).toISOString().split('T')[0] : new Date(highlightedPost.createdAt ?? new Date()).toISOString().split('T')[0]
+    if (featuredPost) {
+      postDate = featuredPost.publishAt ? new Date(featuredPost.publishAt).toISOString().split('T')[0] : new Date(featuredPost.createdAt ?? new Date()).toISOString().split('T')[0]
     }
     // If postDate is defined, find its index and slice everything before it
     let startIndex = 0 - dayCount
@@ -251,10 +245,10 @@ export default function ViewChallengeChat (): JSX.Element {
     return latestEntriesObject
   }
 
-  const handleCloseHighlightedPost = (): void => {
-    setShowHighlightedPost(false)
-    setHighlightedPostId(0)
-    setShowHighlightedPost(false)
+  const handleClosefeaturedPost = (): void => {
+    setShowfeaturedPost(false)
+    setfeaturedPostId(0)
+    setShowfeaturedPost(false)
     window.history.replaceState(null, '', window.location.pathname)
     scrollToBottom()
   }
@@ -287,8 +281,8 @@ export default function ViewChallengeChat (): JSX.Element {
           key={date}
           ref={el => {
             postRefs.current[date] = el
-            if (highlightedPostId && posts.some((post) => post.id === highlightedPostId)) {
-              postRefs.current[highlightedPostId] = el
+            if (featuredPostId && posts.some((post) => post.id === featuredPostId)) {
+              postRefs.current[featuredPostId] = el
             }
           }}
         >
@@ -300,7 +294,8 @@ export default function ViewChallengeChat (): JSX.Element {
             checkIns={[...checkIns.empty, ...checkIns.nonEmpty] as CheckIn[]}
             allowComments={true}
             date={date}
-            highlightedCommentId={highlightedCommentId}
+            highlightedObject={highlightedObject}
+            highlightedId={highlightedId}
           />
         </div>
       ))}
@@ -331,8 +326,8 @@ export default function ViewChallengeChat (): JSX.Element {
           />
         </div>
       )}
-      {highlightedPost && (
-        <DialogPost post={highlightedPost as Post} open={showHighlightedPost} onClose={handleCloseHighlightedPost} >
+      {featuredPost && (
+        <DialogPost post={featuredPost as Post} open={showfeaturedPost} onClose={handleClosefeaturedPost} >
           {hasStarted && !hasCheckedInToday && !isExpired &&
             <div className='flex items-center justify-center mt-4'>
               <CheckInButton challenge={challenge} afterCheckIn={handleAfterCheckIn} />

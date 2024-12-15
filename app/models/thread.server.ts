@@ -41,6 +41,11 @@ export const loadThread = async (threadId: string | number): Promise<Thread | nu
     include: {
       _count: {
         select: { comments: true, likes: true }
+      },
+      user: {
+        include: {
+          profile: true
+        }
       }
     }
   })

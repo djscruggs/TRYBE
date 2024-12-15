@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from '@remix-run/react'
+import { useNavigate, useParams, Link } from '@remix-run/react'
 import { useEffect, useState, useContext } from 'react'
 import type { ChallengeSummary, MemberChallenge } from '~/utils/types'
 import ChallengeList from '~/components/challengeList'
@@ -7,7 +7,7 @@ import { CurrentUserContext } from '~/utils/CurrentUserContext'
 import { Switch } from '@material-tailwind/react'
 export default function ChallengesIndex (): JSX.Element {
   const [myChallenges, setMyChallenges] = useState<ChallengeSummary[]>([])
-  const [categoryFilter, setCategoryFilter] = useState<string[]>('')
+  const [categoryFilter, setCategoryFilter] = useState<string[]>([])
   const [upcomingChallenges, setUpcomingChallenges] = useState<ChallengeSummary[]>([])
   const params = useParams()
   const [status, setStatus] = useState(params.range ?? 'active')
@@ -29,20 +29,24 @@ export default function ChallengesIndex (): JSX.Element {
   const loadData = async (): Promise<void> => {
     setLoading(true)
     const url = `/api/challenges/${status}`
-    console.log('url', url)
     const response = await axios.get(url)
 
     const allChallenges = response.data.challenges as ChallengeSummary[]
     const userMemberships = response.data.memberships as MemberChallenge[]
-
+    console.log('allChallenges', allChallenges)
     // Filter challenges where the user is a member or owner
-    const userChallenges = allChallenges.filter(challenge =>
-      userMemberships.some(membership => membership.challengeId === challenge.id) ||
-      challenge.userId === currentUser?.id
-    )
+    // const userChallenges = allChallenges.filter(challenge =>
+    //   userMemberships.some(membership => membership.challengeId === challenge.id) ||
+    //   challenge.userId === currentUser?.id
+    // )
+    // const otherChallenges = allChallenges.filter(challenge =>
+    //   !userMemberships.some(membership => membership.challengeId === challenge.id) &&
+    //   challenge.userId !== currentUser?.id
+    // )
+    // console.log('otherChallenges', otherChallenges)
 
     // Filter challenges where the user is not a member or owner
-    setMyChallenges(userChallenges)
+    setMyChallenges(allChallenges)
     setMemberships(userMemberships)
     setLoading(false)
   }
@@ -51,10 +55,13 @@ export default function ChallengesIndex (): JSX.Element {
   }
   const loadUpcomingChallenges = async (): Promise<void> => {
     setLoadingUpcoming(true)
-    const url = '/api/challenges/upcoming'
-    const params: AxiosRequestConfig['params'] = { SELF_LED: selfGuided }
+    const url = '/api/challenges/all'
+    const params: AxiosRequestConfig['params'] = { }
     if (categoryFilter.length > 0) {
       params.category = categoryFilter.join(',')
+    }
+    if (selfGuided) {
+      params.SELF_LED = true
     }
     const response = await axios.get(url, { params })
 
@@ -69,6 +76,7 @@ export default function ChallengesIndex (): JSX.Element {
     setLoadingUpcoming(false)
   }
   useEffect(() => {
+    console.log('status', status)
     void loadData().then(() => {
       void loadUpcomingChallenges()
     }).catch(console.error)

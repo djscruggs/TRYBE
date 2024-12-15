@@ -428,15 +428,6 @@ export default function FormChallenge ({ challenge }: { challenge: ChallengeInpu
                       onChange={handleChange}
                       crossOrigin={undefined}
                     />
-                    <Radio
-                      name='status'
-                      value='ARCHIVED'
-                      label='Archived'
-                      checked={formData.status === 'ARCHIVED'}
-                      onChange={handleChange}
-                      crossOrigin={undefined}
-                    />
-
                   </div>
 
                 </div>

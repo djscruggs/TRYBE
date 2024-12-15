@@ -125,6 +125,7 @@ export interface Challenge {
   videoMeta: CloudinaryMeta | null
   icon: string | null | undefined
   color: string | null | undefined
+  user?: User
   categories: Category[]
   reminders: boolean
   syncCalendar: boolean

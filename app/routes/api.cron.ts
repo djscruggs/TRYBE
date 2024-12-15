@@ -47,7 +47,7 @@ export const sendScheduledPosts = async (): Promise<number> => {
   await Promise.all(posts.map(async post => {
     if (post.challenge?.members) {
       await Promise.all(post.challenge?.members.map(async member => {
-        const postLink = generateUrl(`/challenges/v/${post.challenge?.id}/chat#post-${post.id}`)
+        const postLink = generateUrl(`/challenges/v/${post.challenge?.id}/chat#featured-id-${post.id}`)
         const props = {
           to: member.user.email,
           replyTo: post.user.email,
@@ -143,7 +143,7 @@ export const sendDayNumberPosts = async (): Promise<number> => {
       await Promise.all(members.map(async member => {
         const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https'
         const host = process.env.NODE_ENV === 'development' ? 'localhost:3000' : 'app.jointhetrybe.com'
-        const postLink = `${protocol}://${host}/challenges/v/${post.challengeId}/chat#post-${post.id}`
+        const postLink = `${protocol}://${host}/challenges/v/${post.challengeId}/chat#featured-id-${post.id}`
         const props = {
           to: member.user.email,
           replyTo: post.user.email,

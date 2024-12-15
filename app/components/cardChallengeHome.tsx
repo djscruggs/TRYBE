@@ -108,6 +108,9 @@ export default function CardChallengeHome ({ challenge, isMember, isPreview }: C
                     <ShareMenu className='ml-2' noText={true} copyUrl={getFullUrl()} itemType='challenge' itemId={Number(challenge.id)} isPreview={isPreview} />
                   </div>
                 </div>
+                {challenge.status === 'DRAFT' &&
+                  <div className='text-xs text-yellow'>Draft</div>
+                }
                 {challenge.type === 'SELF_LED'
                   ? <div className='text-xs text-darkgrey'>Self-Guided</div>
 
@@ -121,6 +124,9 @@ export default function CardChallengeHome ({ challenge, isMember, isPreview }: C
                       <span className='text-xs pl-1 text-darkgrey inline'>{howLongToStart()}</span>
                     </div>
                   </>
+                }
+                {!challenge.public &&
+                  <div className='text-xs text-darkgrey'>Private</div>
                 }
 
               </div>

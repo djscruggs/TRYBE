@@ -23,11 +23,11 @@ interface CheckinsListProps {
   newestComment: Comment | null
   allowComments: boolean
   id?: string
-  date?: string
-  highlightedCommentId?: number | null
+  highlightedObject?: string | null
+  highlightedId?: number | null
 }
 
-export default function CheckinsList ({ checkIns, posts, comments, newestComment, allowComments, id, date, highlightedCommentId }: CheckinsListProps): JSX.Element {
+export default function CheckinsList ({ checkIns, posts, comments, newestComment, allowComments, id, highlightedObject, highlightedId }: CheckinsListProps): JSX.Element {
   const [checkInsArr, setCheckInsArr] = useState(checkIns)
   const handleDelete = (deletedCheckIn: CheckIn): void => {
     setCheckInsArr(checkInsArr.filter(checkIn => checkIn.id !== deletedCheckIn.id))
@@ -79,14 +79,14 @@ export default function CheckinsList ({ checkIns, posts, comments, newestComment
               return (
                 <div key={checkIn.id} className={`relative pt-2 ${index === 0 ? '' : 'border-t'}`}>
                   <div className='mt-2'>
-                    <CheckinRow checkIn={checkIn} comments={[]} allowComments={allowComments} highlightedCommentId={highlightedCommentId} afterDelete={handleDelete} />
+                    <CheckinRow checkIn={checkIn} comments={[]} allowComments={allowComments} highlightedObject={highlightedObject} highlightedId={highlightedId} afterDelete={handleDelete} />
                   </div>
                 </div>
               )
             })}
             {posts.map((post: Post) => (
                 <div key={`post-${post.id}`} className='max-w-sm md:max-w-xl mb-6' id={`post-${post.id}`}>
-                  <CardPost post={post} hideMeta={false} fullPost={false} isChat={true} />
+                  <CardPost post={post} hideMeta={false} fullPost={false} isChat={true} highlightedObject={highlightedObject} highlightedId={highlightedId} />
                 </div>
             ))}
             {commentsByDay?.[date] &&
@@ -96,7 +96,8 @@ export default function CheckinsList ({ checkIns, posts, comments, newestComment
                   comments={commentsByDay[date] || []}
                   newestComment={newestComment}
                   allowReplies={true}
-                  highlightedCommentId={highlightedCommentId}
+                  highlightedObject={highlightedObject}
+                  highlightedId={highlightedId}
                 />
               </>
             }
@@ -112,7 +113,8 @@ interface CheckinRowProps {
   comments?: Comment[]
   allowComments: boolean
   afterDelete: (deletedCheckIn: CheckIn) => void
-  highlightedCommentId?: number | null
+  highlightedObject?: string | null
+  highlightedId?: number | null
 }
 export function CheckinRow (props: CheckinRowProps): JSX.Element {
   console.log('props', props)
@@ -121,7 +123,7 @@ export function CheckinRow (props: CheckinRowProps): JSX.Element {
   const { allowComments, comments, checkIn } = props
   const [checkInObj, setCheckInObj] = useState<CheckIn>(checkIn)
   const [deleted, setDeleted] = useState(false)
-  const [showComments, setShowComments] = useState(Boolean(props?.highlightedCommentId))
+  const [showComments, setShowComments] = useState(Boolean(props?.highlightedObject === 'checkin' && props?.highlightedId === checkInObj.id))
   console.log('showComments', showComments)
   const onClose = (): void => {
     setShowComments(false)
@@ -137,7 +139,7 @@ export function CheckinRow (props: CheckinRowProps): JSX.Element {
     props.afterDelete(object)
   }
   const [showEditForm, setShowEditForm] = useState(false)
-  /* only allow comments if there is a note or image or videoon the checkin */
+  /* only allow comments if there is a note or imagehighlightedObject or videoon the checkin */
   const acceptComments = checkInObj.body?.length || checkInObj.imageMeta?.secure_url || checkInObj.videoMeta?.secure_url
   if (deleted) {
     return <></>

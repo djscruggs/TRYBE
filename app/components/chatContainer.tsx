@@ -5,7 +5,8 @@ interface ChatContainerProps {
   comments: Comment[]
   newestComment?: Comment | null
   allowReplies?: boolean
-  highlightedCommentId?: number | null
+  highlightedObject?: string
+  highlightedId?: number | null
 }
 
 export default function ChatContainer (props: ChatContainerProps): JSX.Element {
@@ -27,10 +28,10 @@ export default function ChatContainer (props: ChatContainerProps): JSX.Element {
   return (
     <div className='w-full' id='comments'>
       {getUniqueComments().map(comment => (
-        <ChatItem key={`comment-${comment.id}`} highlightedCommentId={props.highlightedCommentId} comment={comment} allowReply={allowReplies} />
+        <ChatItem key={`comment-${comment.id}`} highlightedObject={props.highlightedObject} highlightedId={props.highlightedId} comment={comment} allowReply={allowReplies} />
       ))}
       {newestComment && (
-        <ChatItem key={`comment-${newestComment.id}`} highlightedCommentId={props.highlightedCommentId} comment={newestComment} allowReply={allowReplies} />
+        <ChatItem key={`comment-${newestComment.id}`} highlightedObject={props.highlightedObject} highlightedId={props.highlightedId} comment={newestComment} allowReply={allowReplies} />
       )}
     </div>
   )

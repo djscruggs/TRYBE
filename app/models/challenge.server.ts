@@ -62,6 +62,11 @@ export const loadChallengeSummary = async (challengeId: string | number): Promis
       id
     },
     include: {
+      user: {
+        include: {
+          profile: true
+        }
+      },
       _count: {
         select: { members: true, comments: true, likes: true }
       },
@@ -85,6 +90,11 @@ export const loadUserCreatedChallenges = async (userId: string | number): Promis
     include: {
       _count: {
         select: { members: true }
+      },
+      user: {
+        include: {
+          profile: true
+        }
       }
     }
   })
@@ -144,7 +154,12 @@ export const fetchChallengeSummaries = async ({
   SELF_LED
 }: FetchChallengeSummariesParams): Promise<ChallengeSummary[]> => {
   const uid = userId ? Number(userId) : undefined
-  const where: any[] = [{ public: true }]
+  const where: any[] = []
+  if (uid) {
+    where.push({ userId: uid })
+  } else {
+    where.push({ public: true })
+  }
   if (SELF_LED) {
     where.push({ type: 'SELF_LED' })
   } else {
@@ -163,9 +178,6 @@ export const fetchChallengeSummaries = async ({
   }
   if (SELF_LED) {
     where.push({ type: 'SELF_LED' })
-  }
-  if (uid) {
-    where.push({ userId: uid })
   }
   let queryCategory: number[] = []
   if (typeof category === 'number') {
@@ -399,7 +411,15 @@ export async function fetchCheckIns ({ userId, challengeId, orderBy = 'desc' }: 
 export const loadCheckIn = async (checkInId: number): Promise<CheckIn | null> => {
   const id = Number(checkInId)
   return await prisma.checkIn.findUnique({
-    where: { id }
+    where: { id },
+    include: {
+      challenge: true,
+      user: {
+        include: {
+          profile: true
+        }
+      }
+    }
   }) as CheckIn | null
 }
 export const deleteCheckIn = async (checkInId: number): Promise<CheckIn> => {
