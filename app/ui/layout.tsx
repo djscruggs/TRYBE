@@ -61,7 +61,7 @@ export const FullLayout = (): JSX.Element => {
   const isWelcome = location.pathname.includes('/challenges/')
   const { signOut } = useClerk()
   useEffect(() => {
-    if (['/', '/register', '/login', '/signup', '/signin'].includes(location.pathname)) {
+    if (['/', '/register', '/login', '/signup', '/signin', '/landing'].includes(location.pathname)) {
       setShowNav(false)
     } else {
       setShowNav(true)
