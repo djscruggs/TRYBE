@@ -3,6 +3,7 @@
 export function Colors (): JSX.Element {
   return (
       <div className='hidden'>
+        <div className='h-[36px] w-[36px] bg-purple-400 rounded-full'>purple</div>
         <div className='text-purple-400 bg-purple-400 border-purple-400 ring-purple-400'>purple</div>
         <div className='text-blue-gray-50 bg-blue-gray-50 border-blue-gray-50 ring-blue-gray-50'>blue-gray</div>
         <div className='text-white bg-white border-white ring-white'>white</div>

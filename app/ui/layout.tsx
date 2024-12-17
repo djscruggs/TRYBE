@@ -59,6 +59,7 @@ export const FullLayout = (): JSX.Element => {
   const [showNav, setShowNav] = useState(true)
   const isInterior = location.pathname.includes('/v/')
   const isWelcome = location.pathname.includes('/challenges/')
+  const isLanding = location.pathname.includes('/landing')
   const { signOut } = useClerk()
   useEffect(() => {
     if (['/', '/register', '/login', '/signup', '/signin', '/landing'].includes(location.pathname)) {
@@ -101,7 +102,7 @@ export const FullLayout = (): JSX.Element => {
       <>
         <div className='hidden md:block w-screen min-h-screen'>
           <div className='flex min-h-screen max-w-screen-2xl'>
-            {currentUser &&
+            {currentUser && !isLanding &&
               <div className="hidden md:flex flex-col justify-start items-start mr-8">
                 <div className="flex items-center mb-4 mt-10">
                   <div className="flex h-full flex-col px-3 py-4 md:px-2">
@@ -117,8 +118,8 @@ export const FullLayout = (): JSX.Element => {
               </div>
             }
             <SignedIn>
-              <div className={`flex-grow pt-4 ${currentUser ?? location.pathname !== '/' ? 'ml-20' : 'ml-0'}`}>
-
+              <div className={`flex-grow ${(!isLanding && location.pathname !== '/') ? 'pt-4 ml-20' : 'ml-0'}`}>
+                {!isLanding &&
                   <div className='absolute right-0 mr-4'>
                     <UserButton
                       showName={true}
@@ -127,6 +128,7 @@ export const FullLayout = (): JSX.Element => {
                       userProfileMode="navigation"
                     />
                   </div>
+                }
                   <Outlet />
               </div>
             </SignedIn>

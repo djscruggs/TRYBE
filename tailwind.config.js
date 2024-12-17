@@ -10,6 +10,7 @@ module.exports = withMT({
     extend: {
       fontFamily: {
         'sans': ['"Source Sans 3"', 'Roboto', 'Helvetica', 'Arial', 'sans-serif'],
+        'cursive': ['ReklameScript-Regular'],
         'taprom': ['"Taprom"', 'Roboto', 'Helvetica', 'Arial', 'sans-serif'],
       },
       colors: {

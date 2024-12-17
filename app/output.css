@@ -444,6 +444,12 @@ video {
   display: none;
 }
 
+@font-face {
+  font-family: 'ReklameScript-Regular';
+
+  src: url('/fonts/ReklameScript-Regular.woff');
+}
+
 *, ::before, ::after {
   --tw-border-spacing-x: 0;
   --tw-border-spacing-y: 0;
@@ -693,6 +699,10 @@ video {
   bottom: 1rem;
 }
 
+.bottom-40 {
+  bottom: 10rem;
+}
+
 .bottom-8 {
   bottom: 2rem;
 }
@@ -887,6 +897,11 @@ video {
 .my-1 {
   margin-top: 0.25rem;
   margin-bottom: 0.25rem;
+}
+
+.my-10 {
+  margin-top: 2.5rem;
+  margin-bottom: 2.5rem;
 }
 
 .my-2 {
@@ -1244,6 +1259,10 @@ video {
   height: 24px;
 }
 
+.h-\[36px\] {
+  height: 36px;
+}
+
 .h-\[40px\] {
   height: 40px;
 }
@@ -1252,8 +1271,16 @@ video {
   height: 58px;
 }
 
+.h-\[600px\] {
+  height: 600px;
+}
+
 .h-\[74px\] {
   height: 74px;
+}
+
+.h-auto {
+  height: auto;
 }
 
 .h-fit {
@@ -1274,10 +1301,6 @@ video {
   height: 100vh;
 }
 
-.h-auto {
-  height: auto;
-}
-
 .max-h-24 {
   max-height: 6rem;
 }
@@ -1288,6 +1311,10 @@ video {
 
 .max-h-96 {
   max-height: 24rem;
+}
+
+.max-h-\[1000px\] {
+  max-height: 1000px;
 }
 
 .max-h-\[100vh\] {
@@ -1394,6 +1421,10 @@ video {
   width: 4rem;
 }
 
+.w-2 {
+  width: 0.5rem;
+}
+
 .w-2\/5 {
   width: 40%;
 }
@@ -1476,6 +1507,10 @@ video {
 
 .w-\[110px\] {
   width: 110px;
+}
+
+.w-\[36px\] {
+  width: 36px;
 }
 
 .w-\[40px\] {
@@ -3259,6 +3294,10 @@ video {
   font-family: "Taprom", Roboto, Helvetica, Arial, sans-serif;
 }
 
+.font-cursive {
+  font-family: ReklameScript-Regular;
+}
+
 .\!text-\[11px\] {
   font-size: 11px !important;
 }
@@ -3285,6 +3324,11 @@ video {
 
 .text-6xl {
   font-size: 3.75rem;
+  line-height: 1;
+}
+
+.text-8xl {
+  font-size: 6rem;
   line-height: 1;
 }
 
@@ -3426,6 +3470,16 @@ video {
 .text-\[\#555555\] {
   --tw-text-opacity: 1;
   color: rgb(85 85 85 / var(--tw-text-opacity));
+}
+
+.text-\[\#696262\] {
+  --tw-text-opacity: 1;
+  color: rgb(105 98 98 / var(--tw-text-opacity));
+}
+
+.text-\[\#EC5F5C\] {
+  --tw-text-opacity: 1;
+  color: rgb(236 95 92 / var(--tw-text-opacity));
 }
 
 .text-amber-500 {
@@ -6622,6 +6676,10 @@ video {
 
   .md\:w-2\/3 {
     width: 66.666667%;
+  }
+
+  .md\:w-2\/5 {
+    width: 40%;
   }
 
   .md\:w-3\/4 {
