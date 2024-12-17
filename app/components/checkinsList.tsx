@@ -117,14 +117,12 @@ interface CheckinRowProps {
   highlightedId?: number | null
 }
 export function CheckinRow (props: CheckinRowProps): JSX.Element {
-  console.log('props', props)
   const { currentUser } = useContext(CurrentUserContext)
   const locale = userLocale(currentUser)
   const { allowComments, comments, checkIn } = props
   const [checkInObj, setCheckInObj] = useState<CheckIn>(checkIn)
   const [deleted, setDeleted] = useState(false)
   const [showComments, setShowComments] = useState(Boolean(props?.highlightedObject === 'checkin' && props?.highlightedId === checkInObj.id))
-  console.log('showComments', showComments)
   const onClose = (): void => {
     setShowComments(false)
   }

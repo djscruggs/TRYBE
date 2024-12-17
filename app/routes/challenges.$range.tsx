@@ -55,13 +55,13 @@ export default function ChallengesIndex (): JSX.Element {
   }
   const loadUpcomingChallenges = async (): Promise<void> => {
     setLoadingUpcoming(true)
-    const url = '/api/challenges/all'
+    const url = '/api/challenges/upcoming'
     const params: AxiosRequestConfig['params'] = { }
     if (categoryFilter.length > 0) {
       params.category = categoryFilter.join(',')
     }
     if (selfGuided) {
-      params.SELF_LED = true
+      params.type = 'SELF_LED'
     }
     const response = await axios.get(url, { params })
 

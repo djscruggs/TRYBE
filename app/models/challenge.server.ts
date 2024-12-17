@@ -1,5 +1,5 @@
 import { prisma, PrismaClient } from './prisma.server'
-import { type Prisma } from '@prisma/client'
+import { type ChallengeType, type Prisma } from '@prisma/client'
 import type { Challenge, ChallengeSummary, MemberChallenge, CheckIn, ChallengeWithHost } from '~/utils/types'
 import { addDays, isFriday, isSaturday } from 'date-fns'
 import { deleteFromCloudinary } from '~/utils/uploadFile'
@@ -144,14 +144,14 @@ interface FetchChallengeSummariesParams {
   userId?: number | null
   range?: string
   category?: string | number | null
-  SELF_LED?: boolean
+  type?: string
 }
 
 export const fetchChallengeSummaries = async ({
   userId,
   range,
   category,
-  SELF_LED
+  type = 'all'
 }: FetchChallengeSummariesParams): Promise<ChallengeSummary[]> => {
   const uid = userId ? Number(userId) : undefined
   const where: any[] = []
@@ -160,25 +160,46 @@ export const fetchChallengeSummaries = async ({
   } else {
     where.push({ public: true })
   }
-  if (SELF_LED) {
-    where.push({ type: 'SELF_LED' })
-  } else {
-    switch (range) {
-      case 'upcoming':
-        where.push({ startAt: { gt: new Date() }, status: 'PUBLISHED' })
-        break
-      case 'archived':
-        where.push({ OR: [{ endAt: { lt: new Date() } }, { status: 'ARCHIVED' }] })
-        break
-      case 'active':
-        where.push({ startAt: { lt: new Date() }, status: 'PUBLISHED' })
-        where.push({ endAt: { gte: new Date() } })
-        break
+  where.push({ status: 'PUBLISHED' })
+  switch (range) {
+    case 'upcoming': {
+      const upcomingCondition = { startAt: { gt: new Date() } }
+      if (type !== 'all') {
+        where.push({
+          OR: [
+            upcomingCondition,
+            { type: type.toUpperCase() }
+          ]
+        })
+      } else {
+        where.push(upcomingCondition)
+      }
+      break
+    }
+    case 'archived':
+      where.push({ OR: [{ endAt: { lt: new Date() } }, { status: 'ARCHIVED' }] })
+      break
+    case 'active': {
+      const activeCondition = {
+        AND: [
+          { startAt: { lt: new Date() } },
+          { endAt: { gte: new Date() } }
+        ]
+      }
+      if (type !== 'all') {
+        where.push({
+          OR: [
+            activeCondition,
+            { type: type.toUpperCase() }
+          ]
+        })
+      } else {
+        where.push(activeCondition)
+      }
+      break
     }
   }
-  if (SELF_LED) {
-    where.push({ type: 'SELF_LED' })
-  }
+
   let queryCategory: number[] = []
   if (typeof category === 'number') {
     queryCategory = [category]
@@ -201,7 +222,6 @@ export const fetchChallengeSummaries = async ({
       })
     }
   }
-
   const params: Prisma.ChallengeFindManyArgs = {
     where: {
       AND: where
@@ -248,9 +268,9 @@ export async function updateCheckin (checkin: CheckIn): Promise<CheckIn> {
 }
 interface FetchUserChallengesAndMembershipsParams {
   userId: number | null
-  SELF_LED?: boolean
+  type?: string
 }
-export const fetchUserChallengesAndMemberships = async ({ userId, SELF_LED }: FetchUserChallengesAndMembershipsParams): Promise<ChallengeSummary[]> => {
+export const fetchUserChallengesAndMemberships = async ({ userId, type = 'all' }: FetchUserChallengesAndMembershipsParams): Promise<ChallengeSummary[]> => {
   const uid = Number(userId)
   const memberChallengeWhere: Prisma.MemberChallengeWhereInput = { userId: uid }
   const memberChallenges = await prisma.memberChallenge.findMany(
@@ -267,8 +287,8 @@ export const fetchUserChallengesAndMemberships = async ({ userId, SELF_LED }: Fe
     return challenge
   })
   const challengeWhere: Prisma.ChallengeWhereInput = { userId: uid }
-  if (SELF_LED) {
-    challengeWhere.type = 'SELF_LED'
+  if (type !== 'all') {
+    challengeWhere.type = type.toUpperCase() as ChallengeType
   }
   const ownedChallenges = await prisma.challenge.findMany({
     where: challengeWhere,

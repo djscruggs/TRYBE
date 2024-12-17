@@ -16,7 +16,7 @@ export async function action (args: ActionFunctionArgs): Promise<any> {
   const currentUser = await requireCurrentUser(args)
   const request = args.request
   const rawData = await unstable_parseMultipartFormData(request, uploadHandler)
-
+  console.log('rawData', rawData)
   const formData = Object.fromEntries(rawData)
   const cleanData = convertStringValues(formData)
   if (!cleanData.userId) {
@@ -42,7 +42,7 @@ export async function action (args: ActionFunctionArgs): Promise<any> {
       const numDays = differenceInDays(endDate, startDate)
       converted.numDays = numDays
     }
-
+    console.log('converted', converted)
     let data: any
     if (converted.id) {
       data = await updateChallenge(converted)

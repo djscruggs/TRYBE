@@ -9,7 +9,7 @@ import { json, type LoaderFunction } from '@remix-run/node'
 
 export const loader: LoaderFunction = async (args) => {
   const { range } = args.params ?? 'active'
-  const SELF_LED = new URL(args.request.url).searchParams.get('SELF_LED') === 'true'
+  const type = new URL(args.request.url).searchParams.get('type') ?? 'all'
   const category = new URL(args.request.url).searchParams.get('category')
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const currentUser = await getCurrentUser(args)
@@ -17,12 +17,12 @@ export const loader: LoaderFunction = async (args) => {
   let challenges
   console.log('range', range)
   if (range === 'mine') {
-    challenges = await fetchUserChallengesAndMemberships({ userId: uid, SELF_LED }) as { error?: string }
+    challenges = await fetchUserChallengesAndMemberships({ userId: uid }) as { error?: string }
   } else {
     if (range === 'all') {
-      challenges = await fetchChallengeSummaries({ SELF_LED }) as { error?: string }
+      challenges = await fetchChallengeSummaries({ type }) as { error?: string }
     } else {
-      challenges = await fetchChallengeSummaries({ userId: uid, range, category, SELF_LED }) as { error?: string }
+      challenges = await fetchChallengeSummaries({ range, category, type }) as { error?: string }
     }
   }
   if (!challenges || (challenges.error != null)) {

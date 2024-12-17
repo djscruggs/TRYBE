@@ -46,6 +46,7 @@ export default function FormChallenge ({ challenge }: { challenge: ChallengeInpu
     delete challenge._count
   }
   const defaults = { deleteImage: false, numDays: 30, type: 'SCHEDULED' as ChallengeType, frequency: 'DAILY' as Challenge['frequency'], status: 'DRAFT' as ChallengeStatus }
+  delete challenge.user
   const [formData, setFormData] = useState<Partial<ChallengeInputs>>({
     ...(typeof challenge === 'object' && challenge !== null ? { ...defaults, ...challenge } : { ...defaults })
   })
