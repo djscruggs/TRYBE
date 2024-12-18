@@ -168,6 +168,9 @@ model MemberChallenge {
   createdAt   DateTime  @default(now())
   nextCheckIn DateTime?
   lastCheckIn DateTime?
+  notificationHour Int?
+  notificationMinute Int?
+  startAt DateTime?
   dayNumber   Int       @default(1)
   id          Int       @id @default(autoincrement())
   checkIns    CheckIn[]

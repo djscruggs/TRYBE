@@ -4,6 +4,11 @@ import type { LoaderFunction } from '@remix-run/node'
 import { json } from '@remix-run/node'
 import { generateUrl } from '~/utils/helpers'
 export const loader: LoaderFunction = async (args) => {
+  const currentTimeGMT = new Date()
+  const currentHourGMT = currentTimeGMT.getUTCHours()
+  const currentMinuteGMT = currentTimeGMT.getUTCMinutes()
+  console.log('currentHourGMT', currentHourGMT)
+  console.log('currentMinuteGMT', currentMinuteGMT)
   const scheduledPosts = await sendScheduledPosts()
   // const dayNumberPosts = await sendDayNumberPosts()
   const dayNumberPosts = 0

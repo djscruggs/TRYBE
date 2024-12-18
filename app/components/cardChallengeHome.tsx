@@ -33,12 +33,7 @@ export default function CardChallengeHome ({ challenge, isMember, isPreview }: C
       return
     }
     const url = `/challenges/v/${challenge.id}`
-    if (currentUser) {
-      navigate(url)
-    } else {
-      localStorage.setItem('redirect', url)
-      navigate('/signup')
-    }
+    navigate(url)
   }
   let challengeLength = ''
   if (challenge.frequency === 'WEEKLY') {

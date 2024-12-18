@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   Button,
   Dialog,
@@ -16,6 +16,9 @@ interface DeleteDialogProps {
 export default function DialogConfirm (props: DeleteDialogProps): JSX.Element {
   const { prompt, isOpen, onConfirm, onCancel } = props
   const [open, setOpen] = useState(isOpen)
+  useEffect(() => {
+    setOpen(isOpen)
+  }, [isOpen])
   const handleOpen = (event: any): void => {
     event.preventDefault()
     event.stopPropagation()

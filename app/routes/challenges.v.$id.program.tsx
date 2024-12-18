@@ -13,7 +13,6 @@ interface ChallengeScheduleData {
   posts: Post[]
 }
 export const loader: LoaderFunction = async (args: LoaderFunctionArgs): Promise<ChallengeScheduleData> => {
-  await requireCurrentUser(args)
   const { params } = args
   const challenge: Challenge | null = await loadChallenge(Number(params.id))
   if (!challenge) {

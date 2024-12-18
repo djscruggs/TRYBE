@@ -1,7 +1,7 @@
 import { loadChallengeSummary } from '~/models/challenge.server'
 import { Outlet, useLoaderData, useNavigate, useLocation, useMatches, type MetaFunction } from '@remix-run/react'
 import { useContext, useState } from 'react'
-import { requireCurrentUser } from '~/models/auth.server'
+import { getUser } from '~/models/auth.server'
 import type { MemberChallenge, Challenge, ChallengeSummary, CheckIn } from '~/utils/types'
 import { type LoaderFunction, type LoaderFunctionArgs } from '@remix-run/node'
 import { FaChevronCircleLeft } from 'react-icons/fa'
@@ -20,6 +20,7 @@ import { isPast, differenceInDays } from 'date-fns'
 import DialogConfirm from '~/components/dialogConfirm'
 import ChallengeHeader from '~/components/challengeHeader'
 import { CheckInButton } from '~/components/checkinButton'
+import DialogJoin from '~/components/dialogJoin'
 interface ViewChallengeData {
   challenge: ChallengeSummary
   membership?: MemberChallenge | null | undefined
@@ -34,7 +35,7 @@ interface ChallengeSummaryWithCounts extends ChallengeSummary {
 }
 
 export const loader: LoaderFunction = async (args: LoaderFunctionArgs): Promise<ViewChallengeData | null | { loadingError: string }> => {
-  const currentUser = await requireCurrentUser(args)
+  const currentUser = await getUser(args.request)
   const { params } = args
   if (!params.id) {
     return null
@@ -48,7 +49,7 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs): Promise<
   if (currentUser) {
     membership = await prisma.memberChallenge.findFirst({
       where: {
-        userId: Number(currentUser.id),
+        userId: currentUser ? Number(currentUser.id) : 0,
         challengeId: Number(params.id)
       },
       include: {
@@ -73,6 +74,7 @@ export default function ViewChallenge (): JSX.Element {
   const parsedDescription = textToJSX(challenge.description as string ?? '')
   const location = useLocation()
   const [showConfirm, setShowConfirm] = useState(false)
+  const [showJoin, setShowJoin] = useState(false)
   const isOverview = matches.length === 3 // matches[0] is root, matches[1] is the challenges, matches[2] is challenges/v/$idtab
   const isProgram = location.pathname.includes('program')
   const isPosts = location.pathname.includes('posts')
@@ -82,7 +84,7 @@ export default function ViewChallenge (): JSX.Element {
   const navigate = useNavigate()
   const [loading, setLoading] = useState<boolean>(false)
   const [isMember, setIsMember] = useState(Boolean(membership?.id))
-  const isStarted = challenge.startAt ? isPast(challenge.startAt) : false
+  const isStarted = challenge.startAt ? isPast(challenge.startAt as Date) : false
 
   if (!data) {
     return <p>No data.</p>
@@ -95,6 +97,16 @@ export default function ViewChallenge (): JSX.Element {
   }
 
   const confirmJoinUnjoin = async (): Promise<void> => {
+    if (!currentUser) {
+      const redirectTo = location.pathname
+      localStorage.setItem('redirectTo', redirectTo)
+      navigate(`/signin?redirectTo=${redirectTo}`)
+      return
+    }
+    if (challenge.type === 'SELF_LED' && !isMember) {
+      setShowJoin(true)
+      return
+    }
     if (isMember) {
       setShowConfirm(true)
     } else {
@@ -117,6 +129,10 @@ export default function ViewChallenge (): JSX.Element {
     setLoading(false)
     setShowConfirm(false)
   }
+  const afterJoin = (isMember: boolean): void => {
+    setIsMember(isMember)
+    setShowJoin(false)
+  }
   if (!isOverview && !isPosts && !isComments && !isProgram) {
     return (
       <div className='flex flex-col mt-2 md:mt-0'>
@@ -136,7 +152,7 @@ export default function ViewChallenge (): JSX.Element {
         <div className='relative'>
           {parsedDescription}
         </div>
-        {challenge.type === 'SCHEDULED' && <button className='cursor-pointer  bg-green-500 hover:bg-red float-right text-white text-xs p-1 px-2 rounded-full' onClick={() => { navigate(`/challenges/v/${challenge.id}/contact`) }}>Contact Host</button>}
+        {currentUser && challenge.type === 'SCHEDULED' && <button className='cursor-pointer  bg-green-500 hover:bg-red float-right text-white text-xs p-1 px-2 rounded-full' onClick={() => { navigate(`/challenges/v/${challenge.id}/contact`) }}>Contact Host</button>}
         <div className='text-lg py-2 flex items-center justify-center w-full gap-4'>
           <div className={`w-fit ${isOverview ? 'border-b-2 border-red' : 'cursor-pointer'}`} onClick={() => { navigate(`/challenges/v/${challenge.id}`) }}>Overview</div>
           <div className={`w-fit ${isProgram ? 'border-b-2 border-red' : 'cursor-pointer'}`} onClick={() => { navigate(`/challenges/v/${challenge.id}/program`) }}>Program</div>
@@ -148,9 +164,10 @@ export default function ViewChallenge (): JSX.Element {
           </div>
         }
       </div>
-      {isOverview && challenge.type === 'SCHEDULED' &&
+      {isOverview &&
         <div className="max-w-sm md:max-w-md lg:max-w-lg text-center">
-          {challenge?.userId !== currentUser?.id && !isExpired && (
+          {/* {challenge?.userId !== currentUser?.id && !isExpired && ( */}
+          {!isExpired && (
             <>
                 <button
                   onClick={confirmJoinUnjoin}
@@ -158,15 +175,21 @@ export default function ViewChallenge (): JSX.Element {
                     { isMember ? 'Leave Challenge' : 'Join this Challenge' }
                     { loading && <Spinner className='w-4 h-4 inline ml-2' /> }
                 </button>
+                <DialogConfirm
+                  isOpen={showConfirm}
+                  onConfirm={toggleJoin}
+                  onCancel={() => { setShowConfirm(false) }}
+                  prompt='Are you sure you want to leave this challenge? All your check-ins will be lost.'
+                />
 
-                {showConfirm && (
-                  <DialogConfirm
-                    isOpen={showConfirm}
-                    onConfirm={toggleJoin}
-                    onCancel={() => { setShowConfirm(false) }}
-                    prompt='Are you sure you want to leave this challenge? All your check-ins will be lost.'
-                  />
-                )}
+                <DialogJoin
+                  isOpen={showJoin}
+                  challenge={challenge}
+                  onConfirm={toggleJoin}
+                  onCancel={() => { setShowJoin(false) }}
+                  afterJoin={afterJoin}
+                />
+
             </>
           )}
 
@@ -228,8 +251,7 @@ function ChallengeOverview ({ challenge }: { challenge: Challenge | ChallengeSum
   const isExpired = challenge?.endAt ? isPast(challenge?.endAt) : false
   const isStarted = challenge?.startAt ? isPast(challenge?.startAt) : false
   const { currentUser } = useContext(CurrentUserContext)
-  const navigate = useNavigate()
-  const locale = userLocale(currentUser)
+  const locale = currentUser ? userLocale(currentUser) : 'en-US'
   const dateOptions: DateTimeFormatOptions = {
     weekday: 'short',
     month: 'short',

@@ -60,7 +60,6 @@ export const FullLayout = (): JSX.Element => {
   const isInterior = location.pathname.includes('/v/')
   const isWelcome = location.pathname.includes('/challenges/')
   const isLanding = location.pathname.includes('/landing')
-  const { signOut } = useClerk()
   useEffect(() => {
     if (['/', '/register', '/login', '/signup', '/signin', '/landing'].includes(location.pathname)) {
       setShowNav(false)
@@ -133,8 +132,8 @@ export const FullLayout = (): JSX.Element => {
               </div>
             </SignedIn>
             <SignedOut>
-              <div className='flex-grow  items-center justify-center'>
-                <div className='flex flex-col items-center justify-center h-full'>
+              <div className='flex-grow  items-center justify-start'>
+                <div className='flex flex-col items-center justify-start h-full'>
 
                   <Outlet />
                 </div>

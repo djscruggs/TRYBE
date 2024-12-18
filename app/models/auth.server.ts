@@ -100,7 +100,7 @@ export async function requireCurrentUser (args: LoaderFunctionArgs): Promise<Cur
 }
 
 export async function getUserSession (request: Request): Promise<Session> {
-  return await storage.getSession(request.headers.get('Cookie'))
+  return await storage.getSession(request?.headers.get('Cookie'))
 }
 
 async function getUserId (request: Request): Promise<string | null> {

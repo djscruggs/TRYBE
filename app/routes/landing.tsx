@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react'
 import { FaArrowCircleRight } from 'react-icons/fa'
-import { useSearchParams } from 'react-router-dom'
+import { useSearchParams, useNavigate } from 'react-router-dom'
 import Logo from '../components/logo'
 export default function LandingPage (): JSX.Element {
+  const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
   const _step = Number(searchParams.get('step'))
   const [step, setStep] = useState(_step > 0 ? _step : 1)
@@ -13,7 +14,7 @@ export default function LandingPage (): JSX.Element {
   }
 
   const skipStep = () => {
-    console.log('skip')
+    navigate('/challenges')
   }
 
   return (
@@ -21,13 +22,16 @@ export default function LandingPage (): JSX.Element {
             <Logo size='36px' backgroundColor='white' className='my-10' />
             {step === 1 &&
             <>
-            <div className='relative flex flex-col max-h-[600px] h-full items-start justify-center border border-black text-red font-light md:w-2/5 w-full'>
+            <div className='relative flex flex-col max-h-[800px] h-full items-start justify-center border border-black text-red font-light md:w-2/5 w-full'>
               <div className='text-xl text-left w-full'>Welcome to</div>
               <div className='text-8xl font-bold text-center w-full font-cursive'>Trybe</div>
               <div className='text-xl text-right w-full mb-20'>(BETA)</div>
               <div className='text-[#696262] text-xl text-center w-full'>
                 <p className='text-lg'>Discover your next challenge.</p>
                 <p className='text-lg'>Find your Trybe.</p>
+              </div>
+              <div className='flex justify-center items-center space-x-2 w-full'>
+                <NavigationDots step={step} />
               </div>
               <NavigationArrows step={step} skip={skipStep} nextStep={incrementStep} />
               <img src="/images/landing/people-bottom.png" alt="people-bottom" className='absolute bottom-0 left-1/2 transform -translate-x-1/2 text-center w-full' />
@@ -42,7 +46,9 @@ export default function LandingPage (): JSX.Element {
                   <p className='text-lg text-center'>Our intentional design lets you<br /> get what you need, no matter <br />what <span className='font-bold'>#mood</span> you&apos;re in</p>
                   <img src="/images/landing/process.png" alt="process" className='max-h-[1000px] mt-14' />
                 </div>
-                <NavigationArrows step={step} skip={skipStep} nextStep={incrementStep} />
+                  <NavigationDots step={step} />
+                  <NavigationArrows step={step} skip={skipStep} nextStep={incrementStep} />
+
               </div>
             }
             {step === 3 &&
@@ -62,13 +68,14 @@ export default function LandingPage (): JSX.Element {
                     </p>
                   </div>
                   <img src="/images/landing/improvement.png" alt="improvement" className='w-full h-auto' />
+                  <div className='flex justify-center items-center space-x-2 w-full'>
+                    <NavigationDots step={step} />
+                  </div>
                 </div>
                 <NavigationArrows step={step} skip={skipStep} nextStep={incrementStep} />
               </div>
             }
-            <div className='absolute bottom-40 w-full'>
-              <NavigationDots step={step} />
-            </div>
+
           </div>
   )
 }
@@ -78,7 +85,7 @@ const NavigationDots = ({ step = 1 }: { step: number }): JSX.Element => {
     console.log(step)
   }, [step])
   return (
-  <div className='flex justify-center items-center space-x-2'>
+  <div className='flex justify-center w-full items-center space-x-2'>
     {[1, 2, 3].map((page) => (
       <div
         key={page}
@@ -101,7 +108,7 @@ const NavigationArrows = ({ step = 1, nextStep, skip }: { step: number, nextStep
     <div className='w-full relative flex justify-center items-center space-x-2'>
       {step < 3 &&
         <>
-        <div className='text-gray-400 cursor-pointer absolute bottom-0 left-0' onClick={() => { skip() }}>SKIP</div>
+        <div className='z-10 text-gray-400 cursor-pointer absolute bottom-0 left-0' onClick={() => { skip() }}>SKIP</div>
         <FaArrowCircleRight className='z-10 text-red rounded-full text-4xl cursor-pointer absolute bottom-0 right-0' onClick={() => { nextStep() }}/>
         </>
       }

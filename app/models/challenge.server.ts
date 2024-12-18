@@ -370,7 +370,7 @@ export const fetchChallengeMembers = async (cId: string | number): Promise<Membe
   // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
   return await prisma.memberChallenge.findMany(params) as unknown as MemberChallenge[]
 }
-export const joinChallenge = async (userId: number, challengeId: number): Promise<Prisma.MemberChallenge> => {
+export const joinChallenge = async (userId: number, challengeId: number, startAt?: Date, notificationHour?: number, notificationMinute?: number): Promise<Prisma.MemberChallenge> => {
   // Check if the member challenge already exists
   const existingMemberChallenge = await prisma.memberChallenge.findFirst({
     where: {
@@ -387,15 +387,43 @@ export const joinChallenge = async (userId: number, challengeId: number): Promis
   })
 
   if (existingMemberChallenge) {
+    console.log('existingMemberChallenge', existingMemberChallenge)
     return existingMemberChallenge
   }
+  // otehrwise, create a new member challenge
+  const challenge = await loadChallenge(challengeId)
 
-  // If not, create a new member challenge
-  return await prisma.memberChallenge.create({
-    data: {
-      userId,
-      challengeId
+  if (!challenge) {
+    throw new Error('Challenge not found')
+  }
+
+  if (challenge.type === 'SELF_LED') {
+    if (startAt && isNaN(startAt.getTime())) {
+      throw new Error('Invalid date: startAt must be a valid date string')
     }
+
+    if (notificationHour != null && (notificationHour < 0 || notificationHour > 23)) {
+      throw new Error('Invalid time: notificationHour must be between 0 and 23')
+    }
+
+    if (notificationMinute != null && (notificationMinute < 0 || notificationMinute > 59)) {
+      throw new Error('Invalid time: notificationMinute must be between 0 and 59')
+    }
+  }
+  const data: Prisma.MemberChallengeCreateInput = {
+    user: {
+      connect: { id: userId }
+    },
+    challenge: {
+      connect: { id: challengeId }
+    },
+    startAt,
+    notificationHour,
+    notificationMinute
+  }
+
+  return await prisma.memberChallenge.create({
+    data
   }) as unknown as MemberChallenge
 }
 export const unjoinChallenge = async (userId: number, challengeId: number): Promise<MemberChallenge> => {
