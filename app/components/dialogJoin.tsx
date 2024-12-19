@@ -1,5 +1,5 @@
 import { useState, useContext, useEffect } from 'react'
-import type { Challenge } from '~/utils/types'
+import type { Challenge, MemberChallenge } from '~/utils/types'
 import { CurrentUserContext } from '~/utils/CurrentUserContext'
 import {
   Button,
@@ -16,11 +16,11 @@ interface DeleteDialogProps {
   isOpen: boolean
   onConfirm: (event: any) => void
   onCancel?: (event: any) => void
-  afterJoin?: (isMember: boolean) => void
+  afterJoin?: (isMember: boolean, membership?: MemberChallenge) => void
 }
 
 export default function DialogJoin (props: DeleteDialogProps): JSX.Element {
-  const { challenge, isOpen, onConfirm, onCancel, afterJoin } = props
+  const { challenge, isOpen, onCancel, afterJoin } = props
   const { currentUser } = useContext(CurrentUserContext)
   const localDateFormat = currentUser?.locale === 'en-US' ? 'M-dd-YYYY' : 'dd-M-YYYY'
   const localTimeFormat = currentUser?.locale === 'en-US' ? 'h:mm a' : 'h:mm'
@@ -82,8 +82,6 @@ export default function DialogJoin (props: DeleteDialogProps): JSX.Element {
       throw new Error('cannot join without an id')
     }
 
-    console.log(formData)
-
     setLoading(true)
     const notificationDate = new Date(formData.notificationTime)
     const notificationHour = notificationDate.getUTCHours()
@@ -97,7 +95,8 @@ export default function DialogJoin (props: DeleteDialogProps): JSX.Element {
     const url = `/api/challenges/join-unjoin/${challenge.id as string | number}`
     const response = await axios.post(url, data)
     if (response.data.result === 'joined') {
-      afterJoin?.(true)
+      console.log(response.data)
+      afterJoin?.(true, response.data.data as MemberChallenge)
     } else {
       afterJoin?.(false)
     }

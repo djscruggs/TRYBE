@@ -27,7 +27,6 @@ export async function action (args: ActionFunctionArgs): Promise<Response> {
       const notificationMinuteNumber = notificationMinute != null ? Number(notificationMinute.toString()) : undefined
 
       const result = await joinChallenge(Number(user.id), Number(params.id), startAtDate, notificationHourNumber, notificationMinuteNumber)
-      console.log('result', result)
       return new Response(JSON.stringify({
         result: 'joined',
         data: result

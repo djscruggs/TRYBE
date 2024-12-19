@@ -171,6 +171,9 @@ export interface MemberChallenge {
   lastCheckIn: Date
   nextCheckIn: Date
   dayNumber: number
+  notificationHour?: number | null
+  notificationMinute?: number | null
+  startAt?: Date | null
   _count?: {
     checkIns?: number
   }
