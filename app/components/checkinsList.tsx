@@ -96,8 +96,8 @@ export default function CheckinsList ({ checkIns, posts, comments, newestComment
                   comments={commentsByDay[date] || []}
                   newestComment={newestComment}
                   allowReplies={true}
-                  highlightedObject={highlightedObject}
-                  highlightedId={highlightedId}
+                  highlightedObject={highlightedObject as string | undefined}
+                  highlightedId={highlightedId as number | undefined}
                 />
               </>
             }
@@ -279,7 +279,9 @@ const CollapsedCheckins = ({ checkIns }: CollapsedCheckinsProps): JSX.Element =>
         ? (
           <div className='flex items-center'>
             <CheckInAvatar checkIn={checkIns[0]} />
-            <span className='ml-2'>{uniqueProfiles[0]?.fullName} checked in</span>
+            <span className='ml-2'>{uniqueProfiles[0]?.fullName} checked in
+              {checkIns.length > 1 ? checkIns.length === 2 ? ' twice' : ` ${checkIns.length} times` : ''}
+            </span>
           </div>
           )
         : count === 2
