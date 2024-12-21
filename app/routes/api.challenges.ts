@@ -16,7 +16,6 @@ export async function action (args: ActionFunctionArgs): Promise<any> {
   const currentUser = await requireCurrentUser(args)
   const request = args.request
   const rawData = await unstable_parseMultipartFormData(request, uploadHandler)
-  console.log('rawData', rawData)
   const formData = Object.fromEntries(rawData)
   const cleanData = convertStringValues(formData)
   if (!cleanData.userId) {
@@ -34,7 +33,6 @@ export async function action (args: ActionFunctionArgs): Promise<any> {
     converted.endAt = converted.endAt ? new Date(converted.endAt as Date).toISOString() : null
     converted.startAt = converted.startAt ? new Date(converted.startAt as Date).toISOString() : null
     converted.publishAt = converted.publishAt ? new Date(converted.publishAt as Date).toISOString() : new Date().toISOString()
-
     // Calculate numDays if type is "SCHEDULED"
     if (converted.type === 'SCHEDULED' && converted.startAt && converted.endAt) {
       const startDate = new Date(converted.startAt as string)
@@ -42,7 +40,6 @@ export async function action (args: ActionFunctionArgs): Promise<any> {
       const numDays = differenceInDays(endDate, startDate)
       converted.numDays = numDays
     }
-    console.log('converted', converted)
     let data: any
     if (converted.id) {
       data = await updateChallenge(converted)

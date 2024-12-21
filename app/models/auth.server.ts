@@ -106,14 +106,12 @@ export async function getUserSession (request: Request): Promise<Session> {
 async function getUserId (request: Request): Promise<string | null> {
   const session = await getUserSession(request)
   const currentUserId = session.get('userId')
-  console.log('session', session)
   if (!currentUserId) return null
   return currentUserId
 }
 
 export async function getUser (request: Request): Promise<CurrentUser | null> {
   const userId = await getUserId(request)
-  console.log('userId', userId)
   if (!userId) {
     return null
   }

@@ -33,7 +33,6 @@ export default function ChallengesIndex (): JSX.Element {
 
     const allChallenges = response.data.challenges as ChallengeSummary[]
     const userMemberships = response.data.memberships as MemberChallenge[]
-    console.log('allChallenges', allChallenges)
     // Filter challenges where the user is a member or owner
     // const userChallenges = allChallenges.filter(challenge =>
     //   userMemberships.some(membership => membership.challengeId === challenge.id) ||
@@ -76,7 +75,6 @@ export default function ChallengesIndex (): JSX.Element {
     setLoadingUpcoming(false)
   }
   useEffect(() => {
-    console.log('status', status)
     void loadData().then(() => {
       void loadUpcomingChallenges()
     }).catch(console.error)

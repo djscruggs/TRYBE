@@ -95,7 +95,6 @@ export default function DialogJoin (props: DeleteDialogProps): JSX.Element {
     const url = `/api/challenges/join-unjoin/${challenge.id as string | number}`
     const response = await axios.post(url, data)
     if (response.data.result === 'joined') {
-      console.log(response.data)
       afterJoin?.(true, response.data.data as MemberChallenge)
     } else {
       afterJoin?.(false)

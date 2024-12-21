@@ -17,9 +17,6 @@ export default function ChallengeTemplatesIndex (): JSX.Element {
   if (!isAdmin) {
     return <Navigate to="/" />
   }
-  useEffect(() => {
-    console.log('mounted')
-  }, [])
 
   return (
     <>

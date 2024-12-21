@@ -15,7 +15,6 @@ export const loader: LoaderFunction = async (args) => {
   const currentUser = await getCurrentUser(args)
   const uid = currentUser?.id ? Number(currentUser.id) : null
   let challenges
-  console.log('range', range)
   if (range === 'mine') {
     challenges = await fetchUserChallengesAndMemberships({ userId: uid }) as { error?: string }
   } else {

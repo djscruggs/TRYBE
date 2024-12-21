@@ -37,10 +37,8 @@ interface Errors {
 }
 
 export default function FormPost (props: FormPostProps): JSX.Element {
-  console.log('FormPost props', props)
   const { currentUser } = useContext(CurrentUserContext)
   const { afterSave, onCancel, post, challenge, publishAt, title, notifyMembers, dayNumber } = props
-  console.log('FormPost challenge', challenge)
   const locale = currentUser?.locale ?? 'en-US'
   const [showVideoRecorder, setShowVideoRecorder] = useState(false)
   const [errors, setErrors] = useState<Errors>({})

@@ -133,7 +133,6 @@ export default function ViewChallenge (): JSX.Element {
   }
   const afterJoin = (isMember: boolean, membership?: MemberChallenge): void => {
     setIsMember(isMember)
-    console.log(membership)
     setMembership(membership)
     setShowJoin(false)
   }
@@ -279,10 +278,8 @@ function ChallengeOverview ({ challenge, memberChallenge }: { challenge: Challen
   const [editingStartAt, setEditingStartAt] = useState(false)
 
   useEffect(() => {
-    console.log('useEffect membership', memberChallenge)
     setMembership(memberChallenge)
   }, [memberChallenge])
-  console.log('membership', membership)
   return (
     <div className='md:px-0 justify-start'>
       {challenge.type === 'SELF_LED' &&
@@ -386,7 +383,6 @@ interface EditMemberChallengeProps {
 
 export function EditMemberChallenge (props: EditMemberChallengeProps): JSX.Element {
   const { onCancel, afterSave, which } = props
-  console.log('EditMemberChallenge', props)
   const [memberChallenge, setMemberChallenge] = useState<MemberChallenge | null | undefined>(props.memberChallenge)
   if (!memberChallenge) {
     return <></>

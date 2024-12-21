@@ -59,7 +59,6 @@ export const action: ActionFunction = async ({ request }) => {
   // }
   // Grab the ID and TYPE of the Webhook
 
-  console.log(`Webhook with type ${bodyJson.type}`)
   try {
     if (bodyJson.type === 'user.created') {
       // email_addresses is an array, but one is primary

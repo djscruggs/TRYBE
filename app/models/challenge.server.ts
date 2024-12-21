@@ -5,7 +5,6 @@ import { addDays, isFriday, isSaturday } from 'date-fns'
 import { deleteFromCloudinary } from '~/utils/uploadFile'
 
 export const createChallenge = async (challenge: prisma.challengeCreateInput): Promise<Challenge> => {
-  console.log('challenge data', challenge)
   const newChallenge = await prisma.challenge.create({
     data: challenge
   })
@@ -387,7 +386,6 @@ export const joinChallenge = async (userId: number, challengeId: number, startAt
   })
 
   if (existingMemberChallenge) {
-    console.log('existingMemberChallenge', existingMemberChallenge)
     return existingMemberChallenge
   }
   // otehrwise, create a new member challenge

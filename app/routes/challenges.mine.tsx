@@ -25,7 +25,6 @@ export default function ChallengeMine (): JSX.Element {
     setLoading(true)
     const url = '/api/challenges/mine'
     const response = await axios.get(url)
-    console.log(response.data.challenges)
     setMyChallenges(response.data.challenges as ChallengeSummary[])
     setLoading(false)
   }

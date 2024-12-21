@@ -86,8 +86,6 @@ export const sendDayNumberPosts = async (): Promise<{ dayNumberPosts: number, da
   const currentTimeGMT = new Date()
   const currentHourGMT = currentTimeGMT.getUTCHours()
   const currentMinuteGMT = currentTimeGMT.getUTCMinutes()
-  console.log('currentHourGMT', currentHourGMT)
-  console.log('currentMinuteGMT', currentMinuteGMT)
   const challenges = await prisma.challenge.findMany({
     where: {
       status: 'PUBLISHED',
