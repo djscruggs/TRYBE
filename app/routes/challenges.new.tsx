@@ -4,7 +4,7 @@ import { requireCurrentUser } from '~/models/auth.server'
 import { type LoaderFunction } from '@remix-run/node'
 import { CurrentUserContext } from '~/utils/CurrentUserContext'
 import type { MetaFunction } from '@remix-run/react'
-
+import type { ChallengeInputs } from '~/utils/types'
 export const meta: MetaFunction = () => {
   return [
     { title: 'Create Challenge' },
@@ -26,6 +26,6 @@ export default function NewChallenge (): JSX.Element {
   const { currentUser } = useContext(CurrentUserContext)
   const formData = { userId: currentUser?.id }
   return (
-    <ChallengeForm object={formData}/>
+    <ChallengeForm challenge={formData as ChallengeInputs}/>
   )
 }

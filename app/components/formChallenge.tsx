@@ -7,7 +7,7 @@ import React, {
 } from 'react'
 import { Form, useNavigate } from '@remix-run/react'
 import axios from 'axios'
-import type { Category, Challenge, ChallengeType, ChallengeStatus } from '~/utils/types'
+import type { Category, Challenge, ChallengeType, ChallengeStatus, ChallengeInputs } from '~/utils/types'
 import { Button, Select, Option, Radio, Menu, MenuHandler, MenuItem, MenuList, Checkbox } from '@material-tailwind/react'
 import { FormField } from '~/components/formField'
 import DatePicker from 'react-datepicker'
@@ -31,9 +31,6 @@ interface Errors {
   numDays?: string
 }
 
-interface ChallengeInputs extends Challenge {
-  deleteImage: boolean
-}
 export default function FormChallenge ({ challenge }: { challenge: ChallengeInputs }): JSX.Element {
   const frequencies: Array<Challenge['frequency']> = ['DAILY', 'WEEKDAYS', 'WEEKLY']
   const navigate = useNavigate()

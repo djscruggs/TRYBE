@@ -8,12 +8,12 @@ export default function LandingPage (): JSX.Element {
   const _step = Number(searchParams.get('step'))
   const [step, setStep] = useState(_step > 0 ? _step : 1)
 
-  const incrementStep = () => {
+  const incrementStep = (): void => {
     setStep(step + 1)
     setSearchParams({ step: (step + 1).toString() })
   }
 
-  const skipStep = () => {
+  const skipStep = (): void => {
     navigate('/challenges')
   }
 

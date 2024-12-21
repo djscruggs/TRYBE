@@ -61,7 +61,7 @@ export const FullLayout = (): JSX.Element => {
   const isWelcome = location.pathname.includes('/challenges/')
   const isLanding = location.pathname.includes('/landing')
   useEffect(() => {
-    if (['/', '/register', '/login', '/signup', '/signin', '/landing'].includes(location.pathname)) {
+    if (['/', '/register', '/login', '/signup', '/signin'].includes(location.pathname)) {
       setShowNav(false)
     } else {
       setShowNav(true)
@@ -143,7 +143,7 @@ export const FullLayout = (): JSX.Element => {
 
         </div>
         {/* mobile layout */}
-        <div className="md:hidden max-w-sm px-1  flex flex-col min-h-screen min-w-screen p-0" onClick={hideMenu}>
+        <div className="md:hidden px-1  flex flex-col min-h-screen min-w-screen p-0" onClick={hideMenu}>
 
                 {showNav &&
                 <>

@@ -140,6 +140,10 @@ export interface Challenge {
 export interface ChallengeWithHost extends Challenge {
   user: User
 }
+export interface ChallengeInputs extends Challenge {
+  deleteImage: boolean
+}
+
 export interface Category {
   id: number
   name?: string
