@@ -23,12 +23,12 @@ export default function ChallengesIndex (): JSX.Element {
       {isRouteException
         ? <Outlet />
         : (
-      <div className='flex items-center  max-w-lg mt-14'>
-        <div className="flex flex-col items-center max-w-lg w-full">
-          <h1 className="text-3xl font-bold mb-4 w-full ml-2 md:ml-0">
+      <div className='flex items-center w-full mt-14'>
+        <div className="flex flex-col items-center md:max-w-lg w-full">
+          <h1 className="text-3xl font-bold mb-4 w-full ml-2 md:ml-0 text-left">
                 Challenges
             </h1>
-            {/* <p className='ml-2 md:ml-0 text-gray-500'>View your current challenges, browse upcoming challenges, or start your own!</p>
+{/* <p className='ml-2 md:ml-0 text-gray-500'>View your current challenges, browse upcoming challenges, or start your own!</p>
             {currentUser && <Button placeholder='Create a Challenge' size="sm" onClick={() => { navigate('./new') }} className="bg-red mb-4 mt-4">Create a Challenge</Button>}
             <Outlet /> */}
             <Outlet />
