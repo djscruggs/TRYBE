@@ -18,29 +18,32 @@ export default function LandingPage (): JSX.Element {
   }
 
   return (
-          <div className='relative w-screen h-screen items-center flex flex-col border-2 border-red text-[#555555]'>
-            <Logo size='36px' backgroundColor='white' className='my-10' />
+          <div className='relative w-screen max-w-[800px] h-screen items-start flex flex-col pt-10 text-[#555555]'>
+            <div className='flex justify-center items-center space-x-2 w-full'>
+              <Logo size='36px' backgroundColor='white' />
+            </div>
             {step === 1 &&
             <>
-            <div className='relative flex flex-col max-h-[800px] h-full items-start justify-center border border-black text-red font-light md:w-2/5 w-full'>
-              <div className='text-xl text-left w-full'>Welcome to</div>
+            <div className='relative flex flex-col max-h-[800px] h-full items-start justify-start  text-red font-light max-w-[800px] w-full'>
+              <div className='text-xl text-left w-full pl-20 md:pl-60 mt-10'>WELCOME TO</div>
               <div className='text-8xl font-bold text-center w-full font-cursive'>Trybe</div>
-              <div className='text-xl text-right w-full mb-20'>(BETA)</div>
+              <div className='text-xl text-right w-full mb-20 pr-20 md:pr-60'>(BETA)</div>
               <div className='text-[#696262] text-xl text-center w-full'>
                 <p className='text-lg'>Discover your next challenge.</p>
                 <p className='text-lg'>Find your Trybe.</p>
+                <img src="/images/landing/people-bottom.png" alt="people-bottom" className='absolute bottom-0 w-full object-cover' />
               </div>
               <div className='flex justify-center items-center space-x-2 w-full'>
                 <NavigationDots step={step} />
               </div>
               <NavigationArrows step={step} skip={skipStep} nextStep={incrementStep} />
-              <img src="/images/landing/people-bottom.png" alt="people-bottom" className='absolute bottom-0 left-1/2 transform -translate-x-1/2 text-center w-full' />
+
             </div>
 
             </>
             }
             {step === 2 &&
-              <div className='relative border-2 border-red'>
+              <div className='relative'>
                 <div className='flex-col h-[600px] items-center justify-center'>
                   <h1 className='text-xl font-bold text-center'>What you can do with <span className='text-red font-cursive'>Trybe</span></h1>
                   <p className='text-lg text-center'>Our intentional design lets you<br /> get what you need, no matter <br />what <span className='font-bold'>#mood</span> you&apos;re in</p>
@@ -105,16 +108,16 @@ const NavigationArrows = ({ step = 1, nextStep, skip }: { step: number, nextStep
     console.log('arrows step', step)
   }, [step])
   return (
-    <div className='w-full relative flex justify-center items-center space-x-2'>
+    <div className='w-full relative flex justify-center items-center space-x-2 mt-36'>
       {step < 3 &&
         <>
-        <div className='z-10 text-gray-400 cursor-pointer absolute bottom-0 left-0' onClick={() => { skip() }}>SKIP</div>
-        <FaArrowCircleRight className='z-10 text-red rounded-full text-4xl cursor-pointer absolute bottom-0 right-0' onClick={() => { nextStep() }}/>
+        <div className='z-10 text-gray-400 cursor-pointer text-2xl absolute bottom-0 left-10 md:left-36' onClick={() => { skip() }}>SKIP</div>
+        <FaArrowCircleRight className='z-10 text-red rounded-full text-6xl cursor-pointer absolute bottom-0 right-10 md:right-36' onClick={() => { nextStep() }}/>
         </>
       }
       {step > 2 &&
 
-      <button onClick={getStarted} className="p-2 py-1 rounded-full bg-red text-white text-sm uppercase hover:bg-gray-200 absolute bottom-0 right-0">
+      <button onClick={getStarted} className="p-2 py-1 rounded-full bg-red text-white text-sm uppercase hover:bg-gray-200 absolute bottom-0 right mr-4">
         Get Started
       </button>
 }
