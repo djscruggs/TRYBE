@@ -1,18 +1,12 @@
 import { prisma } from '../models/prisma.server'
-import { mailPost } from '../utils/mailer'
+import { type CheckinReminderMailerProps, mailPost, sendCheckinReminder } from '../utils/mailer'
 import type { LoaderFunction } from '@remix-run/node'
 import { json } from '@remix-run/node'
 import { generateUrl } from '~/utils/helpers'
 export const loader: LoaderFunction = async (args) => {
-  const currentTimeGMT = new Date()
-  const currentHourGMT = currentTimeGMT.getUTCHours()
-  const currentMinuteGMT = currentTimeGMT.getUTCMinutes()
-  console.log('currentHourGMT', currentHourGMT)
-  console.log('currentMinuteGMT', currentMinuteGMT)
   const scheduledPosts = await sendScheduledPosts()
-  // const dayNumberPosts = await sendDayNumberPosts()
-  const dayNumberPosts = 0
-  return json({ scheduledPosts, dayNumberPosts }, 200)
+  const { dayNumberPosts, dayNotifications } = await sendDayNumberPosts()
+  return json({ scheduledPosts, dayNumberPosts, dayNotifications }, 200)
 }
 
 export const sendScheduledPosts = async (): Promise<number> => {
@@ -87,8 +81,13 @@ export const sendScheduledPosts = async (): Promise<number> => {
   return posts.length
 }
 
-export const sendDayNumberPosts = async (): Promise<number> => {
+export const sendDayNumberPosts = async (): Promise<{ dayNumberPosts: number, dayNotifications: number }> => {
   // Step 1: Get challenges with status PUBLISHED and type SELF_LED
+  const currentTimeGMT = new Date()
+  const currentHourGMT = currentTimeGMT.getUTCHours()
+  const currentMinuteGMT = currentTimeGMT.getUTCMinutes()
+  console.log('currentHourGMT', currentHourGMT)
+  console.log('currentMinuteGMT', currentMinuteGMT)
   const challenges = await prisma.challenge.findMany({
     where: {
       status: 'PUBLISHED',
@@ -96,6 +95,16 @@ export const sendDayNumberPosts = async (): Promise<number> => {
     },
     include: {
       members: {
+        where: {
+          notificationHour: {
+            gte: currentHourGMT,
+            lte: currentHourGMT + (currentMinuteGMT + 4 >= 60 ? 1 : 0)
+          },
+          notificationMinute: {
+            gte: currentMinuteGMT,
+            lte: (currentMinuteGMT + 4) % 60
+          }
+        },
         include: {
           user: {
             include: {
@@ -114,9 +123,12 @@ export const sendDayNumberPosts = async (): Promise<number> => {
       if (!dayNumberHash[member.dayNumber]) {
         dayNumberHash[member.dayNumber] = []
       }
-      dayNumberHash[member.dayNumber].push(member)
+      // add the challenge object so we can access its properties when sending the daily reminder email
+      const memberWithChallenge = { ...member, challenge }
+      dayNumberHash[member.dayNumber].push(memberWithChallenge)
     })
   })
+
   // Step 3: Find posts for each challengeId scheduled for the days in the hash
   const posts = await prisma.post.findMany({
     where: {
@@ -133,50 +145,81 @@ export const sendDayNumberPosts = async (): Promise<number> => {
         include: {
           profile: true
         }
-      }
+      },
+      challenge: true
     }
   })
-  // Step 4: Email the correct post to each member
-  await Promise.all(posts.map(async post => {
-    // Skip if publishOnDayNumber is null
-    if (post.publishOnDayNumber === null) {
-      return
-    }
 
-    const members = dayNumberHash[post.publishOnDayNumber]
-    if (members) {
-      await Promise.all(members.map(async member => {
-        const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https'
-        const host = process.env.NODE_ENV === 'development' ? 'localhost:3000' : 'app.jointhetrybe.com'
-        const postLink = `${protocol}://${host}/challenges/v/${post.challengeId}/chat#featured-id-${post.id}`
-        const props = {
-          to: member.user.email,
-          replyTo: post.user.email,
-          fromName: 'Trybe',
-          dynamic_template_data: {
-            name: (`${post.user.profile?.firstName ?? ''} ${post.user.profile?.lastName ?? ''}`).trim(),
-            post_url: postLink,
-            date: post.publishAt?.toLocaleDateString() ?? post.createdAt.toLocaleDateString(),
-            subject: `${post.title}`,
-            title: post.title,
-            body: convertYouTubeLinksToImages(post.body ?? '', postLink)
+  // Step 4: Email the correct post to each member or send a generic reminder if no posts
+  let nonPostNotifications = 0 // count of non post notifications sent, added to return value
+  if (posts.length === 0) {
+    // Send generic reminder email
+    await Promise.all(Object.values(dayNumberHash).flat().map(async member => {
+      const props: CheckinReminderMailerProps = {
+        to: member.user.email,
+        dynamic_template_data: {
+          name: (`${member.user.profile?.firstName ?? ''} ${member.user.profile?.lastName ?? ''}`.trim() || 'Trybe Member'),
+          challenge_name: member.challenge.name,
+          checkin_url: generateUrl(`/challenges/v/${member.challenge.id}/checkins`)
+        }
+      }
+      try {
+        await sendCheckinReminder(props)
+        nonPostNotifications++
+      } catch (err) {
+        console.error('Error sending reminder email', err.response.body.errors)
+      }
+    }))
+  } else {
+    await Promise.all(posts.map(async post => {
+      // Skip if publishOnDayNumber is null
+      if (post.publishOnDayNumber === null) {
+        return
+      }
+
+      const members = dayNumberHash[post.publishOnDayNumber]
+      if (members) {
+        await Promise.all(members.map(async member => {
+          const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https'
+          const host = process.env.NODE_ENV === 'development' ? 'localhost:3000' : 'app.jointhetrybe.com'
+          const postLink = `${protocol}://${host}/challenges/v/${post.challengeId}/chat#featured-id-${post.id}`
+          const props = {
+            to: member.user.email,
+            replyTo: post.user.email,
+            fromName: 'Trybe',
+            dynamic_template_data: {
+              name: (`${post.user.profile?.firstName ?? ''} ${post.user.profile?.lastName ?? ''}`).trim(),
+              post_url: postLink,
+              date: post.publishAt?.toLocaleDateString() ?? post.createdAt.toLocaleDateString(),
+              subject: `${post.title}`,
+              title: post.title,
+              body: convertYouTubeLinksToImages(post.body ?? '', postLink)
+            }
           }
-        }
-        try {
-          await mailPost(props)
-        } catch (err) {
-          console.error('Error sending notification', err)
-        }
-      }))
-    }
-  }))
+          try {
+            await mailPost(props)
+          } catch (err) {
+            console.error('Error sending notification', err)
+          }
+        }))
+      }
+    }))
+  }
+
   // Step 5: Increment memberChallenge.dayNumber by 1
-  // Update all memberChallenges for SELF_LED and PUBLISHED challenges
   await prisma.memberChallenge.updateMany({
     where: {
       challenge: {
         type: 'SELF_LED',
         status: 'PUBLISHED'
+      },
+      notificationHour: {
+        gte: currentHourGMT,
+        lte: currentHourGMT + (currentMinuteGMT + 4 >= 60 ? 1 : 0)
+      },
+      notificationMinute: {
+        gte: currentMinuteGMT,
+        lte: (currentMinuteGMT + 4) % 60
       }
     },
     data: {
@@ -185,7 +228,7 @@ export const sendDayNumberPosts = async (): Promise<number> => {
       }
     }
   })
-  return posts.length
+  return { dayNumberPosts: posts.length, dayNotifications: nonPostNotifications }
 }
 
 export function convertYouTubeLinksToImages (body: string, postLink: string = ''): string {

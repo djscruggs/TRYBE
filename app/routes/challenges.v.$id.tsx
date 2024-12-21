@@ -124,6 +124,7 @@ export default function ViewChallenge (): JSX.Element {
     const response = await axios.post(url)
     if (response.data.result === 'joined') {
       setIsMember(true)
+      setMembership(response.data.result as MemberChallenge)
     } else {
       setIsMember(false)
     }
@@ -169,8 +170,8 @@ export default function ViewChallenge (): JSX.Element {
       </div>
       {isOverview &&
         <div className="max-w-sm md:max-w-md lg:max-w-lg text-center">
-          {/* {challenge?.userId !== currentUser?.id && !isExpired && ( */}
-          {!isExpired && (
+          {challenge?.userId !== currentUser?.id && !isExpired && (
+
             <>
                 <button
                   onClick={confirmJoinUnjoin}
@@ -284,91 +285,93 @@ function ChallengeOverview ({ challenge, memberChallenge }: { challenge: Challen
   console.log('membership', membership)
   return (
     <div className='md:px-0 justify-start'>
-      {challenge.type === 'SELF_LED'
-        ? (
+      {challenge.type === 'SELF_LED' &&
+
         <>
-
-            <div className="w-1/3">
-              <div className="font-bold">
-                Frequency
-              </div>
-              <div className="capitalize">
-                  {challenge?.frequency?.toLowerCase()}
-              </div>
-            </div>
-            <div className="w-1/3">
-          <div className="font-bold">
-            Duration
-          </div>
-          {challenge.numDays} days
-
-          {membership?.startAt &&
-            <>
+          <div className="w-1/3">
             <div className="font-bold">
-              {isFuture(membership.startAt) ? 'Starts' : 'Started'}
+              Frequency
             </div>
-            {editingStartAt
-              ? <EditMemberChallenge which='startAt' memberChallenge={membership} onCancel={() => { setEditingStartAt(false) }} afterSave={(memberChallenge) => { setMembership(memberChallenge); setEditingStartAt(false) }} />
-              : <>
-              {formatDate(String(membership.startAt))}
-              {!editingNotificationTime &&
-              <button onClick={() => { setEditingStartAt(true) }} className='ml-2 text-xs text-red underline'>edit</button>
-              }
+            <div className="capitalize">
+                {challenge?.frequency?.toLowerCase()}
+            </div>
+          </div>
+          <div className="w-1/3">
+            <div className="font-bold">
+              Duration
+            </div>
+            {challenge.numDays} days
+            {membership?.startAt &&
+              <>
+                <div className="font-bold">
+                    {isFuture(membership.startAt) ? 'Starts' : 'Started'}
+                </div>
+                {editingStartAt
+                  ? <EditMemberChallenge which='startAt' memberChallenge={membership} onCancel={() => { setEditingStartAt(false) }} afterSave={(memberChallenge) => { setMembership(memberChallenge); setEditingStartAt(false) }} />
+                  : <>
+                  {formatDate(String(membership.startAt))}
+                  {!editingNotificationTime &&
+                    <button onClick={() => { setEditingStartAt(true) }} className='ml-2 text-xs text-red underline'>edit</button>
+                  }
+                </>
+                  }
               </>
             }
+            {membership?.startAt &&
+            <>
+              <div className="font-bold">
+                Reminder Time
+              </div>
+              {editingNotificationTime
+                ? (
+                <div>
+                  <EditMemberChallenge which='notificationTime' memberChallenge={membership} onCancel={() => { setEditingNotificationTime(false) }} afterSave={(memberChallenge) => { setMembership(memberChallenge); setEditingNotificationTime(false) }} />
+                </div>
+                  )
+                : (
+                  <>
+                  <div className="capitalize inline">{challenge?.frequency.toLowerCase()}</div> at {formatTime(membership?.notificationHour ?? 0, membership?.notificationMinute ?? 0)}
+                  {!editingStartAt &&
+                    <button onClick={() => { setEditingNotificationTime(true) } } className='ml-2 text-xs text-red underline'>edit</button>
+                  }
+                  </>
+                  )}
             </>
           }
-          <div className="font-bold">
-            Reminder Time
           </div>
-          {editingNotificationTime
-            ? (
-            <div>
-              <EditMemberChallenge which='notificationTime' memberChallenge={membership} onCancel={() => { setEditingNotificationTime(false) }} afterSave={(memberChallenge) => { setMembership(memberChallenge); setEditingNotificationTime(false) }} />
-            </div>
-              )
-            : (
-              <>
-              <span className="capitalize">{challenge?.frequency.toLowerCase()}</span> at {formatTime(membership?.notificationHour ?? 0, membership?.notificationMinute ?? 0)}
-              {!editingStartAt &&
-                <button onClick={() => { setEditingNotificationTime(true) } } className='ml-2 text-xs text-red underline'>edit</button>
-              }
-              </>
-              )}
-        </div>
-        {!membership &&
-          <div className='text-red text-center mb-4'>This is a self-guided challenge. Click program to view the schedule.</div>
-        }
-        </>
-          )
-        : (
-        <>
-          {isExpired && <div className='text-red text-center'>This challenge has ended</div>}
+          {!membership &&
+            <div className='text-red text-center mb-4'>This is a self-guided challenge. Click program to view the schedule.</div>
+          }
+          </>
 
-          <div className="mb-2 flex flex-cols">
-            <div className="w-1/3">
-              <div className="font-bold">
-                {isExpired || isStarted ? 'Started' : 'Starts'}
+      }
+      {challenge.type === 'SCHEDULED' &&
+          <>
+            {isExpired && <div className='text-red text-center'>This challenge has ended</div>}
+            <div className="mb-2 flex flex-cols">
+              <div className="w-1/3">
+                <div className="font-bold">
+                  {isExpired || isStarted ? 'Started' : 'Starts'}
+                </div>
+                {challenge.startAt ? new Date(challenge.startAt).toLocaleDateString(locale, dateOptions) : ''}
               </div>
-              {challenge.startAt ? new Date(challenge.startAt).toLocaleDateString(locale, dateOptions) : ''}
+              <div className="w-1/3">
+                <div className="font-bold">
+                  {isExpired ? 'Ended' : 'Ends'}
+                </div>
+                {challenge.endAt ? new Date(challenge.endAt).toLocaleDateString(locale, dateOptions) : ''}
+              </div>
+              <div className="w-1/3">
+                <div className="font-bold">
+                  Frequency
+                </div>
+                <div className="capitalize">
+                    {challenge?.frequency?.toLowerCase()}
+                </div>
+              </div>
             </div>
-            <div className="w-1/3">
-              <div className="font-bold">
-                {isExpired ? 'Ended' : 'Ends'}
-              </div>
-              {challenge.endAt ? new Date(challenge.endAt).toLocaleDateString(locale, dateOptions) : ''}
-            </div>
-            <div className="w-1/3">
-              <div className="font-bold">
-                Frequency
-              </div>
-              <div className="capitalize">
-                  {challenge?.frequency?.toLowerCase()}
-              </div>
-            </div>
-          </div>
-        </>
-          )}
+          </>
+        }
 
     </div>
   )

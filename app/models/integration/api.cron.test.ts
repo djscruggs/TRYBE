@@ -30,7 +30,10 @@ describe('testing api/cron', async () => {
       }
     }
   })
-  // create a self led challenge
+  // create a self led challenge and mambership set to get a reminder in the next 2 minutes
+  const currentTimeGMT = new Date()
+  const currentHourGMT = currentTimeGMT.getUTCHours()
+  const currentMinuteGMT = currentTimeGMT.getUTCMinutes()
   await createChallenge({
     name: 'Challenge #1',
     description: 'test challenge',
@@ -42,6 +45,14 @@ describe('testing api/cron', async () => {
     endAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
     frequency: 'DAILY',
     public: true,
+    members: {
+      create: {
+        userId: 2,
+        notificationHour: currentMinuteGMT + 2 >= 60 ? (currentHourGMT + 1) % 24 : currentHourGMT,
+        notificationMinute: currentMinuteGMT + 2 >= 60 ? (currentMinuteGMT + 2 - 60) : currentMinuteGMT + 2,
+        dayNumber: 1
+      }
+    },
     posts: {
       createMany: {
         data: [
@@ -66,34 +77,43 @@ describe('testing api/cron', async () => {
     }
   })
   it('expects scheduled and day number posts to be sent', async ({ integration }) => {
+    // first run should send the scheduled post and the first day number post
     const response: Response = await loader({
       request: new Request('http://localhost/api/cron'),
       context: {},
       params: {}
     })
 
-    const { scheduledPosts, dayNumberPosts } = response ? await response.json() : { scheduledPosts: undefined, dayNumberPosts: undefined }
-    expect(scheduledPosts).toBeDefined()
-    console.log('numScheduledPosts', scheduledPosts)
-    expect(scheduledPosts).toEqual(0)
+    const { scheduledPosts, dayNumberPosts, dayNotifications } = response ? await response.json() : { scheduledPosts: undefined, dayNumberPosts: undefined, dayNotifications: undefined }
+    expect(scheduledPosts).toEqual(1)
     expect(dayNumberPosts).toBeDefined()
-    console.log('numDayNumberPosts', dayNumberPosts)
-    expect(dayNumberPosts).toEqual(0)
+    expect(dayNumberPosts).toEqual(1)
+    expect(dayNotifications).toEqual(0)
   })
   it('expects only day number posts to be sent', async ({ integration }) => {
-    // we use it to create a random user
+    // now that we've sent the only scheduled post, the second day should just have a day number post
     const response: Response = await loader({
       request: new Request('http://localhost/api/cron'),
       context: {},
       params: {}
     })
 
-    const { scheduledPosts, dayNumberPosts } = response ? await response.json() : { scheduledPosts: undefined, dayNumberPosts: undefined }
-    expect(scheduledPosts).toBeDefined()
-    console.log('numScheduledPosts', scheduledPosts)
+    const { scheduledPosts, dayNumberPosts, dayNotifications } = response ? await response.json() : { scheduledPosts: undefined, dayNumberPosts: undefined, dayNotifications: undefined }
     expect(scheduledPosts).toEqual(0)
-    expect(dayNumberPosts).toBeDefined()
-    console.log('numDayNumberPosts', dayNumberPosts)
-    expect(dayNumberPosts).toBeGreaterThan(0)
+    expect(dayNumberPosts).toEqual(1)
+    expect(dayNotifications).toEqual(0)
+  })
+  it('expects only day notifications to be sent', async ({ integration }) => {
+    // now that we've sent the first two days of posts, the third day should just have a notification (because we only created 2 posts)
+    const response: Response = await loader({
+      request: new Request('http://localhost/api/cron'),
+      context: {},
+      params: {}
+    })
+
+    const { scheduledPosts, dayNumberPosts, dayNotifications } = response ? await response.json() : { scheduledPosts: undefined, dayNumberPosts: undefined, dayNotifications: undefined }
+    expect(scheduledPosts).toEqual(0)
+    expect(dayNumberPosts).toEqual(0)
+    expect(dayNotifications).toEqual(1)
   })
 })

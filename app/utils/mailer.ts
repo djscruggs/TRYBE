@@ -1,5 +1,4 @@
-import sgMail from '@sendgrid/mail'
-import { AxiosHeaders } from 'axios'
+import sgMail, { type MailDataRequired, type EmailData } from '@sendgrid/mail'
 // const example_data = {
 //   to: 'me@derekscruggs.com', // Change to your recipient
 //   dynamic_template_data: {
@@ -15,15 +14,16 @@ import { AxiosHeaders } from 'axios'
 const TEMPLATES = {
   POST: 'd-139902a1da0942a5bd08308598092164',
   CONTACT_HOST: 'd-149674868c814ae795698747d3c71a65',
-  REPLY_NOTIFICATION: 'd-6a5d461f89a1417ab36ebea0a50b64be'
+  REPLY_NOTIFICATION: 'd-6a5d461f89a1417ab36ebea0a50b64be',
+  CHECKIN_REMINDER: 'd-e0af565878704bfd85ea71146ccff90f'
 }
 
 function setupEnvironment (): void {
+  if (process.env.NODE_ENV === 'test') {
+    return
+  }
   if (process.env.NODE_ENV === 'development' && !process.env.EMAIL_NOTIFICATIONS_TO) {
     throw new Error('EMAIL_NOTIFICATIONS_TO must be set in development mode')
-  }
-  if (process.env.NODE_ENV === 'test') {
-    throw new Error('Test environment detected')
   }
   if (!process.env.SENDGRID_API_KEY) {
     throw new Error('SENDGRID_API_KEY must be set in environment to use this hook')
@@ -33,10 +33,18 @@ function setupEnvironment (): void {
   }
   sgMail.setApiKey(process.env.SENDGRID_API_KEY)
 }
+async function sendEmail (msg: MailDataRequired): Promise<any> {
+  if (process.env.NODE_ENV === 'test') {
+    console.log('Test environment detected, using mockSendgridResponse')
+    return mockSendgridResponse()
+  }
+  return await sendEmail(msg)
+}
+
 interface PostMailerProps {
-  to: string
-  replyTo?: string
-  fromName?: string
+  to: EmailData
+  replyTo?: EmailData
+  fromName?: EmailData
   dynamic_template_data: {
     name: string
     post_url: string
@@ -49,9 +57,6 @@ interface PostMailerProps {
 
 export async function mailPost (props: PostMailerProps): Promise<any> {
   setupEnvironment()
-  if (process.env.NODE_ENV === 'test') {
-    return mockSendgridResponse()
-  }
   // eslint-disable-next-line @typescript-eslint/naming-convention
   const { to, dynamic_template_data, replyTo, fromName } = props
   const msg = {
@@ -67,12 +72,12 @@ export async function mailPost (props: PostMailerProps): Promise<any> {
       enable: !['test', 'development'].includes(process.env.NODE_ENV)
     }
   }
-  const result = await sgMail.send(msg)
-  return result
+  const result = await sendEmail(msg as MailDataRequired)
+  return result[0]
 }
 export interface HostMailerProps {
-  to: string
-  replyTo?: string
+  to: EmailData
+  replyTo?: EmailData
   dynamic_template_data: {
     member_name: string
     body: string
@@ -83,9 +88,6 @@ export interface HostMailerProps {
 
 export async function contactHost (props: HostMailerProps): Promise<any> {
   setupEnvironment()
-  if (process.env.NODE_ENV === 'test') {
-    return mockSendgridResponse()
-  }
   // eslint-disable-next-line @typescript-eslint/naming-convention
   const { to, dynamic_template_data, replyTo } = props
   const msg = {
@@ -95,11 +97,11 @@ export async function contactHost (props: HostMailerProps): Promise<any> {
     templateId: TEMPLATES.CONTACT_HOST,
     dynamic_template_data
   }
-  const result = await sgMail.send(msg)
+  const result = await sendEmail(msg as MailDataRequired)
   return result[0]
 }
 export interface CommentReplyMailerProps {
-  to: string
+  to: EmailData
   dynamic_template_data: {
     toName: string
     fromName: string
@@ -111,10 +113,6 @@ export interface CommentReplyMailerProps {
 }
 export async function sendCommentReplyNotification (props: CommentReplyMailerProps): Promise<any> {
   setupEnvironment()
-  if (process.env.NODE_ENV === 'test') {
-    return mockSendgridResponse()
-  }
-
   // eslint-disable-next-line @typescript-eslint/naming-convention
   const { to, dynamic_template_data } = props
   const msg = {
@@ -123,10 +121,33 @@ export async function sendCommentReplyNotification (props: CommentReplyMailerPro
     templateId: TEMPLATES.REPLY_NOTIFICATION,
     dynamic_template_data
   }
-  const result = await sgMail.send(msg)
+  const result = await sendEmail(msg as MailDataRequired)
   return result[0]
 }
 
+export interface CheckinReminderMailerProps {
+  to: EmailData
+  dynamic_template_data: {
+    name: string
+    challenge_name: string
+    checkin_url: string
+  }
+}
+
+export async function sendCheckinReminder (props: CheckinReminderMailerProps): Promise<any> {
+  setupEnvironment()
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  const { to, dynamic_template_data } = props
+  const msg = {
+    from: process.env.SENDGRID_FROM_EMAIL,
+    to: process.env.NODE_ENV === 'development' ? process.env.EMAIL_NOTIFICATIONS_TO : to,
+    templateId: TEMPLATES.CHECKIN_REMINDER,
+    dynamic_template_data
+  }
+  console.log('msg', msg)
+  const result = await sendEmail(msg as MailDataRequired)
+  return result[0]
+}
 const mockSendgridResponse = (): any => {
   return {
     statusCode: 202,
