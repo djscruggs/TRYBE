@@ -49,9 +49,6 @@ export default function ChallengesIndex (): JSX.Element {
     setMemberships(userMemberships)
     setLoading(false)
   }
-  const handleSelfGuidedChange = (): void => {
-    setSelfGuided(prev => !prev)
-  }
   const loadUpcomingChallenges = async (): Promise<void> => {
     setLoadingUpcoming(true)
     const url = '/api/challenges/upcoming'
@@ -112,8 +109,11 @@ export default function ChallengesIndex (): JSX.Element {
                     {cat}
                   </div>
                 ))}
-                  <div className='w-xs mx-2 text-grey'> | </div>
-                  <Switch className='text-xs md:text-sm' crossOrigin="anonymous" label="Self-Guided" checked={selfGuided} onChange={handleSelfGuidedChange}/>
+                <div className={`w-fit p-1 px-2 rounded-md cursor-pointer ${selfGuided ? 'bg-gray-400' : 'text-black bg-gray-100'}`}
+                  onClick={() => { setSelfGuided(prev => !prev) }}
+                >
+                 Self-Guided
+                </div>
 
               </div>
               {!loadingUpcoming && upcomingChallenges.length === 0 &&

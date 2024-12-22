@@ -186,7 +186,7 @@ export const FullLayout = (): JSX.Element => {
                 </div>
                 {showNav && !isInterior &&
                   <div className={`${wrapperVisible ? 'opacity-100' : 'opacity-30'} transition-opacity duration-500 fixed bottom-0 left-0 right-0 max-w-screen flex items-center w-full justify-between m-0 p-0 px-2 py-1 bg-gray-50 border-2 border-slate-200 z-10`}>
-                      <Link to="/" className='w-8 h-8 ml-14 flex justify-center items-center'>
+                      <Link to="/challenges" className='w-8 h-8 ml-14 flex justify-center items-center'>
                         <HomeIcon className='cursor-pointer w-8 h-8' />
                       </Link>
                       <div className="flex items-center justify-center relative min-w-8" onClick={(event) => { handlePlusClick(event) }}>
