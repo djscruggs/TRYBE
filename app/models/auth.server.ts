@@ -86,7 +86,7 @@ export async function requireCurrentUser (args: LoaderFunctionArgs): Promise<Cur
 
   const path = new URL(request.url).pathname
   if (!currentUser) {
-    if (!['/login', '/register', '/signup', '/signin'].includes(path)) {
+    if (!['/login', '/register', '/signup'].includes(path)) {
       const url = new URL(request.url)
       const redirectPath = new URL(request.url).pathname
       const urlWithoutPath = `${url.protocol}//${url.host}${url.search}${url.hash}`
@@ -133,7 +133,7 @@ export async function getUser (request: Request): Promise<CurrentUser | null> {
 export async function logout (args: { request: Request }): Promise<Response> {
   const session = await getUserSession(args.request)
   await storage.destroySession(session)
-  return redirect('/signin', {
+  return redirect('/login', {
     headers: {
       'Set-Cookie': await storage.destroySession(session)
     }

@@ -3,7 +3,7 @@ import { FcLike } from 'react-icons/fc'
 import { SlShareAlt } from 'react-icons/sl'
 import { FaRegComment } from 'react-icons/fa'
 import RandomAvatar from './randomavatar'
-import { useMobileSize } from '~/utils/useMobileSize'
+import { useMobileSize } from '~/hooks/useMobileSize'
 export default function FeedCommunityCard (): JSX.Element {
   const isMobile = useMobileSize()
   return (

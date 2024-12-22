@@ -62,7 +62,7 @@ function CardSignup ({ maxWidth = '400px' }: { maxWidth?: string }): JSX.Element
   const navigate = useNavigate()
   const handleSignIn = (event: any): void => {
     event.preventDefault()
-    navigate('/signin')
+    navigate('/login')
   }
   const handleSignUp = (event: any): void => {
     event.preventDefault()

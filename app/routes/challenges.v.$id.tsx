@@ -1,5 +1,6 @@
 import { loadChallengeSummary } from '~/models/challenge.server'
 import { Outlet, useLoaderData, useNavigate, useLocation, useMatches, type MetaFunction } from '@remix-run/react'
+import useGatedNavigate from '~/hooks/useGatedNavigate'
 import { useContext, useEffect, useState } from 'react'
 import { getCurrentUser } from '~/models/auth.server'
 import type { MemberChallenge, Challenge, ChallengeSummary, CheckIn } from '~/utils/types'
@@ -13,7 +14,7 @@ import {
 } from '~/utils/helpers'
 import { type DateTimeFormatOptions } from 'intl'
 import { CurrentUserContext } from '~/utils/CurrentUserContext'
-import { Button, Spinner } from '@material-tailwind/react'
+import { Spinner } from '@material-tailwind/react'
 import { LiaUserFriendsSolid } from 'react-icons/lia'
 import { prisma } from '~/models/prisma.server'
 import { isPast, isFuture } from 'date-fns'
@@ -83,6 +84,7 @@ export default function ViewChallenge (): JSX.Element {
   const isExpired = isPast(challenge.endAt as Date)
   const { currentUser } = useContext(CurrentUserContext)
   const navigate = useNavigate()
+  const gatedNavigate = useGatedNavigate()
   const [loading, setLoading] = useState<boolean>(false)
   const [isMember, setIsMember] = useState(Boolean(membership?.id))
   const isStarted = challenge.startAt ? isPast(challenge.startAt as Date) : false
@@ -101,7 +103,7 @@ export default function ViewChallenge (): JSX.Element {
     if (!currentUser) {
       const redirectTo = location.pathname
       localStorage.setItem('redirectTo', redirectTo)
-      navigate(`/signin?redirectTo=${redirectTo}`)
+      navigate(`/signup?redirectTo=${redirectTo}`)
       return
     }
     if (challenge.type === 'SELF_LED' && !isMember) {
@@ -159,7 +161,7 @@ export default function ViewChallenge (): JSX.Element {
         <div className='text-lg py-2 flex items-center justify-center w-full gap-4'>
           <div className={`w-fit ${isOverview ? 'border-b-2 border-red' : 'cursor-pointer'}`} onClick={() => { navigate(`/challenges/v/${challenge.id}`) }}>Overview</div>
           <div className={`w-fit ${isProgram ? 'border-b-2 border-red' : 'cursor-pointer'}`} onClick={() => { navigate(`/challenges/v/${challenge.id}/program`) }}>Program</div>
-          {challenge.type === 'SCHEDULED' && <div className={`w-fit ${isPosts ? 'border-b-2 border-red' : 'cursor-pointer'}`} onClick={() => { navigate(`/challenges/v/${challenge.id}/chat`) }}>Chat</div>}
+          {challenge.type === 'SCHEDULED' && <div className={`w-fit ${isPosts ? 'border-b-2 border-red' : 'cursor-pointer'}`} onClick={() => { gatedNavigate(`/challenges/v/${challenge.id}/chat`) }}>Chat</div>}
         </div>
         {isOverview &&
           <div className={`${challenge.type === 'SELF_LED' ? 'mt-0' : 'mt-4'}`}>

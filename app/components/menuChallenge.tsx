@@ -8,7 +8,7 @@ import { GiHamburgerMenu } from 'react-icons/gi'
 import axios from 'axios'
 import { toast } from 'react-hot-toast'
 import { type MenuProps } from '@material-tailwind/react'
-import { useMobileSize } from '~/utils/useMobileSize'
+import { useMobileSize } from '~/hooks/useMobileSize'
 
 interface MenuChallengeProps {
   challenge: Challenge | ChallengeSummary

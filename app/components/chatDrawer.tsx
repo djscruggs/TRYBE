@@ -6,7 +6,7 @@ import { ChatRowSkeleton } from './skeletons'
 import { toast } from 'react-hot-toast'
 import FormChat from './formChat'
 import axios from 'axios'
-import { useShouldRefresh } from '~/utils/useShouldRefresh'
+import { useShouldRefresh } from '~/hooks/useShouldRefresh'
 interface ChatDrawerProps {
   isOpen: boolean
   placement: 'left' | 'right' | 'top' | 'bottom'

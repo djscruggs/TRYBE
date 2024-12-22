@@ -34,18 +34,18 @@ export default function ChallengesIndex (): JSX.Element {
     const allChallenges = response.data.challenges as ChallengeSummary[]
     const userMemberships = response.data.memberships as MemberChallenge[]
     // Filter challenges where the user is a member or owner
-    // const userChallenges = allChallenges.filter(challenge =>
-    //   userMemberships.some(membership => membership.challengeId === challenge.id) ||
-    //   challenge.userId === currentUser?.id
-    // )
-    // const otherChallenges = allChallenges.filter(challenge =>
-    //   !userMemberships.some(membership => membership.challengeId === challenge.id) &&
-    //   challenge.userId !== currentUser?.id
-    // )
+    const userChallenges = allChallenges.filter(challenge =>
+      userMemberships.some(membership => membership.challengeId === challenge.id) ||
+      challenge.userId === currentUser?.id
+    )
+    const otherChallenges = allChallenges.filter(challenge =>
+      !userMemberships.some(membership => membership.challengeId === challenge.id) &&
+      challenge.userId !== currentUser?.id
+    )
     // console.log('otherChallenges', otherChallenges)
 
     // Filter challenges where the user is not a member or owner
-    setMyChallenges(allChallenges)
+    setMyChallenges(userChallenges)
     setMemberships(userMemberships)
     setLoading(false)
   }

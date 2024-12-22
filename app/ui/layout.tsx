@@ -1,26 +1,16 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { SignedIn, SignedOut, useClerk, UserButton } from '@clerk/remix'
-import useHasLoaded from '~/utils/useHasLoaded'
+import { SignedIn, SignedOut, UserButton } from '@clerk/remix'
+import useHasLoaded from '~/hooks/useHasLoaded'
 import { useLocation, Outlet, useNavigate, Link } from '@remix-run/react'
 
 import NavLinks from './navlinks'
 import { CurrentUserContext } from '~/utils/CurrentUserContext'
 import {
-  // BellIcon,
-  // MagnifyingGlassIcon,
-  // ChatBubbleLeftRightIcon,
   HomeIcon,
-  ArchiveBoxIcon,
-  TrophyIcon,
-  // UserGroupIcon,
-  // UsersIcon,
-  IdentificationIcon,
   PlusCircleIcon,
-  ChatBubbleLeftEllipsisIcon
+  IdentificationIcon
 } from '@heroicons/react/24/outline'
-import { AnimatePresence, motion } from 'framer-motion'
 import { FaChevronCircleLeft } from 'react-icons/fa'
-import { HiOutlineLogout } from 'react-icons/hi'
 export default function Layout (): JSX.Element {
   const hasLoaded = useHasLoaded()
   if (!hasLoaded) {
@@ -61,7 +51,7 @@ export const FullLayout = (): JSX.Element => {
   const isWelcome = location.pathname.includes('/challenges/')
   const isLanding = location.pathname.includes('/landing')
   useEffect(() => {
-    if (['/', '/register', '/login', '/signup', '/signin', '/landing'].includes(location.pathname)) {
+    if (['/', '/register', '/login', '/signup', '/landing'].includes(location.pathname)) {
       setShowNav(false)
     } else {
       setShowNav(true)

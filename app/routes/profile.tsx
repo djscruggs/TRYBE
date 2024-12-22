@@ -5,7 +5,7 @@ import { HiOutlineLogout } from 'react-icons/hi'
 export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
   const auth = await getAuth(args)
   if (!auth.userId) {
-    return redirect('/signin')
+    return redirect('/login')
   }
   return auth
 }
