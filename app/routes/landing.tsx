@@ -1,5 +1,5 @@
 import LandingPage from '~/components/landingPage'
-
+import { type MetaFunction } from '@remix-run/node'
 export const meta: MetaFunction = () => [
   { title: 'Trybe' },
   { name: 'description', content: 'Build new habits. Join challenges. Meet your Trybe.' },
