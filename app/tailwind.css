@@ -14,8 +14,16 @@
 
 /* bug reporting widget see https://docs.sentry.io/platforms/javascript/user-feedback/configuration/ */
 #sentry-feedback {
-  --bottom: 2.8rem !important; 
-  --right: .3rem !important;
+  --bottom: .6rem !important;
+  --right: .2rem !important;
+  @media (max-width: 640px) {
+    --bottom: .2rem !important;
+    --right: .2rem !important;
+  }
+  bottom: var(--bottom);
+  .widget__actor {
+    width: 150px !important;
+  }
 }
 
 
