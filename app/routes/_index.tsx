@@ -1,7 +1,9 @@
 import { type LoaderFunction, type LoaderFunctionArgs, redirect, type MetaFunction } from '@remix-run/node'
 import { getAuth } from '@clerk/remix/ssr.server'
-
+import { useState, useEffect } from 'react'
 import { WelcomePage } from '~/components/welcomepage'
+import LandingPage from '~/components/landingPage'
+import { useNavigate } from '@remix-run/react'
 
 export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
   const { userId } = await getAuth(args)
@@ -28,9 +30,23 @@ export const meta: MetaFunction = () => [
 
 ]
 export default function Index (): JSX.Element {
+  const splashSeen = localStorage.getItem('splashSeen')
+  const navigate = useNavigate()
+  const [loading, setLoading] = useState(true)
+  console.log('splashSeen', splashSeen)
+  useEffect(() => {
+    if (splashSeen) {
+      navigate('/challenges')
+    } else {
+      setLoading(false)
+      localStorage.setItem('splashSeen', 'true')
+    }
+  }, [])
   return (
           <>
-            <WelcomePage />
+            {!loading &&
+              <LandingPage />
+            }
           </>
   )
 }

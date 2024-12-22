@@ -133,8 +133,7 @@ export const FullLayout = (): JSX.Element => {
             </SignedIn>
             <SignedOut>
               <div className='flex-grow  items-center justify-start'>
-                <div className='flex flex-col items-center justify-start h-full'>
-
+                <div className='flex flex-col items-center justify-start h-full pl-4'>
                   <Outlet />
                 </div>
               </div>

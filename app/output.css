@@ -4233,9 +4233,6 @@ video {
     --right: .2rem !important;
   }
   bottom: var(--bottom);
-  .widget__actor {
-    width: 150px !important;
-  }
 }
 
 .file\:mr-5::file-selector-button {

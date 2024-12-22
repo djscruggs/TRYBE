@@ -21,9 +21,6 @@
     --right: .2rem !important;
   }
   bottom: var(--bottom);
-  .widget__actor {
-    width: 150px !important;
-  }
 }
 
 
