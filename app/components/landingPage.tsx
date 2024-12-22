@@ -116,7 +116,7 @@ const NavigationArrows = ({ step = 1, nextStep, skip, className }: { step: numbe
     <div className={`w-full relative flex justify-center items-center space-x-2 ${className}`}>
       {step < 3 &&
         <>
-        <div className='z-10 text-gray-400 cursor-pointer text-2xl absolute bottom-0 left-10 md:left-36' onClick={() => { skip() }}>SKIP</div>
+        <div className='z-10 text-gray-400 cursor-pointer text-2xl absolute bottom-3 left-10 md:left-36' onClick={() => { skip() }}>SKIP</div>
         <FaArrowCircleRight className='z-10 text-red rounded-full text-6xl cursor-pointer absolute bottom-0 right-10 md:right-36' onClick={() => { nextStep() }}/>
         </>
       }
