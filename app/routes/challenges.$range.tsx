@@ -124,8 +124,8 @@ export default function ChallengesIndex (): JSX.Element {
                   <div className='text-lg flex-col justify-start w-full relative'>
                     <div className='text-red font-bold'>What&apos;s New</div>
                   <div className='flex items-start justify-start space-x-4'>
-                    <div className='h-40 w-48 border border-red rounded-md bg-red p-4'>Item 1</div>
-                    <div className='h-40 w-48 border border-red rounded-md bg-red p-4'>Item 2</div>
+                    <div className='h-40 w-48 border border-red rounded-md bg-red p-4 text-white'>Item 1</div>
+                    <div className='h-40 w-48 border border-red rounded-md bg-red p-4 text-white'>Item 2</div>
                   </div>
                 </div>
               </div>
