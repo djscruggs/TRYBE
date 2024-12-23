@@ -3,7 +3,8 @@ export default function Logo ({ size = '24px', backgroundColor = 'white', classN
         <img src="/logo.png" className={`h-[${size}] bg-${backgroundColor} rounded-full ${className}`} />
   )
 }
-// not used, this is used to generate tailwind classes
+// this is used to generate tailwind classes
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const sizes = {
   24: <span className='h-[24px] w-[24px]'>T</span>,
   36: <span className='h-[36px] w-[36px]'>T</span>,

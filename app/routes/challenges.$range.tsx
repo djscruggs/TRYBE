@@ -1,12 +1,13 @@
-import { useNavigate, useParams, Link } from '@remix-run/react'
-import { useEffect, useState, useContext } from 'react'
+import { useNavigate, useParams } from '@remix-run/react'
+import { useEffect, useState, useContext, useRef } from 'react'
 import type { ChallengeSummary, MemberChallenge } from '~/utils/types'
 import ChallengeList from '~/components/challengeList'
 import axios, { type AxiosRequestConfig } from 'axios'
 import { CurrentUserContext } from '~/utils/CurrentUserContext'
-import { Switch } from '@material-tailwind/react'
 export default function ChallengesIndex (): JSX.Element {
   const [myChallenges, setMyChallenges] = useState<ChallengeSummary[]>([])
+  const browseRef = useRef<HTMLDivElement | null>(null)
+  const [isExtended, setIsExtended] = useState(false) // this is used to extend the screen that the scroll into view is applied to
   const [categoryFilter, setCategoryFilter] = useState<string[]>([])
   const [upcomingChallenges, setUpcomingChallenges] = useState<ChallengeSummary[]>([])
   const params = useParams()
@@ -45,7 +46,7 @@ export default function ChallengesIndex (): JSX.Element {
     // console.log('otherChallenges', otherChallenges)
 
     // Filter challenges where the user is not a member or owner
-    setMyChallenges(userChallenges)
+    setMyChallenges([])
     setMemberships(userMemberships)
     setLoading(false)
   }
@@ -71,6 +72,17 @@ export default function ChallengesIndex (): JSX.Element {
     setUpcomingChallenges(filteredUpcomingChallenges)
     setLoadingUpcoming(false)
   }
+  const [triggerRender, setTriggerRender] = useState(1)
+  const scrollToBrowse = (): void => {
+    setIsExtended(true)
+    setTriggerRender(prev => prev + 1)
+  }
+  useEffect(() => {
+    if (isExtended && browseRef.current) {
+      browseRef.current.scrollIntoView({ behavior: 'smooth' })
+    }
+  }, [triggerRender])
+
   useEffect(() => {
     void loadData().then(() => {
       void loadUpcomingChallenges()
@@ -82,23 +94,47 @@ export default function ChallengesIndex (): JSX.Element {
   const categories = ['Meditation', 'Journal', 'Creativity', 'Health']
   return (
         <div className="w-full">
-          {!loading && myChallenges.length > 0 &&
+          {!loading &&
             <>
-              <div className='text-lg py-2 flex items-center justify-start w-full relative'>
-              <div className='text-red cursor-pointer' onClick={() => { handleStatusChange('active') }}>My Challenges</div>
-              <div className={`absolute right-2 text-xs text-gray-500 underline cursor-pointer ${status === 'archived' ? 'text-red' : ''}`} onClick={() => { handleStatusChange('archived') }}>Archived</div>
-            </div>
-            <div className="flex flex-col items-center max-w-lg w-full">
-              {!loading && myChallenges.length === 0 &&
-                <div className="text-center mt-10">No {status !== 'mine' ? status : ''} challenges found</div>
-              }
-              <ChallengeList challenges={myChallenges} memberships={memberships} isLoading={loading} />
+              <div className='mb-8'>
+                  <div className='text-lg flex items-center justify-start w-full relative'>
+                    <div className='text-red cursor-pointer font-bold' onClick={() => { handleStatusChange('active') }}>My Challenges</div>
+                      {currentUser &&
+                        <div className={`absolute right-2 text-xs text-gray-500 underline cursor-pointer ${status === 'archived' ? 'text-red' : ''}`} onClick={() => { handleStatusChange('archived') }}>Archived</div>
+                      }
+                  </div>
+                  <div className="flex flex-col rounded-md p-2 max-w-lg w-full">
+                    {!loading && myChallenges.length === 0
+                      ? (
+                      <>
+                        <p className='text-left text-gray-500'>It&apos;s A Little Quiet Here... Ready To Spark Some Action?</p>
+                        <div className='flex items-center justify-start space-x-2 mt-4'>
+                          <button className='text-white bg-red p-2 text-xs rounded-full underline italic px-4' onClick={scrollToBrowse}>BROWSE CHALLENGES</button>
+                          <button className='text-red bg-white border border-red p-2 text-xs rounded-full underline italic px-4' onClick={() => { navigate('/challenges/new') }}>CREATE YOUR OWN</button>
+                        </div>
+                      </>
+                        )
+                      : (
+                      <ChallengeList challenges={myChallenges} memberships={memberships} isLoading={loading} />
+                        )}
+                  </div>
               </div>
+              {currentUser?.role === 'ADMIN' &&
+                <div className='mb-8'>
+                  <div className='text-lg flex-col justify-start w-full relative'>
+                    <div className='text-red font-bold'>What&apos;s New</div>
+                  <div className='flex items-start justify-start space-x-4'>
+                    <div className='h-40 w-48 border border-red rounded-md bg-red p-4'>Item 1</div>
+                    <div className='h-40 w-48 border border-red rounded-md bg-red p-4'>Item 2</div>
+                  </div>
+                </div>
+              </div>
+              }
             </>
           }
           {!loading &&
             <>
-              <div className='text-red'>Browse Challenges</div>
+              <div ref={browseRef} className='text-red font-bold text-lg'>Browse Challenges</div>
               <div className='py-2 space-x-2 flex items-center justify-between md:justify-start relative text-white text-xs md:text-sm'>
                 {categories.map((cat: string) => (
                   <div
@@ -109,6 +145,7 @@ export default function ChallengesIndex (): JSX.Element {
                     {cat}
                   </div>
                 ))}
+                <span className='px-2 text-grey'>|</span>
                 <div className={`w-fit p-1 px-2 rounded-md cursor-pointer ${selfGuided ? 'bg-gray-400' : 'text-black bg-gray-100'}`}
                   onClick={() => { setSelfGuided(prev => !prev) }}
                 >
@@ -122,6 +159,9 @@ export default function ChallengesIndex (): JSX.Element {
               <div className="flex flex-col items-center max-w-lg w-full">
                 <ChallengeList challenges={upcomingChallenges} memberships={memberships} isLoading={loadingUpcoming} />
               </div>
+              {isExtended &&
+                <div className='h-[800px]'></div>
+              }
             </>
           }
         </div>
