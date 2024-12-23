@@ -75,7 +75,6 @@
     "react-resizable": "^3.0.5",
     "remix-utils": "^7.5.0",
     "save": "^2.9.0",
-    "sharp": "^0.33.4",
     "svix": "^1.21.0",
     "ts-node": "^10.9.2",
     "upgrade-remix": "^0.6.2",
