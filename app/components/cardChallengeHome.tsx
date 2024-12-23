@@ -32,7 +32,14 @@ export default function CardChallengeHome ({ challenge, isMember, isPreview }: C
     if (isPreview) {
       return
     }
-    const url = `/challenges/v/${challenge.id}`
+    let url = `/challenges/v/${challenge.id}`
+    if (isMember) {
+      if (challenge.type === 'SCHEDULED') {
+        url = `/challenges/v/${challenge.id}/chat`
+      } else {
+        url = `/challenges/v/${challenge.id}/checkins`
+      }
+    }
     navigate(url)
   }
   let challengeLength = ''
