@@ -30,7 +30,11 @@ Sentry.init({
     }),
     Sentry.feedbackIntegration({
       // Additional SDK configuration goes in here, for example:
-      colorScheme: 'system'
+      colorScheme: 'system',
+      buttonLabel: 'Give Feedback',
+      submitButtonLabel: 'Send Feedback',
+      formTitle: 'Send Feedback',
+      messagePlaceholder: 'Describe your feedback or bug'
     }),
     Sentry.replayIntegration({
       maskAllText: false,
