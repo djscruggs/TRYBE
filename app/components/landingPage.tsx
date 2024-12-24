@@ -37,13 +37,13 @@ export default function LandingPage (): JSX.Element {
               <div className='relative flex flex-col h-screen flex-grow items-start justify-start  text-red font-light max-w-[800px] w-full'>
                 <div className='text-xl text-left w-full pl-20 md:pl-60 mt-10'>WELCOME TO</div>
                 <div className='text-8xl font-bold text-center w-full font-cursive'>Trybe</div>
-                <div className='text-xl text-right w-full mb-20 pr-20 md:pr-60'>(BETA)</div>
+                <div className='text-xl text-right w-full mb-8 md:mb-20 pr-20 md:pr-60'>(BETA)</div>
                 <div className='text-[#696262] text-xl text-center w-full'>
                   <p className='text-lg'>Discover your next challenge.</p>
                   <p className='text-lg'>Find your Trybe.</p>
 
                 </div>
-                <div className='flex flex-col justify-between w-full mt-12'>
+                <div className='flex flex-col justify-between w-full mt-12  md:px-24'>
                     <NavigationDots step={step} />
                     <NavigationArrows step={step} skip={skipStep} nextStep={incrementStep} className='mt-24'/>
                 </div>
@@ -63,9 +63,9 @@ export default function LandingPage (): JSX.Element {
                   <div className='flex justify-center items-center  w-full mb-4'>
                     <img src="/images/landing/howitworks.png" alt="How it works" className='h-[360px]' />
                   </div>
-                  <div className='flex flex-col justify-between w-full flex-grow'>
+                  <div className='flex flex-col justify-between w-full flex-grow md:mt-16 md:px-24'>
                     <NavigationDots step={step} />
-                    <NavigationArrows step={step} skip={skipStep} nextStep={incrementStep} className='mt-16'/>
+                    <NavigationArrows step={step} skip={skipStep} nextStep={incrementStep} className='mt-16 md:mt-32'/>
                   </div>
 
                 </div>
@@ -91,9 +91,9 @@ export default function LandingPage (): JSX.Element {
                   <div className='flex justify-center items-start  w-full mb-2'>
                     <img src="/images/landing/improvement.png" alt="Continuous improvement is better than delayed perfection" className='w-auto h-[200px]' />
                   </div>
-                  <div className='flex-col justify-center items-center space-x-2 w-full'>
+                  <div className='flex-col justify-center items-center space-x-2 w-full md:mt-16 md:px-24'>
                     <NavigationDots step={step} />
-                    <NavigationArrows step={step} skip={skipStep} nextStep={incrementStep} className='mt-16' />
+                    <NavigationArrows step={step} skip={skipStep} nextStep={incrementStep} className='mt-12 md:mt-16' />
                   </div>
 
                 </div>
@@ -101,7 +101,7 @@ export default function LandingPage (): JSX.Element {
               </div>
             }
             {step === 1 &&
-              <img src="/images/landing/people-bottom.png" alt="people-bottom" className='absolute bottom-0 w-full object-cover' />
+              <img src="/images/landing/people-bottom.png" alt="people-bottom" className='absolute bottom-20 md:bottom-0 w-full object-cover' />
             }
           </div>
   )
@@ -140,10 +140,12 @@ const NavigationArrows = ({ step = 1, nextStep, skip, className }: { step: numbe
         </>
       }
       {step > 2 &&
-
-      <button onClick={getStarted} className="p-2 py-1 rounded-full bg-red text-white text-sm uppercase hover:bg-gray-200 absolute bottom-0">
+      <>
+      <div className='z-10 text-gray-400 cursor-pointer text-xl absolute bottom-0 left-6' onClick={() => { skip() }}>DONE</div>
+      <button onClick={getStarted} className="p-2 py-1 rounded-full bg-red text-white text-sm uppercase absolute bottom-0 right-6">
         Get Started
       </button>
+      </>
 }
 
     </div>
