@@ -24,6 +24,7 @@ export default function CardChallengeHome ({ challenge, isMember, isPreview }: C
   const navigate = useNavigate()
   const bgColor = colorToClassName(challenge?.color ?? '', 'red')
   const memberCount = challenge?._count?.members ?? 0
+
   const isExpired = isPast(challenge.endAt ?? new Date('1970-01-01'))
   const isStarted = !isExpired && challenge.startAt ? isPast(challenge.startAt) : false
   const checkInButtonDisabled = isExpired || !isStarted
@@ -34,7 +35,7 @@ export default function CardChallengeHome ({ challenge, isMember, isPreview }: C
     }
     let url = `/challenges/v/${challenge.id}`
     if (isMember) {
-      if (challenge.type === 'SCHEDULED') {
+      if (memberCount < 2 || challenge.type === 'SCHEDULED') {
         url = `/challenges/v/${challenge.id}/chat`
       } else {
         url = `/challenges/v/${challenge.id}/checkins`

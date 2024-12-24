@@ -3,6 +3,7 @@ import { FaArrowCircleRight } from 'react-icons/fa'
 import { useSearchParams, useNavigate } from 'react-router-dom'
 import { FaLessThan } from 'react-icons/fa6'
 import Logo from '../components/logo'
+import HideFeedbackButton from './hideFeedbackButton'
 export default function LandingPage (): JSX.Element {
   const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
@@ -19,7 +20,10 @@ export default function LandingPage (): JSX.Element {
   }
 
   return (
-          <div className='relative w-screen max-w-[800px] border-2 border-black h-svh items-start flex-grow flex flex-col rounded-lg md:shadow-inner md:m-4  pt-4 md:pt-8 text-[#555555]'>
+          <div className='relative w-screen max-w-[800px] h-screen items-start flex-grow flex flex-col rounded-lg md:shadow-inner md:m-4  pt-4 md:pt-8 text-[#555555]'>
+            {/* this hides the sentry feedback button that shows up globally */}
+            <HideFeedbackButton />
+
             <div className='w-full mb-4'>
               <div className='flex justify-center items-center w-1/2'>
                 <FaLessThan className={`text-lessblack text-lg text-left w-full ${step > 1 ? 'cursor-pointer' : 'invisible'}`} onClick={() => { if (step > 1) { setStep(step - 1) } }}/>
@@ -39,26 +43,32 @@ export default function LandingPage (): JSX.Element {
                   <p className='text-lg'>Find your Trybe.</p>
 
                 </div>
-                <div className='flex justify-center items-center space-x-2 w-full'>
-                  <NavigationDots step={step} />
+                <div className='flex flex-col justify-between w-full mt-12'>
+                    <NavigationDots step={step} />
+                    <NavigationArrows step={step} skip={skipStep} nextStep={incrementStep} className='mt-24'/>
                 </div>
-                <NavigationArrows step={step} skip={skipStep} nextStep={incrementStep} className='mt-36' />
               </div>
             }
             {step === 2 &&
-              <div className='relative w-full h-screen'>
-                <div className='flex-col  w-full items-center justify-center'>
-                  <h1 className='text-xl font-bold text-center mt-4'>What you can do with <span className='text-red font-cursive'>Trybe</span></h1>
-                  <p className='text-lg text-center'>Our intentional design lets you<br /> get what you need, no matter <br />what <span className='font-bold'>#mood</span> you&apos;re in</p>
-                  <div className='flex justify-center items-start  w-full mb-8'>
-                    <img src="/images/landing/howitworks.png" alt="How it works" className='h-[400px]' />
+              <div className='relative w-full flex-grow'>
+                <div className='flex-col w-full'>
+                  <h1 className='text-xl font-bold text-center mt-0'>What you can do with <span className='text-red font-cursive'>Trybe</span></h1>
+                  <div className='text-lg text-center mb-4'>
+                    Our intentional design lets you
+                    <br />
+                    get what you need, no matter
+                    <br />
+                    what <span className='font-bold'>#mood</span> you&apos;re in
+                  </div>
+                  <div className='flex justify-center items-center  w-full mb-4'>
+                    <img src="/images/landing/howitworks.png" alt="How it works" className='h-[360px]' />
+                  </div>
+                  <div className='flex flex-col justify-between w-full flex-grow'>
+                    <NavigationDots step={step} />
+                    <NavigationArrows step={step} skip={skipStep} nextStep={incrementStep} className='mt-16'/>
                   </div>
 
-                    <NavigationDots step={step} />
-                    <div className='flex-grow items-start border-2 border-red w-full absolute bottom-0'>
-                      <NavigationArrows step={step} skip={skipStep} nextStep={incrementStep} className='mt-24' />
-                    </div>
-                  </div>
+                </div>
 
               </div>
             }
