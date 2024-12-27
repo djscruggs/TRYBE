@@ -1,9 +1,8 @@
-import { joinChallenge, unjoinChallenge } from '~/models/challenge.server'
+import { joinChallenge, unjoinChallenge, loadChallenge } from '~/models/challenge.server'
 import { requireCurrentUser } from '~/models/auth.server'
 import { loadUser } from '~/models/user.server'
 import { json, type LoaderFunction, type ActionFunctionArgs } from '@remix-run/node'
 import type { MemberChallenge } from '@prisma/client'
-
 export async function action (args: ActionFunctionArgs): Promise<Response> {
   const currentUser = await requireCurrentUser(args)
   const { params } = args
@@ -18,21 +17,31 @@ export async function action (args: ActionFunctionArgs): Promise<Response> {
         data: result
       }), { status: 200 }) // 200 OK
     } else {
-      const formData = await args.request.formData()
-      const notificationHour = formData.get('notificationHour') as string
-      const notificationMinute = formData.get('notificationMinute') as string
-      const startAt = formData.get('startAt') as string
-      const startAtDate = startAt ? new Date(startAt.toString()) : undefined
-      const notificationHourNumber = notificationHour != null ? Number(notificationHour.toString()) : undefined
-      const notificationMinuteNumber = notificationMinute != null ? Number(notificationMinute.toString()) : undefined
-
-      const result = await joinChallenge(Number(user.id), Number(params.id), startAtDate, notificationHourNumber, notificationMinuteNumber)
+      // load the challenge
+      const challenge = await loadChallenge(Number(params.id))
+      if (!challenge) {
+        throw new Error('Challenge with id ' + params.id + ' not found')
+      }
+      let result: MemberChallenge
+      if (challenge?.type === 'SELF_LED') {
+        const formData = await args.request.formData()
+        const notificationHour = formData.get('notificationHour') as string
+        const notificationMinute = formData.get('notificationMinute') as string
+        const startAt = formData.get('startAt') as string
+        const startAtDate = startAt ? new Date(startAt.toString()) : undefined
+        const notificationHourNumber = notificationHour != null ? Number(notificationHour.toString()) : undefined
+        const notificationMinuteNumber = notificationMinute != null ? Number(notificationMinute.toString()) : undefined
+        result = await joinChallenge(Number(user.id), Number(params.id), startAtDate, notificationHourNumber, notificationMinuteNumber)
+      } else {
+        result = await joinChallenge(Number(user.id), Number(params.id))
+      }
       return new Response(JSON.stringify({
         result: 'joined',
         data: result
       }), { status: 201 }) // 201 Created
     }
   } catch (error) {
+    console.error(error)
     return new Response(JSON.stringify({
       result: 'error',
       message: error instanceof Error ? error.message : 'An unknown error occurred'
