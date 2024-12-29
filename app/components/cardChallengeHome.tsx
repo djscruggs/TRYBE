@@ -107,6 +107,7 @@ export default function CardChallengeHome ({ challenge, isMember, isPreview }: C
 
                   <div className='text-xs text-darkgrey flex items-center justify-start'>
                     <span className='text-black text-lg'>{challenge.name}</span>
+                    {challenge.status === 'DRAFT' && <div className='text-sm font-light text-yellow ml-2'>Draft</div>}
                     {isHost &&
                       <> <span className='mx-2'>| </span> <span className='text-xs font-taprom text-blue'>Hosting</span></>
                     }
