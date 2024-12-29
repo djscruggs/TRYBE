@@ -15,7 +15,9 @@ const TEMPLATES = {
   POST: 'd-139902a1da0942a5bd08308598092164',
   CONTACT_HOST: 'd-149674868c814ae795698747d3c71a65',
   REPLY_NOTIFICATION: 'd-6a5d461f89a1417ab36ebea0a50b64be',
-  CHECKIN_REMINDER: 'd-e0af565878704bfd85ea71146ccff90f'
+  CHECKIN_REMINDER: 'd-e0af565878704bfd85ea71146ccff90f',
+  WELCOME: 'd-fd916ab44ef2481ea8c79c7603094732',
+  CHALLENGE_WELCOME: 'd-c0d3fd810fbd4c98ab97a7040f8dc1fc'
 }
 
 function setupEnvironment (): void {
@@ -38,7 +40,10 @@ async function sendEmail (msg: MailDataRequired): Promise<any> {
     console.log('Test environment detected, using mockSendgridResponse')
     return mockSendgridResponse()
   }
-  return await sendEmail(msg)
+  if (process.env.NODE_ENV === 'development') {
+    console.log('Sending email', msg)
+  }
+  return await sgMail.send(msg)
 }
 
 interface PostMailerProps {
@@ -144,7 +149,6 @@ export async function sendCheckinReminder (props: CheckinReminderMailerProps): P
     templateId: TEMPLATES.CHECKIN_REMINDER,
     dynamic_template_data
   }
-  console.log('msg', msg)
   const result = await sendEmail(msg as MailDataRequired)
   return result[0]
 }
@@ -166,4 +170,46 @@ const mockSendgridResponse = (): any => {
       'strict-transport-security': 'max-age=600; includeSubDomains'
     }
   }
+}
+export interface WelcomeMailerProps {
+  to: EmailData
+}
+
+export async function sendWelcomeEmail (props: WelcomeMailerProps): Promise<any> {
+  setupEnvironment()
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  const { to } = props
+  const msg = {
+    from: process.env.SENDGRID_FROM_EMAIL,
+    fromName: 'Trybe',
+    to: process.env.NODE_ENV === 'development' ? process.env.EMAIL_NOTIFICATIONS_TO : to,
+    templateId: TEMPLATES.WELCOME
+  }
+  const result = await sendEmail(msg as MailDataRequired)
+  return result[0]
+}
+
+export interface ChallengeWelcomeMailerProps {
+  to: EmailData
+  dynamic_template_data: {
+    challengeName: string
+    startDate: string
+    duration: string
+    description: string
+  }
+}
+
+export async function sendChallengeWelcome (props: ChallengeWelcomeMailerProps): Promise<any> {
+  setupEnvironment()
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  const { to, dynamic_template_data } = props
+  const msg = {
+    from: process.env.SENDGRID_FROM_EMAIL,
+    fromName: 'Trybe',
+    to: process.env.NODE_ENV === 'development' ? process.env.EMAIL_NOTIFICATIONS_TO : to,
+    templateId: TEMPLATES.CHALLENGE_WELCOME,
+    dynamic_template_data
+  }
+  const result = await sendEmail(msg as MailDataRequired)
+  return result[0]
 }

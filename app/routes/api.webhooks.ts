@@ -3,7 +3,7 @@ import { json, type LoaderFunction, type ActionFunction } from '@remix-run/node'
 import { updateUser, createUser, deleteUser } from '~/models/user.server'
 import { Webhook } from 'svix'
 import { prisma } from '~/models/prisma.server'
-
+import { sendWelcomeEmail } from '~/utils/mailer'
 // @see https://clerk.com/docs/integrations/webhooks/sync-data
 // {
 //   "data": {
@@ -73,6 +73,11 @@ export const action: ActionFunction = async ({ request }) => {
         lastLogin: new Date()
       }
       const user = await createUser(data)
+      try {
+        await sendWelcomeEmail({ to: user.email })
+      } catch (e) {
+        console.error('error in sendWelcomeEmail', e)
+      }
     }
     if (bodyJson.type === 'user.updated') {
       // first get user id from clerk id
@@ -84,6 +89,7 @@ export const action: ActionFunction = async ({ request }) => {
           profile: true
         }
       })
+      await sendWelcomeEmail({ to: 'me@derekscruggs.com' })
       // update email address
       const primaryEmailAddress = bodyJson.data.email_addresses.find((address: any) => address.id === bodyJson.data.primary_email_address_id).email_address
       await prisma.user.update({

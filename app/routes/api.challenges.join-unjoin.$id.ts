@@ -3,6 +3,10 @@ import { requireCurrentUser } from '~/models/auth.server'
 import { loadUser } from '~/models/user.server'
 import { json, type LoaderFunction, type ActionFunctionArgs } from '@remix-run/node'
 import type { MemberChallenge } from '@prisma/client'
+import { type ChallengeWelcomeMailerProps, sendChallengeWelcome } from '~/utils/mailer'
+import { formatDate } from '~/utils/helpers'
+import getUserLocale from 'get-user-locale'
+import { differenceInCalendarDays } from 'date-fns'
 export async function action (args: ActionFunctionArgs): Promise<Response> {
   const currentUser = await requireCurrentUser(args)
   const { params } = args
@@ -23,6 +27,11 @@ export async function action (args: ActionFunctionArgs): Promise<Response> {
         throw new Error('Challenge with id ' + params.id + ' not found')
       }
       let result: MemberChallenge
+      const tempData: Partial<ChallengeWelcomeMailerProps['dynamic_template_data']> = {
+        challengeName: challenge.name ?? '',
+
+        description: challenge.description ?? ''
+      }
       if (challenge?.type === 'SELF_LED') {
         const formData = await args.request.formData()
         const notificationHour = formData.get('notificationHour') as string
@@ -32,9 +41,17 @@ export async function action (args: ActionFunctionArgs): Promise<Response> {
         const notificationHourNumber = notificationHour != null ? Number(notificationHour.toString()) : undefined
         const notificationMinuteNumber = notificationMinute != null ? Number(notificationMinute.toString()) : undefined
         result = await joinChallenge(Number(user.id), Number(params.id), startAtDate, notificationHourNumber, notificationMinuteNumber)
+        tempData.startDate = formatDate(startAtDate?.toISOString() ?? '', getUserLocale())
+        tempData.duration = challenge.numDays?.toString() + ' days' ?? 'none'
       } else {
         result = await joinChallenge(Number(user.id), Number(params.id))
+        tempData.startDate = formatDate(challenge.startAt?.toISOString() ?? '', getUserLocale())
+        tempData.duration = differenceInCalendarDays(challenge.endAt ?? new Date(), challenge.startAt ?? new Date()).toString() + ' days'
       }
+      await sendChallengeWelcome({
+        to: user.email,
+        dynamic_template_data: tempData as ChallengeWelcomeMailerProps['dynamic_template_data']
+      })
       return new Response(JSON.stringify({
         result: 'joined',
         data: result

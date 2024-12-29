@@ -10,6 +10,7 @@ import { toast } from 'react-hot-toast'
 import type { Challenge, ChallengeSummary, MemberChallenge, CurrentUser, User } from './types'
 import { isPast } from 'date-fns'
 import { youtubeRegex } from '~/components/linkRenderer'
+import { type DateTimeFormatOptions } from 'intl'
 export const copyToClipboard = async (text: string): Promise<void> => {
   try {
     await navigator.clipboard.writeText(text)
@@ -302,4 +303,16 @@ export function challengeHasStarted (challenge: Challenge | ChallengeSummary, me
     }
   }
   return true
+}
+const dateOptions: DateTimeFormatOptions = {
+  weekday: 'short',
+  month: 'short',
+  day: 'numeric'
+}
+export function formatDate (dateString: string, locale: string): string {
+  const date = new Date(dateString)
+  if (date instanceof Date && !isNaN(date.getTime())) {
+    return date.toLocaleDateString(locale, dateOptions)
+  }
+  return ''
 }
