@@ -80,7 +80,7 @@ export default function CardChallengeHome ({ challenge, isMember, isPreview }: C
   const getFullUrl = (): string => {
     return `${window.location.origin}/challenges/v/${challenge.id}`
   }
-  const categoryNames = challenge.categories.map(category => category.name).filter((name): name is string => name !== undefined)
+  const categoryNames = challenge.categories?.map(category => category.name).filter((name): name is string => name !== undefined) ?? []
   return (
     <div className="mt-2 drop-shadow-none mr-2 w-full cursor-pointer">
 
