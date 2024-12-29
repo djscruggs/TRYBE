@@ -178,42 +178,46 @@ export const fetchChallengeSummaries = async ({
     where.push({ public: true })
   }
   where.push({ status: 'PUBLISHED' })
-  switch (range) {
-    case 'upcoming': {
-      const upcomingCondition = { startAt: { gt: new Date() } }
-      if (type !== 'all') {
-        where.push({
-          OR: [
-            upcomingCondition,
-            { type: type.toUpperCase() }
+  if (type === 'SELF_LED') {
+    where.push({ type: 'SELF_LED' })
+  } else {
+    switch (range) {
+      case 'upcoming': {
+        const upcomingCondition = { startAt: { gt: new Date() } }
+        if (type !== 'all') {
+          where.push({
+            OR: [
+              upcomingCondition,
+              { type: type.toUpperCase() }
+            ]
+          })
+        } else {
+          where.push(upcomingCondition)
+        }
+        break
+      }
+      case 'archived':
+        where.push({ OR: [{ endAt: { lt: new Date() } }, { status: 'ARCHIVED' }] })
+        break
+      case 'active': {
+        const activeCondition = {
+          AND: [
+            { startAt: { lt: new Date() } },
+            { endAt: { gte: new Date() } }
           ]
-        })
-      } else {
-        where.push(upcomingCondition)
+        }
+        if (type !== 'all') {
+          where.push({
+            OR: [
+              activeCondition,
+              { type: type.toUpperCase() }
+            ]
+          })
+        } else {
+          where.push(activeCondition)
+        }
+        break
       }
-      break
-    }
-    case 'archived':
-      where.push({ OR: [{ endAt: { lt: new Date() } }, { status: 'ARCHIVED' }] })
-      break
-    case 'active': {
-      const activeCondition = {
-        AND: [
-          { startAt: { lt: new Date() } },
-          { endAt: { gte: new Date() } }
-        ]
-      }
-      if (type !== 'all') {
-        where.push({
-          OR: [
-            activeCondition,
-            { type: type.toUpperCase() }
-          ]
-        })
-      } else {
-        where.push(activeCondition)
-      }
-      break
     }
   }
 
@@ -239,6 +243,7 @@ export const fetchChallengeSummaries = async ({
       })
     }
   }
+  // console.log('where', JSON.stringify(where, null, 2))
   const params: Prisma.ChallengeFindManyArgs = {
     where: {
       AND: where
@@ -293,10 +298,9 @@ interface FetchUserChallengesAndMembershipsParams {
 }
 export const fetchUserChallengesAndMemberships = async ({ userId, type = 'all' }: FetchUserChallengesAndMembershipsParams): Promise<ChallengeSummary[]> => {
   const uid = Number(userId)
-  const memberChallengeWhere: Prisma.MemberChallengeWhereInput = { userId: uid }
   const memberChallenges = await prisma.memberChallenge.findMany(
     {
-      where: memberChallengeWhere,
+      where: { userId: uid },
       include: {
         challenge: {
           include: {
@@ -319,30 +323,11 @@ export const fetchUserChallengesAndMemberships = async ({ userId, type = 'all' }
   if (type !== 'all') {
     challengeWhere.type = type.toUpperCase() as ChallengeType
   }
-  const ownedChallenges = await prisma.challenge.findMany({
-    where: challengeWhere,
-    include: {
-      _count: {
-        select: { members: true, comments: true, likes: true }
-      },
-      user: {
-        include: {
-          profile: true
-        }
-      },
-      categories: {
-        select: {
-          category: true
-        }
-      }
-    }
-  })
-
-  // de-dupe any overlap
+  const ownedChallenges = await fetchUserChallenges(uid)
   const uniqueChallenges = [...new Map([...ownedChallenges, ...memberships].map(item => [item.id, item])).values()] as ChallengeSummary[]
   return uniqueChallenges
 }
-export const fetchUserChallenges = async (userId: string | number, showPrivate = false): Promise<ChallengeSummary[]> => {
+export const fetchUserChallenges = async (userId: string | number): Promise<ChallengeSummary[]> => {
   const uid = Number(userId)
   return await prisma.challenge.findMany({
     where: {

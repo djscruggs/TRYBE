@@ -45,7 +45,7 @@ export default function ChallengesIndex (): JSX.Element {
     )
 
     // Filter challenges where the user is not a member or owner
-    setMyChallenges([])
+    setMyChallenges(userChallenges)
     setMemberships(userMemberships)
     setLoading(false)
   }
@@ -63,12 +63,11 @@ export default function ChallengesIndex (): JSX.Element {
 
     // Filter out challenges where the user is already a member
     const allUpcomingChallenges = response.data.challenges as ChallengeSummary[]
-
+    const memberships = response.data.memberships as MemberChallenge[]
     const filteredUpcomingChallenges = allUpcomingChallenges.filter(challenge =>
       !memberships.some(membership => membership.challengeId === challenge.id) &&
       challenge.userId !== currentUser?.id
     )
-
     setUpcomingChallenges(filteredUpcomingChallenges)
     setLoadingUpcoming(false)
   }
