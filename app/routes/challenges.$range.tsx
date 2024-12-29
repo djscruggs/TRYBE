@@ -103,7 +103,7 @@ export default function ChallengesIndex (): JSX.Element {
                       }
                   </div>
                   <div className="flex flex-col rounded-md p-2 max-w-lg w-full">
-                    {!loading && myChallenges.length === 0
+                    {!loading && myChallenges.length === 0 && memberships.length === 0
                       ? (
                       <>
                         <p className='text-left text-gray-500'>It&apos;s A Little Quiet Here... Ready To Spark Some Action?</p>
