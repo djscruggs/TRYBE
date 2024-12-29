@@ -9,6 +9,8 @@ import axios from 'axios'
 import {
   textToJSX,
   userLocale,
+  removeYouTubeLinks,
+  removeLinks,
   pluralize,
   challengeHasStarted
 } from '~/utils/helpers'
@@ -24,6 +26,7 @@ import ChallengeHeader from '~/components/challengeHeader'
 import { CheckInButton } from '~/components/checkinButton'
 import DialogJoin from '~/components/dialogJoin'
 import ChallengeTabs from '~/components/challengeTabs'
+import LinkRenderer from '~/components/linkRenderer'
 interface ViewChallengeData {
   challenge: ChallengeSummary
   membership?: MemberChallenge | null | undefined
@@ -155,6 +158,7 @@ export default function ViewChallenge (): JSX.Element {
         <ChallengeTabs challenge={challenge as Challenge} isOverview={isOverview} isProgram={isProgram} isPosts={isPosts} isMember={isMember}/>
         <div className='relative'>
           {parsedDescription}
+          <LinkRenderer text={challenge.description ?? ''} />
         </div>
         {currentUser && challenge.type === 'SCHEDULED' && <button className='cursor-pointer  bg-green-500 hover:bg-red float-right text-white text-xs p-1 px-2 rounded-full' onClick={() => { navigate(`/challenges/v/${challenge.id}/contact`) }}>Contact Host</button>}
 

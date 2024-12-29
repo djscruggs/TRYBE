@@ -208,16 +208,22 @@ export function resizeImageToFit (width: number, height: number, maxSize: number
 
   return [newWidth, newHeight]
 }
-export function textToJSX (text: string | undefined): React.ReactNode {
+export function textToJSX (text: string | undefined, textOnly = false): React.ReactNode {
   if (!text) return null
+  const { text: textWithoutLinks, links } = separateTextAndLinks(text) ?? {}
+  // remove youtube links
+  const strippedLinks = links?.map((link) => {
+    return link.replace(youtubeRegex, '')
+  })
   return (
     <div>
-      {text.split('\n').map((line: string, index: number, array: string[]) => (
+      {textWithoutLinks?.split('\n').map((line: string, index: number, array: string[]) => (
         <React.Fragment key={index}>
           {convertTextToJSXAnchors(line)}
           {index < array.length - 1 && <br />} {/* Only add <br /> if not the last element */}
         </React.Fragment>
       ))}
+      {!textOnly && formatLinks({ links: strippedLinks ?? [], keyPrefix: 'text-to-jsx' })}
     </div>
   )
 }

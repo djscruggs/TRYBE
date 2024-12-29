@@ -4,7 +4,7 @@ import {
 } from '@material-tailwind/react'
 import { FaRegCalendarAlt, FaUserFriends } from 'react-icons/fa'
 import { type ChallengeSummary } from '~/utils/types'
-import { colorToClassName, resizeImageToFit } from '~/utils/helpers'
+import { colorToClassName, resizeImageToFit, textToJSX } from '~/utils/helpers'
 import { CurrentUserContext } from '~/utils/CurrentUserContext'
 import { useNavigate } from '@remix-run/react'
 import { differenceInCalendarDays, differenceInWeeks, differenceInBusinessDays, isPast } from 'date-fns'
@@ -96,7 +96,7 @@ export default function CardChallenge ({ challenge, isShare, isMember, isPreview
           <div className="w-full flex">
             <div className="w-3/5 border-0  h-24 max-h-24 mb-2">
               <div className="text-gray-400 mb-2 text-ellipsis ">
-              {shortDescription}
+              {textToJSX(shortDescription, true)}
               </div>
 
             </div>
