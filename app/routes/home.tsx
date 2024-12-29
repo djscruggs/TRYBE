@@ -11,7 +11,6 @@ import { type LoaderFunction } from '@remix-run/node'
 import { prisma } from '~/models/prisma.server'
 import CardChallenge from '~/components/cardChallenge'
 import CardNote from '~/components/cardNote'
-import getRandomQuote from '~/utils/quotes'
 
 interface FeedLoaderData {
   challenges: ChallengeSummary[]
@@ -40,6 +39,11 @@ export const loader: LoaderFunction = async (args): Promise<FeedLoaderData> => {
       },
       _count: {
         select: { members: true, comments: true, likes: true }
+      },
+      categories: {
+        select: {
+          category: true
+        }
       }
     }
 

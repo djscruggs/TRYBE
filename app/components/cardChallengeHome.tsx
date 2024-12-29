@@ -24,21 +24,22 @@ export default function CardChallengeHome ({ challenge, isMember, isPreview }: C
   const navigate = useNavigate()
   const bgColor = colorToClassName(challenge?.color ?? '', 'red')
   const memberCount = challenge?._count?.members ?? 0
-
   const isExpired = isPast(challenge.endAt ?? new Date('1970-01-01'))
   const isStarted = !isExpired && challenge.startAt ? isPast(challenge.startAt) : false
-  const checkInButtonDisabled = isExpired || !isStarted
+  const checkInButtonDisabled = isExpired || !isStarted || challenge.status === 'DRAFT'
   const goToChallenge = (event: any): void => {
     event.stopPropagation()
     if (isPreview) {
       return
     }
     let url = `/challenges/v/${challenge.id}`
-    if (isMember) {
-      if (memberCount < 2 || challenge.type === 'SCHEDULED') {
-        url = `/challenges/v/${challenge.id}/chat`
-      } else {
-        url = `/challenges/v/${challenge.id}/checkins`
+    if (challenge.status === 'PUBLISHED') {
+      if (isMember) {
+        if (memberCount < 2 || challenge.type === 'SCHEDULED') {
+          url = `/challenges/v/${challenge.id}/chat`
+        } else {
+          url = `/challenges/v/${challenge.id}/checkins`
+        }
       }
     }
     navigate(url)
@@ -79,6 +80,7 @@ export default function CardChallengeHome ({ challenge, isMember, isPreview }: C
   const getFullUrl = (): string => {
     return `${window.location.origin}/challenges/v/${challenge.id}`
   }
+  const categoryNames = challenge.categories.map(category => category.name).filter((name): name is string => name !== undefined)
   return (
     <div className="mt-2 drop-shadow-none mr-2 w-full cursor-pointer">
 
@@ -111,9 +113,6 @@ export default function CardChallengeHome ({ challenge, isMember, isPreview }: C
                     <ShareMenu className='ml-2' noText={true} copyUrl={getFullUrl()} itemType='challenge' itemId={Number(challenge.id)} isPreview={isPreview} />
                   </div>
                 </div>
-                {challenge.status === 'DRAFT' &&
-                  <div className='text-xs text-yellow'>Draft</div>
-                }
                 {challenge.type === 'SELF_LED'
                   ? <div className='text-xs text-darkgrey'>Self-Guided</div>
 
@@ -128,8 +127,11 @@ export default function CardChallengeHome ({ challenge, isMember, isPreview }: C
                     </div>
                   </>
                 }
+                {categoryNames.length > 0 &&
+                  <div className='text-xs text-blue inline mr-1'>{categoryNames.join(', ')}</div>
+                }
                 {!challenge.public &&
-                  <div className='text-xs text-darkgrey'>Private</div>
+                  <div className='text-xs text-darkgrey '>Private</div>
                 }
 
               </div>

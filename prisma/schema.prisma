@@ -134,7 +134,7 @@ model Challenge {
   userId         Int
   color          String?
   description    String?
-  startAt        DateTime?
+  startAt        DateTime?         @default(now())
   endAt          DateTime?
   numDays        Int?
   icon           String?

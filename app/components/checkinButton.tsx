@@ -19,6 +19,7 @@ export function CheckInButton ({ challenge, membership, afterCheckIn, size, labe
   if (!challenge?.id) {
     throw new Error('Challenge object with id is required')
   }
+  const isDraft = challenge.status === 'DRAFT'
   let isExpired = false
   if (membership?.startAt && challenge.type === 'SELF_LED') {
     const endDate = addDays(new Date(membership.startAt), challenge.numDays ?? 0)
@@ -34,17 +35,17 @@ export function CheckInButton ({ challenge, membership, afterCheckIn, size, labe
       afterCheckIn(checkIn)
     }
   }
-  const minWidth = size === 'xs' ? 'min-w-24' : size === 'sm' ? 'min-w-32' : size === 'md' ? 'min-w-32' : 'min-w-40'
+  const minWidth = size === 'xs' ? 'min-w-20' : size === 'sm' ? 'min-w-32' : size === 'md' ? 'min-w-32' : 'min-w-40'
 
   return (
     <>
       <div>
         <button
             onClick={() => { setShowForm(true) } }
-            className={className ?? `w-fit ${minWidth} bg-red hover:bg-green-500 text-white font-bold rounded-full p-2 justify-center text-sm disabled:bg-gray-400 ${isExpired ? 'opacity-50 cursor-not-allowed' : ''}`}
-            disabled={isExpired || !hasStarted || disabled}
+            className={className ?? `w-fit ${minWidth} bg-red hover:bg-green-500 text-white ${size === 'xs' ? 'text-xs p-1' : 'p-2'} rounded-full justify-center text-sm disabled:bg-gray-400 ${isExpired ? 'opacity-50 cursor-not-allowed' : ''}`}
+            disabled={isExpired || !hasStarted || isDraft || disabled}
           >
-            {isExpired ? 'Challenge Ended' : hasStarted ? label : 'Challenge Not Started'}
+            {isExpired ? 'Challenge Ended' : hasStarted ? label : 'Not Started'}
         </button>
       </div>
       {showForm &&

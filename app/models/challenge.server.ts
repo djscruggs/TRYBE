@@ -19,10 +19,18 @@ export const createChallenge = async (challenge: prisma.challengeCreateInput): P
 }
 export const updateChallenge = async (challenge: Partial<Challenge>): Promise<Challenge> => {
   const { id, userId, ...data } = challenge
-  return await prisma.challenge.update({
+  const updatedChallenge = await prisma.challenge.update({
     where: { id },
     data: data as Prisma.ChallengeUpdateInput
   }) as unknown as Challenge
+  // update startAt on memberChallenges if it is set
+  if (data.startAt) {
+    void prisma.memberChallenge.updateMany({
+      where: { challengeId: id },
+      data: { startAt: data.startAt }
+    })
+  }
+  return updatedChallenge
 }
 export const loadChallenge = async (challengeId: number, userId?: number): Promise<Challenge | null> => {
   const id = Number(challengeId)
@@ -33,7 +41,11 @@ export const loadChallenge = async (challengeId: number, userId?: number): Promi
   const challenge = await prisma.challenge.findUnique({
     where,
     include: {
-      categories: true
+      categories: {
+        select: {
+          category: true
+        }
+      }
     }
   })
   return challenge as Challenge | null
@@ -77,7 +89,6 @@ export const loadChallengeSummary = async (challengeId: string | number): Promis
     }
   }) as unknown as ChallengeSummary
 
-  challenge.categories = challenge.categories.map(c => c.category)
   return challenge
 }
 export const loadUserCreatedChallenges = async (userId: string | number): Promise<Challenge[]> => {
@@ -135,6 +146,13 @@ export const fetchChallenges = async (userId: string | number): Promise<Challeng
   return await prisma.challenge.findMany({
     where: {
       userId: uid
+    },
+    include: {
+      categories: {
+        select: {
+          category: true
+        }
+      }
     }
   }) as unknown as Challenge[]
 }
@@ -229,7 +247,11 @@ export const fetchChallengeSummaries = async ({
       _count: {
         select: { members: true, comments: true, likes: true }
       },
-      categories: true
+      categories: {
+        select: {
+          category: true
+        }
+      }
     }
   }
   const challenges = await prisma.challenge.findMany(params)
@@ -276,7 +298,15 @@ export const fetchUserChallengesAndMemberships = async ({ userId, type = 'all' }
     {
       where: memberChallengeWhere,
       include: {
-        challenge: true
+        challenge: {
+          include: {
+            categories: {
+              select: {
+                category: true
+              }
+            }
+          }
+        }
       }
     }
   )
@@ -299,6 +329,11 @@ export const fetchUserChallengesAndMemberships = async ({ userId, type = 'all' }
         include: {
           profile: true
         }
+      },
+      categories: {
+        select: {
+          category: true
+        }
       }
     }
   })
@@ -316,6 +351,11 @@ export const fetchUserChallenges = async (userId: string | number, showPrivate =
     include: {
       _count: {
         select: { members: true, comments: true, likes: true }
+      },
+      categories: {
+        select: {
+          category: true
+        }
       }
     }
   }) as unknown as ChallengeSummary[]
@@ -325,7 +365,15 @@ export const fetchUserMemberships = async (userId: string | number): Promise<Mem
   const memberships = await prisma.memberChallenge.findMany({
     where: { userId: uid },
     include: {
-      challenge: true,
+      challenge: {
+        include: {
+          categories: {
+            select: {
+              category: true
+            }
+          }
+        }
+      },
       user: {
         include: {
           profile: true
@@ -350,6 +398,15 @@ export const loadMemberChallenge = async (userId: number, challengeId: number): 
     include: {
       _count: {
         select: { checkIns: true }
+      },
+      challenge: {
+        include: {
+          categories: {
+            select: {
+              category: true
+            }
+          }
+        }
       }
     }
   }) as MemberChallenge | null
@@ -407,6 +464,8 @@ export const joinChallenge = async (userId: number, challengeId: number, startAt
     if (notificationMinute != null && (notificationMinute < 0 || notificationMinute > 59)) {
       throw new Error('Invalid time: notificationMinute must be between 0 and 59')
     }
+  } else {
+    startAt = challenge.startAt ? challenge.startAt : undefined
   }
   const data: Prisma.MemberChallengeCreateInput = {
     user: {

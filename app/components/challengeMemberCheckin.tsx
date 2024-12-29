@@ -39,7 +39,7 @@ export function ChallengeMemberCheckin ({ challenge, memberChallenge, showDetail
     return format(membership.nextCheckIn, 'cccc')
   }
   const canCheckInNow = (): boolean => {
-    if (challengeIsExpired || !hasStarted) {
+    if (challengeIsExpired || !hasStarted || challenge.status === 'DRAFT') {
       return false
     }
 

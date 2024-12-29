@@ -3,8 +3,7 @@ import { type Challenge, type ChallengeSummary } from '~/utils/types'
 import { Link } from '@remix-run/react'
 import ChallengeIcon from './challengeIcon'
 import MenuChallenge from './menuChallenge'
-
-export default function ChallengeHeader ({ challenge, size, className }: { challenge: Challenge | ChallengeSummary, size: 'small' | 'large', className?: string }): JSX.Element {
+export default function ChallengeHeader ({ challenge, size, className }: { challenge: Challenge | ChallengeSummary, size: 'small' | 'large', className?: string, isMember?: boolean }): JSX.Element {
   const imgSize = size === 'small' ? 60 : 500
   const [imgWidth, imgHeight] = resizeImageToFit(Number(challenge.coverPhotoMeta?.width), Number(challenge.coverPhotoMeta?.height), imgSize)
   return (
@@ -23,9 +22,11 @@ export default function ChallengeHeader ({ challenge, size, className }: { chall
           <ChallengeIcon icon={challenge.icon as string | undefined} size={size} />
         </Link>
         <div className='text-2xl pl-2'>{challenge.name}</div>
+        {challenge.status === 'DRAFT' && <div className='text-sm text-yellow ml-2'>Draft</div>}
         <div className='ml-4'>
           <MenuChallenge challenge={challenge} />
         </div>
+
       </div>
         )}
     </>

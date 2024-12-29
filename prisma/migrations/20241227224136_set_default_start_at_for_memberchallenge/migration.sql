@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Challenge" ALTER COLUMN "startAt" SET DEFAULT CURRENT_TIMESTAMP;

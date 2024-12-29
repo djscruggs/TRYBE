@@ -7,7 +7,8 @@ import { PiBarbellLight } from 'react-icons/pi'
 import { IoFishOutline } from 'react-icons/io5'
 import type { ChangeEvent } from 'react'
 import { toast } from 'react-hot-toast'
-import { type CurrentUser, type User } from './types'
+import type { Challenge, ChallengeSummary, MemberChallenge, CurrentUser, User } from './types'
+import { isPast } from 'date-fns'
 import { youtubeRegex } from '~/components/linkRenderer'
 export const copyToClipboard = async (text: string): Promise<void> => {
   try {
@@ -281,4 +282,18 @@ export function handleFileUpload ({ event, setFile, setFileURL }: HandleFileUplo
     }
   }
   fileReader.readAsDataURL(file)
+}
+
+export function challengeHasStarted (challenge: Challenge | ChallengeSummary, memberChallenge: MemberChallenge | null | undefined): boolean {
+  if (challenge.type === 'SCHEDULED') {
+    if (challenge.startAt) {
+      return isPast(challenge.startAt)
+    }
+  }
+  if (memberChallenge) {
+    if (memberChallenge.startAt) {
+      return isPast(memberChallenge.startAt)
+    }
+  }
+  return true
 }

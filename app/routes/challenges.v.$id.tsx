@@ -1,6 +1,5 @@
 import { loadChallengeSummary } from '~/models/challenge.server'
 import { Outlet, useLoaderData, useNavigate, useLocation, useMatches, type MetaFunction } from '@remix-run/react'
-import useGatedNavigate from '~/hooks/useGatedNavigate'
 import { useContext, useEffect, useState } from 'react'
 import { getCurrentUser } from '~/models/auth.server'
 import type { MemberChallenge, Challenge, ChallengeSummary, CheckIn } from '~/utils/types'
@@ -10,7 +9,8 @@ import axios from 'axios'
 import {
   textToJSX,
   userLocale,
-  pluralize
+  pluralize,
+  challengeHasStarted
 } from '~/utils/helpers'
 import { type DateTimeFormatOptions } from 'intl'
 import { CurrentUserContext } from '~/utils/CurrentUserContext'
@@ -23,10 +23,11 @@ import DialogConfirm from '~/components/dialogConfirm'
 import ChallengeHeader from '~/components/challengeHeader'
 import { CheckInButton } from '~/components/checkinButton'
 import DialogJoin from '~/components/dialogJoin'
+import ChallengeTabs from '~/components/challengeTabs'
 interface ViewChallengeData {
   challenge: ChallengeSummary
   membership?: MemberChallenge | null | undefined
-
+  loadingError?: string
 }
 interface ChallengeSummaryWithCounts extends ChallengeSummary {
   _count: {
@@ -69,11 +70,11 @@ export const meta: MetaFunction<typeof loader> = ({
   return [{ title: data?.challenge?.name ?? 'Challenge' }]
 }
 export default function ViewChallenge (): JSX.Element {
-  const data = useLoaderData<typeof loader>()
+  const data = useLoaderData<ViewChallengeData>()
   const matches = useMatches()
   const { challenge } = data
   const [membership, setMembership] = useState<MemberChallenge | null | undefined>(data?.membership as ViewChallengeData['membership'])
-  const parsedDescription = textToJSX(challenge.description as string ?? '')
+  const parsedDescription = textToJSX(challenge.description ?? '')
   const location = useLocation()
   const [showConfirm, setShowConfirm] = useState(false)
   const [showJoin, setShowJoin] = useState(false)
@@ -81,13 +82,12 @@ export default function ViewChallenge (): JSX.Element {
   const isProgram = location.pathname.includes('program')
   const isPosts = location.pathname.includes('posts')
   const isComments = location.pathname.includes('comments')
-  const isExpired = isPast(challenge.endAt as Date)
+  const isExpired = challenge?.endAt ? isPast(new Date(challenge.endAt)) : false
   const { currentUser } = useContext(CurrentUserContext)
   const navigate = useNavigate()
-  const gatedNavigate = useGatedNavigate()
   const [loading, setLoading] = useState<boolean>(false)
   const [isMember, setIsMember] = useState(Boolean(membership?.id))
-  const isStarted = challenge.startAt ? isPast(challenge.startAt as Date) : false
+  const isStarted = challengeHasStarted(challenge as Challenge, membership)
 
   if (!data) {
     return <p>No data.</p>
@@ -148,30 +148,25 @@ export default function ViewChallenge (): JSX.Element {
       </div>
     )
   }
-
   return (
     <div className='flex flex-col'>
       <div className='max-w-sm md:max-w-md lg:max-w-lg relative'>
-        <ChallengeHeader challenge={challenge} size='small' className='mb-4' />
-        {challenge.status === 'DRAFT' && <div className='bg-yellow text-center mb-4 rounded-md'>DRAFT</div>}
+        <ChallengeHeader challenge={challenge as Challenge} size='small' />
+        <ChallengeTabs challenge={challenge as Challenge} isOverview={isOverview} isProgram={isProgram} isPosts={isPosts} isMember={isMember}/>
         <div className='relative'>
           {parsedDescription}
         </div>
         {currentUser && challenge.type === 'SCHEDULED' && <button className='cursor-pointer  bg-green-500 hover:bg-red float-right text-white text-xs p-1 px-2 rounded-full' onClick={() => { navigate(`/challenges/v/${challenge.id}/contact`) }}>Contact Host</button>}
-        <div className='text-lg py-2 flex items-center justify-center w-full gap-4'>
-          <div className={`w-fit ${isOverview ? 'border-b-2 border-red' : 'cursor-pointer'}`} onClick={() => { navigate(`/challenges/v/${challenge.id}`) }}>Overview</div>
-          <div className={`w-fit ${isProgram ? 'border-b-2 border-red' : 'cursor-pointer'}`} onClick={() => { navigate(`/challenges/v/${challenge.id}/program`) }}>Program</div>
-          {challenge.type === 'SCHEDULED' && <div className={`w-fit ${isPosts ? 'border-b-2 border-red' : 'cursor-pointer'}`} onClick={() => { gatedNavigate(`/challenges/v/${challenge.id}/chat`) }}>Chat</div>}
-        </div>
+
         {isOverview &&
           <div className={`${challenge.type === 'SELF_LED' ? 'mt-0' : 'mt-4'}`}>
-            <ChallengeOverview challenge={challenge} memberChallenge={membership}/>
+            <ChallengeOverview challenge={challenge as Challenge} memberChallenge={membership} />
           </div>
         }
       </div>
       {isOverview &&
         <div className="max-w-sm md:max-w-md lg:max-w-lg text-center">
-          {challenge?.userId !== currentUser?.id && !isExpired && (
+          {!isExpired && (
 
             <>
                 <button
@@ -189,7 +184,7 @@ export default function ViewChallenge (): JSX.Element {
 
                 <DialogJoin
                   isOpen={showJoin}
-                  challenge={challenge}
+                  challenge={challenge as Challenge}
                   onConfirm={toggleJoin}
                   onCancel={() => { setShowJoin(false) }}
                   afterJoin={afterJoin}
@@ -204,7 +199,7 @@ export default function ViewChallenge (): JSX.Element {
                   ? (
                 <div>
                     <LiaUserFriendsSolid className="text-grey h-5 w-5 inline ml-4 -mt-1 mr-1" />
-                    {challenge?._count.members} {pluralize(challenge?._count.members as number, 'member')}
+                    {challenge?._count.members} {pluralize(challenge?._count.members, 'member')}
                 </div>
                     )
                   : (
@@ -221,12 +216,12 @@ export default function ViewChallenge (): JSX.Element {
       }
 
       <Outlet />
-      {challenge.type === 'SCHEDULED' && (membership || challenge.userId === currentUser?.id) &&
+      {(membership ?? challenge.userId === currentUser?.id) &&
       <div className='mb-20 max-w-sm md:max-w-md lg:max-w-lg'>
          {!isStarted && <div className='text-center text-grey mt-2'>You can check in and view progress once the challenge starts.</div>}
          <div className='flex justify-between mt-2'>
           <button
-              className='w-40 bg-red hover:bg-green-500 text-white font-bold rounded-full p-2 justify-center text-sm disabled:bg-gray-400'
+              className='w-40 bg-red hover:bg-green-500 text-white rounded-full p-2 justify-center text-sm disabled:bg-gray-400'
               onClick={() => { navigate(`/challenges/v/${challenge.id}/checkins`) }}
               disabled={!isStarted}
             >
@@ -234,7 +229,7 @@ export default function ViewChallenge (): JSX.Element {
           </button>
           <CheckInButton
             size='lg'
-            challenge={challenge}
+            challenge={challenge as Challenge}
             afterCheckIn={(checkIn: CheckIn) => { navigate(`/challenges/v/${challenge.id}/checkins`) }}
             disabled={!isStarted}
           />
@@ -252,9 +247,9 @@ export default function ViewChallenge (): JSX.Element {
   )
 }
 
-function ChallengeOverview ({ challenge, memberChallenge }: { challenge: Challenge | ChallengeSummary, memberChallenge?: MemberChallenge | null | undefined }): JSX.Element {
-  const isExpired = challenge?.endAt ? isPast(challenge?.endAt) : false
-  const isStarted = challenge?.startAt ? isPast(challenge?.startAt) : false
+function ChallengeOverview ({ challenge, memberChallenge }: { challenge: Challenge | ChallengeSummary, memberChallenge?: MemberChallenge | null | undefined, isMember?: boolean }): JSX.Element {
+  const isExpired = challenge?.endAt ? isPast(new Date(challenge.endAt)) : false
+  const [isStarted, setIsStarted] = useState(challengeHasStarted(challenge, memberChallenge))
   const { currentUser } = useContext(CurrentUserContext)
   const locale = currentUser ? userLocale(currentUser) : 'en-US'
   const dateOptions: DateTimeFormatOptions = {
@@ -281,7 +276,8 @@ function ChallengeOverview ({ challenge, memberChallenge }: { challenge: Challen
 
   useEffect(() => {
     setMembership(memberChallenge)
-  }, [memberChallenge])
+    setIsStarted(challengeHasStarted(challenge, memberChallenge))
+  }, [memberChallenge, challenge, membership])
   return (
     <div className='md:px-0 justify-start'>
       {challenge.type === 'SELF_LED' &&

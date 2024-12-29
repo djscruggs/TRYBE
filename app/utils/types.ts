@@ -148,6 +148,9 @@ export interface Category {
   id: number
   name?: string
 }
+export interface ChallengeCategory {
+  category: Category
+}
 
 interface CountType {
   members?: number

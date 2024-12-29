@@ -9,6 +9,7 @@ import { CheckInButton } from '~/components/checkinButton'
 import axios from 'axios'
 import { Spinner } from '@material-tailwind/react'
 import 'react-circular-progressbar/dist/styles.css'
+import ChallengeTabs from '~/components/challengeTabs'
 
 export const meta: MetaFunction = () => {
   return [
@@ -27,6 +28,7 @@ export default function MyCheckIns (): JSX.Element {
   if (!membership && challenge.userId !== currentUser?.id) {
     return <></>
   }
+  const isMember = Boolean(membership?.id ?? challenge?.userId === currentUser?.id)
   const fetchCheckIns = async (): Promise<void> => {
     setIsLoading(true)
     const response = await axios.get(`/api/checkins/${challenge.id}/${currentUser?.id}`)
@@ -38,15 +40,15 @@ export default function MyCheckIns (): JSX.Element {
   }, [challenge.id, currentUser?.id])
   return (
     <div className={`flex flex-col ${isLoading ? 'items-center' : 'items-start'} justify-center mt-4  w-full max-w-lg md:max-w-xl`}>
+      <div className='mb-4 w-full'>
+        <ChallengeTabs challenge={challenge} isOverview={false} isProgram={false} isPosts={false} isMember={isMember} />
+      </div>
       {isLoading
         ? <Spinner />
         : <>
         <div className='w-full flex items-center justify-center mb-8'>
           <div className='max-w-[200px] flex-col items-center justify-center'>
             <ChallengeMemberProgressChart challenge={challenge} checkIns={checkIns} />
-            <div className='mt-4 flex items-center justify-center'>
-              <CheckInButton challenge={challenge} membership={membership} afterCheckIn={fetchCheckIns} />
-            </div>
           </div>
         </div>
         <CheckinsList checkIns={checkIns} allowComments={false} posts={[]} newestComment={null}/>

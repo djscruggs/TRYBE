@@ -42,7 +42,7 @@ export default function FormChallenge ({ challenge }: { challenge: ChallengeInpu
   if (challenge?._count) {
     delete challenge._count
   }
-  const defaults = { deleteImage: false, numDays: 30, type: 'SCHEDULED' as ChallengeType, frequency: 'DAILY' as Challenge['frequency'], status: 'DRAFT' as ChallengeStatus }
+  const defaults = { deleteImage: false, numDays: 30, type: 'SCHEDULED' as ChallengeType, frequency: 'DAILY' as Challenge['frequency'], categories: [], status: 'DRAFT' as ChallengeStatus }
   delete challenge.user
   const [formData, setFormData] = useState<Partial<ChallengeInputs>>({
     ...(typeof challenge === 'object' && challenge !== null ? { ...defaults, ...challenge } : { ...defaults })
@@ -267,17 +267,17 @@ export default function FormChallenge ({ challenge }: { challenge: ChallengeInpu
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-1">
 
                     {categories.map((category: Category) => (
-                      <div key={category.id} className="flex items-center mb-2">
+                      <div key={category?.id} className="flex items-center mb-2">
                         <Checkbox
                           crossOrigin={undefined}
-                          id={`category-${category.id}`}
+                          id={`category-${category?.id}`}
                           name="categories"
-                          value={String(category.id)}
-                          checked={formData.categories?.some(c => c.id === category.id)}
+                          value={String(category?.id)}
+                          checked={formData.categories?.some(c => c?.id === category?.id)}
                           onChange={handleCategoryChange}
                         />
-                        <label htmlFor={`category-${category.id}`} className="ml-2 capitalize">
-                          {category.name}
+                        <label htmlFor={`category-${category?.id}`} className="ml-2 capitalize">
+                          {category?.name}
                         </label>
                       </div>
                     ))}

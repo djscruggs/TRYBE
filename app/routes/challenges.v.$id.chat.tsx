@@ -14,12 +14,14 @@ import { CheckInButton } from '~/components/checkinButton'
 import DateDivider from '~/components/dateDivider'
 import { isPast } from 'date-fns'
 import { FaChevronCircleLeft } from 'react-icons/fa'
+import ChallengeTabs from '~/components/challengeTabs'
 interface ChallengeChatData {
   groupedData: Record<string, { posts: Post[], checkIns: { empty: CheckIn[], nonEmpty: CheckIn[] }, comments: Comment[] }>
+  membership: MemberChallenge | null | undefined
 }
 type GroupedDataEntry = SerializeFrom<ChallengeChatData['groupedData']>
 export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
-  await requireCurrentUser(args)
+  const currentUser = await requireCurrentUser(args)
   const { params } = args
   if (!params.id) {
     return null
@@ -120,8 +122,13 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
   // Sort the groupedData by date
   const sortedGroupedData = Object.entries(groupedData)
     .sort(([dateA], [dateB]) => new Date(dateA).getTime() - new Date(dateB).getTime())
-
-  const data: ChallengeChatData = { groupedData: Object.fromEntries(sortedGroupedData) }
+  const membership = await prisma.memberChallenge.findFirst({
+    where: {
+      challengeId: Number(params.id),
+      userId: currentUser?.id
+    }
+  })
+  const data: ChallengeChatData = { groupedData: Object.fromEntries(sortedGroupedData), membership }
   return json(data)
 }
 
@@ -130,10 +137,11 @@ export default function ViewChallengeChat (): JSX.Element {
   const loaderData = useLoaderData<ChallengeChatData>()
   const [groupedData, setGroupedData] = useState<GroupedDataEntry>(loaderData.groupedData)
   const bottomRef = useRef<HTMLDivElement>(null)
-  const { challenge } = useRouteLoaderData<{ challenge: Challenge, membership: MemberChallenge }>('routes/challenges.v.$id') as unknown as { challenge: Challenge, membership: MemberChallenge }
+  const { challenge, membership } = useRouteLoaderData<{ challenge: Challenge, membership: MemberChallenge }>('routes/challenges.v.$id') as unknown as { challenge: Challenge, membership: MemberChallenge }
   if (!groupedData) {
     return <p>No data.</p>
   }
+  const isMember = Boolean(membership?.id || membership?.userId === currentUser?.id)
   const navigate = useNavigate()
   // have to resort the groupedData by date because the data from loader is not guaranteed to be in order
   const postRefs = useRef<Record<string, HTMLDivElement | null>>({})
@@ -208,7 +216,7 @@ export default function ViewChallengeChat (): JSX.Element {
   const isExpired = isPast(challenge.endAt ?? new Date('1970-01-01'))
   const [hasCheckedInToday, setHasCheckedInToday] = useState(checkedInToday())
   // only show the checkin popup if the user is logged in and they haven't checked in today, the challenge isn't expired, and there's no featured post
-  const [showCheckinPopup, setShowCheckinPopup] = useState(hasStarted && currentUser && !hasCheckedInToday && !isExpired && !featuredPost)
+  const [showCheckinPopup, setShowCheckinPopup] = useState(hasStarted && currentUser && !hasCheckedInToday && !isExpired && !featuredPost && challenge.status !== 'DRAFT')
   const revalidator = useRevalidator()
   const handleAfterCheckIn = (checkIn: CheckIn): void => {
     setDayCount(dayCount + 1)
@@ -273,7 +281,10 @@ export default function ViewChallengeChat (): JSX.Element {
     setDayCount(dayCount + 5)
   }
   return (
-    <div className='max-w-2xl pt-4'>
+    <div className='max-w-2xl pt-2'>
+      <div className='mb-4'>
+        <ChallengeTabs challenge={challenge} isOverview={false} isProgram={false} isPosts={false} isMember={isMember} />
+      </div>
       {hasEarlierDays && <div className='text-center text-sm text-gray-500 mb-8 cursor-pointer' onClick={handleShowPreviousDays}>show previous days</div>}
       {limitedGroupedData && Object.entries(limitedGroupedData)?.map(([date, { posts, checkIns, comments }], index) => (
 
@@ -328,7 +339,7 @@ export default function ViewChallengeChat (): JSX.Element {
       )}
       {featuredPost && (
         <DialogPost post={featuredPost as Post} open={showfeaturedPost} onClose={handleClosefeaturedPost} >
-          {hasStarted && !hasCheckedInToday && !isExpired &&
+          {hasStarted && !hasCheckedInToday && !isExpired && challenge.status !== 'DRAFT' &&
             <div className='flex items-center justify-center mt-4'>
               <CheckInButton challenge={challenge} afterCheckIn={handleAfterCheckIn} />
             </div>

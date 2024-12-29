@@ -33,7 +33,6 @@ export default function Index (): JSX.Element {
   const splashSeen = localStorage.getItem('splashSeen')
   const navigate = useNavigate()
   const [loading, setLoading] = useState(true)
-  console.log('splashSeen', splashSeen)
   useEffect(() => {
     if (splashSeen) {
       navigate('/challenges')

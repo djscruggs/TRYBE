@@ -37,6 +37,34 @@ function extendPrisma (prisma: PrismaClient): PrismaClient {
         }
       }
     }
+  }).$extends({
+    result: {
+      challenge: {
+        categories: {
+          needs: { categories: true },
+          compute (challenge): Array<{ id: number, name: string }> {
+            if (!challenge.categories || !Array.isArray(challenge.categories)) {
+              return [] // Return an empty array if categories are not loaded
+            }
+            return challenge.categories.map(item => {
+              if (item.category) {
+                // Handle the case where category is an object with id and name
+                return {
+                  id: item.category.id,
+                  name: item.category.name
+                }
+              } else {
+                // Handle the default structure case
+                return {
+                  id: item.categoryId,
+                  name: `Category ${item.categoryId}` // Placeholder name, adjust as needed
+                }
+              }
+            })
+          }
+        }
+      }
+    }
   })
 }
 if (process.env.NODE_ENV === 'production') {
