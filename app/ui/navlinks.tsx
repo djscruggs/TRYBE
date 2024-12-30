@@ -26,16 +26,16 @@ const NavLinks = (): JSX.Element => {
       <>
       {currentUser &&
         <div className="flex flex-col justify-start items-center h-screen min-h-full ">
-          {/* <div className={`w-24 flex items-center flex-col text-darkgrey text-center mb-4 p-2 rounded-lg ${location.pathname === '/' ? 'bg-gray-100' : 'hover:bg-gray-300'}`}>
-            <Link to="/challenges" className='flex items-center flex-col' prefetch='render'>
+          <div className={`w-24 flex items-center flex-col text-darkgrey text-center mb-4 p-2 rounded-lg ${location.pathname === '/' ? 'bg-gray-100' : 'hover:bg-gray-300'}`}>
+            <Link to="/home" className='flex items-center flex-col' prefetch='render'>
               <HomeIcon className='className="h-8 w-8 cursor-pointer mb-1' />
               <span className="cursor-pointer ">Home</span>
             </Link>
-          </div> */}
+          </div>
           <div className={`w-24 h-20 flex items-center justify-center flex-col text-darkgrey text-center mt-4 mb-4 p-2 rounded-lg ${location.pathname === '/challenges' ? 'bg-gray-100' : 'hover:bg-gray-300'}`}>
             <Link to="/challenges" className='flex items-center flex-col' prefetch='render'>
-              <HomeIcon className='h-8 w-8 cursor-pointer mb-1y' />
-              <span className="cursor-pointer">Home</span>
+              <TrophyIcon className='h-8 w-8 cursor-pointer mb-1y' />
+              <span className="cursor-pointer">Challenges</span>
             </Link>
           </div>
 
