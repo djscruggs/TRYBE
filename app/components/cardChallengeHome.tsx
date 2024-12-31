@@ -50,9 +50,6 @@ export default function CardChallengeHome ({ challenge, isMember, isPreview }: C
   } else {
     challengeLength = differenceInCalendarDays(challenge.endAt ?? new Date('1970-01-01'), challenge.startAt ?? new Date('1970-01-01')) + 1 + ' days'
   }
-  console.log('challenge startAt', challenge.startAt)
-  console.log('challenge endAt', challenge.endAt)
-  console.log('challengeLength', challengeLength)
 
   const howLongToStart = (): string => {
     if (!challenge.startAt || challenge.type === 'SELF_LED') {

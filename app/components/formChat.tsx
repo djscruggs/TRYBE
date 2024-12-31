@@ -194,14 +194,12 @@ export default function FormChat (props: FormChatProps): JSX.Element {
         props.onPending(_comment as Comment)
       }
       const updated = await axios.post('/api/comments', formData)
-      console.log('updated', updated)
+
       props.afterSave(updated.data as Comment)
     } catch (error: any) {
-      console.log('error', error)
       if (props.onError && !id) {
         props.onError(error as Error)
       }
-      console.error('error', error)
       const errorMessage = typeof error?.response?.data.message === 'string' ? error?.response?.data.message : 'An unexpected error occurred'
       toast.error(errorMessage as string)
       setState(prev => ({ ...prev, error: errorMessage, body: tempBody, video: tempVideo, image: tempImage }))
