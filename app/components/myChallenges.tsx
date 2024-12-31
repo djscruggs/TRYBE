@@ -49,13 +49,13 @@ export default function MyChallenges (props: MyChallengesProps): JSX.Element {
   }, [status])
   return (
     <div className='mb-8'>
-      <div className='text-lg flex items-center justify-start w-full relative pl-2'>
+      <div className='text-lg flex items-center justify-start w-full relative'>
         <div className='text-red cursor-pointer font-bold'>My Challenges</div>
-          {currentUser &&
+          {/* {currentUser &&
             <div className={`absolute right-2 text-xs text-gray-500 underline cursor-pointer ${status === 'archived' ? 'text-red' : ''}`} onClick={() => { handleStatusChange('archived') }}>Archived</div>
-          }
+          } */}
         </div>
-        <div className="flex flex-col rounded-md p-2 max-w-lg w-full">
+        <div className="flex flex-col rounded-md max-w-lg w-full">
           {!loading && myChallenges.length === 0 && memberships.length === 0
             ? (
             <>

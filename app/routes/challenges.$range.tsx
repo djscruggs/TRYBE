@@ -69,12 +69,12 @@ export default function ChallengesIndex (): JSX.Element {
   }, [categoryFilter, selfGuided])
   const categories = ['Meditation', 'Journal', 'Creativity', 'Health']
   return (
-        <div className="w-full">
-          <MyChallenges range='active' scrollToBrowse={() => { navigate('/challenges') }} />
+        <div className="w-full pl-2">
+          <MyChallenges range='active' scrollToBrowse={scrollToBrowse} />
           {!loading &&
             <>
-              <div ref={browseRef} className='text-red font-bold text-lg'>Browse Challenges</div>
-              <div className='py-2 space-x-1 md:space-x-2 flex items-center justify-between md:justify-start relative text-white text-xs md:text-sm'>
+              <div ref={browseRef} className='text-red font-bold text-lg mb-2'>Browse Challenges</div>
+              <div className='space-x-1 md:space-x-2 flex items-center justify-between md:justify-start relative text-white text-xs md:text-sm'>
                 {categories.map((cat: string) => (
                   <div
                     key={cat}
