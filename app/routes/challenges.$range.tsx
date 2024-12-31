@@ -74,7 +74,7 @@ export default function ChallengesIndex (): JSX.Element {
           {!loading &&
             <>
               <div ref={browseRef} className='text-red font-bold text-lg'>Browse Challenges</div>
-              <div className='py-2 space-x-2 flex items-center justify-between md:justify-start relative text-white text-xs md:text-sm'>
+              <div className='py-2 space-x-1 md:space-x-2 flex items-center justify-between md:justify-start relative text-white text-xs md:text-sm'>
                 {categories.map((cat: string) => (
                   <div
                     key={cat}
@@ -84,7 +84,7 @@ export default function ChallengesIndex (): JSX.Element {
                     {cat}
                   </div>
                 ))}
-                <span className='px-2 text-grey'>|</span>
+                <span className='px-1 md:px-2 text-grey'>|</span>
                 <div className={`w-fit p-1 px-2 rounded-md cursor-pointer ${selfGuided ? 'bg-gray-400' : 'text-black bg-gray-100'}`}
                   onClick={() => { setSelfGuided(prev => !prev) }}
                 >
