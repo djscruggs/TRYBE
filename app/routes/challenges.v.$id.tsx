@@ -1,23 +1,14 @@
 import { loadChallengeSummary } from '~/models/challenge.server'
 import { Outlet, useLoaderData, useNavigate, useLocation, useMatches, type MetaFunction } from '@remix-run/react'
-import { useContext, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { getCurrentUser } from '~/models/auth.server'
 import type { MemberChallenge, Challenge, ChallengeSummary } from '~/utils/types'
 import { type LoaderFunction, type LoaderFunctionArgs } from '@remix-run/node'
 import { FaChevronCircleLeft } from 'react-icons/fa'
-import axios from 'axios'
-import {
-  challengeHasStarted
-} from '~/utils/helpers'
-import { CurrentUserContext } from '~/utils/CurrentUserContext'
-import { Spinner } from '@material-tailwind/react'
 import { prisma } from '~/models/prisma.server'
-import { isPast } from 'date-fns'
-import DialogConfirm from '~/components/dialogConfirm'
 import ChallengeHeader from '~/components/challengeHeader'
-import DialogJoin from '~/components/dialogJoin'
 import ChallengeTabs from '~/components/challengeTabs'
-import ChallengeOverview from '~/components/challengeOverview'
+
 interface ViewChallengeData {
   challenge: ChallengeSummary
   membership?: MemberChallenge | null | undefined
@@ -69,14 +60,13 @@ export default function ViewChallenge (): JSX.Element {
   const [which, setWhich] = useState('') // matches[0] is root, matches[1] is the challenges, matches[2] is challenges/v/$idtab
   const location = useLocation()
   const navigate = useNavigate()
+  const matches = useMatches()
   useEffect(() => {
-    console.log('location.pathname', location.pathname)
     if (location.pathname.includes('about')) {
       setWhich('about')
     } else if (location.pathname.includes('program')) {
       setWhich('program')
     } else if (location.pathname.includes('checkins')) {
-      console.log('checkins')
       setWhich('progress')
     } else if (location.pathname.includes('chat')) {
       setWhich('chat')
@@ -91,7 +81,13 @@ export default function ViewChallenge (): JSX.Element {
   if (!data?.challenge) {
     return <p>Loading...</p>
   }
-
+  // force redirect to about tab if no tab is selected
+  useEffect(() => {
+    if (matches.length === 3) {
+      const url = (matches[2].pathname + '/about').replace('//', '/')
+      navigate(url)
+    }
+  }, [matches])
   return (
     <div className='max-w-sm md:max-w-md lg:max-w-lg relative'>
         <div className='fixed top-0 z-10 bg-white w-full max-w-sm md:max-w-md lg:max-w-lg'>
