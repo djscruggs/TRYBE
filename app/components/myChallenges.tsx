@@ -40,12 +40,16 @@ export default function MyChallenges (props: MyChallengesProps): JSX.Element {
     setMemberships(userMemberships)
     setLoading(false)
   }
+  const handleStatusChange = (status: string): void => {
+    setStatus(status)
+    void loadData()
+  }
   useEffect(() => {
     void loadData()
   }, [status])
   return (
     <div className='mb-8'>
-      <div className='text-lg flex items-center justify-start w-full relative'>
+      <div className='text-lg flex items-center justify-start w-full relative pl-2'>
         <div className='text-red cursor-pointer font-bold'>My Challenges</div>
           {currentUser &&
             <div className={`absolute right-2 text-xs text-gray-500 underline cursor-pointer ${status === 'archived' ? 'text-red' : ''}`} onClick={() => { handleStatusChange('archived') }}>Archived</div>

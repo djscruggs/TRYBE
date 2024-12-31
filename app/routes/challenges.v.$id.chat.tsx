@@ -126,6 +126,14 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
     where: {
       challengeId: Number(params.id),
       userId: currentUser?.id
+    },
+    include: {
+      user: {
+        include: {
+          profile: true
+        }
+      },
+      challenge: true
     }
   })
   const data: ChallengeChatData = { groupedData: Object.fromEntries(sortedGroupedData), membership }
@@ -145,6 +153,7 @@ export default function ViewChallengeChat (): JSX.Element {
   const navigate = useNavigate()
   // have to resort the groupedData by date because the data from loader is not guaranteed to be in order
   const postRefs = useRef<Record<string, HTMLDivElement | null>>({})
+  const chatFormRef = useRef<HTMLDivElement>(null)
   // find highlighted post in hash
   const [featuredPostId, setfeaturedPostId] = useState(Number(window.location.hash.replace('#featured-id-', '')))
   const highlightedCommentId = Number(window.location.hash.replace('#comment-', ''))
@@ -168,6 +177,7 @@ export default function ViewChallengeChat (): JSX.Element {
   // used in various places to get the current date formatted as YYYY-MM-DD
   const today = new Date().toLocaleDateString('en-CA')
   const scrollToBottom = (): void => {
+    console.log('scrollToBottom')
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }
   useEffect(() => {
@@ -195,10 +205,10 @@ export default function ViewChallengeChat (): JSX.Element {
   }
   const onPendingComment = (comment: Comment): void => {
     setNewestComment(comment)
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
+    scrollToBottom()
   }
   const onSaveCommentError = (): void => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
+    scrollToBottom()
   }
   const checkedInToday = (): boolean => {
     if (!currentUser) {
@@ -277,14 +287,13 @@ export default function ViewChallengeChat (): JSX.Element {
       setHasScrolledToBottom(true)
     }
   }, [loaderData, dayCount])
+
   const handleShowPreviousDays = (): void => {
     setDayCount(dayCount + 5)
   }
+
   return (
-    <div className='max-w-2xl pt-2'>
-      <div className='mb-4'>
-        <ChallengeTabs challenge={challenge} isOverview={false} isProgram={false} isPosts={false} isMember={isMember} />
-      </div>
+    <div className='max-w-2xl mt-6'>
       {hasEarlierDays && <div className='text-center text-sm text-gray-500 mb-8 cursor-pointer' onClick={handleShowPreviousDays}>show previous days</div>}
       {limitedGroupedData && Object.entries(limitedGroupedData)?.map(([date, { posts, checkIns, comments }], index) => (
 
@@ -304,7 +313,6 @@ export default function ViewChallengeChat (): JSX.Element {
             newestComment={newestComment}
             checkIns={[...checkIns.empty, ...checkIns.nonEmpty] as CheckIn[]}
             allowComments={true}
-            date={date}
             highlightedObject={highlightedObject}
             highlightedId={highlightedId}
           />
@@ -333,7 +341,8 @@ export default function ViewChallengeChat (): JSX.Element {
             onError={onSaveCommentError}
             objectId={challenge.id}
             type={'challenge'}
-            autoFocus={!window.location.hash}
+            autoFocus={!highlightedObject && !showfeaturedPost}
+            inputRef={chatFormRef}
           />
         </div>
       )}

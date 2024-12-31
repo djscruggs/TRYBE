@@ -170,20 +170,21 @@ export interface ChallengeSummary extends Challenge {
 }
 
 export interface MemberChallenge {
-  id?: number | string
+  id: number
   userId: number
   challengeId: number
   user: User
   challenge: Challenge | ChallengeSummary
-  lastCheckIn: Date
-  nextCheckIn: Date
+  lastCheckIn: Date | null
+  nextCheckIn: Date | null
   dayNumber: number
   notificationHour?: number | null
   notificationMinute?: number | null
-  startAt?: Date | null
+  startAt: Date | null
   _count?: {
     checkIns?: number
   }
+  createdAt: Date
 }
 export interface Like {
   id: number

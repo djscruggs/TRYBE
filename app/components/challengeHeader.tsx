@@ -22,7 +22,6 @@ export default function ChallengeHeader ({ challenge, size, className }: { chall
           <ChallengeIcon icon={challenge.icon as string | undefined} size={size} />
         </Link>
         <div className='text-2xl pl-2'>{challenge.name}</div>
-        {challenge.status === 'DRAFT' && <div className='text-sm text-yellow ml-2'>Draft</div>}
         <div className='ml-4'>
           <MenuChallenge challenge={challenge} />
         </div>

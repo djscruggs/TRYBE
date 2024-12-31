@@ -66,8 +66,6 @@ export default function FormChat (props: FormChatProps): JSX.Element {
     submitting: false
   })
   const imageRef = useRef<HTMLInputElement>(null)
-  const inputRef = props.inputRef ?? useRef<HTMLTextAreaElement>(null)
-
   const imageDialog = useCallback((): void => {
     if (imageRef.current) {
       imageRef.current.click()
@@ -196,8 +194,10 @@ export default function FormChat (props: FormChatProps): JSX.Element {
         props.onPending(_comment as Comment)
       }
       const updated = await axios.post('/api/comments', formData)
+      console.log('updated', updated)
       props.afterSave(updated.data as Comment)
     } catch (error: any) {
+      console.log('error', error)
       if (props.onError && !id) {
         props.onError(error as Error)
       }
@@ -216,7 +216,6 @@ export default function FormChat (props: FormChatProps): JSX.Element {
       void handleSubmit()
     }
   }, [handleSubmit])
-
   return (
     <div className='w-full'>
       <Form method="post" onSubmit={handleSubmit}>
@@ -225,7 +224,7 @@ export default function FormChat (props: FormChatProps): JSX.Element {
           placeholder={props.prompt ?? 'Reply...'}
           type='textarea'
           rows={2}
-          inputRef={inputRef as React.RefObject<HTMLTextAreaElement>}
+          inputRef={props.inputRef as React.RefObject<HTMLTextAreaElement>}
           required={true}
           autoFocus={props.autoFocus ?? true}
           value={state.body}

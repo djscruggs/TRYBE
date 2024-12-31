@@ -291,7 +291,7 @@ export function handleFileUpload ({ event, setFile, setFileURL }: HandleFileUplo
   fileReader.readAsDataURL(file)
 }
 
-export function challengeHasStarted (challenge: Challenge | ChallengeSummary, memberChallenge: MemberChallenge | null | undefined): boolean {
+export function challengeHasStarted (challenge: Challenge | ChallengeSummary, memberChallenge?: MemberChallenge): boolean {
   if (challenge.type === 'SCHEDULED') {
     if (challenge.startAt) {
       return isPast(challenge.startAt)

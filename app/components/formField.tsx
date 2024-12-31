@@ -83,7 +83,7 @@ export function FormField ({
             required={required}
             autoFocus = {autoFocus}
             maxLength={65535}
-            ref={textRef}
+            ref={inputRef}
             disabled={disabled}
           >
           {value}
@@ -105,7 +105,7 @@ export function FormField ({
           value={value}
           autoComplete={autoComplete}
           autoFocus = {autoFocus}
-          ref={textRef}
+          ref={inputRef}
       />
 
           )}

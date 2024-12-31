@@ -220,7 +220,6 @@ export const fetchChallengeSummaries = async ({
       }
     }
   }
-
   let queryCategory: number[] = []
   if (typeof category === 'number') {
     queryCategory = [category]

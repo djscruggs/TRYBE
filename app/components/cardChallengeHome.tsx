@@ -32,10 +32,10 @@ export default function CardChallengeHome ({ challenge, isMember, isPreview }: C
     if (isPreview) {
       return
     }
-    let url = `/challenges/v/${challenge.id}`
+    let url = `/challenges/v/${challenge.id}/about`
     if (challenge.status === 'PUBLISHED') {
       if (isMember) {
-        if (memberCount < 2 || challenge.type === 'SCHEDULED') {
+        if (memberCount >= 2 || challenge.type === 'SCHEDULED') {
           url = `/challenges/v/${challenge.id}/chat`
         } else {
           url = `/challenges/v/${challenge.id}/checkins`

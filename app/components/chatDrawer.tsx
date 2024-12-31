@@ -123,7 +123,7 @@ export default function ChatDrawer (props: ChatDrawerProps): JSX.Element {
         }
         {id &&
           <div className='px-2' ref={bottomRef}>
-            <FormChat afterSave={afterSaveComment} onPending={onPendingComment} onError={onSaveCommentError} objectId={id} type={type} inputRef={inputRef} />
+            <FormChat afterSave={afterSaveComment} onPending={onPendingComment} onError={onSaveCommentError} objectId={id} type={type} inputRef={inputRef} autoFocus={false} />
           </div>
         }
       </div>

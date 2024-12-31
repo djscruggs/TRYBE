@@ -23,7 +23,7 @@ export default function ChallengesIndex (): JSX.Element {
       {isRouteException
         ? <Outlet />
         : (
-      <div className='flex items-center w-full mt-14'>
+      <div className='flex items-center w-full mt-2 md:mt-8'>
         <div className="flex flex-col items-center md:max-w-lg w-full">
           <h1 className="text-3xl font-bold mb-4 w-full ml-2 md:ml-0 text-left">
                 Challenges
