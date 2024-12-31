@@ -177,7 +177,6 @@ export default function ViewChallengeChat (): JSX.Element {
   // used in various places to get the current date formatted as YYYY-MM-DD
   const today = new Date().toLocaleDateString('en-CA')
   const scrollToBottom = (): void => {
-    console.log('scrollToBottom')
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }
   useEffect(() => {
@@ -293,7 +292,7 @@ export default function ViewChallengeChat (): JSX.Element {
   }
 
   return (
-    <div className='max-w-2xl mt-6'>
+    <div className='max-w-2xl mt-28'>
       {hasEarlierDays && <div className='text-center text-sm text-gray-500 mb-8 cursor-pointer' onClick={handleShowPreviousDays}>show previous days</div>}
       {limitedGroupedData && Object.entries(limitedGroupedData)?.map(([date, { posts, checkIns, comments }], index) => (
 
