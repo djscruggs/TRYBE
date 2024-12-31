@@ -72,6 +72,7 @@ export default function ViewChallenge (): JSX.Element {
       setWhich('chat')
     }
   }, [])
+  const isEdit = location.pathname.includes('edit')
   if (!data) {
     return <p>No data.</p>
   }
@@ -89,11 +90,15 @@ export default function ViewChallenge (): JSX.Element {
     }
   }, [matches])
   return (
-    <div className='max-w-sm md:max-w-md lg:max-w-lg relative'>
-        <div className='fixed top-0 z-10 bg-white w-full max-w-sm md:max-w-md lg:max-w-lg'>
+    <div className={`${isEdit ? '' : 'max-w-sm md:max-w-md lg:max-w-lg relative'}`}>
+
+        <div className='fixed top-0 z-10 bg-white w-full max-w-sm md:max-w-lg'>
           <ChallengeHeader challenge={challenge as Challenge} size='small' />
-          <ChallengeTabs challenge={challenge as ChallengeSummary} which={which} isMember={Boolean(data.membership?.id)}/>
+          {!isEdit &&
+            <ChallengeTabs challenge={challenge as ChallengeSummary} which={which} isMember={Boolean(data.membership?.id)}/>
+          }
         </div>
+
         <div className='mb-16 mt-24'>
           <Outlet />
         </div>

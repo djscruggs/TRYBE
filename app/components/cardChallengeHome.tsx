@@ -119,6 +119,9 @@ export default function CardChallengeHome ({ challenge, isMember, isPreview }: C
                     <div className=''>
                       <FaUserFriends className='h-4 w-4 text-darkgrey inline' />
                       <span className='text-xs pl-2 text-darkgrey inline'>{memberCount} joined</span>
+                      {!challenge.public &&
+                        <span className='text-xs text-darkgrey ml-2'>Private</span>
+                      }
                     </div>
                   <div className=''>
                       <FaRegCalendarAlt className='h-4 w-4 text-darkgrey inline' />
@@ -128,9 +131,6 @@ export default function CardChallengeHome ({ challenge, isMember, isPreview }: C
                 }
                 {categoryNames.length > 0 &&
                   <div className='text-xs text-blue inline mr-1'>{categoryNames.join(', ')}</div>
-                }
-                {!challenge.public &&
-                  <div className='text-xs text-darkgrey '>Private</div>
                 }
 
               </div>
