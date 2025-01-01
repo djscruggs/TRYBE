@@ -175,10 +175,12 @@ export const fetchChallengeSummaries = async ({
   const where: any[] = []
   if (uid) {
     where.push({ userId: uid })
-  } else {
+  } else if (range !== 'all') {
     where.push({ public: true })
   }
-  where.push({ status: 'PUBLISHED' })
+  if (range !== 'all') {
+    where.push({ status: 'PUBLISHED' })
+  }
   if (type === 'SELF_LED') {
     where.push({ type: 'SELF_LED' })
   } else {

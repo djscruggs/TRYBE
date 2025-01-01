@@ -16,10 +16,19 @@ export const loader: LoaderFunction = async (args) => {
   const currentUser = await getCurrentUser(args)
   const userId = currentUser?.id ? Number(currentUser.id) : null
   let challenges
+  let error = null
   if (range === 'mine') {
     challenges = await fetchUserChallengesAndMemberships({ userId }) as { error?: string }
   } else {
-    challenges = await fetchChallengeSummaries({ range, category, type }) as { error?: string }
+    if (range === 'all' && currentUser?.role === 'ADMIN') {
+      challenges = await fetchChallengeSummaries({ range, category, type }) as { error?: string }
+    } else {
+      if (range === 'all') {
+        error = 'Range `all` called by non-admin user, returning upcoming'
+        console.error(error)
+      }
+      challenges = await fetchChallengeSummaries({ range: 'upcoming', category, type }) as { error?: string }
+    }
   }
 
   if (!challenges || challenges.error) {
@@ -27,5 +36,5 @@ export const loader: LoaderFunction = async (args) => {
   }
 
   const memberships = await fetchMemberChallenges(userId) || [] as number[]
-  return json({ challenges, memberships, error: null })
+  return json({ challenges, memberships, error })
 }

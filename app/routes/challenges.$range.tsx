@@ -6,7 +6,6 @@ import axios, { type AxiosRequestConfig } from 'axios'
 import { CurrentUserContext } from '~/utils/CurrentUserContext'
 import MyChallenges from '~/components/myChallenges'
 export default function ChallengesIndex (): JSX.Element {
-  const [myChallenges, setMyChallenges] = useState<ChallengeSummary[]>([])
   const browseRef = useRef<HTMLDivElement | null>(null)
   const [isExtended, setIsExtended] = useState(false) // this is used to extend the screen that the scroll into view is applied to
   const [categoryFilter, setCategoryFilter] = useState<string[]>([])
@@ -30,7 +29,10 @@ export default function ChallengesIndex (): JSX.Element {
 
   const loadUpcomingChallenges = async (): Promise<void> => {
     setLoading(true)
-    const url = '/api/challenges/upcoming'
+    let url = '/api/challenges/upcoming'
+    if (status === 'all') {
+      url = '/api/challenges/all'
+    }
     const params: AxiosRequestConfig['params'] = { }
     if (categoryFilter.length > 0) {
       params.category = categoryFilter.join(',')
