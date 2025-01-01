@@ -2,7 +2,7 @@ import { type LoaderFunction, type LoaderFunctionArgs } from '@remix-run/node'
 import { SignUp } from '@clerk/remix'
 import Logo from '~/components/logo'
 import { useState } from 'react'
-import { Link } from '@remix-run/react'
+import { Link, useSearchParams } from '@remix-run/react'
 
 export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
   // const { userId } = await getAuth(args)
@@ -12,11 +12,14 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
   return null
 }
 export default function SignUpPage (): JSX.Element {
-  const [showSignup, setShowSignup] = useState(false)
+  const [searchParams] = useSearchParams()
+  const clerkSignup = Boolean(searchParams.get('clerkSignup'))
+  const [showClerkSignup, setShowClerkSignup] = useState(clerkSignup)
   return (
-    <div className="justify-center items-center flex flex-col gap-y-4 w-screen h-screen relative">
-      {!showSignup && <SignupNotice onSignUp={() => { setShowSignup(true) }} />}
-      {showSignup &&
+    <div className="max-w-sm justify-center items-center mt-10  w-screen h-screen">
+      {!showClerkSignup && <SignupNotice onSignUp={() => { setShowClerkSignup(true) }} />}
+      {showClerkSignup &&
+      <div className='justify-center w-sm'>
         <SignUp
         appearance={{
           variables: {
@@ -29,6 +32,7 @@ export default function SignUpPage (): JSX.Element {
           }
         }}
         />
+      </div>
       }
 
     </div>
@@ -37,7 +41,7 @@ export default function SignUpPage (): JSX.Element {
 
 function SignupNotice ({ onSignUp }: { onSignUp: () => void }): JSX.Element {
   return (
-    <div className='flex flex-col items-center w-lg '>
+    <div className='flex flex-col items-center w-sm'>
       <div className='text-xl text-red'>WELCOME TO</div>
       <div className='text-8xl font-bold text-red text-center w-full font-cursive'>Trybe</div>
       <div className='flex mt-6'>

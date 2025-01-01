@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react'
 import { SignedIn, SignedOut, UserButton } from '@clerk/remix'
 import useHasLoaded from '~/hooks/useHasLoaded'
 import { useLocation, Outlet, useNavigate, Link } from '@remix-run/react'
-
+import { HiOutlineLogin } from 'react-icons/hi'
 import NavLinks from './navlinks'
 import { CurrentUserContext } from '~/utils/CurrentUserContext'
 import {
@@ -51,7 +51,7 @@ export const FullLayout = (): JSX.Element => {
   const isWelcome = location.pathname.includes('/challenges/')
   const isLanding = location.pathname.includes('/landing')
   useEffect(() => {
-    if (['/', '/register', '/login', '/signup', '/landing'].includes(location.pathname)) {
+    if (['/', '/landing'].includes(location.pathname)) {
       setShowNav(false)
     } else {
       setShowNav(true)
@@ -174,19 +174,30 @@ export const FullLayout = (): JSX.Element => {
                     </AnimatePresence> */}
                 </div>
                 {showNav && !isInterior &&
-                  <div className={`${wrapperVisible ? 'opacity-100' : 'opacity-30'} transition-opacity duration-500 fixed bottom-0 left-0 right-0 max-w-screen flex items-center w-full justify-between m-0 p-0 px-2 py-1 bg-gray-50 border-2 border-slate-200 z-10`}>
-                      <Link to="/challenges" className='w-8 h-8 ml-14 flex justify-center items-center'>
+                  <div className={`${wrapperVisible ? 'opacity-100' : 'opacity-30'}  transition-opacity duration-500 fixed bottom-0 left-0 right-0 max-w-screen flex items-center w-full justify-between m-0 p-0 px-2 py-1 bg-gray-50 border-2 border-slate-200 z-10`}>
+                      <div className='max-w-lg flex justify-between w-full'>
+                      <Link to="/challenges" className={`w-8 h-8 ${currentUser ? 'ml-14' : 'ml-24'} flex justify-center items-center`}>
                         <HomeIcon className='cursor-pointer w-8 h-8' />
                       </Link>
                       <div className="flex items-center justify-center relative min-w-8" onClick={(event) => { handlePlusClick(event) }}>
-                        <Link to="/challenges/new" prefetch='render'>
-                          <PlusCircleIcon className='w-12 h-12 text-white rounded-full bg-red text-color-white cursor-pointer text-6xl' />
-                        </Link>
+                        {currentUser &&
+                          <Link to="/challenges/new" prefetch='render'>
+                            <PlusCircleIcon className='w-12 h-12 text-white rounded-full bg-red text-color-white cursor-pointer text-6xl' />
+                          </Link>
+                        }
                       </div>
+                      {currentUser
+                        ? (
                       <Link to="/profile" className='w-8 h-8 mr-14 flex justify-center items-center'>
                         <IdentificationIcon className='cursor-pointer w-8 h-8' />
                       </Link>
-
+                          )
+                        : (
+                        <Link to="/signup" className='w-8 h-8 mr-24 flex justify-center items-center'>
+                          <HiOutlineLogin className='cursor-pointer w-8 h-8' />
+                        </Link>
+                          )}
+                      </div>
                   </div>
 
                 }

@@ -5,7 +5,7 @@ import {
 export default function SignInPage (): JSX.Element {
   const redirectTo = localStorage.getItem('redirectTo') ?? '/quote'
   return (
-    <div className="max-w-lg justify-center items-center flex flex-col gap-y-4 w-screen h-screen relative">
+    <div className="w-sm justify-center items-center mt-10">
       <SignIn
         fallbackRedirectUrl={redirectTo}
         appearance={{

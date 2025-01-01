@@ -16,7 +16,7 @@
 #sentry-feedback {
   --bottom: .6rem !important;
   --right: .2rem !important;
-  @media (max-width: 640px) {
+  @media (max-width: 1024px) {
     --bottom: .2rem !important;
     --right: .2rem !important;
   }
