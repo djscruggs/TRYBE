@@ -58,6 +58,9 @@ export default function ChallengeOverview ({ challenge, memberChallenge }: { cha
   }, [challenge.id, currentUser?.id])
   return (
     <div className='max-w-sm md:max-w-md lg:max-w-lg relative'>
+       {!membership &&
+          <div className='text-red text-center mb-2'>This is a self-guided challenge. Click program to view the schedule.</div>
+        }
       <div className='relative mb-4'>
           {parsedDescription}
           <LinkRenderer text={challenge.description ?? ''} />
@@ -86,11 +89,9 @@ export default function ChallengeOverview ({ challenge, memberChallenge }: { cha
             <LiaUserFriendsSolid className="text-grey h-5 w-5 inline mr-1" />
             {challenge?._count.members} {pluralize(challenge?._count.members, 'member')}
           </div>
-        }
-          {!membership &&
-            <div className='text-red text-center mb-4'>This is a self-guided challenge. Click program to view the schedule.</div>
           }
         </div>
+
         {membership?.startAt &&
           <div className='flex mt-4'>
             <div className = 'w-1/3'>

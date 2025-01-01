@@ -1,10 +1,10 @@
 import { useContext } from 'react'
 import { FaRegCalendarAlt, FaUserFriends } from 'react-icons/fa'
-import { type ChallengeSummary } from '~/utils/types'
+import { type Challenge, type ChallengeSummary } from '~/utils/types'
 import { colorToClassName } from '~/utils/helpers'
 import { CurrentUserContext } from '~/utils/CurrentUserContext'
 import { useNavigate } from '@remix-run/react'
-import { differenceInCalendarDays, differenceInWeeks, differenceInBusinessDays, isPast } from 'date-fns'
+import { differenceInCalendarDays, differenceInWeeks, isPast } from 'date-fns'
 import ShareMenu from './shareMenu'
 import ChallengeIcon from './challengeIcon'
 import { CheckInButton } from './checkinButton'
@@ -105,7 +105,7 @@ export default function CardChallengeHome ({ challenge, isMember, isPreview }: C
 
                   <div className='text-xs text-darkgrey flex items-center justify-start'>
                     <span className='text-black text-lg'>{challenge.name}</span>
-                    {challenge.status === 'DRAFT' && <div className='text-sm font-light text-yellow ml-2'>Draft</div>}
+
                     {isHost &&
                       <> <span className='mx-2'>| </span> <span className='text-xs font-taprom text-blue'>Hosting</span></>
                     }
@@ -113,19 +113,26 @@ export default function CardChallengeHome ({ challenge, isMember, isPreview }: C
                   </div>
                 </div>
                 {challenge.type === 'SELF_LED'
-                  ? <div className='text-xs text-darkgrey'>Self-Guided</div>
+                  ? <>
+
+                  <div className='text-xs text-darkgrey'>Self-Guided
+                    <DraftBadge challenge={challenge} className='ml-2 inline' />
+                    </div>
+                  </>
 
                   : <>
                     <div className=''>
+
                       <FaUserFriends className='h-4 w-4 text-darkgrey inline' />
                       <span className='text-xs pl-2 text-darkgrey inline'>{memberCount} joined</span>
                       {!challenge.public &&
                         <span className='text-xs text-darkgrey ml-2'>Private</span>
                       }
                     </div>
-                  <div className=''>
+                    <div className=''>
                       <FaRegCalendarAlt className='h-4 w-4 text-darkgrey inline' />
                       <span className='text-xs pl-1 text-darkgrey inline'>{howLongToStart()}</span>
+                      <DraftBadge challenge={challenge} className='ml-2 inline' />
                     </div>
                   </>
                 }
@@ -141,4 +148,11 @@ export default function CardChallengeHome ({ challenge, isMember, isPreview }: C
 
     </div>
   )
+}
+
+function DraftBadge ({ challenge, className = '' }: { challenge: ChallengeSummary | Challenge, className?: string }): JSX.Element {
+  if (challenge?.status === 'DRAFT') {
+    return <div className={`text-sm font-bold text-yellow ${className}`}>Draft</div>
+  }
+  return <></>
 }
