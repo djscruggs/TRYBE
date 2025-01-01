@@ -38,7 +38,7 @@ export default function FormChallenge ({ challenge }: { challenge: ChallengeInpu
   const revalidator = useRevalidator()
   const [errors, setErrors] = useState<Errors>()
   const [image, setImage] = useState<File | null>(null)
-  // make a copy so it doesn't affect parent renders
+  const memberCount = challenge?._count?.members
   if (challenge?._count) {
     delete challenge._count
   }
@@ -64,6 +64,22 @@ export default function FormChallenge ({ challenge }: { challenge: ChallengeInpu
         }))
       }
     }
+  }
+  // if published and there are already members, can't go back to draft
+  const canMakeDraft = function (): boolean {
+    // if challenge hasn't been saved yet, can make draft
+    if (!challenge.id) {
+      return true
+    }
+    // if challenge is already in draft mode, can make draft
+    if (challenge.status === 'DRAFT') {
+      return true
+    }
+    // if challenge has more than one member, can't make draft
+    if (memberCount && memberCount > 1) {
+      return false
+    }
+    return true
   }
   function calculateEndDate (startAt: Date): Date {
     if (isFirstDayOfMonth(startAt)) {
@@ -409,6 +425,11 @@ export default function FormChallenge ({ challenge }: { challenge: ChallengeInpu
                 </div>
                 <div className="relative mb-2 max-w-[400px] text-sm">
                   <label htmlFor='status'>Publication Status</label>
+                  {!canMakeDraft() &&
+                    <div className="text-xs text-red">
+                      Challenges with members cannot be put back in draft mode.
+                    </div>
+                  }
                   <div className="flex items-center space-x-2">
                     <Radio
                       name='status'
@@ -417,6 +438,7 @@ export default function FormChallenge ({ challenge }: { challenge: ChallengeInpu
                       checked={formData.status === 'PUBLISHED'}
                       onChange={handleChange}
                       crossOrigin={undefined}
+                      disabled={!canMakeDraft()}
                     />
                     <Radio
                       name='status'
@@ -425,6 +447,7 @@ export default function FormChallenge ({ challenge }: { challenge: ChallengeInpu
                       checked={formData.status === 'DRAFT'}
                       onChange={handleChange}
                       crossOrigin={undefined}
+                      disabled={!canMakeDraft()}
                     />
                   </div>
 
