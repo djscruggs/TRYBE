@@ -14,10 +14,10 @@ export const loader: LoaderFunction = async (args) => {
   const category = url.searchParams.get('category')
 
   const currentUser = await getCurrentUser(args)
-  const uid = currentUser?.id ? Number(currentUser.id) : null
+  const userId = currentUser?.id ? Number(currentUser.id) : null
   let challenges
   if (range === 'mine') {
-    challenges = await fetchUserChallengesAndMemberships({ userId: uid }) as { error?: string }
+    challenges = await fetchUserChallengesAndMemberships({ userId }) as { error?: string }
   } else {
     challenges = await fetchChallengeSummaries({ range, category, type }) as { error?: string }
   }
@@ -26,6 +26,6 @@ export const loader: LoaderFunction = async (args) => {
     return json({ loadingError: 'Unable to load challenges' })
   }
 
-  const memberships = await fetchMemberChallenges(uid) || [] as number[]
+  const memberships = await fetchMemberChallenges(userId) || [] as number[]
   return json({ challenges, memberships, error: null })
 }

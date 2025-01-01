@@ -170,6 +170,7 @@ export const fetchChallengeSummaries = async ({
   category,
   type = 'all'
 }: FetchChallengeSummariesParams): Promise<ChallengeSummary[]> => {
+  console.log('fetchChallengeSummaries', { userId, range, category, type })
   const uid = userId ? Number(userId) : undefined
   const where: any[] = []
   if (uid) {
@@ -192,7 +193,12 @@ export const fetchChallengeSummaries = async ({
             ]
           })
         } else {
-          where.push(upcomingCondition)
+          where.push({
+            OR: [
+              upcomingCondition,
+              { type: 'SELF_LED' }
+            ]
+          })
         }
         break
       }
@@ -210,7 +216,7 @@ export const fetchChallengeSummaries = async ({
           where.push({
             OR: [
               activeCondition,
-              { type: type.toUpperCase() }
+              { type: 'SELF_LED' }
             ]
           })
         } else {
@@ -242,7 +248,7 @@ export const fetchChallengeSummaries = async ({
       })
     }
   }
-  // console.log('where', JSON.stringify(where, null, 2))
+  console.log('where', JSON.stringify(where, null, 3))
   const params: Prisma.ChallengeFindManyArgs = {
     where: {
       AND: where
