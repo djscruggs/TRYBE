@@ -76,9 +76,14 @@ export default function ChallengeAbout (): JSX.Element {
   return (
     <div className='w-full'>
         <ChallengeOverview challenge={challenge} memberChallenge={membership}/>
-        {!isExpired && (
-          <div className='text-center'>
-              <button
+
+          <div className='max-w-lg text-center rounded-lg p-2'>
+          {currentUser?.id === challenge.userId && (
+            <p className='text-red mt-4'>As the creator of this challenge, you are automatically a member.</p>
+          )}
+          {currentUser?.id !== challenge.userId && (
+            <>
+            <button
                 onClick={confirmJoinUnjoin}
                 className='mt-4  bg-red hover:bg-green-500 text-white rounded-full p-1 px-2 cursor-pointer text-xs'>
                   { isMember ? 'Leave Challenge' : 'Join this Challenge' }
@@ -98,9 +103,10 @@ export default function ChallengeAbout (): JSX.Element {
                 onCancel={() => { setShowJoin(false) }}
                 afterJoin={afterJoin}
               />
-
+            </>
+          )}
           </div>
-        )}
+
     </div>
   )
 }

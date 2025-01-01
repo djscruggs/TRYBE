@@ -1,10 +1,13 @@
 import { type MetaFunction, useRouteLoaderData } from '@remix-run/react'
 import type { Challenge, CheckIn, MemberChallenge } from '~/utils/types'
 import CheckinsList from '~/components/checkinsList'
+import { differenceInDays, format } from 'date-fns'
+import { CircularProgressbarWithChildren, buildStyles } from 'react-circular-progressbar'
 import { useContext, useEffect, useState } from 'react'
 import { CurrentUserContext } from '~/utils/CurrentUserContext'
 import axios from 'axios'
 import { Spinner } from '@material-tailwind/react'
+import 'react-circular-progressbar/dist/styles.css'
 import { ProgressChart } from '~/components/progressChart'
 
 export const meta: MetaFunction = () => {
@@ -40,7 +43,7 @@ export default function MyCheckIns (): JSX.Element {
       {isLoading
         ? <Spinner />
         : <>
-        <div className='w-full flex items-center justify-center mb-8'>
+        <div className='w-full flex items-center justify-center mb-12 mt-10'>
           <div className='max-w-[200px] flex-col items-center justify-center'>
             <ProgressChart challenge={challenge} checkIns={checkIns} />
           </div>

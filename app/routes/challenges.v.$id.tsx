@@ -1,6 +1,6 @@
 import { loadChallengeSummary } from '~/models/challenge.server'
 import { Outlet, useLoaderData, useNavigate, useLocation, useMatches, type MetaFunction } from '@remix-run/react'
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { getCurrentUser } from '~/models/auth.server'
 import type { MemberChallenge, Challenge, ChallengeSummary } from '~/utils/types'
 import { type LoaderFunction, type LoaderFunctionArgs } from '@remix-run/node'
@@ -8,6 +8,7 @@ import { FaChevronCircleLeft } from 'react-icons/fa'
 import { prisma } from '~/models/prisma.server'
 import ChallengeHeader from '~/components/challengeHeader'
 import ChallengeTabs from '~/components/challengeTabs'
+import { CurrentUserContext } from '~/utils/CurrentUserContext'
 
 interface ViewChallengeData {
   challenge: ChallengeSummary
@@ -57,6 +58,7 @@ export const meta: MetaFunction<typeof loader> = ({
 export default function ViewChallenge (): JSX.Element {
   const data = useLoaderData<ViewChallengeData>()
   const { challenge } = data
+  const { currentUser } = useContext(CurrentUserContext)
   const [which, setWhich] = useState('') // matches[0] is root, matches[1] is the challenges, matches[2] is challenges/v/$idtab
   const location = useLocation()
   const navigate = useNavigate()
@@ -95,7 +97,7 @@ export default function ViewChallenge (): JSX.Element {
         <div className='fixed top-0 z-10 bg-white w-full max-w-lg'>
           <ChallengeHeader challenge={challenge as Challenge} size='small' />
           {!isEdit &&
-            <ChallengeTabs challenge={challenge as ChallengeSummary} which={which} isMember={Boolean(data.membership?.id)}/>
+            <ChallengeTabs challenge={challenge as ChallengeSummary} which={which} isMember={Boolean(data.membership?.id || challenge.userId === currentUser?.id)}/>
           }
         </div>
 
