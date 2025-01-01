@@ -1,6 +1,5 @@
 import ChallengeOverview from '~/components/challengeOverview'
-import { type MetaFunction, useRouteLoaderData, useNavigate } from '@remix-run/react'
-import ChallengeTabs from '~/components/challengeTabs'
+import { type MetaFunction, useRouteLoaderData, useNavigate, useRevalidator } from '@remix-run/react'
 import { type Challenge, type ChallengeSummary, type MemberChallenge } from '~/utils/types'
 import { useContext, useState } from 'react'
 import { CurrentUserContext } from '~/utils/CurrentUserContext'
@@ -23,6 +22,7 @@ export default function ChallengeAbout (): JSX.Element {
   const { challenge } = data
   const { currentUser } = useContext(CurrentUserContext)
   const navigate = useNavigate()
+  const revalidator = useRevalidator()
   const [loading, setLoading] = useState<boolean>(false)
   const [showConfirm, setShowConfirm] = useState<boolean>(false)
   const [showJoin, setShowJoin] = useState<boolean>(false)
@@ -62,17 +62,19 @@ export default function ChallengeAbout (): JSX.Element {
     }
     setLoading(false)
     setShowConfirm(false)
+    revalidator.revalidate()
   }
   const afterJoin = (isMember: boolean, membership?: MemberChallenge): void => {
     setIsMember(isMember)
     setMembership(membership)
     setShowJoin(false)
+    revalidator.revalidate()
   }
   if (!challenge) {
     return <div>Loading...</div>
   }
   return (
-    <>
+    <div className='w-full'>
         <ChallengeOverview challenge={challenge} memberChallenge={membership}/>
         {!isExpired && (
           <div className='text-center'>
@@ -99,6 +101,6 @@ export default function ChallengeAbout (): JSX.Element {
 
           </div>
         )}
-    </>
+    </div>
   )
 }

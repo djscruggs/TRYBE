@@ -28,7 +28,7 @@ export default function ChallengeSchedule ({ challenge, posts, isSchedule = fals
   const { currentUser } = useContext(CurrentUserContext)
   const userIsCreator = currentUser?.id === challenge.userId
   return (
-    <div className={`max-w-sm  ${isSchedule ? 'md:max-w-xl lg:max-w-2xl' : 'md:max-w-md lg:max-w-lg'}`}>
+    <div className={`flex justify-center items-center w-screen max-w-2xl  ${isSchedule ? 'md:max-w-xl lg:max-w-2xl' : 'md:max-w-md lg:max-w-lg'}`}>
       {isSchedule &&
          <>
           <ScheduleDateRange challenge={challenge} />
@@ -41,7 +41,9 @@ export default function ChallengeSchedule ({ challenge, posts, isSchedule = fals
         <DateSchedule challenge={challenge} posts={posts} isSchedule={isSchedule} />
       }
       {challenge.type === 'SELF_LED' &&
+
         <NumberSchedule challenge={challenge} posts={posts} isSchedule={isSchedule} />
+
       }
 
     </div>
@@ -139,20 +141,20 @@ const NumberSchedule = ({ challenge, posts, isSchedule }: { challenge: Challenge
   const userIsCreator = currentUser?.id === challenge.userId
   const numDays = challenge.numDays ?? 0 // Default to 0 if numDays is null or undefined
   return (
-    <div className={`max-w-sm  ${isSchedule ? 'md:max-w-xl lg:max-w-2xl' : 'md:max-w-md lg:max-w-lg'}`}>
-    <div className={`${isSchedule ? 'md:grid' : ''}  grid-cols-7 gap-2 w-full mt-4 `}>
-      {Array.from({ length: numDays }, (_, index) => (
-        <div key={index} className="flex flex-col items-center justify-center p-2 border border-gray-300 text-center  relative  h-24 bg-lightgrey  border-[#CECECE]'">
-          <div className={`${postsByDayNum[index + 1] ? 'absolute top-0 text-xs' : ''}`}>Day {index + 1}</div>
-          {postsByDayNum[index + 1]?.map((post) => (
-              <PostsBlock post={post} isSchedule={isSchedule} challenge={challenge} key={post.id} />
-          ))}
-          {isSchedule && !postsByDayNum[index + 1] && userIsCreator &&
-            <NewPostLink day={index + 1} challenge={challenge} />
-          }
-        </div>
-      ))}
-    </div>
+    <div className={`w-full max-w-sm  ${isSchedule ? 'md:max-w-xl lg:max-w-2xl' : 'md:max-w-md lg:max-w-lg'}`}>
+      <div className={`${isSchedule ? 'md:grid' : ''}  grid-cols-7 gap-2 w-full mt-4`}>
+        {Array.from({ length: numDays }, (_, index) => (
+          <div key={index} className="flex flex-col items-center justify-center p-2 border border-gray-300 text-center  relative  h-24 bg-lightgrey  border-[#CECECE]'">
+            <div className={`${postsByDayNum[index + 1] ? 'absolute top-0 text-xs' : ''}`}>Day {index + 1}</div>
+            {postsByDayNum[index + 1]?.map((post) => (
+                <PostsBlock post={post} isSchedule={isSchedule} challenge={challenge} key={post.id} />
+            ))}
+            {isSchedule && !postsByDayNum[index + 1] && userIsCreator &&
+              <NewPostLink day={index + 1} challenge={challenge} />
+            }
+          </div>
+        ))}
+      </div>
     </div>
   )
 }
@@ -212,7 +214,7 @@ const UnscheduledPosts = ({ posts }: { posts: Post[] }): JSX.Element => {
     return <></>
   }
   return (
-    <div className='border border-red p-2 my-2 rounded-md'>
+    <div className='p-2 my-2 rounded-md'>
       <BsExclamationCircleFill className='h-4 w-4  text-red inline-block mr-2 -mt-1' />
       There {pluralize(posts.length, 'is', 'are')} {posts.length} unscheduled {pluralize(posts.length, 'post', 'posts')}.
       {posts.map((post) => {

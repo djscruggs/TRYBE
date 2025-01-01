@@ -43,7 +43,7 @@ export default function Program (): JSX.Element {
   return (
     <>
       {posts.length === 0 &&
-        <div className='my-6 max-w-lg text-center '>
+        <div className='mt-6 max-w-lg text-center '>
           {challenge.userId === currentUser?.id
             ? <>You have not scheduled content. <Link className='text-red underline' to={`/challenges/v/${challenge.id}/schedule`}>Edit schedule.</Link></>
             : <>Schedule has not been published yet.</>
