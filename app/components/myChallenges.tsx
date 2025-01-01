@@ -9,10 +9,11 @@ import useGatedNavigate from '~/hooks/useGatedNavigate'
 interface MyChallengesProps {
   range: string
   scrollToBrowse: () => void
+  centered?: boolean
 }
 
 export default function MyChallenges (props: MyChallengesProps): JSX.Element {
-  const { range, scrollToBrowse } = props
+  const { range, scrollToBrowse, centered } = props
   const [status, setStatus] = useState(range ?? 'active')
   const [loading, setLoading] = useState(true)
   const [myChallenges, setMyChallenges] = useState<ChallengeSummary[]>([])
@@ -49,8 +50,8 @@ export default function MyChallenges (props: MyChallengesProps): JSX.Element {
     void loadData()
   }, [status])
   return (
-    <div className='mb-8'>
-      <div className='text-lg flex items-center justify-start w-full relative'>
+    <div className={`mb-8 ${centered ? 'flex-col justify-center items-center' : ''}`}>
+      <div className={`text-lg w-full relative ${centered ? 'text-center' : ''}`}>
         <div className='text-red cursor-pointer font-bold'>My Challenges</div>
           {/* {currentUser &&
             <div className={`absolute right-2 text-xs text-gray-500 underline cursor-pointer ${status === 'archived' ? 'text-red' : ''}`} onClick={() => { handleStatusChange('archived') }}>Archived</div>
@@ -61,7 +62,7 @@ export default function MyChallenges (props: MyChallengesProps): JSX.Element {
             ? (
             <>
               <p className='text-left text-gray-500'>It&apos;s A Little Quiet Here... Ready To Spark Some Action?</p>
-              <div className='flex items-center justify-start space-x-2 mt-4'>
+              <div className={`flex items-center ${centered ? 'justify-center' : 'justify-start'} space-x-2 mt-4`}>
                 <button className='text-white bg-red p-2 text-xs rounded-full underline italic px-4' onClick={() => { scrollToBrowse ? scrollToBrowse() : navigate('/challenges') }}>BROWSE CHALLENGES</button>
                 <button className='text-red bg-white border border-red p-2 text-xs rounded-full underline italic px-4' onClick={() => { navigate('/challenges/new', true) }}>CREATE YOUR OWN</button>
               </div>

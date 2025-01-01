@@ -44,7 +44,9 @@ export default function Home (): JSX.Element {
       </div>
 
       <div className='text-center text-lg  underline cursor-pointer italic text-blue' onClick={openFeedback}>Leave Us Your Feedback!</div>
-      <MyChallenges range='active' scrollToBrowse={() => { navigate('/challenges') }} />
+      <div className='w-sm p-2 flex justify-center items-center mt-4'>
+      <MyChallenges range='active' scrollToBrowse={() => { navigate('/challenges') }} centered={true}/>
+      </div>
     </div>
 
   )
