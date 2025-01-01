@@ -91,7 +91,7 @@ export const FullLayout = (): JSX.Element => {
       <>
         <div className='hidden md:block w-screen min-h-screen'>
           <div className='flex min-h-screen max-w-screen-2xl'>
-            {currentUser && !isLanding &&
+            {!isLanding &&
               <div className="hidden md:flex flex-col justify-start items-start mr-8">
                 <div className="flex items-center mb-4 mt-10">
                   <div className="flex h-full flex-col px-3 py-4 md:px-2">
@@ -122,8 +122,8 @@ export const FullLayout = (): JSX.Element => {
               </div>
             </SignedIn>
             <SignedOut>
-              <div className='flex-grow  items-center justify-start'>
-                <div className='flex flex-col items-center justify-start h-full pl-4'>
+              <div className={`flex-grow items-center justify-start pt-4 ${showNav ? 'ml-20' : 'ml-0'}`}>
+                <div className={`w-lg ${showNav ? 'items-start' : 'items-center'} justify-start h-full`}>
                   <Outlet />
                 </div>
               </div>

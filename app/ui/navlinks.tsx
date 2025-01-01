@@ -6,7 +6,7 @@ import {
   TrophyIcon
   , HomeIcon
 } from '@heroicons/react/24/outline'
-import { HiOutlineLogout } from 'react-icons/hi'
+import { HiOutlineLogout, HiOutlineLogin } from 'react-icons/hi'
 import { CurrentUserContext } from '~/utils/CurrentUserContext'
 import { useContext, useState } from 'react'
 import { Spinner } from '@material-tailwind/react'
@@ -24,7 +24,7 @@ const NavLinks = (): JSX.Element => {
   }
   return (
       <>
-      {currentUser &&
+
         <div className="flex flex-col justify-start items-center h-screen min-h-full ">
           <div className={`w-24 flex items-center flex-col text-darkgrey text-center mb-4 p-2 rounded-lg ${location.pathname === '/' ? 'bg-gray-100' : 'hover:bg-gray-300'}`}>
             <Link to="/home" className='flex items-center flex-col' prefetch='render'>
@@ -38,6 +38,14 @@ const NavLinks = (): JSX.Element => {
               <span className="cursor-pointer">Challenges</span>
             </Link>
           </div>
+          {!currentUser &&
+            <div className={`w-24 h-20 flex items-center justify-center flex-col text-darkgrey text-center mt-4 mb-4 p-2 rounded-lg ${location.pathname === '/challenges' ? 'bg-gray-100' : 'hover:bg-gray-300'}`}>
+              <Link to="/login" className='flex items-center flex-col' prefetch='render'>
+                <HiOutlineLogin className='h-8 w-8 cursor-pointer mb-1y' />
+                <span className="cursor-pointer">Login</span>
+              </Link>
+            </div>
+          }
 
           {currentUser?.role === 'ADMIN' &&
             <>
@@ -95,13 +103,15 @@ const NavLinks = (): JSX.Element => {
               </Button>
             </Form>
           </div> */}
+           {currentUser &&
           <div className='absolute bottom-10 left-0 w-24 h-20 text-darkgrey text-center mb-4 rounded-lg hover:bg-gray-300 flex flex-col items-center justify-center'>
             <HiOutlineLogout className='h-8 w-8 cursor-pointer mb-1 text-darkgrey' onClick={() => { void signOut({ redirectUrl: '/challenges' }) }}/>
-            <div className="cursor-pointer">Logout</div>
-          </div>
+              <div className="cursor-pointer">Logout</div>
+            </div>
+          }
           {navigation.state === 'loading' && <Spinner />}
         </div>
-      }
+
       </>
   )
 }

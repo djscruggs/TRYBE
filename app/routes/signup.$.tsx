@@ -37,7 +37,7 @@ export default function SignUpPage (): JSX.Element {
 
 function SignupNotice ({ onSignUp }: { onSignUp: () => void }): JSX.Element {
   return (
-    <div className='flex flex-col items-center justify-center '>
+    <div className='flex flex-col items-center w-lg '>
       <div className='text-xl text-red'>WELCOME TO</div>
       <div className='text-8xl font-bold text-red text-center w-full font-cursive'>Trybe</div>
       <div className='flex mt-6'>
