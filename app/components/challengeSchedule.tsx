@@ -28,7 +28,7 @@ export default function ChallengeSchedule ({ challenge, posts, isSchedule = fals
   const { currentUser } = useContext(CurrentUserContext)
   const userIsCreator = currentUser?.id === challenge.userId
   return (
-    <div className={`flex justify-center items-center w-screen max-w-2xl  ${isSchedule ? 'md:max-w-xl lg:max-w-2xl' : 'md:max-w-md lg:max-w-lg'}`}>
+    <div className={`flex-col  border-red items-center w-screen max-w-2xl  ${isSchedule ? 'md:max-w-xl lg:max-w-2xl' : 'md:max-w-md lg:max-w-lg'}`}>
       {isSchedule &&
          <>
           <ScheduleDateRange challenge={challenge} />
@@ -76,7 +76,7 @@ const DateSchedule = ({ challenge, posts, isSchedule }: { challenge: Challenge, 
   const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
   const userIsCreator = currentUser?.id === challenge.userId
   return (
-    <div className={`max-w-sm  ${isSchedule ? 'md:max-w-xl lg:max-w-2xl' : 'md:max-w-md lg:max-w-lg'}`}>
+    <div className={`px-2 w-full max-w-lg  ${isSchedule ? 'md:max-w-xl lg:max-w-2xl' : 'md:max-w-md lg:max-w-lg'}`}>
       <div className={`${isSchedule ? 'md:grid' : ''}  grid-cols-7 gap-0 w-full mt-4 `}>
         {/* only show the days if we're on the schedule page */}
         {weekDays.map((day) => (
