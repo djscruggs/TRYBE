@@ -86,12 +86,14 @@ export default function ChallengesIndex (): JSX.Element {
                     {cat}
                   </div>
                 ))}
-                <span className='px-1 md:px-2 text-grey'>|</span>
-                <div className={`w-fit p-1 px-2 rounded-md cursor-pointer ${selfGuided ? 'bg-gray-400' : 'text-black bg-gray-100'}`}
-                  onClick={() => { setSelfGuided(prev => !prev) }}
-                >
-                 Self-Guided
-                </div>
+                {currentUser?.role === 'ADMIN' &&
+                <>
+                  <span className='px-1 md:px-2 text-grey'>|</span>
+                  <div className={`w-fit p-1 px-2 rounded-md cursor-pointer ${selfGuided ? 'bg-gray-400' : 'text-black bg-gray-100'}`} onClick={() => { setSelfGuided(prev => !prev) }}>
+                    Self-Guided
+                  </div>
+                </>
+                }
 
               </div>
               {!loading && upcomingChallenges.length === 0 &&
