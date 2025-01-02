@@ -10,10 +10,10 @@ import axios from 'axios'
 import Spinner from '@material-tailwind/react/components/Spinner'
 export const meta: MetaFunction = () => {
   return [
-    { title: 'Edit Challenge' },
+    { title: 'About this Challenge' },
     {
       property: 'og:title',
-      content: 'Create Challenge'
+      content: 'About this Challenge'
     }
   ]
 }

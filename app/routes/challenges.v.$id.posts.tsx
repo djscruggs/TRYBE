@@ -2,10 +2,19 @@ import { Outlet, useLoaderData } from '@remix-run/react'
 import React from 'react'
 import { requireCurrentUser } from '~/models/auth.server'
 import type { Post } from '~/utils/types'
-import { type LoaderFunction, type LoaderFunctionArgs } from '@remix-run/node'
+import { type MetaFunction, type LoaderFunction, type LoaderFunctionArgs } from '@remix-run/node'
 import { prisma } from '~/models/prisma.server'
 import CardPost from '~/components/cardPost'
 
+export const meta: MetaFunction = () => {
+  return [
+    { title: 'Posts' },
+    {
+      property: 'og:title',
+      content: 'Posts'
+    }
+  ]
+}
 interface ViewChallengePostsData {
   posts: Post[] | null
 }

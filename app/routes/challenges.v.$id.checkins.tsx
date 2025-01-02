@@ -12,10 +12,10 @@ import { ProgressChart } from '~/components/progressChart'
 
 export const meta: MetaFunction = () => {
   return [
-    { title: 'Checkins' },
+    { title: 'View Progress' },
     {
       property: 'og:title',
-      content: 'Checkins'
+      content: 'View Progress'
     }
   ]
 }

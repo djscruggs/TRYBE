@@ -7,9 +7,17 @@ import { type ChallengeWithHost } from '~/utils/types'
 import { toast } from 'react-hot-toast'
 import { Button } from '@material-tailwind/react'
 import { loadChallengeWithHost } from '~/models/challenge.server'
-import { type LoaderFunction } from '@remix-run/node'
+import { type MetaFunction, type LoaderFunction } from '@remix-run/node'
 import { useLoaderData } from '@remix-run/react'
-
+export const meta: MetaFunction = () => {
+  return [
+    { title: 'Contact Host' },
+    {
+      property: 'og:title',
+      content: 'Contact Host'
+    }
+  ]
+}
 export const loader: LoaderFunction = async (args): Promise<ChallengeWithHost | null | { loadingError: string }> => {
   const { params } = args
   if (!params.id) {

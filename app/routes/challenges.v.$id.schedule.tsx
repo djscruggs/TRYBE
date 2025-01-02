@@ -6,6 +6,15 @@ import { prisma } from '~/models/prisma.server'
 import { type Challenge } from '~/utils/types'
 import ChallengeSchedule from '~/components/challengeSchedule'
 
+export const meta: MetaFunction = () => {
+  return [
+    { title: 'Schedule' },
+    {
+      property: 'og:title',
+      content: 'Schedule'
+    }
+  ]
+}
 interface ChallengeScheduleData {
   posts: Post[]
 }
@@ -29,15 +38,6 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs): Promise<
     }))
   }
   return data
-}
-export const meta: MetaFunction = () => {
-  return [
-    { title: 'Schedule' },
-    {
-      property: 'og:title',
-      content: 'Schedule'
-    }
-  ]
 }
 export default function Schedule (): JSX.Element {
   const { challenge } = useRouteLoaderData<typeof useRouteLoaderData>('routes/challenges.v.$id') as { challenge: Challenge }

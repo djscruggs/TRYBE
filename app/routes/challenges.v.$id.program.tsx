@@ -3,10 +3,20 @@ import { useContext } from 'react'
 import { loadChallenge } from '~/models/challenge.server'
 import { CurrentUserContext } from '~/utils/CurrentUserContext'
 import { type Post } from '@prisma/client'
-import { type LoaderFunction, type LoaderFunctionArgs } from '@remix-run/node'
+import { type MetaFunction, type LoaderFunction, type LoaderFunctionArgs } from '@remix-run/node'
 import { prisma } from '~/models/prisma.server'
 import { type Challenge } from '~/utils/types'
 import ChallengeSchedule from '~/components/challengeSchedule'
+
+export const meta: MetaFunction = () => {
+  return [
+    { title: 'Program' },
+    {
+      property: 'og:title',
+      content: 'Program'
+    }
+  ]
+}
 
 interface ChallengeScheduleData {
   posts: Post[]

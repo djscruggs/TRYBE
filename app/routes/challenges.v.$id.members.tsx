@@ -3,6 +3,16 @@ import { type LoaderFunction } from '@remix-run/server-runtime'
 import { fetchChallengeMembers } from '~/models/challenge.server'
 import AvatarLoader from '~/components/avatarLoader'
 import { type MemberChallenge } from '~/utils/types'
+
+export const meta: MetaFunction = () => {
+  return [
+    { title: 'Members' },
+    {
+      property: 'og:title',
+      content: 'Members'
+    }
+  ]
+}
 export const loader: LoaderFunction = async ({ request, params }) => {
   if (!params.id) {
     return json({ loadingError: 'Challenge id not included' })
@@ -15,15 +25,6 @@ export const loader: LoaderFunction = async ({ request, params }) => {
   }
   const data: Array<Record<string, any>> = result
   return json(data)
-}
-export const meta: MetaFunction = () => {
-  return [
-    { title: 'Members' },
-    {
-      property: 'og:title',
-      content: 'Members'
-    }
-  ]
 }
 export default function ViewChallengeMembers (): JSX.Element {
   const members = useLoaderData<typeof loader>()

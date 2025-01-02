@@ -2,7 +2,7 @@ import { useLoaderData, useRouteLoaderData, useRevalidator, useNavigate } from '
 import { useEffect, useRef, useState, useContext } from 'react'
 import { requireCurrentUser } from '~/models/auth.server'
 import type { Post, CheckIn, Challenge, Comment, MemberChallenge } from '~/utils/types'
-import { json, type LoaderFunction, type LoaderFunctionArgs, type SerializeFrom } from '@remix-run/node'
+import { json, type MetaFunction, type LoaderFunction, type LoaderFunctionArgs, type SerializeFrom } from '@remix-run/node'
 import { prisma } from '~/models/prisma.server'
 import { Prisma } from '@prisma/client'
 import CheckinsList from '~/components/checkinsList'
@@ -14,7 +14,15 @@ import { CheckInButton } from '~/components/checkinButton'
 import DateDivider from '~/components/dateDivider'
 import { isPast } from 'date-fns'
 import { FaChevronCircleLeft } from 'react-icons/fa'
-import ChallengeTabs from '~/components/challengeTabs'
+export const meta: MetaFunction = () => {
+  return [
+    { title: 'Chat' },
+    {
+      property: 'og:title',
+      content: 'Chat'
+    }
+  ]
+}
 interface ChallengeChatData {
   groupedData: Record<string, { posts: Post[], checkIns: { empty: CheckIn[], nonEmpty: CheckIn[] }, comments: Comment[] }>
   membership: MemberChallenge | null | undefined
