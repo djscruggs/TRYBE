@@ -10,7 +10,7 @@ export default function ChallengesIndex (): JSX.Element {
   const navigate = useNavigate()
   const location = useLocation()
   const { range } = useParams()
-  const routeExceptions = ['/new', '/v/', '/mine']
+  const routeExceptions = ['/new', '/v/', '/mine', '/all']
   const isRouteException = routeExceptions.some(fragment => location.pathname.includes(fragment))
   useEffect(() => {
     if (!range && !isRouteException) {

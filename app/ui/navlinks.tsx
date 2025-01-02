@@ -49,10 +49,17 @@ const NavLinks = (): JSX.Element => {
 
           {currentUser?.role === 'ADMIN' &&
             <>
-              <div className={`w-24 h-20 flex items-center justify-center flex-col text-darkgrey text-center mt-4 mb-4 p-2 rounded-lg ${location.pathname === '/challenges' ? 'bg-gray-100' : 'hover:bg-gray-300'}`}>
+              <div className={`w-24 h-20 flex items-center justify-center flex-col text-darkgrey text-center mt-4 mb-4 p-2 rounded-lg ${location.pathname === '/challenges/mine' ? 'bg-gray-100' : 'hover:bg-gray-300'}`}>
                 <Link to="/challenges/mine" className='flex items-center flex-col' prefetch='render'>
                   <TrophyIcon className='h-8 w-8 cursor-pointer mb-1y' />
                   <div className="cursor-pointer">My</div>
+                  <div className="cursor-pointer text-xs">(admins)</div>
+                </Link>
+              </div>
+              <div className={`w-24 h-20 flex items-center justify-center flex-col text-darkgrey text-center mt-4 mb-4 p-2 rounded-lg ${location.pathname === '/challenges/all' ? 'bg-gray-100' : 'hover:bg-gray-300'}`}>
+                <Link to="/challenges/all" className='flex items-center flex-col' prefetch='render'>
+                  <TrophyIcon className='h-8 w-8 cursor-pointer mb-1y' />
+                  <div className="cursor-pointer">All</div>
                   <div className="cursor-pointer text-xs">(admins)</div>
                 </Link>
               </div>
