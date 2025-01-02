@@ -157,7 +157,7 @@ model Challenge {
   notes          Note[]
   posts          Post[]
   threads       Thread[]
-
+  cohorts       ChallengeCohort[]
   @@index([userId])
   @@index([userId, updatedAt])
 }
@@ -176,10 +176,21 @@ model MemberChallenge {
   checkIns    CheckIn[]
   challenge   Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
   user        User      @relation(fields: [userId], references: [id])
-
+  cohortId Int?
+  cohort ChallengeCohort? @relation(fields: [cohortId], references: [id], onDelete: Cascade)
   @@index([challengeId])
   @@index([userId])
   @@index([userId, createdAt])
+}
+model ChallengeCohort {
+  id Int @id @default(autoincrement())
+  challengeId Int
+  challenge Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+  members MemberChallenge[]
+  dayNumber Int @default(1)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  startAt DateTime?
 }
 
 model CheckIn {
