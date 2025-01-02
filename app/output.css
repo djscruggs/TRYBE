@@ -1162,6 +1162,10 @@ video {
   margin-top: 1px;
 }
 
+.mt-32 {
+  margin-top: 8rem;
+}
+
 .box-border {
   box-sizing: border-box;
 }
@@ -2912,6 +2916,10 @@ video {
 
 .bg-opacity-80 {
   --tw-bg-opacity: 0.8;
+}
+
+.bg-opacity-90 {
+  --tw-bg-opacity: 0.9;
 }
 
 .bg-gradient-to-b {

@@ -8,9 +8,9 @@ import { CurrentUserContext } from '~/utils/CurrentUserContext'
 import {
   HomeIcon,
   PlusCircleIcon,
-  IdentificationIcon
+  IdentificationIcon,
+  TrophyIcon
 } from '@heroicons/react/24/outline'
-import { FaChevronCircleLeft } from 'react-icons/fa'
 export default function Layout (): JSX.Element {
   const hasLoaded = useHasLoaded()
   if (!hasLoaded) {
@@ -47,7 +47,7 @@ export const FullLayout = (): JSX.Element => {
   // hack to remove padding on welcome screen mobile
   // hide nav if on index, login or register
   const [showNav, setShowNav] = useState(true)
-  const isInterior = location.pathname.includes('/v/')
+  const [isChat, setIsChat] = useState(location.pathname.includes('/chat'))
   const isWelcome = location.pathname.includes('/challenges/')
   const isLanding = location.pathname.includes('/landing')
   const [showSpacer, setShowSpacer] = useState(true)
@@ -59,6 +59,7 @@ export const FullLayout = (): JSX.Element => {
       setShowNav(true)
       setShowSpacer(true)
     }
+    setIsChat(location.pathname.includes('/chat'))
   }, [location.pathname])
 
   const handlePlusClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>): void => {
@@ -152,14 +153,7 @@ export const FullLayout = (): JSX.Element => {
                 }
 
                 <div className={`flex flex-col items-center justify-center  ${isWelcome ? 'p-0' : ' px-2'}`}>
-                    {isInterior && showNav &&
-                        <div className='flex items-center justify-center w-full my-2'>
-                          <FaChevronCircleLeft
-                            className='w-6 h-6 text-grey cursor-pointer'
-                            onClick={() => { navigate(-1) }}
-                          />
-                        </div>
-                    }
+
                     <Outlet />
                     {showSpacer &&
                       <div className='min-h-[100px]'>
@@ -178,33 +172,40 @@ export const FullLayout = (): JSX.Element => {
                         </motion.main>
                     </AnimatePresence> */}
                 </div>
-                {showNav && !isInterior &&
-                  <div className={`${wrapperVisible ? 'opacity-100' : 'opacity-30'}  transition-opacity duration-500 fixed bottom-0 left-0 right-0 max-w-screen flex items-center w-full justify-between m-0 p-0 px-2 py-1 bg-gray-50 border-2 border-slate-200 z-10`}>
-                      <div className='max-w-lg flex justify-between w-full'>
-                      <Link to="/challenges" className={`w-8 h-8 ${currentUser ? 'ml-14' : 'ml-24'} flex justify-center items-center`}>
-                        <HomeIcon className='cursor-pointer w-8 h-8' />
-                      </Link>
-                      <div className="flex items-center justify-center relative min-w-8" onClick={(event) => { handlePlusClick(event) }}>
-                        {currentUser &&
+                {showNav && !isChat &&
+                  <div className={`${wrapperVisible ? 'opacity-100' : 'opacity-30'}  transition-opacity duration-500 fixed bottom-0 left-0 right-0 max-w-screen flex items-center w-full justify-center m-0 p-0 px-2 py-1 bg-gray-50 border-2 border-slate-200 z-10`}>
+                    <div className='max-w-lg flex justify-between w-full'>
+                      <div className='flex justify-center items-center w-1/3'>
+                        {currentUser && (
+                          <Link to="/home" className={`w-8 h-8 ${currentUser ? 'ml-14' : 'ml-24'} flex justify-center items-center`}>
+                            <HomeIcon className='cursor-pointer w-8 h-8' />
+                          </Link>
+                        )}
+                        <Link to="/challenges" className={`w-8 h-8 ${currentUser ? 'ml-14' : 'ml-24'} flex justify-center items-center`}>
+                          <TrophyIcon className='cursor-pointer w-8 h-8' />
+                        </Link>
+                      </div>
+                      <div className='flex justify-center items-center w-1/3'>
+                        {currentUser && (
                           <Link to="/challenges/new" prefetch='render'>
                             <PlusCircleIcon className='w-12 h-12 text-white rounded-full bg-red text-color-white cursor-pointer text-6xl' />
                           </Link>
-                        }
+                        )}
                       </div>
-                      {currentUser
-                        ? (
-                      <Link to="/profile" className='w-8 h-8 mr-14 flex justify-center items-center'>
-                        <IdentificationIcon className='cursor-pointer w-8 h-8' />
-                      </Link>
-                          )
-                        : (
-                        <Link to="/signup" className='w-8 h-8 mr-24 flex justify-center items-center'>
-                          <HiOutlineLogin className='cursor-pointer w-8 h-8' />
-                        </Link>
-                          )}
+                      <div className='flex justify-center items-center w-1/3'>
+                      {currentUser && (
+                        <Link to="/profile" className='w-8 h-8 mr-14 flex justify-center items-center'>
+                          <IdentificationIcon className='cursor-pointer w-8 h-8' />
+                          </Link>
+                      )}
+                        {!currentUser && (
+                          <Link to="/signup" className='w-8 h-8 mr-24 flex justify-center items-center'>
+                            <HiOutlineLogin className='cursor-pointer w-8 h-8' />
+                          </Link>
+                        )}
                       </div>
                   </div>
-
+                  </div>
                 }
             </div>
       </>

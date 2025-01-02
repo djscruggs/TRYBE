@@ -300,7 +300,7 @@ export default function ViewChallengeChat (): JSX.Element {
   }
 
   return (
-    <div className='max-w-2xl mt-28'>
+    <div className='max-w-2xl mt-32 md:mt-28'>
       {hasEarlierDays && <div className='text-center text-sm text-gray-500 mb-8 cursor-pointer' onClick={handleShowPreviousDays}>show previous days</div>}
       {limitedGroupedData && Object.entries(limitedGroupedData)?.map(([date, { posts, checkIns, comments }], index) => (
 
@@ -333,7 +333,7 @@ export default function ViewChallengeChat (): JSX.Element {
         <DialogCheckin challenge={challenge} open={true} onClose={() => { setShowCheckinPopup(false) }} afterCheckIn={handleAfterCheckIn} />
       )}
       {currentUser && (
-        <div className='fixed w-full max-w-2xl bottom-0  bg-white bg-opacity-70 max-h-3/4' >
+        <div className='fixed w-full max-w-2xl bottom-0  bg-white bg-opacity-90 max-h-3/4' >
           {/* back button for mobile */}
           <div className='flex items-center md:hidden justify-center w-full my-1'>
             <FaChevronCircleLeft
