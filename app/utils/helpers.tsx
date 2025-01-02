@@ -220,8 +220,10 @@ export function textToJSX (text: string | undefined, textOnly = false): React.Re
     <div>
       {textWithoutLinks?.split('\n').map((line: string, index: number, array: string[]) => (
         <React.Fragment key={index}>
-          {convertTextToJSXAnchors(line)}
-          {index < array.length - 1 && <br />} {/* Only add <br /> if not the last element */}
+          <p className='mt-1'>
+            {convertTextToJSXAnchors(line)}
+          </p>
+
         </React.Fragment>
       ))}
       {!textOnly && formatLinks({ links: strippedLinks ?? [], keyPrefix: 'text-to-jsx' })}
