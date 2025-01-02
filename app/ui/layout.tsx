@@ -50,11 +50,14 @@ export const FullLayout = (): JSX.Element => {
   const isInterior = location.pathname.includes('/v/')
   const isWelcome = location.pathname.includes('/challenges/')
   const isLanding = location.pathname.includes('/landing')
+  const [showSpacer, setShowSpacer] = useState(true)
   useEffect(() => {
     if (['/', '/landing'].includes(location.pathname)) {
       setShowNav(false)
+      setShowSpacer(false)
     } else {
       setShowNav(true)
+      setShowSpacer(true)
     }
   }, [location.pathname])
 
@@ -158,9 +161,11 @@ export const FullLayout = (): JSX.Element => {
                         </div>
                     }
                     <Outlet />
-                    <div className='min-h-[100px]'>
-                      {/* this is a spacer so you can scroll to bottom and menu doesn't cover content */}
-                    </div>
+                    {showSpacer &&
+                      <div className='min-h-[100px]'>
+                        {/* this is a spacer so you can scroll to bottom and menu doesn't cover content */}
+                      </div>
+                    }
                     {/* <AnimatePresence mode='wait' initial={false}>
                         <motion.main
                          key={useLocation().pathname}

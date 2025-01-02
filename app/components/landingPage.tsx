@@ -101,7 +101,7 @@ export default function LandingPage (): JSX.Element {
               </div>
             }
             {step === 1 &&
-              <img src="/images/landing/people-bottom.png" alt="people-bottom" className='absolute bottom-20 md:bottom-0 w-full object-cover' />
+              <img src="/images/landing/people-bottom.png" alt="people-bottom" className='absolute bottom-0 md:bottom-0 w-full object-cover' />
             }
           </div>
   )
