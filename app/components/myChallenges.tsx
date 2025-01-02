@@ -19,7 +19,7 @@ export default function MyChallenges (props: MyChallengesProps): JSX.Element {
   const [myChallenges, setMyChallenges] = useState<ChallengeSummary[]>([])
   const [memberships, setMemberships] = useState<MemberChallenge[]>([])
   const { currentUser } = useContext(CurrentUserContext)
-  const navigate = useGatedNavigate()
+  const gatedNavigate = useGatedNavigate()
   const loadData = async (): Promise<void> => {
     setLoading(true)
     const url = `/api/challenges/${status}`
@@ -32,19 +32,9 @@ export default function MyChallenges (props: MyChallengesProps): JSX.Element {
       userMemberships.some(membership => membership.challengeId === challenge.id) ||
       challenge.userId === currentUser?.id
     )
-    const otherChallenges = allChallenges.filter(challenge =>
-      !userMemberships.some(membership => membership.challengeId === challenge.id) &&
-      challenge.userId !== currentUser?.id
-    )
-
-    // Filter challenges where the user is not a member or owner
     setMyChallenges(userChallenges)
     setMemberships(userMemberships)
     setLoading(false)
-  }
-  const handleStatusChange = (status: string): void => {
-    setStatus(status)
-    void loadData()
   }
   useEffect(() => {
     void loadData()
@@ -63,8 +53,8 @@ export default function MyChallenges (props: MyChallengesProps): JSX.Element {
             <>
               <p className='text-left text-gray-500'>It&apos;s A Little Quiet Here... Ready To Spark Some Action?</p>
               <div className={`flex items-center ${centered ? 'justify-center' : 'justify-start'} space-x-2 mt-4`}>
-                <button className='text-white bg-red p-2 text-xs rounded-full underline italic px-4' onClick={() => { scrollToBrowse ? scrollToBrowse() : navigate('/challenges') }}>BROWSE CHALLENGES</button>
-                <button className='text-red bg-white border border-red p-2 text-xs rounded-full underline italic px-4' onClick={() => { navigate('/challenges/new', true) }}>CREATE YOUR OWN</button>
+                <button className='text-white bg-red p-2 text-xs rounded-full underline italic px-4' onClick={() => { scrollToBrowse ? scrollToBrowse() : gatedNavigate('/challenges', false) }}>BROWSE CHALLENGES</button>
+                <button className='text-red bg-white border border-red p-2 text-xs rounded-full underline italic px-4' onClick={() => { gatedNavigate('/challenges/new', true) }}>{currentUser ? 'CREATE YOUR OWN' : 'SIGN UP TO CREATE YOUR OWN'}</button>
               </div>
             </>
               )

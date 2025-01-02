@@ -14,7 +14,6 @@ interface ChallengeTabsProps {
 export default function ChallengeTabs (props: ChallengeTabsProps): JSX.Element {
   const { challenge, which } = props
   const [isMember, setIsMember] = useState(props.isMember)
-  const navigate = useNavigate()
   const gatedNavigate = useGatedNavigate()
   const [currentTab, setCurrentTab] = useState(which)
   const goTo = (path: string, which: string, gated: boolean = false): void => {
@@ -26,11 +25,7 @@ export default function ChallengeTabs (props: ChallengeTabsProps): JSX.Element {
       }
     }
     const url = `/challenges/v/${challenge.id}${path}`
-    if (gated) {
-      gatedNavigate(url)
-    } else {
-      navigate(url)
-    }
+    gatedNavigate(url, gated)
     setCurrentTab(which)
   }
   useEffect(() => {
