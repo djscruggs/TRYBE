@@ -54,7 +54,7 @@ export default function MyChallenges (props: MyChallengesProps): JSX.Element {
               <p className='text-left text-gray-500'>It&apos;s A Little Quiet Here... Ready To Spark Some Action?</p>
               <div className={`flex items-center ${centered ? 'justify-center' : 'justify-start'} space-x-2 mt-4`}>
                 <button className='text-white bg-red p-2 text-xs rounded-full underline italic px-4' onClick={() => { scrollToBrowse ? scrollToBrowse() : gatedNavigate('/challenges', false) }}>BROWSE CHALLENGES</button>
-                <button className='text-red bg-white border border-red p-2 text-xs rounded-full underline italic px-4' onClick={() => { gatedNavigate('/challenges/new', true) }}>{currentUser ? 'CREATE YOUR OWN' : 'SIGN UP TO CREATE YOUR OWN'}</button>
+                <button className='text-red bg-white border border-red p-2 text-xs rounded-full underline italic px-4' onClick={() => { gatedNavigate('/challenges/new', true) }}>CREATE YOUR OWN</button>
               </div>
             </>
               )

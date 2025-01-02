@@ -1,6 +1,5 @@
 import { useLoaderData, useRouteLoaderData, Link } from '@remix-run/react'
 import { useContext } from 'react'
-import { requireCurrentUser } from '~/models/auth.server'
 import { loadChallenge } from '~/models/challenge.server'
 import { CurrentUserContext } from '~/utils/CurrentUserContext'
 import { type Post } from '@prisma/client'

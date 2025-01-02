@@ -10,15 +10,16 @@ import { HiOutlineLogout, HiOutlineLogin } from 'react-icons/hi'
 import { CurrentUserContext } from '~/utils/CurrentUserContext'
 import { useContext, useState } from 'react'
 import { Spinner } from '@material-tailwind/react'
-import { Link, useNavigate } from '@remix-run/react'
+import { Link } from '@remix-run/react'
 import { useClerk } from '@clerk/remix'
+import useGatedNavigate from '~/hooks/useGatedNavigate'
 const NavLinks = (): JSX.Element => {
   const { currentUser } = useContext(CurrentUserContext)
   const location = useLocation()
   const { signOut } = useClerk()
   const [isNewOpen, setIsNewOpen] = useState(false)
   const navigation = useNavigation()
-  const navigate = useNavigate()
+  const gatedNavigate = useGatedNavigate()
   const toggleNewOpen = (): void => {
     setIsNewOpen(!isNewOpen)
   }
@@ -38,6 +39,13 @@ const NavLinks = (): JSX.Element => {
               <span className="cursor-pointer">Challenges</span>
             </Link>
           </div>
+
+          <div className='relative' onMouseEnter={toggleNewOpen} onMouseLeave={toggleNewOpen}>
+            <div className={'w-24 h-20 flex items-center justify-center flex-col text-darkgrey text-center mt-4 mb-4 p-2 rounded-lg'}>
+              <PlusCircleIcon className='h-8 w-8 cursor-pointer mb-1y text-red' onClick={() => { gatedNavigate('/challenges/new', true) }} />
+            </div>
+          </div>
+
           {!currentUser &&
             <div className={`w-24 h-20 flex items-center justify-center flex-col text-darkgrey text-center mt-4 mb-4 p-2 rounded-lg ${location.pathname === '/challenges' ? 'bg-gray-100' : 'hover:bg-gray-300'}`}>
               <Link to="/login" className='flex items-center flex-col' prefetch='render'>
@@ -63,13 +71,7 @@ const NavLinks = (): JSX.Element => {
                   <div className="cursor-pointer text-xs">(admins)</div>
                 </Link>
               </div>
-              {!location.pathname.includes('/challenges/new') &&
-                <div className='relative' onMouseEnter={toggleNewOpen} onMouseLeave={toggleNewOpen}>
-                  <div className={'w-24 h-20 flex items-center justify-center flex-col text-darkgrey text-center mt-4 mb-4 p-2 rounded-lg'}>
-                    <PlusCircleIcon className='h-8 w-8 cursor-pointer mb-1y text-red' onClick={() => { navigate('/challenges/new') }} />
-                  </div>
-                </div>
-              }
+
             </>
           }
           {/* <div className={`w-24 h-20 flex items-center justify-center flex-col text-darkgrey text-center mb-4 p-2 rounded-lg ${location.pathname === '/community' ? 'bg-gray-100' : 'hover:bg-gray-300'}`}>
