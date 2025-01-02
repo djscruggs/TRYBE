@@ -220,7 +220,7 @@ export function textToJSX (text: string | undefined, textOnly = false): React.Re
     <div>
       {textWithoutLinks?.split('\n').map((line: string, index: number, array: string[]) => (
         <React.Fragment key={index}>
-          <p className='mt-1'>
+          <p style={{ marginTop: index > 0 ? '.25rem' : '0' }}>
             {convertTextToJSXAnchors(line)}
           </p>
 
