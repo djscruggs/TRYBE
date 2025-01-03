@@ -6,9 +6,9 @@ export function WhatsNew (): JSX.Element {
   return (
     <>
       <div className='w-full'>
-        <div className='text-lg flex-col justify-start w-full relative bg-white p-4 rounded-lg'>
-          <div className='text-red font-bold pl-4 mb-2'>What&apos;s New</div>
-        <div className='flex flex-col items-center justify-between space-x-4 px-4'>
+        <div className='text-lg flex-col justify-start w-full relative bg-white pt-2 rounded-lg'>
+          <div className='text-red font-bold pl-0 mb-2'>What&apos;s New</div>
+        <div className='flex flex-col items-center justify-between space-x-4 px-0'>
           <WhatsNew1 />
 
         </div>
