@@ -65,7 +65,8 @@ export async function mailPost (props: PostMailerProps): Promise<any> {
   // eslint-disable-next-line @typescript-eslint/naming-convention
   const { to, dynamic_template_data, replyTo, fromName } = props
   const msg = {
-    from: fromName ? `${fromName} <${process.env.SENDGRID_FROM_EMAIL}>` : process.env.SENDGRID_FROM_EMAIL,
+    from: process.env.SENDGRID_FROM_EMAIL,
+    fromName: fromName ?? 'Trybe',
     replyTo,
     to: process.env.NODE_ENV === 'development' ? process.env.EMAIL_NOTIFICATIONS_TO : to,
     templateId: TEMPLATES.POST,
@@ -97,6 +98,7 @@ export async function contactHost (props: HostMailerProps): Promise<any> {
   const { to, dynamic_template_data, replyTo } = props
   const msg = {
     from: process.env.SENDGRID_FROM_EMAIL,
+    fromName: 'Trybe',
     replyTo: replyTo ?? undefined,
     to: process.env.NODE_ENV === 'development' ? process.env.EMAIL_NOTIFICATIONS_TO : to,
     templateId: TEMPLATES.CONTACT_HOST,
@@ -122,6 +124,7 @@ export async function sendCommentReplyNotification (props: CommentReplyMailerPro
   const { to, dynamic_template_data } = props
   const msg = {
     from: process.env.SENDGRID_FROM_EMAIL,
+    fromName: 'Trybe',
     to: process.env.NODE_ENV === 'development' ? process.env.EMAIL_NOTIFICATIONS_TO : to,
     templateId: TEMPLATES.REPLY_NOTIFICATION,
     dynamic_template_data
@@ -145,6 +148,7 @@ export async function sendCheckinReminder (props: CheckinReminderMailerProps): P
   const { to, dynamic_template_data } = props
   const msg = {
     from: process.env.SENDGRID_FROM_EMAIL,
+    fromName: 'Trybe',
     to: process.env.NODE_ENV === 'development' ? process.env.EMAIL_NOTIFICATIONS_TO : to,
     templateId: TEMPLATES.CHECKIN_REMINDER,
     dynamic_template_data
