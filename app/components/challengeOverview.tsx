@@ -52,7 +52,6 @@ export default function ChallengeOverview ({ challenge, memberChallenge }: { cha
     setCheckIns(response.data.checkIns as CheckIn[])
   }
   const parsedDescription = textToJSX(challenge.description ?? '')
-  const navigate = useNavigate()
   useEffect(() => {
     void fetchCheckIns()
   }, [challenge.id, currentUser?.id])
@@ -65,7 +64,7 @@ export default function ChallengeOverview ({ challenge, memberChallenge }: { cha
           {parsedDescription}
           <LinkRenderer text={challenge.description ?? ''} />
       </div>
-      {currentUser && challenge.type === 'SCHEDULED' && <button className='cursor-pointer  bg-green-500 hover:bg-red float-right text-white text-xs p-1 px-2 rounded-full' onClick={() => { navigate(`/challenges/v/${challenge.id}/contact`) }}>Contact Host</button>}
+
       {challenge.type === 'SELF_LED' &&
       <>
         <div className='flex'>

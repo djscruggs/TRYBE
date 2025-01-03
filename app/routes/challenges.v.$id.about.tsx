@@ -75,37 +75,39 @@ export default function ChallengeAbout (): JSX.Element {
   }
   return (
     <div className='w-full'>
-        <ChallengeOverview challenge={challenge} memberChallenge={membership}/>
+      <ChallengeOverview challenge={challenge} memberChallenge={membership}/>
+      <div className='max-w-lg text-center rounded-lg p-2'>
+      {currentUser?.id === challenge.userId && (
+        <p className='text-red mt-4'>As the creator of this challenge, you are automatically a member.</p>
+      )}
+      {currentUser?.id !== challenge.userId && (
+        <>
+        <button
+            onClick={confirmJoinUnjoin}
+            className='mt-4  bg-red hover:bg-green-500 text-white rounded-full p-1 px-2 cursor-pointer text-xs'>
+              { isMember ? 'Leave Challenge' : 'Join this Challenge' }
+              { loading && <Spinner className='w-4 h-4 inline ml-2' /> }
+          </button>
+          <DialogConfirm
+            isOpen={showConfirm}
+            onConfirm={toggleJoin}
+            onCancel={() => { setShowConfirm(false) }}
+            prompt='Are you sure you want to leave this challenge? All your check-ins will be lost.'
+          />
 
-          <div className='max-w-lg text-center rounded-lg p-2'>
-          {currentUser?.id === challenge.userId && (
-            <p className='text-red mt-4'>As the creator of this challenge, you are automatically a member.</p>
-          )}
-          {currentUser?.id !== challenge.userId && (
-            <>
-            <button
-                onClick={confirmJoinUnjoin}
-                className='mt-4  bg-red hover:bg-green-500 text-white rounded-full p-1 px-2 cursor-pointer text-xs'>
-                  { isMember ? 'Leave Challenge' : 'Join this Challenge' }
-                  { loading && <Spinner className='w-4 h-4 inline ml-2' /> }
-              </button>
-              <DialogConfirm
-                isOpen={showConfirm}
-                onConfirm={toggleJoin}
-                onCancel={() => { setShowConfirm(false) }}
-                prompt='Are you sure you want to leave this challenge? All your check-ins will be lost.'
-              />
+          <DialogJoin
+            isOpen={showJoin}
+            challenge={challenge as Challenge}
+            onConfirm={toggleJoin}
+            onCancel={() => { setShowJoin(false) }}
+            afterJoin={afterJoin}
+          />
+        {currentUser && challenge.type === 'SCHEDULED' && <div className='mt-4 cursor-pointer text-red text-center text-xs underline' onClick={() => { navigate(`/challenges/v/${challenge.id}/contact`) }}>Contact Host</div>}
+        </>
 
-              <DialogJoin
-                isOpen={showJoin}
-                challenge={challenge as Challenge}
-                onConfirm={toggleJoin}
-                onCancel={() => { setShowJoin(false) }}
-                afterJoin={afterJoin}
-              />
-            </>
-          )}
-          </div>
+      )}
+
+      </div>
 
     </div>
   )
