@@ -2,10 +2,9 @@ import { useLoaderData, useRouteLoaderData, Link } from '@remix-run/react'
 import { useContext } from 'react'
 import { loadChallenge } from '~/models/challenge.server'
 import { CurrentUserContext } from '~/utils/CurrentUserContext'
-import { type MemberChallenge, type Post } from '@prisma/client'
 import { type MetaFunction, type LoaderFunction, type LoaderFunctionArgs } from '@remix-run/node'
 import { prisma } from '~/models/prisma.server'
-import { type Challenge } from '~/utils/types'
+import type { Challenge, MemberChallenge, Post } from '~/utils/types'
 import ChallengeSchedule from '~/components/challengeSchedule'
 import { getCurrentUser } from '~/models/auth.server'
 
@@ -38,31 +37,41 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs): Promise<
       { publishAt: 'asc' },
       { createdAt: 'asc' }
     ]
-  })
+  }) as Post[]
   let membership: MemberChallenge | null = null
   if (currentUser) {
     membership = await prisma.memberChallenge.findFirst({
       where: {
         challengeId: Number(params.id),
         userId: currentUser?.id
+      },
+      include: {
+        user: {
+          include: {
+            profile: true
+          }
+        },
+        challenge: true
       }
-    })
+    }) as MemberChallenge | null
   }
   const data: ChallengeScheduleData = {
     posts: posts.map(post => ({
       ...post,
-      createdAt: new Date(post.createdAt),
+      createdAt: post.createdAt ? new Date(post.createdAt) : new Date(),
       publishAt: post.publishAt ? new Date(post.publishAt) : null
     })),
     membership
   }
-  console.log('membership', membership)
   return data
 }
 export default function Program (): JSX.Element {
   const { challenge } = useRouteLoaderData<typeof useRouteLoaderData>('routes/challenges.v.$id') as { challenge: Challenge }
   const { posts, membership } = useLoaderData<typeof loader>() as ChallengeScheduleData
   const { currentUser } = useContext(CurrentUserContext)
+  if (currentUser?.role === 'ADMIN') {
+    console.log('Program posts', posts)
+  }
   return (
     <>
       {posts.length === 0 &&

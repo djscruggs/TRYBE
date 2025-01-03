@@ -27,6 +27,9 @@ export default function ChallengeSchedule ({ challenge, posts, isSchedule = fals
   const unscheduled: Post[] = []
   // create arrays of posts by day number and those that are unscheduled
   const { currentUser } = useContext(CurrentUserContext)
+  if (currentUser?.role === 'ADMIN') {
+    console.log('ChallengeSchedule posts', posts)
+  }
   const userIsCreator = currentUser?.id === challenge.userId
   return (
     <div className={`flex-col  border-red items-center w-screen max-w-2xl  ${isSchedule ? 'md:max-w-xl lg:max-w-2xl' : 'md:max-w-md lg:max-w-lg'}`}>
@@ -128,6 +131,9 @@ const DateSchedule = ({ challenge, posts, isSchedule, membership }: { challenge:
 }
 
 const NumberSchedule = ({ challenge, posts, isSchedule, membership }: { challenge: Challenge, posts: Post[], isSchedule: boolean, membership: MemberChallenge | null }): JSX.Element => {
+  if (currentUser?.role === 'ADMIN') {
+    console.log('NumberSchedule posts', posts)
+  }
   const postsByDayNum = posts.reduce<Record<number, Post[]>>((acc, post) => {
     const publishOnDayNumber = post.publishOnDayNumber // Assuming this property exists
     if (Number(publishOnDayNumber) > 0) {
@@ -141,7 +147,9 @@ const NumberSchedule = ({ challenge, posts, isSchedule, membership }: { challeng
   const { currentUser } = useContext(CurrentUserContext)
   const userIsCreator = currentUser?.id === challenge.userId
   const numDays = challenge.numDays ?? 0 // Default to 0 if numDays is null or undefined
-
+  if (currentUser?.role === 'ADMIN') {
+    console.log('number of days', numDays)
+  }
   return (
     <div className={`w-full max-w-screen px-4 md:px-0  ${isSchedule ? 'md:max-w-xl lg:max-w-2xl' : 'md:max-w-md lg:max-w-lg'}`}>
       <div className={`${isSchedule ? 'md:grid' : ''}  grid-cols-7 gap-2 w-full mt-4`}>
