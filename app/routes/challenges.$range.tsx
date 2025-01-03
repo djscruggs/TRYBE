@@ -5,6 +5,7 @@ import ChallengeList from '~/components/challengeList'
 import axios, { type AxiosRequestConfig } from 'axios'
 import { CurrentUserContext } from '~/utils/CurrentUserContext'
 import MyChallenges from '~/components/myChallenges'
+import { Spinner } from '@material-tailwind/react'
 export default function ChallengesIndex (): JSX.Element {
   const browseRef = useRef<HTMLDivElement | null>(null)
   const [isExtended, setIsExtended] = useState(false) // this is used to extend the screen that the scroll into view is applied to
@@ -72,34 +73,40 @@ export default function ChallengesIndex (): JSX.Element {
   const categories = ['Meditation', 'Journal', 'Creativity', 'Health']
   return (
         <div className="w-full pl-2">
+
           <MyChallenges range='active' scrollToBrowse={scrollToBrowse} />
+          <div ref={browseRef} className='text-red font-bold text-lg mb-2'>Browse Challenges</div>
+            <div className='space-x-4 flex items-center max-w-lg w-full justify-start text-xs md:text-sm'>
+              {categories.map((cat: string) => (
+                <div
+                  key={cat}
+                  className={`w-fit p-1 px-2 rounded-md cursor-pointer ${categoryFilter.includes(cat) ? 'bg-gray-400' : 'text-black bg-gray-100'}`}
+                  onClick={() => { handleCategoryChange(cat) }}
+                >
+                  {cat}
+                </div>
+              ))}
+              {currentUser?.role === 'ADMIN' &&
+              <div className='flex items-center justify-start'>
+                <span className='text-grey mr-2'>|</span>
+                <div className={`w-fit p-1 px-2 rounded-md cursor-pointer ${selfGuided ? 'bg-gray-400' : 'text-black bg-gray-100'}`} onClick={() => { setSelfGuided(prev => !prev) }}>
+                  Self-Guided
+                </div>
+              </div>
+              }
+          </div>
+          {loading &&
+            <div className='flex justify-center items-start h-screen mt-10'>
+              <Spinner />
+            </div>
+          }
           {!loading &&
             <>
-              <div ref={browseRef} className='text-red font-bold text-lg mb-2'>Browse Challenges</div>
-              <div className='space-x-1 md:space-x-2 flex items-center max-w-sm md:max-w-lg w-full justify-between md:justify-start relative text-white text-xs md:text-sm'>
-                {categories.map((cat: string) => (
-                  <div
-                    key={cat}
-                    className={`w-fit p-1 px-2 rounded-md cursor-pointer ${categoryFilter.includes(cat) ? 'bg-gray-400' : 'text-black bg-gray-100'}`}
-                    onClick={() => { handleCategoryChange(cat) }}
-                  >
-                    {cat}
-                  </div>
-                ))}
-                {currentUser?.role === 'ADMIN' &&
-                <>
-                  <span className='px-1 md:px-2 text-grey'>|</span>
-                  <div className={`w-fit p-1 px-2 rounded-md cursor-pointer ${selfGuided ? 'bg-gray-400' : 'text-black bg-gray-100'}`} onClick={() => { setSelfGuided(prev => !prev) }}>
-                    Self-Guided
-                  </div>
-                </>
-                }
 
-              </div>
               {!loading && upcomingChallenges.length === 0 &&
-                <p className='text-left text-gray-500 mt-4'>No {selfGuided ? 'self-guided' : 'scheduled'} challenges in this category.</p>
+                <p className='text-left text-gray-500 pt-2'>No {selfGuided ? 'self-guided' : 'scheduled'} challenges in this category.</p>
               }
-              <div className="flex flex-col items-center max-w-lg w-full">
+              <div className="flex flex-col items-center max-w-lg w-full mt-4">
                 <ChallengeList challenges={upcomingChallenges} memberships={memberships} isLoading={loading} />
               </div>
               {isExtended &&
