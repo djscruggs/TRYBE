@@ -175,34 +175,36 @@ export const FullLayout = (): JSX.Element => {
                 {showNav && !isChat &&
                   <div className={`${wrapperVisible ? 'opacity-100' : 'opacity-30'}  transition-opacity duration-500 fixed bottom-0 left-0 right-0 max-w-screen flex items-center w-full justify-center m-0 p-0 px-2 py-1 bg-gray-50 border-2 border-slate-200 z-10`}>
                     <div className='max-w-lg flex justify-between w-full'>
-                      <div className='flex justify-center items-center w-1/3'>
+                      <div className={`flex  items-center  ${currentUser ? 'w-1/3 justify-between' : 'w-1/2 justify-center  '}`}>
                         {currentUser && (
-                          <Link to="/home" className={`w-8 h-8 ${currentUser ? 'ml-14' : 'ml-24'} flex justify-center items-center`}>
+                          <Link to="/home" className='w-8 h-8 flex justify-center items-center'>
                             <HomeIcon className='cursor-pointer w-8 h-8' />
                           </Link>
                         )}
-                        <Link to="/challenges" className={`w-8 h-8 ${currentUser ? 'ml-14' : 'ml-24'} flex justify-center items-center`}>
+                        <Link to="/challenges" className='w-8 h-8 flex justify-center items-center'>
                           <TrophyIcon className='cursor-pointer w-8 h-8' />
                         </Link>
                       </div>
-                      <div className='flex justify-center items-center w-1/3'>
+                      <div className={`flex justify-center items-center ${currentUser ? 'w-1/3' : 'hidden'}`}>
                         {currentUser && (
                           <Link to="/challenges/new" prefetch='render'>
                             <PlusCircleIcon className='w-12 h-12 text-white rounded-full bg-red text-color-white cursor-pointer text-6xl' />
                           </Link>
                         )}
                       </div>
-                      <div className='flex justify-center items-center w-1/3'>
-                      {currentUser && (
-                        <Link to="/profile" className='w-8 h-8 mr-14 flex justify-center items-center'>
-                          <IdentificationIcon className='cursor-pointer w-8 h-8' />
+                      <div className={`flex justify-center items-center ${currentUser ? 'w-1/3' : 'w-1/2'}`}>
+                        {currentUser
+                          ? (
+                          <Link to="/profile" className='w-8 h-8 mr-10 flex justify-center items-center'>
+                            <IdentificationIcon className='cursor-pointer w-8 h-8' />
                           </Link>
-                      )}
-                        {!currentUser && (
-                          <Link to="/signup" className='w-8 h-8 mr-24 flex justify-center items-center'>
+                            )
+                          : (
+                          <Link to="/signup" className='w-8 h-8 flex justify-center items-center'>
                             <HiOutlineLogin className='cursor-pointer w-8 h-8' />
                           </Link>
-                        )}
+                            )}
+
                       </div>
                   </div>
                   </div>
