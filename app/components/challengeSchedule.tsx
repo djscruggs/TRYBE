@@ -179,7 +179,7 @@ const PostsBlock = ({ post, challenge, isSchedule }: { post: Post, challenge: Ch
       {((post.publishAt ?? post.published) || currentUser?.id === challenge.userId) &&
           <div
             key={post.id}
-            className={`${isSchedule ? 'text-xs' : 'text-xl h-full flex items-center'} overflow-hidden text-black w-full underline text-ellipsis mb-1 ${linkable ? 'cursor-pointer' : ''}`}
+            className={`${isSchedule ? 'text-xs' : 'text-xl h-full flex items-center'} overflow-hidden text-black w-full text-ellipsis mb-1 ${linkable ? 'underline cursor-pointer' : ''}`}
             onClick={linkable ? goToPost : undefined}
           >
             {!post.published && challenge.type === 'SCHEDULED'
