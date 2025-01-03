@@ -131,9 +131,6 @@ const DateSchedule = ({ challenge, posts, isSchedule, membership }: { challenge:
 }
 
 const NumberSchedule = ({ challenge, posts, isSchedule, membership }: { challenge: Challenge, posts: Post[], isSchedule: boolean, membership: MemberChallenge | null }): JSX.Element => {
-  if (currentUser?.role === 'ADMIN') {
-    console.log('NumberSchedule posts', posts)
-  }
   const postsByDayNum = posts.reduce<Record<number, Post[]>>((acc, post) => {
     const publishOnDayNumber = post.publishOnDayNumber // Assuming this property exists
     if (Number(publishOnDayNumber) > 0) {
@@ -145,6 +142,10 @@ const NumberSchedule = ({ challenge, posts, isSchedule, membership }: { challeng
     return acc
   }, {})
   const { currentUser } = useContext(CurrentUserContext)
+  if (currentUser?.role === 'ADMIN') {
+    console.log('NumberSchedule posts', posts)
+  }
+
   const userIsCreator = currentUser?.id === challenge.userId
   const numDays = challenge.numDays ?? 0 // Default to 0 if numDays is null or undefined
   if (currentUser?.role === 'ADMIN') {
