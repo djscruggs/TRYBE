@@ -2,7 +2,7 @@ import { prisma } from '../models/prisma.server'
 import { type CheckinReminderMailerProps, mailPost, sendCheckinReminder } from '../utils/mailer'
 import type { LoaderFunction } from '@remix-run/node'
 import { json } from '@remix-run/node'
-import { generateUrl } from '~/utils/helpers'
+import { generateUrl, textToHtml, convertYouTubeLinksToImages } from '~/utils/helpers'
 export const loader: LoaderFunction = async (args) => {
   const scheduledPosts = await sendScheduledPosts()
   const { dayNumberPosts, dayNotifications } = await sendDayNumberPosts()
@@ -65,7 +65,7 @@ export const sendScheduledPosts = async (): Promise<number> => {
             subject: `${post.challenge?.name}: ${post.title}`,
             title: post.title,
             // body: post.body
-            body: convertYouTubeLinksToImages(post.body ?? '', postLink)
+            body: textToHtml(convertYouTubeLinksToImages(post.body ?? '', postLink))
           }
         }
         try {
@@ -198,7 +198,7 @@ export const sendDayNumberPosts = async (): Promise<{ dayNumberPosts: number, da
               date: post.publishAt?.toLocaleDateString() ?? post.createdAt.toLocaleDateString(),
               subject: `${post.title}`,
               title: post.title,
-              body: convertYouTubeLinksToImages(post.body ?? '', postLink)
+              body: textToHtml(convertYouTubeLinksToImages(post.body ?? '', postLink))
             }
           }
           try {
@@ -234,17 +234,6 @@ export const sendDayNumberPosts = async (): Promise<{ dayNumberPosts: number, da
     }
   })
   return { dayNumberPosts: posts.length, dayNotifications: nonPostNotifications }
-}
-
-export function convertYouTubeLinksToImages (body: string, postLink: string = ''): string {
-  const youtubeRegex = /https?:\/\/(www\.)?youtube\.com\/watch\?v=([a-zA-Z0-9_-]+)(?:&[^\s]*)?/g
-
-  return body.replace(youtubeRegex, (match, p1, videoId) => {
-    if (postLink) {
-      return `<br><br ><a href="${postLink}"><img src="https://img.youtube.com/vi/${videoId}/mqdefault.jpg" alt="YouTube Video"></a>`
-    }
-    return `<br><br><img src="https://img.youtube.com/vi/${videoId}/hqdefault.jpg" alt="YouTube Video">`
-  })
 }
 
 /*
