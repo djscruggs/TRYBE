@@ -13,8 +13,9 @@ import DialogPost from '~/components/dialogPost'
 import { CheckInButton } from '~/components/checkinButton'
 import DateDivider from '~/components/dateDivider'
 import { isPast } from 'date-fns'
-import { FaChevronCircleLeft } from 'react-icons/fa'
 import MobileBackButton from '~/components/mobileBackButton'
+import HideFeedbackButton from '~/components/hideFeedbackButton'
+import { useMobileSize } from '~/hooks/useMobileSize'
 export const meta: MetaFunction = () => {
   return [
     { title: 'Chat' },
@@ -302,6 +303,7 @@ export default function ViewChallengeChat (): JSX.Element {
 
   return (
     <div className='max-w-2xl mt-32 md:mt-28'>
+      <HideFeedbackButton />
       {hasEarlierDays && <div className='text-center text-sm text-gray-500 mb-8 cursor-pointer' onClick={handleShowPreviousDays}>show previous days</div>}
       {limitedGroupedData && Object.entries(limitedGroupedData)?.map(([date, { posts, checkIns, comments }], index) => (
 
@@ -334,13 +336,13 @@ export default function ViewChallengeChat (): JSX.Element {
         <DialogCheckin challenge={challenge} open={true} onClose={() => { setShowCheckinPopup(false) }} afterCheckIn={handleAfterCheckIn} />
       )}
       {currentUser && (
-        <div className='fixed w-full max-w-2xl bottom-0  bg-white bg-opacity-90 max-h-3/4' >
+        <div className='fixed w-screen md:max-w-2xl pr-2 bottom-0 pb-2 bg-white bg-opacity-90 max-h-3/4' >
           {/* back button for mobile */}
           <MobileBackButton to={`/challenges/v/${challenge.id}`} />
 
           <FormChat
             afterSave={afterSaveComment}
-            prompt="Sound off..."
+            prompt="Type here..."
             onPending={onPendingComment}
             onError={onSaveCommentError}
             objectId={challenge.id}

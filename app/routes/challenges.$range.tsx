@@ -76,7 +76,7 @@ export default function ChallengesIndex (): JSX.Element {
           {!loading &&
             <>
               <div ref={browseRef} className='text-red font-bold text-lg mb-2'>Browse Challenges</div>
-              <div className='space-x-1 md:space-x-2 flex items-center justify-between md:justify-start relative text-white text-xs md:text-sm'>
+              <div className='space-x-1 md:space-x-2 flex items-center max-w-sm md:max-w-lg w-full justify-between md:justify-start relative text-white text-xs md:text-sm'>
                 {categories.map((cat: string) => (
                   <div
                     key={cat}
