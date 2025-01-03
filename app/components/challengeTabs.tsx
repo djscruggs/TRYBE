@@ -34,7 +34,6 @@ export default function ChallengeTabs (props: ChallengeTabsProps): JSX.Element {
   useEffect(() => {
     setIsMember(props.isMember)
   }, [props.isMember])
-  console.log('isMember', isMember)
   return (
     <>
     <div className='relative text-lg py-2 flex items-center justify-center w-full gap-4'>
