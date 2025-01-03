@@ -13,14 +13,21 @@ export const sendScheduledPosts = async (): Promise<number> => {
   const posts = await prisma.post.findMany({
     where: {
       published: true,
-      challengeId: {
-        not: null
-      },
       notifyMembers: true,
       notificationSentOn: null,
       publishAt: {
         lt: new Date()
-      }
+      },
+      OR: [
+        {
+          challengeId: null
+        },
+        {
+          challenge: {
+            status: 'PUBLISHED' // Add this condition
+          }
+        }
+      ]
     },
     include: {
       user: {

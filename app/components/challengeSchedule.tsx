@@ -7,6 +7,7 @@ import {
   format,
   differenceInDays,
   isFuture
+  , addDays
 } from 'date-fns'
 import { HiMiniPlusSmall } from 'react-icons/hi2'
 import { type Challenge } from '~/utils/types'
@@ -190,15 +191,16 @@ const PostsBlock = ({ post, challenge, isSchedule }: { post: Post, challenge: Ch
 const NewPostLink = ({ day, challenge }: { day: number, challenge: Challenge }): JSX.Element => {
   const navigate = useNavigate()
   const newPost = (): void => {
-    navigate(`/posts/new/challenge/${challenge?.id}`, {
-      state: {
-        title: `Day ${day}`,
-        publishAt: format(new Date(challenge.startAt as unknown as Date).setDate(day), 'yyyy-MM-dd 08:00:00'),
-        dayNumber: day,
-        notifyMembers: true
-      }
-    })
+    const startDate = challenge.type === 'SCHEDULED' ? new Date(challenge.startAt as unknown as Date) : null
+    const state = {
+      title: `Day ${day}`,
+      publishAt: startDate ? format(addDays(startDate, day - 1), 'yyyy-MM-dd 08:00:00') : null,
+      dayNumber: day,
+      notifyMembers: true
+    }
+    navigate(`/posts/new/challenge/${challenge?.id}`, { state })
   }
+
   return (
     <div className='flex items-start -mt-3 pt-6 justify-center w-full h-full cursor-pointer'>
       <HiMiniPlusSmall
