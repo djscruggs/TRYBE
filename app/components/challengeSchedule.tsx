@@ -141,6 +141,7 @@ const NumberSchedule = ({ challenge, posts, isSchedule }: { challenge: Challenge
   const { currentUser } = useContext(CurrentUserContext)
   const userIsCreator = currentUser?.id === challenge.userId
   const numDays = challenge.numDays ?? 0 // Default to 0 if numDays is null or undefined
+
   return (
     <div className={`w-full max-w-sm  ${isSchedule ? 'md:max-w-xl lg:max-w-2xl' : 'md:max-w-md lg:max-w-lg'}`}>
       <div className={`${isSchedule ? 'md:grid' : ''}  grid-cols-7 gap-2 w-full mt-4`}>
@@ -148,7 +149,9 @@ const NumberSchedule = ({ challenge, posts, isSchedule }: { challenge: Challenge
           <div key={index} className="flex flex-col items-center justify-center p-2 border border-gray-300 text-center  relative  h-24 bg-lightgrey  border-[#CECECE]'">
             <div className={`${postsByDayNum[index + 1] ? 'absolute top-0 text-xs' : ''}`}>Day {index + 1}</div>
             {postsByDayNum[index + 1]?.map((post) => (
+              <div className='flex items-center justify-center h-full' key={post.id}>
                 <PostsBlock post={post} isSchedule={isSchedule} challenge={challenge} key={post.id} />
+              </div>
             ))}
             {isSchedule && !postsByDayNum[index + 1] && userIsCreator &&
               <NewPostLink day={index + 1} challenge={challenge} />
