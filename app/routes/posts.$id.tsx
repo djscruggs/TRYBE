@@ -1,12 +1,12 @@
 import { loadPostSummary } from '~/models/post.server'
 import { useState } from 'react'
-import { Outlet, useLoaderData, useLocation } from '@remix-run/react'
+import { Outlet, useLoaderData, useLocation, useNavigate } from '@remix-run/react'
 import CardPost from '~/components/cardPost'
 import ChallengeHeader from '~/components/challengeHeader'
 import { requireCurrentUser } from '~/models/auth.server'
 import type { PostSummary } from '~/utils/types'
 import { json, type LoaderFunction, type LoaderFunctionArgs } from '@remix-run/node'
-
+import MobileBackButton from '~/components/mobileBackButton'
 export interface PostData {
   post: PostSummary | null
   loadingError?: string
@@ -43,11 +43,12 @@ export default function ViewPost (): JSX.Element {
   }
   return (
     <>
-    {post.challenge && <ChallengeHeader size='small' challenge={post.challenge} />}
-    <div className='w-screen px-4 md:px-0 md:max-w-xl mt-10'>
-      <CardPost post={_post} fullPost={true} hideMeta={true} />
-    </div>
-    <Outlet context={{ post }} />
+      {post.challenge && <ChallengeHeader size='small' challenge={post.challenge} />}
+      <div className='w-screen px-4 md:px-0 md:max-w-xl mt-10'>
+        <CardPost post={_post} fullPost={true} hideMeta={true} />
+      </div>
+      <Outlet context={{ post }} />
+      <MobileBackButton />
     </>
   )
 }

@@ -2,11 +2,12 @@ import { useLoaderData, useRouteLoaderData, Link } from '@remix-run/react'
 import { useContext } from 'react'
 import { loadChallenge } from '~/models/challenge.server'
 import { CurrentUserContext } from '~/utils/CurrentUserContext'
-import { type Post } from '@prisma/client'
+import { type MemberChallenge, type Post } from '@prisma/client'
 import { type MetaFunction, type LoaderFunction, type LoaderFunctionArgs } from '@remix-run/node'
 import { prisma } from '~/models/prisma.server'
 import { type Challenge } from '~/utils/types'
 import ChallengeSchedule from '~/components/challengeSchedule'
+import { getCurrentUser } from '~/models/auth.server'
 
 export const meta: MetaFunction = () => {
   return [
@@ -20,12 +21,14 @@ export const meta: MetaFunction = () => {
 
 interface ChallengeScheduleData {
   posts: Post[]
+  membership: MemberChallenge | null
 }
 export const loader: LoaderFunction = async (args: LoaderFunctionArgs): Promise<ChallengeScheduleData> => {
   const { params } = args
+  const currentUser = await getCurrentUser(args)
   const challenge: Challenge | null = await loadChallenge(Number(params.id))
   if (!challenge) {
-    return { posts: [] }
+    return { posts: [], membership: null }
   }
   const posts = await prisma.post.findMany({
     where: {
@@ -36,18 +39,29 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs): Promise<
       { createdAt: 'asc' }
     ]
   })
+  let membership: MemberChallenge | null = null
+  if (currentUser) {
+    membership = await prisma.memberChallenge.findFirst({
+      where: {
+        challengeId: Number(params.id),
+        userId: currentUser?.id
+      }
+    })
+  }
   const data: ChallengeScheduleData = {
     posts: posts.map(post => ({
       ...post,
       createdAt: new Date(post.createdAt),
       publishAt: post.publishAt ? new Date(post.publishAt) : null
-    }))
+    })),
+    membership
   }
+  console.log('membership', membership)
   return data
 }
 export default function Program (): JSX.Element {
   const { challenge } = useRouteLoaderData<typeof useRouteLoaderData>('routes/challenges.v.$id') as { challenge: Challenge }
-  const { posts } = useLoaderData<typeof loader>() as ChallengeScheduleData
+  const { posts, membership } = useLoaderData<typeof loader>() as ChallengeScheduleData
   const { currentUser } = useContext(CurrentUserContext)
   return (
     <>
@@ -59,7 +73,7 @@ export default function Program (): JSX.Element {
           }
         </div>
       }
-      <ChallengeSchedule challenge={challenge} posts={posts} key={challenge.id} isSchedule={false} />
+      <ChallengeSchedule challenge={challenge} posts={posts} key={challenge.id} isSchedule={false} membership={membership} />
     </>
   )
 }

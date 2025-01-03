@@ -1,5 +1,4 @@
 import { useNavigate, Link } from '@remix-run/react'
-import { type Post } from '@prisma/client'
 import {
   eachDayOfInterval,
   startOfWeek,
@@ -10,7 +9,7 @@ import {
   , addDays
 } from 'date-fns'
 import { HiMiniPlusSmall } from 'react-icons/hi2'
-import { type Challenge } from '~/utils/types'
+import type { Challenge, MemberChallenge, Post } from '~/utils/types'
 import { userLocale, pluralize } from '~/utils/helpers'
 import { CurrentUserContext } from '~/utils/CurrentUserContext'
 import { BsExclamationCircleFill } from 'react-icons/bs'
@@ -20,9 +19,10 @@ interface ChallengeScheduleProps {
   challenge: Challenge
   posts: Post[]
   isSchedule?: boolean // if true, this is the scheduling page for the creator, and we should show all posts and empty days
+  membership: MemberChallenge | null
 }
 
-export default function ChallengeSchedule ({ challenge, posts, isSchedule = false }: ChallengeScheduleProps): JSX.Element {
+export default function ChallengeSchedule ({ challenge, posts, isSchedule = false, membership }: ChallengeScheduleProps): JSX.Element {
   // Need to capture any dangling posts that are unscheduled in the date range
   const unscheduled: Post[] = []
   // create arrays of posts by day number and those that are unscheduled
@@ -39,11 +39,11 @@ export default function ChallengeSchedule ({ challenge, posts, isSchedule = fals
         </>
       }
       {challenge.type === 'SCHEDULED' &&
-        <DateSchedule challenge={challenge} posts={posts} isSchedule={isSchedule} />
+        <DateSchedule challenge={challenge} posts={posts} isSchedule={isSchedule} membership={membership} />
       }
       {challenge.type === 'SELF_LED' &&
 
-        <NumberSchedule challenge={challenge} posts={posts} isSchedule={isSchedule} />
+        <NumberSchedule challenge={challenge} posts={posts} isSchedule={isSchedule} membership={membership} />
 
       }
 
@@ -51,7 +51,7 @@ export default function ChallengeSchedule ({ challenge, posts, isSchedule = fals
   )
 }
 
-const DateSchedule = ({ challenge, posts, isSchedule }: { challenge: Challenge, posts: Post[], isSchedule: boolean }): JSX.Element => {
+const DateSchedule = ({ challenge, posts, isSchedule, membership }: { challenge: Challenge, posts: Post[], isSchedule: boolean, membership: MemberChallenge | null }): JSX.Element => {
   // Need to capture any dangling posts that are unscheduled in the date range
   const unscheduled: Post[] = []
   // create arrays of posts by day number and those that are unscheduled
@@ -110,7 +110,7 @@ const DateSchedule = ({ challenge, posts, isSchedule }: { challenge: Challenge, 
               </div>
               <div className="flex flex-col items-start justify-start h-full mt-4 mb-2 overflow-hidden pb-2">
                 {postsByDayNum[dayNum]?.map((post) => (
-                  <PostsBlock post={post} isSchedule={isSchedule} challenge={challenge} key={post.id} />
+                  <PostsBlock post={post} isSchedule={isSchedule} challenge={challenge} key={post.id} membership={membership} />
                 ))}
                 {isSchedule && isInRange && !postsByDayNum[dayNum] && userIsCreator &&
                   <NewPostLink day={dayNum} challenge={challenge} />
@@ -127,7 +127,7 @@ const DateSchedule = ({ challenge, posts, isSchedule }: { challenge: Challenge, 
   )
 }
 
-const NumberSchedule = ({ challenge, posts, isSchedule }: { challenge: Challenge, posts: Post[], isSchedule: boolean }): JSX.Element => {
+const NumberSchedule = ({ challenge, posts, isSchedule, membership }: { challenge: Challenge, posts: Post[], isSchedule: boolean, membership: MemberChallenge | null }): JSX.Element => {
   const postsByDayNum = posts.reduce<Record<number, Post[]>>((acc, post) => {
     const publishOnDayNumber = post.publishOnDayNumber // Assuming this property exists
     if (Number(publishOnDayNumber) > 0) {
@@ -150,7 +150,7 @@ const NumberSchedule = ({ challenge, posts, isSchedule }: { challenge: Challenge
             {!postsByDayNum[index + 1] && <>Day {index + 1}</>}
             {postsByDayNum[index + 1]?.map((post) => (
               <div className='flex items-center justify-center h-full' key={post.id}>
-                <PostsBlock post={post} isSchedule={isSchedule} challenge={challenge} key={post.id} />
+                <PostsBlock post={post} isSchedule={isSchedule} challenge={challenge} key={post.id} membership={membership} />
               </div>
             ))}
             {isSchedule && !postsByDayNum[index + 1] && userIsCreator &&
@@ -163,11 +163,19 @@ const NumberSchedule = ({ challenge, posts, isSchedule }: { challenge: Challenge
   )
 }
 
-const PostsBlock = ({ post, challenge, isSchedule }: { post: Post, challenge: Challenge, isSchedule: boolean }): JSX.Element => {
+const PostsBlock = ({ post, challenge, isSchedule, membership }: { post: Post, challenge: Challenge, isSchedule: boolean, membership: MemberChallenge | null }): JSX.Element => {
   const { currentUser } = useContext(CurrentUserContext)
   const navigate = useNavigate()
   // if post is in the future, don't link to the full post UNLESS it's the user's post
-  let linkable = Boolean(((post.publishAt) && (!isFuture(post.publishAt))))
+  let linkable = false
+  if (challenge.type === 'SCHEDULED') {
+    linkable = Boolean(((post.publishAt) && (!isFuture(post.publishAt))))
+  }
+  if (challenge.type === 'SELF_LED') {
+    if (post.publishOnDayNumber && membership && post.publishOnDayNumber <= membership.dayNumber) {
+      linkable = true
+    }
+  }
   if (currentUser?.id === post.userId) {
     linkable = true
   }

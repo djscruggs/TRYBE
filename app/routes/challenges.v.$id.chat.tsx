@@ -14,6 +14,7 @@ import { CheckInButton } from '~/components/checkinButton'
 import DateDivider from '~/components/dateDivider'
 import { isPast } from 'date-fns'
 import { FaChevronCircleLeft } from 'react-icons/fa'
+import MobileBackButton from '~/components/mobileBackButton'
 export const meta: MetaFunction = () => {
   return [
     { title: 'Chat' },
@@ -335,12 +336,8 @@ export default function ViewChallengeChat (): JSX.Element {
       {currentUser && (
         <div className='fixed w-full max-w-2xl bottom-0  bg-white bg-opacity-90 max-h-3/4' >
           {/* back button for mobile */}
-          <div className='flex items-center md:hidden justify-center w-full my-1'>
-            <FaChevronCircleLeft
-              className='w-6 h-6 text-grey cursor-pointer'
-              onClick={() => { navigate(`/challenges/v/${challenge.id}`) }}
-            />
-          </div>
+          <MobileBackButton to={`/challenges/v/${challenge.id}`} />
+
           <FormChat
             afterSave={afterSaveComment}
             prompt="Sound off..."
