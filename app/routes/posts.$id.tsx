@@ -1,14 +1,19 @@
 import { loadPostSummary } from '~/models/post.server'
-import { useState } from 'react'
-import { Outlet, useLoaderData, useLocation, useNavigate } from '@remix-run/react'
+import { Outlet, useLoaderData, useLocation } from '@remix-run/react'
 import CardPost from '~/components/cardPost'
 import ChallengeHeader from '~/components/challengeHeader'
 import { requireCurrentUser } from '~/models/auth.server'
-import type { PostSummary } from '~/utils/types'
+import type { ChallengeSummary, MemberChallenge, PostSummary } from '~/utils/types'
 import { json, type LoaderFunction, type LoaderFunctionArgs } from '@remix-run/node'
 import MobileBackButton from '~/components/mobileBackButton'
+import ChallengeTabs from '~/components/challengeTabs'
+import { loadChallengeSummary, loadMemberChallenge } from '~/models/challenge.server'
+import { useContext } from 'react'
+import { CurrentUserContext } from '~/utils/CurrentUserContext'
 export interface PostData {
   post: PostSummary | null
+  challenge?: ChallengeSummary | null
+  membership?: MemberChallenge | null
   loadingError?: string
 }
 
@@ -24,8 +29,9 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
     const error = { loadingError: 'Post not found' }
     return json(error)
   }
-  const data: PostData = { post }
-  return json(data)
+  const challenge = await loadChallengeSummary(post?.challengeId ?? 0) as ChallengeSummary | null
+  const membership = await loadMemberChallenge(currentUser?.id ?? 0, post?.challengeId ?? 0)
+  return json({ post, challenge, membership })
 }
 
 export default function ViewPost (): JSX.Element {
@@ -33,19 +39,25 @@ export default function ViewPost (): JSX.Element {
   if (location.pathname.includes('edit')) {
     return <Outlet />
   }
-  const { loadingError, post } = useLoaderData() as PostData
+  const { currentUser } = useContext(CurrentUserContext)
+  const { loadingError, post, challenge, membership } = useLoaderData() as PostData
   if (loadingError) {
     return <h1>{loadingError}</h1>
   }
-  const [_post] = useState<PostSummary | null>(post ?? null)
   if (!post) {
     return <p>Loading...</p>
   }
+  const isMember = Boolean(challenge?.userId === currentUser?.id || membership?.id)
   return (
     <>
-      {post.challenge && <ChallengeHeader size='small' challenge={post.challenge} />}
-      <div className='w-screen px-4 md:px-0 md:max-w-xl mt-10'>
-        <CardPost post={_post} fullPost={true} hideMeta={true} />
+      {challenge &&
+        <div className='fixed top-0 z-10 bg-white w-full max-w-lg bg-opacity-80 rounded-br-lg'>
+          <ChallengeHeader size='small' challenge={challenge} />
+          <ChallengeTabs challenge={challenge} which='posts' isMember={isMember} />
+        </div>
+      }
+      <div className={`w-screen px-4 md:px-0 md:max-w-xl ${post.challenge ? 'mt-24' : 'mt-10'}`}>
+        <CardPost post={post} fullPost={true} hideMeta={true} />
       </div>
       <Outlet context={{ post }} />
       <MobileBackButton />

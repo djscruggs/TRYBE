@@ -380,6 +380,9 @@ export const fetchUserMemberships = async (userId: string | number): Promise<Mem
   return uniqueMemberships
 }
 export const loadMemberChallenge = async (userId: number, challengeId: number): Promise<MemberChallenge | null> => {
+  if (!userId || !challengeId) {
+    return null
+  }
   const uid = Number(userId)
   const cid = Number(challengeId)
   return await prisma.memberChallenge.findFirst({
