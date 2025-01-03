@@ -38,7 +38,8 @@ interface Errors {
 
 export default function FormPost (props: FormPostProps): JSX.Element {
   const { currentUser } = useContext(CurrentUserContext)
-  const { afterSave, onCancel, post, challenge, publishAt, title, notifyMembers, dayNumber } = props
+  const { afterSave, onCancel, post, publishAt, title, notifyMembers, dayNumber } = props
+  const challenge = props.challenge ?? post?.challenge
   const locale = currentUser?.locale ?? 'en-US'
   const [showVideoRecorder, setShowVideoRecorder] = useState(false)
   const [errors, setErrors] = useState<Errors>({})
@@ -191,6 +192,7 @@ export default function FormPost (props: FormPostProps): JSX.Element {
       }))
     }
   }
+
   const setPublishAt = (value: any): void => {
     setFormData(prevFormData => ({
       ...prevFormData,
@@ -320,31 +322,30 @@ export default function FormPost (props: FormPostProps): JSX.Element {
             }
           </div>
         }
+
         {challenge &&
-        <Button type="submit" onClick={handlePublish} className="bg-red hover:bg-green-500 disabled:bg-gray-400" disabled={saving}>
-        {saving
-          ? 'Saving...'
-          : challenge?.type === 'SELF_LED' ? 'Save' : 'Schedule'
-        }
-      </Button>
+          <Button type="submit" onClick={handlePublish} className="bg-red hover:bg-green-500 disabled:bg-gray-400" disabled={saving}>
+          {saving
+            ? 'Saving...'
+            : challenge?.type === 'SELF_LED' ? 'Save' : 'Schedule'
+          }
+          </Button>
         }
         {!challenge &&
-        <>
-          <Button type="submit" onClick={handlePublish} className="bg-red hover:bg-green-500 disabled:bg-gray-400" disabled={saving}>
-            {saving
-              ? 'Publishing...'
-              : challenge?.type === 'SELF_LED' ? 'Save' : formData.publishAt ? 'Schedule' : 'Publish Now'
-            }
-          </Button>
-          {challenge?.type !== 'SELF_LED' &&
+          <>
+            <Button type="submit" onClick={handlePublish} className="bg-red hover:bg-green-500 disabled:bg-gray-400" disabled={saving}>
+              {saving
+                ? 'Publishing...'
+                : challenge?.type === 'SELF_LED' ? 'Save' : formData.publishAt ? 'Schedule' : 'Publish Now'
+              }
+            </Button>
             <Button type="submit" onClick={handleDraft} className="bg-grey text-white ml-2 hover:bg-green-500 disabled:bg-gray-400" disabled={saving}>
               {saving
                 ? 'Saving'
                 : post?.id && post?.published ? 'Unpublish' : 'Save Draft'
               }
             </Button>
-          }
-        </>
+          </>
         }
         <button onClick={handleCancel} className="mt-2 text-sm underline ml-4 hover:text-red">cancel</button>
 

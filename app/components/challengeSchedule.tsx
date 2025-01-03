@@ -27,9 +27,6 @@ export default function ChallengeSchedule ({ challenge, posts, isSchedule = fals
   const unscheduled: Post[] = []
   // create arrays of posts by day number and those that are unscheduled
   const { currentUser } = useContext(CurrentUserContext)
-  if (currentUser?.role === 'ADMIN') {
-    console.log('ChallengeSchedule posts', posts)
-  }
   const userIsCreator = currentUser?.id === challenge.userId
   return (
     <div className={`flex-col  border-red items-center w-screen max-w-2xl  ${isSchedule ? 'md:max-w-xl lg:max-w-2xl' : 'md:max-w-md lg:max-w-lg'}`}>
@@ -142,15 +139,8 @@ const NumberSchedule = ({ challenge, posts, isSchedule, membership }: { challeng
     return acc
   }, {})
   const { currentUser } = useContext(CurrentUserContext)
-  if (currentUser?.role === 'ADMIN') {
-    console.log('NumberSchedule posts', posts)
-  }
-
   const userIsCreator = currentUser?.id === challenge.userId
   const numDays = challenge.numDays ?? 0 // Default to 0 if numDays is null or undefined
-  if (currentUser?.role === 'ADMIN') {
-    console.log('number of days', numDays)
-  }
   return (
     <div className={`w-full max-w-screen px-4 md:px-0  ${isSchedule ? 'md:max-w-xl lg:max-w-2xl' : 'md:max-w-md lg:max-w-lg'}`}>
       <div className={`${isSchedule ? 'md:grid' : ''}  grid-cols-7 gap-2 w-full mt-4`}>
@@ -191,23 +181,41 @@ const PostsBlock = ({ post, challenge, isSchedule, membership }: { post: Post, c
   const goToPost = (): void => {
     navigate(`/posts/${post.id}`)
   }
+
+  const isPublished = (): boolean => {
+    if (challenge.type === 'SELF_LED') {
+      if (post.publishOnDayNumber) {
+        return true
+      }
+      return false
+    }
+    return Boolean(post.published || post.publishAt)
+  }
   return (
     <>
-      {((post.publishAt ?? post.published) || currentUser?.id === challenge.userId) &&
+      {(isPublished() || currentUser?.id === challenge.userId) &&
+          <>
           <div
             key={post.id}
             className={`${isSchedule ? 'text-xs' : 'text-xl h-full flex items-center'} overflow-hidden text-black w-full text-ellipsis mb-1 ${linkable ? 'underline cursor-pointer' : ''}`}
             onClick={linkable ? goToPost : undefined}
           >
-            {!post.published && challenge.type === 'SCHEDULED'
-              ? <div className='bg-red text-white text-center p-1 rounded-md'>Draft</div>
-              : post.title
-            }
+            {post.title}
+
           </div>
+          <DraftBadge published={isPublished()} />
+        </>
       }
-      </>
+    </>
   )
 }
+function DraftBadge ({ published }: { published: boolean }): JSX.Element {
+  if (!published) {
+    return <div className='ml-2 text-sm text-yellow'>Draft</div>
+  }
+  return <></>
+}
+
 const NewPostLink = ({ day, challenge }: { day: number, challenge: Challenge }): JSX.Element => {
   const navigate = useNavigate()
   const newPost = (): void => {
