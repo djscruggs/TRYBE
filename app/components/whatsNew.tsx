@@ -1,5 +1,3 @@
-import { useContext } from 'react'
-import { CurrentUserContext } from '~/utils/CurrentUserContext'
 import Logo from './logo'
 import { useNavigate } from '@remix-run/react'
 export function WhatsNew (): JSX.Element {
