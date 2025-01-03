@@ -6920,6 +6920,10 @@ video {
     width: 83.333333%;
   }
 
+  .md\:w-full {
+    width: 100%;
+  }
+
   .md\:min-w-\[60\%\] {
     min-width: 60%;
   }

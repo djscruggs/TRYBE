@@ -44,7 +44,7 @@ export default function ViewPost (): JSX.Element {
   return (
     <>
     {post.challenge && <ChallengeHeader size='small' challenge={post.challenge} />}
-    <div className='max-w-[400px] md:max-w-xl mt-10'>
+    <div className='w-screen px-4 md:px-0 md:max-w-xl mt-10'>
       <CardPost post={_post} fullPost={true} />
     </div>
     <Outlet context={{ post }} />
