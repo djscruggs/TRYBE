@@ -7,13 +7,15 @@ import {
   pluralize,
   textToJSX
 } from '~/utils/helpers'
-import { hasStarted } from '~/utils/helpers/challenge'
+import { hasStarted, getShortUrl } from '~/utils/helpers/challenge'
 import axios from 'axios'
 import { Spinner } from '@material-tailwind/react'
 import DatePicker from 'react-datepicker'
 import { type DateTimeFormatOptions } from 'intl'
 import { LiaUserFriendsSolid } from 'react-icons/lia'
 import LinkRenderer from './linkRenderer'
+import { toast } from 'react-hot-toast'
+import { HiOutlineClipboardCopy } from 'react-icons/hi'
 export default function ChallengeOverview ({ challenge, memberChallenge }: { challenge: ChallengeSummary, memberChallenge?: MemberChallenge }): JSX.Element {
   const expired = challenge?.endAt ? isPast(new Date(challenge.endAt)) : false
   const [started, setStarted] = useState(hasStarted(challenge, memberChallenge))
@@ -49,6 +51,10 @@ export default function ChallengeOverview ({ challenge, memberChallenge }: { cha
   const fetchCheckIns = async (): Promise<void> => {
     const response = await axios.get(`/api/checkins/${challenge.id}/${currentUser?.id}`)
     setCheckIns(response.data.checkIns as CheckIn[])
+  }
+  const copyLink = async (): Promise<void> => {
+    await navigator.clipboard.writeText(getShortUrl(challenge))
+    toast.success('🎉 Link copied to clipboard!')
   }
   const parsedDescription = textToJSX(challenge.description ?? '')
   useEffect(() => {
@@ -154,6 +160,14 @@ export default function ChallengeOverview ({ challenge, memberChallenge }: { cha
                 {challenge?._count.members} {pluralize(challenge?._count.members, 'member')}
               </div>
             }
+
+            <div className='flex justify-center items-center mt-4 w-full'>
+              <div className='text-xs'>Copy link to invite friends</div>
+              <div className='text-lessblack ml-1 text-sm md:text-md  border p-2 rounded-md text-left max-w-[250px]'>{getShortUrl(challenge)}</div>
+              <HiOutlineClipboardCopy onClick={copyLink} className='h-6 w-6 cursor-pointer ml-1' />
+              <div onClick={copyLink} className='ml-1 text-blue underline cursor-pointer text-xs md:text-sm'>copy</div>
+            </div>
+
           </>
         }
 

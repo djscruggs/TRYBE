@@ -1,5 +1,5 @@
 import { prisma, PrismaClient } from './prisma.server'
-import { type ChallengeType, type Prisma } from '@prisma/client'
+import { type Cohort, type ChallengeType, type Prisma } from '@prisma/client'
 import type { Challenge, ChallengeSummary, MemberChallenge, CheckIn, ChallengeWithHost } from '~/utils/types'
 import { addDays, isFriday, isSaturday } from 'date-fns'
 import { deleteFromCloudinary } from '~/utils/uploadFile'
@@ -421,12 +421,13 @@ export const fetchChallengeMembers = async (cId: string | number): Promise<Membe
   // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
   return await prisma.memberChallenge.findMany(params) as unknown as MemberChallenge[]
 }
-export const joinChallenge = async (userId: number, challengeId: number, startAt?: Date, notificationHour?: number, notificationMinute?: number): Promise<Prisma.MemberChallenge> => {
+export const joinChallenge = async (userId: number, challengeId: number, startAt?: Date, notificationHour?: number, notificationMinute?: number, cohortId?: number): Promise<Prisma.MemberChallenge> => {
   // Check if the member challenge already exists
   const existingMemberChallenge = await prisma.memberChallenge.findFirst({
     where: {
       userId,
-      challengeId
+      challengeId,
+      cohortId
     },
     include: {
       challenge: true,
@@ -473,6 +474,11 @@ export const joinChallenge = async (userId: number, challengeId: number, startAt
     notificationHour,
     notificationMinute
   }
+  if (cohortId) {
+    data.cohort = {
+      connect: { id: cohortId }
+    }
+  }
 
   return await prisma.memberChallenge.create({
     data
@@ -485,6 +491,13 @@ export const unjoinChallenge = async (userId: number, challengeId: number): Prom
       challengeId
     }
   }) as unknown as MemberChallenge
+}
+export const createCohort = async (challengeId: number): Promise<Cohort> => {
+  return await prisma.cohort.create({
+    data: {
+      challengeId
+    }
+  }) as unknown as Cohort
 }
 export async function fetchCheckIns ({ userId, challengeId, orderBy = 'desc' }: { userId?: number, challengeId?: number, orderBy?: 'asc' | 'desc' }): Promise<CheckIn[]> {
   const where: any = {}

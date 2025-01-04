@@ -210,6 +210,7 @@ export interface ChallengeWelcomeMailerProps {
     startDate: string
     duration: string
     description: string
+    inviteLink: string
   }
 }
 

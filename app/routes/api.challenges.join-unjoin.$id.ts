@@ -1,4 +1,4 @@
-import { joinChallenge, unjoinChallenge, loadChallenge } from '~/models/challenge.server'
+import { joinChallenge, unjoinChallenge, loadChallenge, createCohort } from '~/models/challenge.server'
 import { requireCurrentUser } from '~/models/auth.server'
 import { loadUser } from '~/models/user.server'
 import { json, type LoaderFunction, type ActionFunctionArgs } from '@remix-run/node'
@@ -31,7 +31,6 @@ export async function action (args: ActionFunctionArgs): Promise<Response> {
       const tempData: Partial<ChallengeWelcomeMailerProps['dynamic_template_data']> = {
         challengeName: challenge.name ?? '',
         inviteLink: `${baseUrl}/challenges/v/${params.id}/about?i=1`, // Construct the invite link
-        // description: textToHtml(convertYouTubeLinksToImages(challenge.description ?? '', `${baseUrl}/challenges/v/${params.id}/about`))
         description: textToHtml(challenge.description ?? '')
       }
       if (challenge?.type === 'SELF_LED') {
@@ -42,7 +41,13 @@ export async function action (args: ActionFunctionArgs): Promise<Response> {
         const startAtDate = startAt ? new Date(startAt.toString()) : undefined
         const notificationHourNumber = notificationHour != null ? Number(notificationHour.toString()) : undefined
         const notificationMinuteNumber = notificationMinute != null ? Number(notificationMinute.toString()) : undefined
-        result = await joinChallenge(Number(user.id), Number(params.id), startAtDate, notificationHourNumber, notificationMinuteNumber)
+        let cohortId = Number(formData.get('cohortId') as string)
+        if (!cohortId) {
+          // create a cohort first
+          const cohort = await createCohort(Number(params.id))
+          cohortId = cohort.id
+        }
+        result = await joinChallenge(Number(user.id), Number(params.id), startAtDate, notificationHourNumber, notificationMinuteNumber, cohortId)
         tempData.startDate = formatDate(startAtDate?.toISOString() ?? '', getUserLocale())
         tempData.duration = challenge.numDays?.toString() + ' days' ?? 'none'
       } else {

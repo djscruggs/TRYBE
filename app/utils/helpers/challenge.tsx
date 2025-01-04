@@ -29,3 +29,11 @@ export function isExpired (challenge: Challenge | ChallengeSummary, memberChalle
   }
   return false
 }
+
+export function getShortUrl (challenge: Challenge | ChallengeSummary, memberChallenge?: MemberChallenge): string {
+  const url = `${window.location.origin}/s/c${challenge.id}`
+  if (memberChallenge?.cohortId) {
+    return `${url}-${memberChallenge.cohortId}`
+  }
+  return url
+}

@@ -1,6 +1,6 @@
 import { loadChallengeSummary } from '~/models/challenge.server'
 import { Outlet, useLoaderData, useNavigate, useLocation, useMatches, type MetaFunction } from '@remix-run/react'
-import { useContext, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { requireAdminOrValidCohortMembership } from '~/models/auth.server'
 import type { MemberChallenge, Challenge, ChallengeSummary } from '~/utils/types'
 import { type LoaderFunction, type LoaderFunctionArgs } from '@remix-run/node'
@@ -8,11 +8,10 @@ import { FaChevronCircleLeft } from 'react-icons/fa'
 import { prisma } from '~/models/prisma.server'
 import ChallengeHeader from '~/components/challengeHeader'
 import ChallengeTabs from '~/components/challengeTabs'
-import { CurrentUserContext } from '~/utils/CurrentUserContext'
 
 interface ViewChallengeData {
   challenge: ChallengeSummary
-  membership?: MemberChallenge | null | undefined
+  membership?: MemberChallenge | undefined
   loadingError?: string
 }
 interface ChallengeSummaryWithCounts extends ChallengeSummary {
@@ -52,7 +51,7 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs): Promise<
       }
     }) as MemberChallenge | null
   }
-  return { challenge, membership }
+  return { challenge, membership: membership ?? undefined }
 }
 export const meta: MetaFunction<typeof loader> = ({
   data
@@ -61,8 +60,8 @@ export const meta: MetaFunction<typeof loader> = ({
 }
 export default function ViewChallenge (): JSX.Element {
   const data = useLoaderData<ViewChallengeData>()
+  const membership = data.membership
   const { challenge } = data
-  const { currentUser } = useContext(CurrentUserContext)
   const [which, setWhich] = useState('') // matches[0] is root, matches[1] is the challenges, matches[2] is challenges/v/$idtab
   const location = useLocation()
   const navigate = useNavigate()
@@ -101,7 +100,7 @@ export default function ViewChallenge (): JSX.Element {
         <div className={`fixed top-0 z-10 bg-white w-full max-w-lg ${which === 'chat' ? 'md:max-w-2xl' : ''} bg-opacity-80 rounded-br-lg`}>
           <ChallengeHeader challenge={challenge as Challenge} size='small' />
           {!isEdit &&
-            <ChallengeTabs challenge={challenge as ChallengeSummary} which={which} isMember={Boolean(data.membership?.id ?? challenge.userId === currentUser?.id)}/>
+            <ChallengeTabs challenge={challenge as ChallengeSummary} which={which} membership={membership} />
           }
         </div>
 

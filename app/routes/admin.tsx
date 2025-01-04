@@ -29,6 +29,22 @@ export const loader = async (args: LoaderFunctionArgs) => {
   })
   return json({ users })
 }
+interface DateRow {
+  createdAt: Date
+}
+const sortByDate = (rowA: DateRow, rowB: DateRow) => {
+  const a = new Date(rowA.createdAt)
+  const b = new Date(rowB.createdAt)
+
+  if (a > b) {
+    return 1
+  }
+
+  if (b > a) {
+    return -1
+  }
+  return 0
+}
 
 export default function Admin (): React.ReactNode {
   const { users } = useLoaderData<typeof loader>()
@@ -75,7 +91,8 @@ export default function Admin (): React.ReactNode {
       name: 'Joined on',
       selector: (row: any) => new Date(row.createdAt as Date).toLocaleDateString(),
       maxWidth: '200px',
-      sortable: true
+      sortable: true,
+      sortFunction: sortByDate
     }
   ]
 

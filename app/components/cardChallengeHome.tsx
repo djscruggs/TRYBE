@@ -5,7 +5,7 @@ import { colorToClassName } from '~/utils/helpers'
 import { CurrentUserContext } from '~/utils/CurrentUserContext'
 import { useNavigate } from '@remix-run/react'
 import { differenceInCalendarDays, differenceInWeeks, isPast } from 'date-fns'
-import ShareMenu from './shareMenu'
+import { getShortUrl } from '~/utils/helpers/challenge'
 import ChallengeIcon from './challengeIcon'
 import { CheckInButton } from './checkinButton'
 import DialogShare from './dialogShare'
@@ -78,9 +78,7 @@ export default function CardChallengeHome ({ challenge, isMember, isPreview }: C
       return 'In progress'
     }
   }
-  const getShortUrl = (): string => {
-    return `${window.location.origin}/s/c${challenge.id}`
-  }
+
   const getShareUrl = (): string => {
     return `${window.location.origin}/challenges/v/${challenge.id}/about?i=1`
   }
@@ -119,7 +117,7 @@ export default function CardChallengeHome ({ challenge, isMember, isPreview }: C
                     <DialogShare
                       isOpen={sharing}
                       prompt='Copy this link to invite your friends'
-                      link={getShortUrl()}
+                      link={getShortUrl(challenge)}
                       onClose={() => { setSharing(false) }}
                     />
 

@@ -8,7 +8,7 @@ import DialogJoin from '~/components/dialogJoin'
 import DialogShare from '~/components/dialogShare'
 import axios from 'axios'
 import Spinner from '@material-tailwind/react/components/Spinner'
-import { isExpired } from '~/utils/helpers/challenge'
+import { getShortUrl, isExpired } from '~/utils/helpers/challenge'
 
 export const meta: MetaFunction = () => {
   return [
@@ -54,9 +54,6 @@ export default function ChallengeAbout (): JSX.Element {
   const getFullUrl = (): string => {
     return `${window.location.origin}/challenges/v/${challenge.id}`
   }
-  const getShortUrl = (): string => {
-    return `${window.location.origin}/s/c${challenge.id}`
-  }
 
   const toggleJoin = async (): Promise<void> => {
     if (!challenge?.id) {
@@ -70,6 +67,11 @@ export default function ChallengeAbout (): JSX.Element {
       setIsMember(true)
       setMembership(response.data.result as MemberChallenge)
     } else {
+      if (membership?.cohortId) {
+        const url = `/challenges/v/${challenge.id}/about`
+        setMembership(undefined)
+        navigate(url)
+      }
       setIsMember(false)
     }
     setLoading(false)
@@ -80,6 +82,9 @@ export default function ChallengeAbout (): JSX.Element {
     setIsMember(isMember)
     setMembership(membership)
     setShowJoin(false)
+    if (membership?.cohortId) {
+      navigate(`/challenges/v/${challenge.id}/about/${membership.cohortId}`)
+    }
     revalidator.revalidate()
   }
   if (!challenge) {
@@ -92,7 +97,7 @@ export default function ChallengeAbout (): JSX.Element {
           isOpen={true}
           title='Share this Challenge'
           prompt='Here is a link to invite your friends'
-          link={getShortUrl()}
+          link={getShortUrl(challenge, membership)}
           onClose={() => { setInvite(null) }}
         />
 

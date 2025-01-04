@@ -111,7 +111,7 @@ export async function requireAdminOrValidCohortMembership (args: LoaderFunctionA
     return null
   }
   // check that this is a valid cohort
-  const thisCohort = await prisma.challengeCohort.findUnique({
+  const thisCohort = await prisma.cohort.findUnique({
     where: { id: Number(args.params.cohortId) }
   })
   let doRedirect = false

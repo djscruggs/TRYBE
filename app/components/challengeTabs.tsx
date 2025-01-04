@@ -1,19 +1,22 @@
-import { type ChallengeSummary } from '~/utils/types'
-import { useNavigate } from '@remix-run/react'
+import { type ChallengeSummary, type MemberChallenge } from '~/utils/types'
 import useGatedNavigate from '~/hooks/useGatedNavigate'
 import { CheckInButton } from './checkinButton'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useContext } from 'react'
 import { toast } from 'react-hot-toast'
+import { getShortUrl } from '~/utils/helpers/challenge'
+import DialogShare from './dialogShare'
+import { CurrentUserContext } from '~/utils/CurrentUserContext'
 interface ChallengeTabsProps {
   challenge: ChallengeSummary
   className?: string
   which?: string
-  isMember?: boolean
+  membership?: MemberChallenge
 }
 
 export default function ChallengeTabs (props: ChallengeTabsProps): JSX.Element {
   const { challenge, which } = props
-  const [isMember, setIsMember] = useState(props.isMember)
+  const { currentUser } = useContext(CurrentUserContext)
+  const [isMember, setIsMember] = useState(Boolean(props.membership?.id ?? (props.challenge.userId === currentUser?.id)))
   const gatedNavigate = useGatedNavigate()
   const [currentTab, setCurrentTab] = useState(which)
   const goTo = (path: string, which: string, gated: boolean = false): void => {
@@ -28,12 +31,13 @@ export default function ChallengeTabs (props: ChallengeTabsProps): JSX.Element {
     gatedNavigate(url, gated)
     setCurrentTab(which)
   }
+  const [sharing, setSharing] = useState(false)
   useEffect(() => {
     setCurrentTab(which)
   }, [which])
   useEffect(() => {
-    setIsMember(props.isMember)
-  }, [props.isMember])
+    setIsMember(Boolean(props.membership?.id ?? (props.challenge.userId === currentUser?.id)))
+  }, [props.membership, props.challenge.userId, currentUser?.id])
   return (
     <>
     <div className='relative text-lg py-2 flex items-center justify-center w-full gap-4'>
@@ -44,6 +48,16 @@ export default function ChallengeTabs (props: ChallengeTabsProps): JSX.Element {
       <div className=' float-right -mt-1'>
         {isMember && <CheckInButton challenge={challenge} size='xs' />}
       </div>
+      <div className='flex justify-center'>
+          <button onClick={() => { setSharing(true) }} className='text-red underline text-xs'>Share Challenge</button>
+      </div>
+      <DialogShare
+        isOpen={sharing}
+        prompt='Copy this link to invite your friends'
+        link={getShortUrl(challenge, props.membership)}
+        onClose={() => { setSharing(false) }}
+      />
+
     </div>
     </>
   )
