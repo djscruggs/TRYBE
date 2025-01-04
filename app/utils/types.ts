@@ -173,6 +173,7 @@ export interface MemberChallenge {
   id: number
   userId: number
   challengeId: number
+  cohortId?: number | null
   user: User
   challenge: Challenge | ChallengeSummary
   lastCheckIn: Date | null

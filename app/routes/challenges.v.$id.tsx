@@ -1,7 +1,7 @@
 import { loadChallengeSummary } from '~/models/challenge.server'
 import { Outlet, useLoaderData, useNavigate, useLocation, useMatches, type MetaFunction } from '@remix-run/react'
 import { useContext, useEffect, useState } from 'react'
-import { getCurrentUser } from '~/models/auth.server'
+import { requireAdminOrValidCohortMembership } from '~/models/auth.server'
 import type { MemberChallenge, Challenge, ChallengeSummary } from '~/utils/types'
 import { type LoaderFunction, type LoaderFunctionArgs } from '@remix-run/node'
 import { FaChevronCircleLeft } from 'react-icons/fa'
@@ -23,8 +23,12 @@ interface ChallengeSummaryWithCounts extends ChallengeSummary {
   }
 }
 
-export const loader: LoaderFunction = async (args: LoaderFunctionArgs): Promise<ViewChallengeData | null | { loadingError: string }> => {
-  const currentUser = await getCurrentUser(args)
+export const loader: LoaderFunction = async (args: LoaderFunctionArgs): Promise<ViewChallengeData | null | Response | { loadingError: string }> => {
+  const currentUser = await requireAdminOrValidCohortMembership(args)
+  // Check if currentUser is a redirect response
+  if (currentUser instanceof Response) {
+    return currentUser
+  }
   const { params } = args
   if (!params.id) {
     return null

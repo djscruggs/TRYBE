@@ -34,6 +34,10 @@ export async function createUserSession (userId: string | number, redirectTo: st
     }
   })
 }
+export async function getUserSession (request: Request): Promise<Session> {
+  return await storage.getSession(request?.headers.get('Cookie'))
+}
+
 export async function register (user: RegisterForm): Promise<Response> {
   const exists = await prisma.user.count({ where: { email: user.email } })
   if (exists) {
@@ -98,9 +102,37 @@ export async function requireCurrentUser (args: LoaderFunctionArgs): Promise<Cur
   }
   return currentUser
 }
-
-export async function getUserSession (request: Request): Promise<Session> {
-  return await storage.getSession(request?.headers.get('Cookie'))
+export async function requireAdminOrValidCohortMembership (args: LoaderFunctionArgs): Promise<CurrentUser | null | Response> {
+  const currentUser = await getCurrentUser(args)
+  if (!args.params.cohortId) {
+    return currentUser
+  }
+  if (!currentUser) {
+    return null
+  }
+  // check that this is a valid cohort
+  const thisCohort = await prisma.challengeCohort.findUnique({
+    where: { id: Number(args.params.cohortId) }
+  })
+  let doRedirect = false
+  if (!thisCohort) {
+    doRedirect = true
+  }
+  if (!doRedirect) {
+    if (currentUser.role !== 'ADMIN') {
+      const cohort = currentUser.memberChallenges?.find(
+        membership => membership.cohortId === Number(args.params.cohortId)
+      )
+      if (!cohort) {
+        doRedirect = true
+      }
+    }
+  }
+  if (doRedirect) {
+    const goto = args.params.id ? `/challenges/v/${args.params.id}` : '/challenges'
+    return redirect(goto)
+  }
+  return currentUser
 }
 
 async function getUserId (request: Request): Promise<string | null> {
