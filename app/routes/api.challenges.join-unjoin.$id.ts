@@ -4,7 +4,7 @@ import { loadUser } from '~/models/user.server'
 import { json, type LoaderFunction, type ActionFunctionArgs } from '@remix-run/node'
 import type { MemberChallenge } from '@prisma/client'
 import { type ChallengeWelcomeMailerProps, sendChallengeWelcome } from '~/utils/mailer'
-import { formatDate } from '~/utils/helpers'
+import { formatDate, textToHtml, convertYouTubeLinksToImages } from '~/utils/helpers'
 import getUserLocale from 'get-user-locale'
 import { differenceInCalendarDays } from 'date-fns'
 export async function action (args: ActionFunctionArgs): Promise<Response> {
@@ -27,10 +27,12 @@ export async function action (args: ActionFunctionArgs): Promise<Response> {
         throw new Error('Challenge with id ' + params.id + ' not found')
       }
       let result: MemberChallenge
+      const baseUrl = new URL(args.request.url).origin // Get the base URL from the request
       const tempData: Partial<ChallengeWelcomeMailerProps['dynamic_template_data']> = {
         challengeName: challenge.name ?? '',
-
-        description: challenge.description ?? ''
+        inviteLink: `${baseUrl}/challenges/v/${params.id}/about?invite=true`, // Construct the invite link
+        // description: textToHtml(convertYouTubeLinksToImages(challenge.description ?? '', `${baseUrl}/challenges/v/${params.id}/about`))
+        description: textToHtml(challenge.description ?? '')
       }
       if (challenge?.type === 'SELF_LED') {
         const formData = await args.request.formData()
@@ -48,6 +50,7 @@ export async function action (args: ActionFunctionArgs): Promise<Response> {
         tempData.startDate = formatDate(challenge.startAt?.toISOString() ?? '', getUserLocale())
         tempData.duration = differenceInCalendarDays(challenge.endAt ?? new Date(), challenge.startAt ?? new Date()).toString() + ' days'
       }
+
       await sendChallengeWelcome({
         to: user.email,
         dynamic_template_data: tempData as ChallengeWelcomeMailerProps['dynamic_template_data']

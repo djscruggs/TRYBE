@@ -1,13 +1,15 @@
 import ChallengeOverview from '~/components/challengeOverview'
-import { type MetaFunction, useRouteLoaderData, useNavigate, useRevalidator } from '@remix-run/react'
+import { type MetaFunction, useRouteLoaderData, useNavigate, useRevalidator, useSearchParams } from '@remix-run/react'
 import { type Challenge, type ChallengeSummary, type MemberChallenge } from '~/utils/types'
 import { useContext, useState } from 'react'
 import { CurrentUserContext } from '~/utils/CurrentUserContext'
 import DialogConfirm from '~/components/dialogConfirm'
 import DialogJoin from '~/components/dialogJoin'
+import DialogShare from '~/components/dialogShare'
 import { isPast } from 'date-fns'
 import axios from 'axios'
 import Spinner from '@material-tailwind/react/components/Spinner'
+
 export const meta: MetaFunction = () => {
   return [
     { title: 'About this Challenge' },
@@ -29,6 +31,9 @@ export default function ChallengeAbout (): JSX.Element {
   const [isMember, setIsMember] = useState<boolean>(Boolean(data.membership?.id ?? challenge?.userId === currentUser?.id))
   const [membership, setMembership] = useState<MemberChallenge | undefined>(data.membership)
   const isExpired = challenge?.endAt ? isPast(new Date(challenge.endAt)) : false
+  const [searchParams] = useSearchParams()
+  const [invite, setInvite] = useState<string | null>(searchParams.get('invite'))
+
   const confirmJoinUnjoin = async (): Promise<void> => {
     if (!currentUser) {
       const redirectTo = location.pathname
@@ -46,6 +51,10 @@ export default function ChallengeAbout (): JSX.Element {
       await toggleJoin()
     }
   }
+  const getFullUrl = (): string => {
+    return `${window.location.origin}/challenges/v/${challenge.id}`
+  }
+
   const toggleJoin = async (): Promise<void> => {
     if (!challenge?.id) {
       throw new Error('cannot join without an id')
@@ -75,6 +84,16 @@ export default function ChallengeAbout (): JSX.Element {
   }
   return (
     <div className='w-full'>
+      {invite &&
+        <DialogShare
+          isOpen={true}
+          title='Share this Challenge'
+          prompt='Here is a link to invite your friends'
+          link={getFullUrl()}
+          onClose={() => { setInvite(null) }}
+        />
+
+      }
       <ChallengeOverview challenge={challenge} memberChallenge={membership}/>
       <div className='max-w-lg text-center rounded-lg p-2'>
       {currentUser?.id === challenge.userId && (
