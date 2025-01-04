@@ -142,7 +142,7 @@ export interface Challenge {
   notes?: Note[];
   posts?: Post[];
   threads?: Thread[];
-  cohorts?: ChallengeCohort[];
+  cohorts?: Cohort[];
 }
 
 export interface MemberChallenge {
@@ -160,14 +160,16 @@ export interface MemberChallenge {
   challenge?: Challenge;
   user?: User;
   cohortId: number | null;
-  cohort?: ChallengeCohort | null;
+  cohort?: Cohort | null;
 }
 
-export interface ChallengeCohort {
+export interface Cohort {
   id: number;
   challengeId: number;
   challenge?: Challenge;
   members?: MemberChallenge[];
+  comments?: Comment[];
+  checkIns?: CheckIn[];
   dayNumber: number;
   createdAt: Date;
   updatedAt: Date;
@@ -184,6 +186,8 @@ export interface CheckIn {
   updatedAt: Date;
   userId: number;
   challengeId: number;
+  cohortId: number | null;
+  cohort?: Cohort | null;
   memberChallengeId: number;
   challenge?: Challenge;
   memberChallenge?: MemberChallenge;
@@ -204,6 +208,8 @@ export interface Comment {
   userId: number;
   postId: number | null;
   challengeId: number | null;
+  cohortId: number | null;
+  cohort?: Cohort | null;
   threadId: number | null;
   replyToId: number | null;
   checkInId: number | null;

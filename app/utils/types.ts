@@ -144,6 +144,15 @@ export interface ChallengeInputs extends Challenge {
   deleteImage: boolean
 }
 
+export interface Cohort {
+  cohortId: number
+  challengeId: number
+  challenge: Challenge
+  dayNumber: number
+  startAt: Date
+  members: MemberChallenge[]
+}
+
 export interface Category {
   id: number
   name?: string
@@ -173,7 +182,8 @@ export interface MemberChallenge {
   id: number
   userId: number
   challengeId: number
-  cohortId?: number | null
+  cohortId?: number
+  cohort?: Cohort
   user: User
   challenge: Challenge | ChallengeSummary
   lastCheckIn: Date | null

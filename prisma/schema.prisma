@@ -157,7 +157,7 @@ model Challenge {
   notes          Note[]
   posts          Post[]
   threads       Thread[]
-  cohorts       ChallengeCohort[]
+  cohorts       Cohort[]
   @@index([userId])
   @@index([userId, updatedAt])
 }
@@ -177,16 +177,18 @@ model MemberChallenge {
   challenge   Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
   user        User      @relation(fields: [userId], references: [id])
   cohortId Int?
-  cohort ChallengeCohort? @relation(fields: [cohortId], references: [id], onDelete: Cascade)
+  cohort Cohort? @relation(fields: [cohortId], references: [id], onDelete: Cascade)
   @@index([challengeId])
   @@index([userId])
   @@index([userId, createdAt])
 }
-model ChallengeCohort {
+model Cohort {
   id Int @id @default(autoincrement())
   challengeId Int
   challenge Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
   members MemberChallenge[]
+  comments Comment[]
+  checkIns CheckIn[]
   dayNumber Int @default(1)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -203,6 +205,8 @@ model CheckIn {
   updatedAt         DateTime        @updatedAt
   userId            Int
   challengeId       Int
+  cohortId Int?
+  cohort Cohort? @relation(fields: [cohortId], references: [id], onDelete: Cascade)
   memberChallengeId Int
   challenge         Challenge       @relation(fields: [challengeId], references: [id], onDelete: Cascade)
   memberChallenge   MemberChallenge @relation(fields: [memberChallengeId], references: [id], onDelete: Cascade)
@@ -225,6 +229,8 @@ model Comment {
   userId      Int
   postId      Int?
   challengeId Int?
+  cohortId Int?
+  cohort Cohort? @relation(fields: [cohortId], references: [id], onDelete: Cascade)
   threadId    Int?
   replyToId   Int?
   checkInId   Int?
