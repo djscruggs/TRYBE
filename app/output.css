@@ -1863,6 +1863,14 @@ video {
   max-width: fit-content;
 }
 
+.max-w-\[240px\] {
+  max-width: 240px;
+}
+
+.max-w-\[250px\] {
+  max-width: 250px;
+}
+
 .flex-none {
   flex: none;
 }
@@ -6916,6 +6924,10 @@ video {
     display: block;
   }
 
+  .md\:inline-block {
+    display: inline-block;
+  }
+
   .md\:inline {
     display: inline;
   }
@@ -7070,6 +7082,10 @@ video {
 
   .md\:items-start {
     align-items: flex-start;
+  }
+
+  .md\:items-center {
+    align-items: center;
   }
 
   .md\:justify-start {

@@ -118,7 +118,7 @@ export default function CardChallengeHome ({ challenge, isMember, isPreview }: C
                     <SlShareAlt className="cursor-pointer text-grey text-sm mr-1 inline w-4 h-4 ml-2" onClick={(event) => { event?.stopPropagation(); setSharing(true) }}/>
                     <DialogShare
                       isOpen={sharing}
-                      prompt='Here is a link to invite your friends'
+                      prompt='Copy this link to invite your friends'
                       link={getShortUrl()}
                       onClose={() => { setSharing(false) }}
                     />
