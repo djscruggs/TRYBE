@@ -195,7 +195,7 @@ export const sendDayNumberPosts = async (): Promise<{ dayNumberPosts: number, da
             dynamic_template_data: {
               name: (`${post.user.profile?.firstName ?? ''} ${post.user.profile?.lastName ?? ''}`).trim(),
               post_url: postLink,
-              date: post.publishAt?.toLocaleDateString() ?? post.createdAt.toLocaleDateString(),
+              date: new Date().toLocaleDateString(),
               subject: `${post.title}`,
               title: post.title,
               body: textToHtml(convertYouTubeLinksToImages(post.body ?? '', postLink))
