@@ -5,9 +5,9 @@ import { isPast, isFuture } from 'date-fns'
 import {
   userLocale,
   pluralize,
-  challengeHasStarted,
   textToJSX
 } from '~/utils/helpers'
+import { hasStarted } from '~/utils/helpers/challenge'
 import axios from 'axios'
 import { Spinner } from '@material-tailwind/react'
 import DatePicker from 'react-datepicker'
@@ -15,8 +15,8 @@ import { type DateTimeFormatOptions } from 'intl'
 import { LiaUserFriendsSolid } from 'react-icons/lia'
 import LinkRenderer from './linkRenderer'
 export default function ChallengeOverview ({ challenge, memberChallenge }: { challenge: ChallengeSummary, memberChallenge?: MemberChallenge }): JSX.Element {
-  const isExpired = challenge?.endAt ? isPast(new Date(challenge.endAt)) : false
-  const [isStarted, setIsStarted] = useState(challengeHasStarted(challenge, memberChallenge))
+  const expired = challenge?.endAt ? isPast(new Date(challenge.endAt)) : false
+  const [started, setStarted] = useState(hasStarted(challenge, memberChallenge))
   const { currentUser } = useContext(CurrentUserContext)
   const locale = currentUser ? userLocale(currentUser) : 'en-US'
   const dateOptions: DateTimeFormatOptions = {
@@ -43,7 +43,7 @@ export default function ChallengeOverview ({ challenge, memberChallenge }: { cha
 
   useEffect(() => {
     setMembership(memberChallenge)
-    setIsStarted(challengeHasStarted(challenge, memberChallenge))
+    setStarted(hasStarted(challenge, memberChallenge))
   }, [memberChallenge, challenge, membership])
   const [checkIns, setCheckIns] = useState<CheckIn[]>([])
   const fetchCheckIns = async (): Promise<void> => {
@@ -125,17 +125,17 @@ export default function ChallengeOverview ({ challenge, memberChallenge }: { cha
       }
       {challenge.type === 'SCHEDULED' &&
           <>
-            {isExpired && <div className='text-red text-center'>This challenge has ended</div>}
+            {expired && <div className='text-red text-center'>This challenge has ended</div>}
             <div className="mb-2 flex flex-cols">
               <div className="w-1/3">
                 <div className="font-bold">
-                  {isExpired || isStarted ? 'Started' : 'Starts'}
+                  {expired || started ? 'Started' : 'Starts'}
                 </div>
                 {challenge.startAt ? new Date(challenge.startAt).toLocaleDateString(locale, dateOptions) : ''}
               </div>
               <div className="w-1/3">
                 <div className="font-bold">
-                  {isExpired ? 'Ended' : 'Ends'}
+                  {expired ? 'Ended' : 'Ends'}
                 </div>
                 {challenge.endAt ? new Date(challenge.endAt).toLocaleDateString(locale, dateOptions) : ''}
               </div>

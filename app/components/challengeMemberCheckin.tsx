@@ -3,7 +3,8 @@ import type { Challenge, MemberChallenge, CheckIn } from '~/utils/types'
 import { Link, useLocation } from '@remix-run/react'
 import { CheckInButton } from '~/components/checkinButton'
 
-import { challengeHasStarted, challengeIsExpired, pluralize } from '~/utils/helpers'
+import { hasStarted, isExpired } from '~/utils/helpers/challenge'
+import { pluralize } from '~/utils/helpers'
 
 interface ChallengeMemberCheckinProps {
   challenge: Challenge
@@ -17,8 +18,8 @@ export function ChallengeMemberCheckin ({ challenge, memberChallenge, showDetail
     throw new Error('Challenge object with id is required')
   }
   const membership = memberChallenge
-  const isExpired = challengeIsExpired(challenge, membership)
-  const hasStarted = challengeHasStarted(challenge, membership!)
+  const expired = isExpired(challenge, membership)
+  const started = hasStarted(challenge, membership)
   const location = useLocation()
   const linkToMyCheckins = !location.pathname.includes('checkins')
   const formatNextCheckin = (): string => {
@@ -39,7 +40,7 @@ export function ChallengeMemberCheckin ({ challenge, memberChallenge, showDetail
     return format(membership.nextCheckIn, 'cccc')
   }
   const canCheckInNow = (): boolean => {
-    if (isExpired || !hasStarted || challenge.status === 'DRAFT') {
+    if (expired || !started || challenge.status === 'DRAFT') {
       return false
     }
 
@@ -64,7 +65,7 @@ export function ChallengeMemberCheckin ({ challenge, memberChallenge, showDetail
       {/* this is gnarly -- we want to only show details if the flag is set */}
       {/* then, only who the link to the checkins page if we currently are NOT on the checkins page */}
 
-      {!isExpired && (
+      {!expired && (
         <div className="text-xs my-2">
           <CheckInButton challenge={challenge} memberChallenge={memberChallenge} afterCheckIn={handleAfterCheckIn} />
         </div>
@@ -77,7 +78,7 @@ export function ChallengeMemberCheckin ({ challenge, memberChallenge, showDetail
                   { membership?.lastCheckIn &&
                     <p>Last: {formatDistanceToNowStrict(membership.lastCheckIn)} ago </p>
                   }
-                  {!isExpired && membership?.nextCheckIn && <p>Next: {formatNextCheckin()}</p>}
+                  {!expired && membership?.nextCheckIn && <p>Next: {formatNextCheckin()}</p>}
                 </>
               }
 

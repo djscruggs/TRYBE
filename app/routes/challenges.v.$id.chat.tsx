@@ -12,10 +12,9 @@ import DialogCheckin from '~/components/dialogCheckin'
 import DialogPost from '~/components/dialogPost'
 import { CheckInButton } from '~/components/checkinButton'
 import DateDivider from '~/components/dateDivider'
-import { isPast } from 'date-fns'
 import MobileBackButton from '~/components/mobileBackButton'
 import HideFeedbackButton from '~/components/hideFeedbackButton'
-import { challengeHasStarted, challengeIsExpired } from '~/utils/helpers'
+import { hasStarted, isExpired } from '~/utils/helpers/challenge'
 export const meta: MetaFunction = () => {
   return [
     { title: 'Chat' },
@@ -183,7 +182,7 @@ export default function ViewChallengeChat (): JSX.Element {
   const [dayCount, setDayCount] = useState(10)
   const [limitedGroupedData, setLimitedGroupedData] = useState<GroupedDataEntry>(getCorrectDays(groupedData))
   const [newestComment, setNewestComment] = useState<Comment | null>(null)
-  const hasStarted = challengeHasStarted(challenge, membership)
+  const started = hasStarted(challenge, membership)
   // used in various places to get the current date formatted as YYYY-MM-DD
   const today = new Date().toLocaleDateString('en-CA')
   const scrollToBottom = (): void => {
@@ -232,10 +231,10 @@ export default function ViewChallengeChat (): JSX.Element {
     return hasNonEmptyCheckIn || hasEmptyCheckIn
   }
   // used to maintain the number of days we show after a fetch
-  const isExpired = challengeIsExpired(challenge, membership)
+  const expired = isExpired(challenge, membership)
   const [hasCheckedInToday, setHasCheckedInToday] = useState(checkedInToday())
   // only show the checkin popup if the user is logged in and they haven't checked in today, the challenge isn't expired, and there's no featured post
-  const [showCheckinPopup, setShowCheckinPopup] = useState(hasStarted && currentUser && !hasCheckedInToday && !isExpired && !featuredPost && challenge.status !== 'DRAFT')
+  const [showCheckinPopup, setShowCheckinPopup] = useState(started && currentUser && !hasCheckedInToday && !expired && !featuredPost && challenge.status !== 'DRAFT')
   const revalidator = useRevalidator()
   const handleAfterCheckIn = (checkIn: CheckIn): void => {
     setDayCount(dayCount + 1)
@@ -354,7 +353,7 @@ export default function ViewChallengeChat (): JSX.Element {
       )}
       {featuredPost && (
         <DialogPost post={featuredPost as Post} open={showfeaturedPost} onClose={handleClosefeaturedPost} >
-          {hasStarted && !hasCheckedInToday && !isExpired && challenge.status !== 'DRAFT' &&
+          {started && !hasCheckedInToday && !expired && challenge.status !== 'DRAFT' &&
             <div className='flex items-center justify-center mt-4'>
               <CheckInButton challenge={challenge} afterCheckIn={handleAfterCheckIn} />
             </div>

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import type { Challenge, MemberChallenge, CheckIn } from '~/utils/types'
 import FormCheckIn from './formCheckin'
-import { challengeHasStarted, challengeIsExpired } from '~/utils/helpers'
+import { hasStarted, isExpired } from '~/utils/helpers/challenge'
 import {
   Dialog,
   DialogBody
@@ -20,8 +20,8 @@ export function CheckInButton ({ challenge, membership, afterCheckIn, size, labe
     throw new Error('Challenge object with id is required')
   }
   const isDraft = challenge.status === 'DRAFT'
-  const isExpired = challengeIsExpired(challenge, membership)
-  const hasStarted = challengeHasStarted(challenge, membership)
+  const expired = isExpired(challenge, membership)
+  const started = hasStarted(challenge, membership)
   const [showForm, setShowForm] = useState<boolean>(false)
   const handleAfterCheckIn = (checkIn: CheckIn): void => {
     setShowForm(false)
@@ -36,10 +36,10 @@ export function CheckInButton ({ challenge, membership, afterCheckIn, size, labe
       <div>
         <button
             onClick={() => { setShowForm(true) } }
-            className={className ?? `w-fit ${minWidth} bg-red hover:bg-green-500 text-white ${size === 'xs' ? 'text-xs p-1' : 'p-2'} rounded-full justify-center text-sm disabled:bg-gray-400 ${isExpired ? 'opacity-50 cursor-not-allowed px-2' : ''}`}
-            disabled={isExpired || !hasStarted || isDraft || disabled}
+            className={className ?? `w-fit ${minWidth} bg-red hover:bg-green-500 text-white ${size === 'xs' ? 'text-xs p-1' : 'p-2'} rounded-full justify-center text-sm disabled:bg-gray-400 ${expired ? 'opacity-50 cursor-not-allowed px-2' : ''}`}
+            disabled={expired || !started || isDraft || disabled}
           >
-            {isExpired ? 'Challenge Ended' : hasStarted ? label : 'Not Started'}
+            {expired ? 'Challenge Ended' : started ? label : 'Not Started'}
         </button>
       </div>
       {showForm &&

@@ -13,7 +13,8 @@ import { FormField } from '~/components/formField'
 import DatePicker from 'react-datepicker'
 import { addDays, endOfMonth, isFirstDayOfMonth } from 'date-fns'
 import { toast } from 'react-hot-toast'
-import { challengeHasStarted, colorToClassName, handleFileUpload } from '~/utils/helpers'
+import { hasStarted } from '~/utils/helpers/challenge'
+import { colorToClassName, handleFileUpload } from '~/utils/helpers'
 import { useRevalidator } from 'react-router-dom'
 import { CurrentUserContext } from '~/utils/CurrentUserContext'
 import CardChallenge from '~/components/cardChallenge'
@@ -91,7 +92,7 @@ export default function FormChallenge ({ challenge }: { challenge: ChallengeInpu
     if (formData.type === 'SELF_LED') {
       return false
     }
-    if (memberCount && memberCount > 1 && challengeHasStarted(challenge)) {
+    if (memberCount && memberCount > 1 && hasStarted(challenge)) {
       return false
     }
     return true

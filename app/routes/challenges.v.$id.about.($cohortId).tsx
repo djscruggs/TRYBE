@@ -8,7 +8,7 @@ import DialogJoin from '~/components/dialogJoin'
 import DialogShare from '~/components/dialogShare'
 import axios from 'axios'
 import Spinner from '@material-tailwind/react/components/Spinner'
-import { challengeIsExpired } from '~/utils/helpers'
+import { isExpired } from '~/utils/helpers/challenge'
 
 export const meta: MetaFunction = () => {
   return [
@@ -30,7 +30,7 @@ export default function ChallengeAbout (): JSX.Element {
   const [showJoin, setShowJoin] = useState<boolean>(false)
   const [isMember, setIsMember] = useState<boolean>(Boolean(data.membership?.id ?? challenge?.userId === currentUser?.id))
   const [membership, setMembership] = useState<MemberChallenge | undefined>(data.membership)
-  const isExpired = challengeIsExpired(challenge, membership)
+  const expired = isExpired(challenge, membership)
   const [searchParams] = useSearchParams()
   const [invite, setInvite] = useState<string | null>(searchParams.get('i'))
 

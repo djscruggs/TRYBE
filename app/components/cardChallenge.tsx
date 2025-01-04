@@ -26,7 +26,7 @@ export default function CardChallenge ({ challenge, isShare, isMember, isPreview
   const navigate = useNavigate()
   const bgColor = colorToClassName(challenge?.color ?? '', 'red')
   const memberCount = challenge?._count?.members ?? 0
-  const isExpired = isPast(challenge.endAt ?? new Date('1970-01-01'))
+  const expired = isPast(challenge.endAt ?? new Date('1970-01-01'))
   let challengeLength = ''
   if (challenge.frequency === 'WEEKLY') {
     challengeLength = differenceInWeeks(challenge.endAt ?? new Date('1970-01-01'), challenge.startAt ?? new Date('1970-01-01')) + ' weeks'
@@ -69,7 +69,7 @@ export default function CardChallenge ({ challenge, isShare, isMember, isPreview
       }
       return `Starts ${startFormatted}`
     } else {
-      if (isExpired) {
+      if (expired) {
         return 'Ended'
       }
 
