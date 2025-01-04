@@ -1,4 +1,4 @@
-import { useContext } from 'react'
+import { useContext, useState } from 'react'
 import { FaRegCalendarAlt, FaUserFriends } from 'react-icons/fa'
 import { type Challenge, type ChallengeSummary } from '~/utils/types'
 import { colorToClassName } from '~/utils/helpers'
@@ -8,6 +8,8 @@ import { differenceInCalendarDays, differenceInWeeks, isPast } from 'date-fns'
 import ShareMenu from './shareMenu'
 import ChallengeIcon from './challengeIcon'
 import { CheckInButton } from './checkinButton'
+import DialogShare from './dialogShare'
+import { SlShareAlt } from 'react-icons/sl'
 interface CardChallengeProps {
   challenge: ChallengeSummary
   isMember?: boolean
@@ -20,6 +22,7 @@ export default function CardChallengeHome ({ challenge, isMember, isPreview }: C
   if (isMember === undefined) {
     isMember = challenge?.members?.some(member => member.userId === currentUser?.id) ?? challenge.userId === currentUser?.id
   }
+  const [sharing, setSharing] = useState(false)
   const isHost = challenge.userId === currentUser?.id
   const navigate = useNavigate()
   const bgColor = colorToClassName(challenge?.color ?? '', 'red')
@@ -29,7 +32,7 @@ export default function CardChallengeHome ({ challenge, isMember, isPreview }: C
   const checkInButtonDisabled = isExpired || !isStarted || challenge.status === 'DRAFT'
   const goToChallenge = (event: any): void => {
     event.stopPropagation()
-    if (isPreview) {
+    if (isPreview ?? sharing) {
       return
     }
     let url = `/challenges/v/${challenge.id}/about`
@@ -75,8 +78,11 @@ export default function CardChallengeHome ({ challenge, isMember, isPreview }: C
       return 'In progress'
     }
   }
-  const getFullUrl = (): string => {
-    return `${window.location.origin}/challenges/v/${challenge.id}`
+  const getShortUrl = (): string => {
+    return `${window.location.origin}/s/c${challenge.id}`
+  }
+  const getShareUrl = (): string => {
+    return `${window.location.origin}/challenges/v/${challenge.id}/about?i=1`
   }
   const categoryNames = challenge.categories?.map(category => category.name).filter((name): name is string => name !== undefined) ?? []
   return (
@@ -109,7 +115,14 @@ export default function CardChallengeHome ({ challenge, isMember, isPreview }: C
                     {isHost &&
                       <> <span className='mx-2'>| </span> <span className='text-xs font-taprom text-blue'>Hosting</span></>
                     }
-                    <ShareMenu className='ml-2' noText={true} copyUrl={getFullUrl()} itemType='challenge' itemId={Number(challenge.id)} isPreview={isPreview} />
+                    <SlShareAlt className="cursor-pointer text-grey text-sm mr-1 inline w-4 h-4 ml-2" onClick={(event) => { event?.stopPropagation(); setSharing(true) }}/>
+                    <DialogShare
+                      isOpen={sharing}
+                      prompt='Here is a link to invite your friends'
+                      link={getShortUrl()}
+                      onClose={() => { setSharing(false) }}
+                    />
+
                   </div>
                 </div>
                 {challenge.type === 'SELF_LED'

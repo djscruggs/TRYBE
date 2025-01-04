@@ -32,7 +32,7 @@ export default function ChallengeAbout (): JSX.Element {
   const [membership, setMembership] = useState<MemberChallenge | undefined>(data.membership)
   const isExpired = challenge?.endAt ? isPast(new Date(challenge.endAt)) : false
   const [searchParams] = useSearchParams()
-  const [invite, setInvite] = useState<string | null>(searchParams.get('invite'))
+  const [invite, setInvite] = useState<string | null>(searchParams.get('i'))
 
   const confirmJoinUnjoin = async (): Promise<void> => {
     if (!currentUser) {
@@ -53,6 +53,9 @@ export default function ChallengeAbout (): JSX.Element {
   }
   const getFullUrl = (): string => {
     return `${window.location.origin}/challenges/v/${challenge.id}`
+  }
+  const getShortUrl = (): string => {
+    return `${window.location.origin}/s/c${challenge.id}`
   }
 
   const toggleJoin = async (): Promise<void> => {
@@ -89,7 +92,7 @@ export default function ChallengeAbout (): JSX.Element {
           isOpen={true}
           title='Share this Challenge'
           prompt='Here is a link to invite your friends'
-          link={getFullUrl()}
+          link={getShortUrl()}
           onClose={() => { setInvite(null) }}
         />
 

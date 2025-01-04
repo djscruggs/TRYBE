@@ -40,8 +40,9 @@ export default function DialogShare (props: DialogShareProps): JSX.Element {
         <div className='font-bold mb-4'>{prompt}</div>
         <div className='text-center flex justify-start items-center mt-2'>
           <div className='text-lessblack text-md border p-2 rounded-md'>{link}</div> <HiOutlineClipboardCopy onClick={copyLink} className='h-6 w-6 cursor-pointer ml-4' /><div onClick={copyLink} className='ml-1 text-blue underline cursor-pointer'>copy</div>
-          {success && <div className='text-green-500 ml-2'>Link copied!</div>}
+
         </div>
+        {success && <div className='text-green-500 ml-2'>Link copied!</div>}
       </DialogBody>
       <DialogFooter>
         <Button className="bg-red" onClick={handleOpen}>

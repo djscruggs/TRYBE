@@ -6932,6 +6932,18 @@ video {
     display: none;
   }
 
+  .md\:h-\[500px\] {
+    height: 500px;
+  }
+
+  .md\:h-\[100px\] {
+    height: 100px;
+  }
+
+  .md\:h-\[200px\] {
+    height: 200px;
+  }
+
   .md\:max-h-screen {
     max-height: 100vh;
   }
@@ -6966,6 +6978,18 @@ video {
 
   .md\:w-full {
     width: 100%;
+  }
+
+  .md\:w-\[200px\] {
+    width: 200px;
+  }
+
+  .md\:w-\[800px\] {
+    width: 800px;
+  }
+
+  .md\:w-\[400px\] {
+    width: 400px;
   }
 
   .md\:min-w-\[60\%\] {

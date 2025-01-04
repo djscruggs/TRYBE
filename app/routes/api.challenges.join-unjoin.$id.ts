@@ -30,7 +30,7 @@ export async function action (args: ActionFunctionArgs): Promise<Response> {
       const baseUrl = new URL(args.request.url).origin // Get the base URL from the request
       const tempData: Partial<ChallengeWelcomeMailerProps['dynamic_template_data']> = {
         challengeName: challenge.name ?? '',
-        inviteLink: `${baseUrl}/challenges/v/${params.id}/about?invite=true`, // Construct the invite link
+        inviteLink: `${baseUrl}/challenges/v/${params.id}/about?i=1`, // Construct the invite link
         // description: textToHtml(convertYouTubeLinksToImages(challenge.description ?? '', `${baseUrl}/challenges/v/${params.id}/about`))
         description: textToHtml(challenge.description ?? '')
       }
