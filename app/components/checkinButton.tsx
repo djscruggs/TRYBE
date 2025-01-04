@@ -42,7 +42,7 @@ export function CheckInButton ({ challenge, membership, afterCheckIn, size, labe
       <div>
         <button
             onClick={() => { setShowForm(true) } }
-            className={`w-fit ${minWidth} bg-red hover:bg-green-500 text-white ${size === 'xs' ? 'text-xs p-1' : 'p-2'} rounded-full justify-center text-sm disabled:bg-gray-400 ${className} ${isExpired ? 'opacity-50 cursor-not-allowed' : ''}`}
+            className={className ?? `w-fit ${minWidth} bg-red hover:bg-green-500 text-white ${size === 'xs' ? 'text-xs p-1' : 'p-2'} rounded-full justify-center text-sm disabled:bg-gray-400 ${isExpired ? 'opacity-50 cursor-not-allowed px-2' : ''}`}
             disabled={isExpired || !hasStarted || isDraft || disabled}
           >
             {isExpired ? 'Challenge Ended' : hasStarted ? label : 'Not Started'}
