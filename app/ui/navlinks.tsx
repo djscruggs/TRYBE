@@ -3,8 +3,9 @@
 import { useLocation, useNavigation } from 'react-router-dom'
 import {
   PlusCircleIcon,
-  TrophyIcon
-  , HomeIcon
+  TrophyIcon,
+  HomeIcon,
+  UsersIcon
 } from '@heroicons/react/24/outline'
 import { HiOutlineLogout, HiOutlineLogin } from 'react-icons/hi'
 import { CurrentUserContext } from '~/utils/CurrentUserContext'
@@ -69,6 +70,12 @@ const NavLinks = (): JSX.Element => {
                   <TrophyIcon className='h-8 w-8 cursor-pointer mb-1y' />
                   <div className="cursor-pointer">All</div>
                   <div className="cursor-pointer text-xs">(admins)</div>
+                </Link>
+              </div>
+              <div className={`w-24 h-20 flex items-center justify-center flex-col text-darkgrey text-center mt-4 mb-4 p-2 rounded-lg ${location.pathname === '/admin' ? 'bg-gray-100' : 'hover:bg-gray-300'}`}>
+                <Link to="/admin" className='flex items-center flex-col' prefetch='render'>
+                  <UsersIcon className='h-8 w-8 cursor-pointer mb-1y' />
+                  <div className="cursor-pointer">Users</div>
                 </Link>
               </div>
 
