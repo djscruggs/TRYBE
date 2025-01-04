@@ -15,7 +15,7 @@ import DateDivider from '~/components/dateDivider'
 import { isPast } from 'date-fns'
 import MobileBackButton from '~/components/mobileBackButton'
 import HideFeedbackButton from '~/components/hideFeedbackButton'
-import { useMobileSize } from '~/hooks/useMobileSize'
+import { challengeHasStarted, challengeIsExpired } from '~/utils/helpers'
 export const meta: MetaFunction = () => {
   return [
     { title: 'Chat' },
@@ -183,7 +183,7 @@ export default function ViewChallengeChat (): JSX.Element {
   const [dayCount, setDayCount] = useState(10)
   const [limitedGroupedData, setLimitedGroupedData] = useState<GroupedDataEntry>(getCorrectDays(groupedData))
   const [newestComment, setNewestComment] = useState<Comment | null>(null)
-  const hasStarted = challenge.startAt && new Date(challenge.startAt) < new Date()
+  const hasStarted = challengeHasStarted(challenge, membership)
   // used in various places to get the current date formatted as YYYY-MM-DD
   const today = new Date().toLocaleDateString('en-CA')
   const scrollToBottom = (): void => {
@@ -232,7 +232,7 @@ export default function ViewChallengeChat (): JSX.Element {
     return hasNonEmptyCheckIn || hasEmptyCheckIn
   }
   // used to maintain the number of days we show after a fetch
-  const isExpired = isPast(challenge.endAt ?? new Date('1970-01-01'))
+  const isExpired = challengeIsExpired(challenge, membership)
   const [hasCheckedInToday, setHasCheckedInToday] = useState(checkedInToday())
   // only show the checkin popup if the user is logged in and they haven't checked in today, the challenge isn't expired, and there's no featured post
   const [showCheckinPopup, setShowCheckinPopup] = useState(hasStarted && currentUser && !hasCheckedInToday && !isExpired && !featuredPost && challenge.status !== 'DRAFT')

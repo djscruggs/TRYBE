@@ -13,7 +13,6 @@ import { Spinner } from '@material-tailwind/react'
 import DatePicker from 'react-datepicker'
 import { type DateTimeFormatOptions } from 'intl'
 import { LiaUserFriendsSolid } from 'react-icons/lia'
-import { useNavigate } from '@remix-run/react'
 import LinkRenderer from './linkRenderer'
 export default function ChallengeOverview ({ challenge, memberChallenge }: { challenge: ChallengeSummary, memberChallenge?: MemberChallenge }): JSX.Element {
   const isExpired = challenge?.endAt ? isPast(new Date(challenge.endAt)) : false

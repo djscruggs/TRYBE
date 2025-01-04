@@ -8,7 +8,7 @@ import { IoFishOutline } from 'react-icons/io5'
 import type { ChangeEvent } from 'react'
 import { toast } from 'react-hot-toast'
 import type { Challenge, ChallengeSummary, MemberChallenge, CurrentUser, User } from './types'
-import { isPast } from 'date-fns'
+import { isPast, addDays } from 'date-fns'
 import { youtubeRegex } from '~/components/linkRenderer'
 import { type DateTimeFormatOptions } from 'intl'
 export const copyToClipboard = async (text: string): Promise<void> => {
@@ -293,7 +293,7 @@ export function handleFileUpload ({ event, setFile, setFileURL }: HandleFileUplo
   fileReader.readAsDataURL(file)
 }
 
-export function challengeHasStarted (challenge: Challenge | ChallengeSummary, memberChallenge?: MemberChallenge): boolean {
+export function challengeHasStarted (challenge: Challenge | ChallengeSummary, memberChallenge?: MemberChallenge | null): boolean {
   if (challenge.type === 'SCHEDULED') {
     if (challenge.startAt) {
       return isPast(challenge.startAt)
@@ -306,6 +306,22 @@ export function challengeHasStarted (challenge: Challenge | ChallengeSummary, me
   }
   return true
 }
+export function challengeIsExpired (challenge: Challenge | ChallengeSummary, memberChallenge?: MemberChallenge | null): boolean {
+  if (challenge.type === 'SCHEDULED') {
+    if (challenge.endAt) {
+      return isPast(challenge.endAt)
+    }
+  }
+  if (memberChallenge) {
+    if (memberChallenge.startAt) {
+      // add challenge.numDays to startAt
+      const endAt = addDays(memberChallenge.startAt, challenge.numDays ?? 0)
+      return isPast(endAt)
+    }
+  }
+  return false
+}
+
 const dateOptions: DateTimeFormatOptions = {
   weekday: 'short',
   month: 'short',
