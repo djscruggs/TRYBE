@@ -94,7 +94,7 @@ export default function ViewChallenge (): JSX.Element {
   return (
     <div className={`w-full ${isEdit ? '' : ' relative'}`}>
 
-        <div className='fixed top-0 z-10 bg-white w-full max-w-lg md:max-w-xl bg-opacity-80 rounded-br-lg'>
+        <div className='fixed top-0 z-10 bg-white w-full max-w-lg md:max-w-2xl bg-opacity-80 rounded-br-lg'>
           <ChallengeHeader challenge={challenge as Challenge} size='small' />
           {!isEdit &&
             <ChallengeTabs challenge={challenge as ChallengeSummary} which={which} isMember={Boolean(data.membership?.id ?? challenge.userId === currentUser?.id)}/>
