@@ -82,12 +82,6 @@ export default function ChallengeOverview ({ challenge, memberChallenge }: { cha
             {challenge.numDays} days
 
           </div>
-          {challenge?._count?.members > 1 &&
-          <div className='w-1/3'>
-            <LiaUserFriendsSolid className="text-grey h-5 w-5 inline mr-1" />
-            {challenge?._count.members} {pluralize(challenge?._count.members, 'member')}
-          </div>
-          }
         </div>
 
         {membership?.startAt &&
@@ -155,11 +149,11 @@ export default function ChallengeOverview ({ challenge, memberChallenge }: { cha
               </div>
             </div>
             {challenge?._count?.members > 0 &&
-          <div className='w-full'>
-            <LiaUserFriendsSolid className="text-grey h-5 w-5 inline mr-1" />
-            {challenge?._count.members} {pluralize(challenge?._count.members, 'member')}
-          </div>
-        }
+              <div className='w-full'>
+                <LiaUserFriendsSolid className="text-grey h-5 w-5 inline mr-1" />
+                {challenge?._count.members} {pluralize(challenge?._count.members, 'member')}
+              </div>
+            }
           </>
         }
 
