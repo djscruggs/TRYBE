@@ -113,7 +113,7 @@ export const FullLayout = (): JSX.Element => {
             <SignedIn>
               <div className={`flex-grow ${(!isLanding && location.pathname !== '/') ? 'pt-4 ml-20' : 'ml-0'}`}>
                 {!isLanding &&
-                  <div className='absolute right-0 mr-4'>
+                  <div className='absolute right-0 mr-4 z-20'>
                     <UserButton
                       showName={true}
                       afterSignOutUrl="/logout"
