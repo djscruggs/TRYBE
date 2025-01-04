@@ -13,7 +13,7 @@ import { FormField } from '~/components/formField'
 import DatePicker from 'react-datepicker'
 import { addDays, endOfMonth, isFirstDayOfMonth } from 'date-fns'
 import { toast } from 'react-hot-toast'
-import { colorToClassName, handleFileUpload } from '~/utils/helpers'
+import { challengeHasStarted, colorToClassName, handleFileUpload } from '~/utils/helpers'
 import { useRevalidator } from 'react-router-dom'
 import { CurrentUserContext } from '~/utils/CurrentUserContext'
 import CardChallenge from '~/components/cardChallenge'
@@ -77,6 +77,21 @@ export default function FormChallenge ({ challenge }: { challenge: ChallengeInpu
     }
     // if challenge has more than one member, can't make draft
     if (memberCount && memberCount > 1) {
+      return false
+    }
+    return true
+  }
+  const canSwitchType = function (): boolean {
+    if (memberCount && memberCount > 1) {
+      return false
+    }
+    return true
+  }
+  const canChangeStartDate = function (): boolean {
+    if (formData.type === 'SELF_LED') {
+      return false
+    }
+    if (memberCount && memberCount > 1 && challengeHasStarted(challenge)) {
       return false
     }
     return true
@@ -318,6 +333,11 @@ export default function FormChallenge ({ challenge }: { challenge: ChallengeInpu
                 {currentUser?.role === 'ADMIN' &&
                   <fieldset className='border-grey border rounded-md p-2 pb-4 mb-4 max-w-[400px]'>
                     <legend className="text-md">Scheduled or Self-Directed?</legend>
+                    {!canSwitchType() &&
+                      <div className="text-xs text-red mb-2">
+                        Challenges with active members cannot be switched.
+                      </div>
+                    }
                     <p className='text-xs'>Scheduled challenges happen on specific dates. Self-directed challenges can be started at any time.</p>
                     <div className="flex items-center space-x-2">
                       <Radio
@@ -327,6 +347,7 @@ export default function FormChallenge ({ challenge }: { challenge: ChallengeInpu
                         checked={formData.type === 'SCHEDULED'}
                         onChange={handleChange}
                         crossOrigin={undefined}
+                        disabled={!canSwitchType()}
                       />
 
                     </div>
@@ -338,8 +359,9 @@ export default function FormChallenge ({ challenge }: { challenge: ChallengeInpu
                         checked={formData.type === 'SELF_LED'}
                         onChange={handleChange}
                         crossOrigin={undefined}
+                        disabled={!canSwitchType()}
                       />
-                  </div>
+                    </div>
                     {formData.type === 'SELF_LED' &&
                       <div className="relative flex flex-row items-center mr-2">
                         <label className='mx-2'>Number of Days in Challenge</label>
@@ -361,7 +383,14 @@ export default function FormChallenge ({ challenge }: { challenge: ChallengeInpu
                           </div>
                     )}
                     {formData.type === 'SCHEDULED' &&
+                    <>
+                     {!canChangeStartDate() &&
+                      <div className="text-xs text-red">
+                        Cannot change start date after challenge has started.
+                      </div>
+                      }
                       <div className="relative flex flex-col mb-2 md:flex-row md:space-x-2">
+
                         <div className="relative max-w-[160px] mr-2">
                           <label>Start Date</label>
 
@@ -370,6 +399,7 @@ export default function FormChallenge ({ challenge }: { challenge: ChallengeInpu
                           required={true}
                           dateFormat={localDateFormat}
                           minDate={new Date()}
+                          disabled={!canChangeStartDate()}
                           selected={formData.startAt ? new Date(formData.startAt) : null}
                           onChange={(date: Date) => { selectDate('startAt', date) }}
                           className={`p-1 border rounded-md pl-2 ${errors?.startAt ? 'border-red' : 'border-slate-gray-500'}`}
@@ -398,8 +428,10 @@ export default function FormChallenge ({ challenge }: { challenge: ChallengeInpu
                         )}
                       </div>
                       </div>
+                      </>
                     }
                   </fieldset>
+
                 }
 
                 <div className="relative mb-2 max-w-[400px] text-sm">
