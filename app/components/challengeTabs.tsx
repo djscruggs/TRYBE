@@ -42,7 +42,7 @@ export default function ChallengeTabs (props: ChallengeTabsProps): JSX.Element {
       <div className={`w-fit ${isMember ? 'cursor-pointer' : 'cursor-not-allowed'} border-b-2 border-red ${currentTab === 'progress' ? 'border-red' : 'border-white  hover:border-grey '}`} onClick={() => { goTo('/checkins', 'progress') }}>Progress</div>
       {(challenge.type === 'SCHEDULED' || challenge?._count?.members > 1) && <div className={`w-fit ${isMember ? 'cursor-pointer' : 'cursor-not-allowed'} border-b-2 border-red ${currentTab === 'chat' ? 'border-red' : 'border-white  hover:border-grey'}`} onClick={() => { goTo('/chat', 'chat', true) }}>Chat</div>}
       <div className=' float-right -mt-1'>
-        {isMember && <CheckInButton challenge={challenge} size='xs' />}
+        {isMember && <CheckInButton challenge={challenge} size='xs' className='px-2'/>}
       </div>
     </div>
     </>
