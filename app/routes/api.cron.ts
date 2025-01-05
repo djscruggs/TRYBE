@@ -2,7 +2,7 @@ import { prisma } from '../models/prisma.server'
 import { type CheckinReminderMailerProps, mailPost, sendCheckinReminder } from '../utils/mailer'
 import type { LoaderFunction } from '@remix-run/node'
 import { json } from '@remix-run/node'
-import { generateUrl, textToHtml, convertYouTubeLinksToImages } from '~/utils/helpers'
+import { generateUrl, textToHtml, convertYouTubeLinksToImages, pathToEmailUrl } from '~/utils/helpers'
 export const loader: LoaderFunction = async (args) => {
   const scheduledPosts = await sendScheduledPosts()
   const { dayNumberPosts, dayNotifications } = await sendDayNumberPosts()
@@ -53,7 +53,8 @@ export const sendScheduledPosts = async (): Promise<number> => {
   await Promise.all(posts.map(async post => {
     if (post.challenge?.members) {
       await Promise.all(post.challenge?.members.map(async member => {
-        const postLink = generateUrl(`/challenges/v/${post.challenge?.id}/chat#featured-id-${post.id}`)
+        const postPath = pathToEmailUrl(`/challenges/v/${post.challengeId}/chat#featured-id-${post.id}`)
+        const postLink = generateUrl(postPath)
         const props = {
           to: member.user.email,
           replyTo: post.user.email,
@@ -160,12 +161,13 @@ export const sendDayNumberPosts = async (): Promise<{ dayNumberPosts: number, da
   if (posts.length === 0) {
     // Send generic reminder email
     await Promise.all(Object.values(dayNumberHash).flat().map(async member => {
+      const checkinPath = pathToEmailUrl(`/challenges/v/${member.challenge.id}/checkins`)
       const props: CheckinReminderMailerProps = {
         to: member.user.email,
         dynamic_template_data: {
           name: (`${member.user.profile?.firstName ?? ''} ${member.user.profile?.lastName ?? ''}`.trim() || 'Trybe Member'),
           challenge_name: member.challenge.name,
-          checkin_url: generateUrl(`/challenges/v/${member.challenge.id}/checkins`)
+          checkin_url: generateUrl(checkinPath)
         }
       }
       try {
@@ -185,9 +187,9 @@ export const sendDayNumberPosts = async (): Promise<{ dayNumberPosts: number, da
       const members = dayNumberHash[post.publishOnDayNumber]
       if (members) {
         await Promise.all(members.map(async member => {
-          const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https'
-          const host = process.env.NODE_ENV === 'development' ? 'localhost:3000' : 'app.jointhetrybe.com'
-          const postLink = `${protocol}://${host}/challenges/v/${post.challengeId}/chat#featured-id-${post.id}`
+          // const postLink = `${protocol}://${host}/challenges/v/${post.challengeId}/chat#featured-id-${post.id}`
+          const postPath = pathToEmailUrl(`/challenges/v/${post.challengeId}/chat#featured-id-${post.id}`)
+          const postLink = generateUrl(postPath)
           const props = {
             to: member.user.email,
             replyTo: post.user.email,

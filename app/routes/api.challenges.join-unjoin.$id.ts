@@ -4,7 +4,7 @@ import { loadUser } from '~/models/user.server'
 import { json, type LoaderFunction, type ActionFunctionArgs } from '@remix-run/node'
 import type { MemberChallenge } from '@prisma/client'
 import { type ChallengeWelcomeMailerProps, sendChallengeWelcome } from '~/utils/mailer'
-import { formatDate, textToHtml, convertYouTubeLinksToImages } from '~/utils/helpers'
+import { formatDate, textToHtml, convertYouTubeLinksToImages, pathToEmailUrl, generateUrl } from '~/utils/helpers'
 import getUserLocale from 'get-user-locale'
 import { differenceInCalendarDays } from 'date-fns'
 export async function action (args: ActionFunctionArgs): Promise<Response> {
@@ -27,10 +27,10 @@ export async function action (args: ActionFunctionArgs): Promise<Response> {
         throw new Error('Challenge with id ' + params.id + ' not found')
       }
       let result: MemberChallenge
-      const baseUrl = new URL(args.request.url).origin // Get the base URL from the request
+      const invitePath = pathToEmailUrl(`/challenges/v/${params.id}/about?i=1`)
       const tempData: Partial<ChallengeWelcomeMailerProps['dynamic_template_data']> = {
         challengeName: challenge.name ?? '',
-        inviteLink: `${baseUrl}/challenges/v/${params.id}/about?i=1`, // Construct the invite link
+        inviteLink: generateUrl(invitePath),
         description: textToHtml(challenge.description ?? '')
       }
       if (challenge?.type === 'SELF_LED') {

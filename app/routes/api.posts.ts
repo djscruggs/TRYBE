@@ -9,7 +9,7 @@ import { uploadHandler, handleFormUpload } from '~/utils/uploadFile'
 import { mailPost } from '~/utils/mailer'
 import getUserLocale from 'get-user-locale'
 import { format, isPast, isEqual } from 'date-fns'
-import { textToHtml, convertStringValues } from '~/utils/helpers'
+import { textToHtml, convertStringValues, generateUrl, pathToEmailUrl } from '~/utils/helpers'
 import escape from 'escape-html'
 
 export const action: ActionFunction = async (args) => {
@@ -79,12 +79,14 @@ export const action: ActionFunction = async (args) => {
     const dateFormat = getUserLocale() === 'en-US' ? 'MMMM d' : 'd MMMM'
     // const escaped = updated.body?.replace(/['"&’]/g, match => `&#${match.charCodeAt(0)};`)
     try {
+      const postPath = pathToEmailUrl(`/posts/${updated.id}`)
+      const postLink = generateUrl(postPath)
       const msg = {
         to: 'info@jointhetrybe.com',
         replyTo: currentUser.email,
         dynamic_template_data: {
           name: replyToName,
-          post_url: `${baseUrl}/posts/${updated.id}`,
+          post_url: postLink,
           date: format(updated.updatedAt, dateFormat), // format based on user's country
           subject: `New challenge post from ${replyToName} on Trybe`,
           title: updated.title,

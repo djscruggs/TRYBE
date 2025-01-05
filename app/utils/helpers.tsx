@@ -313,3 +313,22 @@ export function convertYouTubeLinksToImages (body: string, postLink: string = ''
     return `<br><br><img src="https://img.youtube.com/vi/${videoId}/hqdefault.jpg" alt="YouTube Video">`
   })
 }
+
+export function pathToDotRoute (path: string): string {
+  if (!path) return ''
+  if (path.startsWith('/')) {
+    path = path.slice(1)
+  }
+  return path.replace(/\//g, '.')
+}
+export function pathFromDotRoute (dotRoute: string): string {
+  if (!dotRoute) return ''
+  if (dotRoute.startsWith('/')) {
+    dotRoute = dotRoute.slice(1)
+  }
+  return '/' + dotRoute.replace(/\./g, '/')
+}
+export function pathToEmailUrl (path: string): string {
+  if (!path) return ''
+  return '/c/' + pathToDotRoute(path)
+}
