@@ -57,23 +57,27 @@ export default function ChallengeAbout (): JSX.Element {
       throw new Error('cannot join without an id')
     }
     setLoading(true)
-
-    const url = `/api/challenges/join-unjoin/${challenge.id as string | number}`
-    const response = await axios.post(url)
-    if (response.data.result === 'joined') {
-      setIsMember(true)
-      setMembership(response.data.result as MemberChallenge)
-    } else {
-      if (membership?.cohortId) {
-        const url = `/challenges/v/${challenge.id}/about`
-        setMembership(undefined)
-        navigate(url, true)
+    try {
+      const url = `/api/challenges/join-unjoin/${challenge.id as string | number}`
+      const response = await axios.post(url)
+      if (response.data.result === 'joined') {
+        setIsMember(true)
+        setMembership(response.data.result as MemberChallenge)
+      } else {
+        if (membership?.cohortId) {
+          const url = `/challenges/v/${challenge.id}/about`
+          setMembership(undefined)
+          navigate(url, true)
+        }
+        setIsMember(false)
       }
-      setIsMember(false)
+    } catch (error) {
+      console.error(error)
+    } finally {
+      setLoading(false)
+      setShowConfirm(false)
+      revalidator.revalidate()
     }
-    setLoading(false)
-    setShowConfirm(false)
-    revalidator.revalidate()
   }
   const afterJoin = (isMember: boolean, membership?: MemberChallenge): void => {
     setIsMember(isMember)

@@ -23,10 +23,16 @@ export default function ChallengeAll (): JSX.Element {
   }
   const loadData = async (): Promise<void> => {
     setLoading(true)
-    const url = '/api/challenges/all'
-    const response = await axios.get(url)
-    setChallenges(response.data.challenges as ChallengeSummary[])
-    setLoading(false)
+    try {
+      const url = '/api/challenges/all'
+      const response = await axios.get(url)
+      setChallenges(response.data.challenges as ChallengeSummary[])
+    } catch (error) {
+      console.error(error)
+      (error)
+    } finally {
+      setLoading(false)
+    }
   }
   useEffect(() => {
     void loadData()

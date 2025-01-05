@@ -30,28 +30,31 @@ export default function ChallengesIndex (): JSX.Element {
 
   const loadUpcomingChallenges = async (): Promise<void> => {
     setLoading(true)
-    let url = '/api/challenges/upcoming'
-    if (status === 'all') {
-      url = '/api/challenges/all'
+    try {
+      let url = '/api/challenges/upcoming'
+      if (status === 'all') {
+        url = '/api/challenges/all'
+      }
+      const params: AxiosRequestConfig['params'] = { }
+      if (categoryFilter.length > 0) {
+        params.category = categoryFilter.join(',')
+      }
+      if (selfGuided) {
+        params.type = 'SELF_LED'
+      }
+      const response = await axios.get(url, { params })
+      const allUpcomingChallenges = response.data.challenges as ChallengeSummary[]
+      const memberships = response.data.memberships as MemberChallenge[]
+      const filteredUpcomingChallenges = allUpcomingChallenges.filter(challenge =>
+        !memberships.some(membership => membership.challengeId === challenge.id) &&
+        challenge.userId !== currentUser?.id
+      )
+      setUpcomingChallenges(filteredUpcomingChallenges)
+    } catch (error) {
+      console.error(error)
+    } finally {
+      setLoading(false)
     }
-    const params: AxiosRequestConfig['params'] = { }
-    if (categoryFilter.length > 0) {
-      params.category = categoryFilter.join(',')
-    }
-    if (selfGuided) {
-      params.type = 'SELF_LED'
-    }
-    const response = await axios.get(url, { params })
-
-    // Filter out challenges where the user is already a member
-    const allUpcomingChallenges = response.data.challenges as ChallengeSummary[]
-    const memberships = response.data.memberships as MemberChallenge[]
-    const filteredUpcomingChallenges = allUpcomingChallenges.filter(challenge =>
-      !memberships.some(membership => membership.challengeId === challenge.id) &&
-      challenge.userId !== currentUser?.id
-    )
-    setUpcomingChallenges(filteredUpcomingChallenges)
-    setLoading(false)
   }
   const [triggerRender, setTriggerRender] = useState(1)
   const scrollToBrowse = (): void => {
