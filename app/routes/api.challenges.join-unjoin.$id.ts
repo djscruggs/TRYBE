@@ -54,11 +54,11 @@ export async function action (args: ActionFunctionArgs): Promise<Response> {
           const cohort = await createCohort(Number(params.id))
           cohortId = cohort.id
         }
-        result = await joinChallenge(Number(user.id), Number(params.id), startAtDate, notificationHourNumber, notificationMinuteNumber, cohortId)
+        result = await joinChallenge({ userId: Number(user.id), challengeId: Number(params.id), startAt: startAtDate, notificationHour: notificationHourNumber, notificationMinute: notificationMinuteNumber, cohortId })
         tempData.startDate = formatDate(startAtDate?.toISOString() ?? '', getUserLocale())
         tempData.duration = challenge.numDays?.toString() + ' days' ?? 'none'
       } else {
-        result = await joinChallenge(Number(user.id), Number(params.id))
+        result = await joinChallenge({ userId: Number(user.id), challengeId: Number(params.id) })
         tempData.startDate = formatDate(challenge.startAt?.toISOString() ?? '', getUserLocale())
         tempData.duration = differenceInCalendarDays(challenge.endAt ?? new Date(), challenge.startAt ?? new Date()).toString() + ' days'
       }
