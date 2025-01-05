@@ -10,6 +10,7 @@ export default function Click (): JSX.Element {
   const params = useParams()
   const navigate = useGatedNavigate()
   useEffect(() => {
+    // i need to append
     const path = pathFromDotRoute(params.route ?? '')
     const hash = window.location.hash ?? ''
     const newPath = path + hash
@@ -17,7 +18,6 @@ export default function Click (): JSX.Element {
     if (newPath.includes('chat') ?? newPath.includes('checkins')) {
       requireLogin = true
     }
-
     navigate(newPath, requireLogin)
   }, [])
   return (

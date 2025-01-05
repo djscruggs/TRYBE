@@ -3,12 +3,13 @@ import { type LoaderFunction } from '@remix-run/node'
 import { prisma } from '~/models/prisma.server'
 import { mailPost } from '~/utils/mailer'
 import { format } from 'date-fns'
-import { textToHtml, convertYouTubeLinksToImages } from '~/utils/helpers'
+import { textToHtml, convertYouTubeLinksToImages, pathToEmailUrl } from '~/utils/helpers'
 import escape from 'escape-html'
 // const ogs = require('open-graph-scraper')
 // const options = { url: 'http://ogp.me/' }
 export const loader: LoaderFunction = async (args) => {
   const user = await requireCurrentUser(args)
+  const invitePath = pathToEmailUrl('/challenges/v/41/about?i=1&foo=bar')
 
   // const data = await ogs(options)
   // const { error, html, result } = data
@@ -16,8 +17,13 @@ export const loader: LoaderFunction = async (args) => {
   // console.log('html:', html) // This contains the HTML of page
   // console.log('result:', result) // This contains all of the Open Graph results
   const data = [
-
+    {
+      path: invitePath
+    }
   ]
+  return {
+    data
+  }
   // const result = await prisma.post.createMany({ data })
   const post = await prisma.post.findFirst({
     where: {

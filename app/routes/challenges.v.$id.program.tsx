@@ -69,9 +69,6 @@ export default function Program (): JSX.Element {
   const { challenge } = useRouteLoaderData<typeof useRouteLoaderData>('routes/challenges.v.$id') as { challenge: Challenge }
   const { posts, membership } = useLoaderData<typeof loader>() as ChallengeScheduleData
   const { currentUser } = useContext(CurrentUserContext)
-  if (currentUser?.role === 'ADMIN') {
-    console.log('Program posts', posts)
-  }
   return (
     <>
       {posts.length === 0 &&

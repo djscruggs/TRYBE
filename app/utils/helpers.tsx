@@ -319,14 +319,30 @@ export function pathToDotRoute (path: string): string {
   if (path.startsWith('/')) {
     path = path.slice(1)
   }
-  return path.replace(/\//g, '.')
+  let url = path.replace(/\//g, '.')
+
+  // Check for query string and replace '?' with '__'
+  const queryIndex = url.indexOf('?')
+  if (queryIndex !== -1) {
+    url = url.slice(0, queryIndex) + '__' + url.slice(queryIndex + 1)
+  }
+
+  return url
 }
 export function pathFromDotRoute (dotRoute: string): string {
   if (!dotRoute) return ''
   if (dotRoute.startsWith('/')) {
     dotRoute = dotRoute.slice(1)
   }
-  return '/' + dotRoute.replace(/\./g, '/')
+  let url = '/' + dotRoute.replace(/\./g, '/')
+
+  // Convert '__' back to '?'
+  const queryIndex = url.indexOf('__')
+  if (queryIndex !== -1) {
+    url = url.slice(0, queryIndex) + '?' + url.slice(queryIndex + 2)
+  }
+
+  return url
 }
 export function pathToEmailUrl (path: string): string {
   if (!path) return ''
