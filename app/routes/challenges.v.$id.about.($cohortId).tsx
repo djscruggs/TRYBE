@@ -28,7 +28,7 @@ export default function ChallengeAbout (): JSX.Element {
   const [loading, setLoading] = useState<boolean>(false)
   const [showConfirm, setShowConfirm] = useState<boolean>(false)
   const [showJoin, setShowJoin] = useState<boolean>(false)
-  const [isMember, setIsMember] = useState<boolean>(Boolean(data.membership?.id ?? challenge?.userId === currentUser?.id))
+  const [isMember, setIsMember] = useState<boolean>(Boolean(data.membership?.id ?? (challenge?.type === 'SCHEDULED' && challenge?.userId === currentUser?.id)))
   const [membership, setMembership] = useState<MemberChallenge | undefined>(data.membership)
 
   const [searchParams] = useSearchParams()
@@ -100,7 +100,7 @@ export default function ChallengeAbout (): JSX.Element {
       }
       <ChallengeOverview challenge={challenge} memberChallenge={membership}/>
       <div className='max-w-lg text-center rounded-lg p-2'>
-      {currentUser?.id === challenge.userId && (
+      {currentUser?.id === challenge.userId && challenge.type === 'SCHEDULED' && (
         <p className='text-red mt-4'>As the creator of this challenge, you are automatically a member.</p>
       )}
       {currentUser?.id !== challenge.userId && (

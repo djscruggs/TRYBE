@@ -44,7 +44,6 @@ export default function ChallengeOverview ({ challenge, memberChallenge }: { cha
   const [editingStartAt, setEditingStartAt] = useState(false)
 
   useEffect(() => {
-    console.log('memberChallenge', memberChallenge)
     setMembership(memberChallenge)
     setStarted(hasStarted(challenge, memberChallenge))
   }, [memberChallenge, challenge, membership])
@@ -63,9 +62,6 @@ export default function ChallengeOverview ({ challenge, memberChallenge }: { cha
   }, [challenge.id, currentUser?.id])
   return (
     <div className='max-w-lg relative px-2'>
-       {challenge.type === 'SELF_LED' &&
-          <div className='text-red text-center mb-2'>This is a self-guided challenge. Click program to view the schedule.</div>
-        }
       <div className='relative mb-4'>
           {parsedDescription}
           <LinkRenderer text={challenge.description ?? ''} />

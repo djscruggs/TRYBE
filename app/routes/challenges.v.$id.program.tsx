@@ -71,15 +71,16 @@ export default function Program (): JSX.Element {
   const { currentUser } = useContext(CurrentUserContext)
   return (
     <>
-      {posts.length === 0 &&
-        <div className='mt-6 max-w-lg text-center '>
-          {challenge.userId === currentUser?.id
-            ? <div>You have not scheduled content. <Link className='text-red underline' to={`/challenges/v/${challenge.id}/schedule`}>Edit schedule.</Link></div>
-            : <div>Schedule has not been published yet.</div>
-          }
-        </div>
-      }
-      <div className='flex flex-col justify-center mt-20   w-full max-w-lg md:max-w-xl'>
+
+      <div className='flex flex-col justify-center mt-6   w-full max-w-lg md:max-w-xl'>
+        {posts.length === 0 &&
+          <div className='max-w-lg text-center '>
+            {challenge.userId === currentUser?.id
+              ? <div>You have not scheduled content. <Link className='text-red underline' to={`/challenges/v/${challenge.id}/schedule`}>Edit schedule.</Link></div>
+              : <div>Schedule has not been published yet.</div>
+            }
+          </div>
+        }
         <ChallengeSchedule challenge={challenge} posts={posts} key={challenge.id} isSchedule={false} membership={membership} />
       </div>
     </>
