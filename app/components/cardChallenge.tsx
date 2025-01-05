@@ -10,6 +10,7 @@ import { useNavigate } from '@remix-run/react'
 import { differenceInCalendarDays, differenceInWeeks, differenceInBusinessDays, isPast } from 'date-fns'
 import ShareMenu from './shareMenu'
 import ChallengeIcon from './challengeIcon'
+import useGatedNavigate from '~/hooks/useGatedNavigate'
 interface CardChallengeProps {
   challenge: ChallengeSummary
   isShare?: boolean
@@ -23,7 +24,7 @@ export default function CardChallenge ({ challenge, isShare, isMember, isPreview
   if (isMember === undefined) {
     isMember = challenge?.members?.some(member => member.userId === currentUser?.id)
   }
-  const navigate = useNavigate()
+  const navigate = useGatedNavigate()
   const bgColor = colorToClassName(challenge?.color ?? '', 'red')
   const memberCount = challenge?._count?.members ?? 0
   const expired = isPast(challenge.endAt ?? new Date('1970-01-01'))
@@ -41,12 +42,7 @@ export default function CardChallenge ({ challenge, isShare, isMember, isPreview
       return
     }
     const url = `/challenges/v/${challenge.id}`
-    if (currentUser) {
-      navigate(url)
-    } else {
-      localStorage.setItem('redirect', url)
-      navigate('/signup')
-    }
+    navigate(url, true)
   }
   let shortDescription = ''
   if (challenge?.description) {

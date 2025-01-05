@@ -9,7 +9,7 @@ import escape from 'escape-html'
 // const options = { url: 'http://ogp.me/' }
 export const loader: LoaderFunction = async (args) => {
   const user = await requireCurrentUser(args)
-  const invitePath = pathToEmailUrl('/challenges/v/41/about?i=1&foo=bar')
+  const invitePath = pathToEmailUrl('/challenges/v/41/chat/2?i=1&foo=bar')
 
   // const data = await ogs(options)
   // const { error, html, result } = data

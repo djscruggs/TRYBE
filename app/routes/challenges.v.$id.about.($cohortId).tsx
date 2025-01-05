@@ -1,5 +1,5 @@
 import ChallengeOverview from '~/components/challengeOverview'
-import { type MetaFunction, useRouteLoaderData, useNavigate, useRevalidator, useSearchParams } from '@remix-run/react'
+import { type MetaFunction, useRouteLoaderData, useRevalidator, useSearchParams } from '@remix-run/react'
 import { type Challenge, type ChallengeSummary, type MemberChallenge } from '~/utils/types'
 import { useContext, useState } from 'react'
 import { CurrentUserContext } from '~/utils/CurrentUserContext'
@@ -9,7 +9,7 @@ import DialogShare from '~/components/dialogShare'
 import axios from 'axios'
 import Spinner from '@material-tailwind/react/components/Spinner'
 import { getShortUrl, isExpired } from '~/utils/helpers/challenge'
-
+import useGatedNavigate from '~/hooks/useGatedNavigate'
 export const meta: MetaFunction = () => {
   return [
     { title: 'About this Challenge' },
@@ -23,22 +23,21 @@ export default function ChallengeAbout (): JSX.Element {
   const data = useRouteLoaderData<{ challenge: ChallengeSummary, membership: MemberChallenge }>('routes/challenges.v.$id') as unknown as { challenge: ChallengeSummary, membership: MemberChallenge }
   const { challenge } = data
   const { currentUser } = useContext(CurrentUserContext)
-  const navigate = useNavigate()
+  const navigate = useGatedNavigate()
   const revalidator = useRevalidator()
   const [loading, setLoading] = useState<boolean>(false)
   const [showConfirm, setShowConfirm] = useState<boolean>(false)
   const [showJoin, setShowJoin] = useState<boolean>(false)
   const [isMember, setIsMember] = useState<boolean>(Boolean(data.membership?.id ?? challenge?.userId === currentUser?.id))
   const [membership, setMembership] = useState<MemberChallenge | undefined>(data.membership)
-  const expired = isExpired(challenge, membership)
+
   const [searchParams] = useSearchParams()
   const [invite, setInvite] = useState<string | null>(searchParams.get('i'))
 
   const confirmJoinUnjoin = async (): Promise<void> => {
     if (!currentUser) {
-      const redirectTo = location.pathname
-      localStorage.setItem('redirectTo', redirectTo)
-      navigate(`/signup?redirectTo=${redirectTo}`)
+      // gateed navigate automatically handles the redirect
+      navigate(location.pathname, true)
       return
     }
     if (challenge.type === 'SELF_LED' && !isMember) {
@@ -50,9 +49,6 @@ export default function ChallengeAbout (): JSX.Element {
     } else {
       await toggleJoin()
     }
-  }
-  const getFullUrl = (): string => {
-    return `${window.location.origin}/challenges/v/${challenge.id}`
   }
 
   const toggleJoin = async (): Promise<void> => {
@@ -70,7 +66,7 @@ export default function ChallengeAbout (): JSX.Element {
       if (membership?.cohortId) {
         const url = `/challenges/v/${challenge.id}/about`
         setMembership(undefined)
-        navigate(url)
+        navigate(url, true)
       }
       setIsMember(false)
     }
@@ -83,7 +79,7 @@ export default function ChallengeAbout (): JSX.Element {
     setMembership(membership)
     setShowJoin(false)
     if (membership?.cohortId) {
-      navigate(`/challenges/v/${challenge.id}/about/${membership.cohortId}`)
+      navigate(`/challenges/v/${challenge.id}/about/${membership.cohortId}`, true)
     }
     revalidator.revalidate()
   }
@@ -129,7 +125,7 @@ export default function ChallengeAbout (): JSX.Element {
             onCancel={() => { setShowJoin(false) }}
             afterJoin={afterJoin}
           />
-        {currentUser && challenge.type === 'SCHEDULED' && <div className='mt-4 cursor-pointer text-red text-center text-xs underline' onClick={() => { navigate(`/challenges/v/${challenge.id}/contact`) }}>Contact Host</div>}
+        {currentUser && challenge.type === 'SCHEDULED' && <div className='mt-4 cursor-pointer text-red text-center text-xs underline' onClick={() => { navigate(`/challenges/v/${challenge.id}/contact`, true) }}>Contact Host</div>}
         </>
 
       )}
