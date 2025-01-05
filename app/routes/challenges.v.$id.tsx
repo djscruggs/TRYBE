@@ -29,31 +29,36 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs): Promise<
   if (currentUser instanceof Response) {
     return currentUser
   }
-  const { params } = args
-  const cohortId = params.cohortId ? Number(params.cohortId) : undefined
-  if (!params.id) {
-    return null
-  }
-  const challenge: ChallengeSummaryWithCounts | undefined = await loadChallengeSummary(params.id)
-  if (!challenge) {
-    const error = { loadingError: 'Challenge not found' }
-    return error
-  }
-  let membership
-  if (currentUser) {
-    membership = await prisma.memberChallenge.findFirst({
-      where: {
-        userId: currentUser ? Number(currentUser.id) : 0,
-        challengeId: Number(params.id)
-      },
-      include: {
-        _count: {
-          select: { checkIns: true }
+  try {
+    const { params } = args
+    const cohortId = params.cohortId ? Number(params.cohortId) : undefined
+    if (!params.id) {
+      return null
+    }
+    const challenge: ChallengeSummaryWithCounts | undefined = await loadChallengeSummary(params.id)
+    if (!challenge) {
+      const error = { loadingError: 'Challenge not found' }
+      return error
+    }
+    let membership
+    if (currentUser) {
+      membership = await prisma.memberChallenge.findFirst({
+        where: {
+          userId: currentUser ? Number(currentUser.id) : 0,
+          challengeId: Number(params.id)
+        },
+        include: {
+          _count: {
+            select: { checkIns: true }
+          }
         }
-      }
-    }) as MemberChallenge | null
+      }) as MemberChallenge | null
+    }
+    return { challenge, membership: membership ?? undefined, cohortId }
+  } catch (error) {
+    console.error(error)
+    return { loadingError: 'Error loading challenge' }
   }
-  return { challenge, membership: membership ?? undefined, cohortId }
 }
 export const meta: MetaFunction<typeof loader> = ({
   data

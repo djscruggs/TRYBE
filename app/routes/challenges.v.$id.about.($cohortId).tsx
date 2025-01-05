@@ -20,9 +20,10 @@ export const meta: MetaFunction = () => {
   ]
 }
 export default function ChallengeAbout (): JSX.Element {
-  const data = useRouteLoaderData<{ challenge: ChallengeSummary, membership: MemberChallenge, cohortId: number }>('routes/challenges.v.$id') as unknown as { challenge: ChallengeSummary, membership: MemberChallenge, cohortId: number }
+  const data = useRouteLoaderData<{ challenge: ChallengeSummary, membership: MemberChallenge, cohortId: number, loadingError: string }>('routes/challenges.v.$id') as unknown as { challenge: ChallengeSummary, membership: MemberChallenge, cohortId: number, loadingError: string }
   const { challenge } = data
   const { cohortId } = data
+  const { loadingError } = data
   const { currentUser } = useContext(CurrentUserContext)
   const navigate = useGatedNavigate()
   const revalidator = useRevalidator()
@@ -90,6 +91,9 @@ export default function ChallengeAbout (): JSX.Element {
   }
   if (!challenge) {
     return <div>Loading...</div>
+  }
+  if (loadingError) {
+    return <div>{loadingError}</div>
   }
   return (
     <div className='w-full mt-28'>
