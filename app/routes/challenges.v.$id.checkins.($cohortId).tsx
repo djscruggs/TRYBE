@@ -27,10 +27,16 @@ export default function MyCheckIns (): JSX.Element {
   if (!membership && challenge.userId !== currentUser?.id) {
     return <></>
   }
-  const isMember = Boolean(membership?.id ?? challenge?.userId === currentUser?.id)
   const fetchCheckIns = async (): Promise<void> => {
+    if (!currentUser && !membership?.userId && challenge.userId !== currentUser?.id) {
+      setCheckIns([])
+      setIsLoading(false)
+      return
+    }
+    const uid = membership?.userId ?? currentUser?.id
     setIsLoading(true)
-    const response = await axios.get(`/api/checkins/${challenge.id}/${currentUser?.id}`)
+    const url = `/api/checkins/${challenge.id}/${uid}`
+    const response = await axios.get(url)
     setCheckIns(response.data.checkIns as CheckIn[])
     setIsLoading(false)
   }
