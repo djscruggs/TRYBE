@@ -53,7 +53,8 @@ export const sendScheduledPosts = async (): Promise<number> => {
   await Promise.all(posts.map(async post => {
     if (post.challenge?.members) {
       await Promise.all(post.challenge?.members.map(async member => {
-        const postPath = pathToEmailUrl(`/challenges/v/${post.challengeId}/chat#featured-id-${post.id}`)
+        const cohortPath = member.cohortId ? `/${member.cohortId}` : ''
+        const postPath = pathToEmailUrl(`/challenges/v/${post.challengeId}/chat${cohortPath}#featured-id-${post.id}`)
         const postLink = generateUrl(postPath)
         const props = {
           to: member.user.email,
@@ -161,7 +162,8 @@ export const sendDayNumberPosts = async (): Promise<{ dayNumberPosts: number, da
   if (posts.length === 0) {
     // Send generic reminder email
     await Promise.all(Object.values(dayNumberHash).flat().map(async member => {
-      const checkinPath = pathToEmailUrl(`/challenges/v/${member.challenge.id}/checkins`)
+      const cohortPath = member.cohortId ? `/${member.cohortId}` : ''
+      const checkinPath = pathToEmailUrl(`/challenges/v/${member.challenge.id}/checkins${cohortPath}`)
       const props: CheckinReminderMailerProps = {
         to: member.user.email,
         dynamic_template_data: {
@@ -188,7 +190,8 @@ export const sendDayNumberPosts = async (): Promise<{ dayNumberPosts: number, da
       if (members) {
         await Promise.all(members.map(async member => {
           // const postLink = `${protocol}://${host}/challenges/v/${post.challengeId}/chat#featured-id-${post.id}`
-          const postPath = pathToEmailUrl(`/challenges/v/${post.challengeId}/chat#featured-id-${post.id}`)
+          const cohortPath = member.cohortId ? `/${member.cohortId}` : ''
+          const postPath = pathToEmailUrl(`/challenges/v/${post.challengeId}/chat#featured-id-${post.id}${cohortPath}`)
           const postLink = generateUrl(postPath)
           const props = {
             to: member.user.email,
