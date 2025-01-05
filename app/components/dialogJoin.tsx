@@ -14,13 +14,14 @@ import axios from 'axios'
 interface DeleteDialogProps {
   challenge: Challenge
   isOpen: boolean
+  cohortId?: number
   onConfirm: (event: any) => void
   onCancel?: (event: any) => void
   afterJoin?: (isMember: boolean, membership?: MemberChallenge) => void
 }
 
 export default function DialogJoin (props: DeleteDialogProps): JSX.Element {
-  const { challenge, isOpen, onCancel, afterJoin } = props
+  const { challenge, isOpen, onCancel, afterJoin, cohortId } = props
   const { currentUser } = useContext(CurrentUserContext)
   const localDateFormat = currentUser?.locale === 'en-US' ? 'M-dd-YYYY' : 'dd-M-YYYY'
   const localTimeFormat = currentUser?.locale === 'en-US' ? 'h:mm a' : 'h:mm'
@@ -52,12 +53,12 @@ export default function DialogJoin (props: DeleteDialogProps): JSX.Element {
   const validateForm = (): boolean => {
     let valid = true
     const newErrors = { startAt: '', notificationTime: '' }
-
-    if (!formData.startAt || formData.startAt < new Date()) {
-      newErrors.startAt = 'Start date must be in the future'
-      valid = false
+    if (!cohortId) {
+      if (!formData.startAt || formData.startAt < new Date()) {
+        newErrors.startAt = 'Start date must be in the future'
+        valid = false
+      }
     }
-
     if (!formData.notificationTime) {
       newErrors.notificationTime = 'Notification time is required'
       valid = false
@@ -90,6 +91,9 @@ export default function DialogJoin (props: DeleteDialogProps): JSX.Element {
     data.append('notificationHour', notificationHour.toString())
     data.append('notificationMinute', notificationMinute.toString())
     data.append('startAt', formData.startAt.toString())
+    if (cohortId) {
+      data.append('cohortId', cohortId.toString())
+    }
 
     // return // Commented out to allow the function to proceed
     const url = `/api/challenges/join-unjoin/${challenge.id as string | number}`
@@ -108,19 +112,22 @@ export default function DialogJoin (props: DeleteDialogProps): JSX.Element {
         <DialogBody>
           <div className='flex flex-col items-start'>
             <p>This challenge runs for {challenge.numDays} days. You will be reminded to check in every day according to your notification time.</p>
-          <label className='my-2'>What day to you want to start?</label>
-
+            {!cohortId &&
+              <>
+                <label className='my-2'>What day to you want to start?</label>
+                <DatePicker
+                  name='startAt'
+                  required={true}
+                  minDate={new Date()}
+                  dateFormat={localDateFormat}
+                  selected={formData.startAt ? new Date(formData.startAt) : null}
+                  onChange={(date: Date) => { selectDate(date) }}
+                  className={`p-1 border rounded-md pl-2 ${errors?.startAt ? 'border-red' : 'border-slate-gray-500'}`}
+                />
+              </>
+            }
+          <label className='my-2'>What time do you want to be reminded to check in?</label>
           <DatePicker
-            name='startAt'
-            required={true}
-            minDate={new Date()}
-            dateFormat={localDateFormat}
-            selected={formData.startAt ? new Date(formData.startAt) : null}
-            onChange={(date: Date) => { selectDate(date) }}
-            className={`p-1 border rounded-md pl-2 ${errors?.startAt ? 'border-red' : 'border-slate-gray-500'}`}
-            />
-            <label className='my-2'>What time do you want to be reminded to check in?</label>
-            <DatePicker
             name='notificationTime'
             required={true}
             minDate={new Date()}
@@ -131,7 +138,7 @@ export default function DialogJoin (props: DeleteDialogProps): JSX.Element {
             selected={formData.notificationTime ? new Date(formData.notificationTime) : null}
             onChange={(time: Date) => { selectNotificationTime(time) }}
             className={`p-1 border rounded-md pl-2 ${errors?.notificationTime ? 'border-red' : 'border-slate-gray-500'}`}
-            />
+          />
 
             </div>
         </DialogBody>

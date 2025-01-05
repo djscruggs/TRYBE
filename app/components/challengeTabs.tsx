@@ -11,14 +11,16 @@ interface ChallengeTabsProps {
   className?: string
   which?: string
   membership?: MemberChallenge
+  cohortId?: number
 }
 
 export default function ChallengeTabs (props: ChallengeTabsProps): JSX.Element {
   const { challenge, which } = props
   const { currentUser } = useContext(CurrentUserContext)
-  const [isMember, setIsMember] = useState(Boolean(props.membership?.id ?? (props.challenge.userId === currentUser?.id)))
+  const [isMember, setIsMember] = useState(Boolean(props.membership?.id ?? (challenge.type === 'SCHEDULED' && props.challenge.userId === currentUser?.id)))
   const gatedNavigate = useGatedNavigate()
   const [currentTab, setCurrentTab] = useState(which)
+  const [cohortId, setCohortId] = useState(props.cohortId ?? props.membership?.cohortId)
   const goTo = (path: string, which: string, gated: boolean = false): void => {
     if (!isMember) {
       if (path === '/chat' || path === '/checkins') {
@@ -32,8 +34,8 @@ export default function ChallengeTabs (props: ChallengeTabsProps): JSX.Element {
     setCurrentTab(which)
   }
   const addCohortId = (path: string): string => {
-    if (path === '/chat' && props.membership?.cohortId) {
-      path = path + '/' + props.membership.cohortId
+    if (cohortId) {
+      path = path + '/' + cohortId
     }
     return path
   }
@@ -42,14 +44,17 @@ export default function ChallengeTabs (props: ChallengeTabsProps): JSX.Element {
     setCurrentTab(which)
   }, [which])
   useEffect(() => {
-    setIsMember(Boolean(props.membership?.id ?? (props.challenge.userId === currentUser?.id)))
-  }, [props.membership, props.challenge.userId, currentUser?.id])
+    if (props.cohortId ?? props.membership?.cohortId) {
+      setCohortId(props.cohortId ?? props.membership?.cohortId)
+    }
+    setIsMember(Boolean(props.membership?.id ?? (challenge.type === 'SCHEDULED' && props.challenge.userId === currentUser?.id)))
+  }, [props.membership, props.challenge.userId, currentUser?.id, props.cohortId])
   return (
     <>
     <div className='relative text-lg py-2 flex items-center justify-center w-full gap-4'>
       <div className={`w-fit cursor-pointer border-b-2 border-red ${currentTab === 'about' ? 'border-red' : ' border-white  hover:border-grey'}`} onClick={() => { goTo(addCohortId('/about'), 'about') }}>About</div>
       <div className={`w-fit cursor-pointer border-b-2 border-red ${currentTab === 'program' ? 'border-red' : 'border-white  hover:border-grey '}`} onClick={() => { goTo('/program', 'program') }}>Program</div>
-      <div className={`w-fit ${isMember ? 'cursor-pointer' : 'cursor-not-allowed'} border-b-2 border-red ${currentTab === 'progress' ? 'border-red' : 'border-white  hover:border-grey '}`} onClick={() => { goTo(addCohortId('/checkins'), 'progress') }}>Progress</div>
+      <div className={`w-fit ${isMember ? 'cursor-pointer' : 'cursor-not-allowed'} border-b-2 border-red ${currentTab === 'progress' ? 'border-red' : 'border-white  hover:border-grey '}`} onClick={() => { goTo(addCohortId('/checkins'), 'progress', true) }}>Progress</div>
       {(challenge.type === 'SCHEDULED' || challenge?._count?.members > 1) && <div className={`w-fit ${isMember ? 'cursor-pointer' : 'cursor-not-allowed'} border-b-2 border-red ${currentTab === 'chat' ? 'border-red' : 'border-white  hover:border-grey'}`} onClick={() => { goTo(addCohortId('/chat'), 'chat', true) }}>Chat</div>}
       <div className=' float-right -mt-1'>
         {isMember && <CheckInButton challenge={challenge} size='xs' />}
@@ -60,7 +65,7 @@ export default function ChallengeTabs (props: ChallengeTabsProps): JSX.Element {
       <DialogShare
         isOpen={sharing}
         prompt='Copy this link to invite your friends'
-        link={getShortUrl(challenge, props.membership)}
+        link={getShortUrl(challenge, props.membership, cohortId)}
         onClose={() => { setSharing(false) }}
       />
 

@@ -30,10 +30,13 @@ export function isExpired (challenge: Challenge | ChallengeSummary, memberChalle
   return false
 }
 
-export function getShortUrl (challenge: Challenge | ChallengeSummary, memberChallenge?: MemberChallenge): string {
+export function getShortUrl (challenge: Challenge | ChallengeSummary, memberChallenge?: MemberChallenge, cohortId?: number): string {
   const url = `${window.location.origin}/s/c${challenge.id}`
   if (memberChallenge?.cohortId) {
     return `${url}-${memberChallenge.cohortId}`
+  }
+  if (cohortId) {
+    return `${url}-${cohortId}`
   }
   return url
 }

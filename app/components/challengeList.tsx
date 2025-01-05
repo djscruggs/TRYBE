@@ -13,14 +13,9 @@ interface ChallengeListProps {
 }
 export default function ChallengeList ({ challenges, memberships, isLoading }: ChallengeListProps): JSX.Element {
   const { currentUser } = useContext(CurrentUserContext)
-  let filteredChallenges = challenges
-  // show only scheduled challenges if the user is not an admin
-  if (currentUser?.role !== 'ADMIN') {
-    filteredChallenges = challenges.filter(c => c.type === 'SCHEDULED')
-  }
   // Merge challenges with those in memberships
   const mergedChallenges = [
-    ...filteredChallenges,
+    ...challenges,
     ...memberships.map((membership: MemberChallenge) => membership.challenge)
   ].reduce<ChallengeSummary[]>((acc, challenge) => {
     if (!acc.some((c) => c.id === challenge.id)) {

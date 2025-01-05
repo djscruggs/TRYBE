@@ -189,7 +189,6 @@ model Cohort {
   members MemberChallenge[]
   comments Comment[]
   checkIns CheckIn[]
-  dayNumber Int @default(1)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   startAt DateTime?

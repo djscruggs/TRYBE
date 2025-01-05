@@ -1,4 +1,10 @@
-import { joinChallenge, unjoinChallenge, loadChallenge, createCohort } from '~/models/challenge.server'
+import {
+  joinChallenge,
+  unjoinChallenge,
+  loadChallenge,
+  createCohort,
+  getLatestDayNumFromCohort
+} from '~/models/challenge.server'
 import { requireCurrentUser } from '~/models/auth.server'
 import { loadUser } from '~/models/user.server'
 import { json, type LoaderFunction, type ActionFunctionArgs } from '@remix-run/node'
@@ -38,6 +44,7 @@ export async function action (args: ActionFunctionArgs): Promise<Response> {
         const notificationHour = formData.get('notificationHour') as string
         const notificationMinute = formData.get('notificationMinute') as string
         const startAt = formData.get('startAt') as string
+
         const startAtDate = startAt ? new Date(startAt.toString()) : undefined
         const notificationHourNumber = notificationHour != null ? Number(notificationHour.toString()) : undefined
         const notificationMinuteNumber = notificationMinute != null ? Number(notificationMinute.toString()) : undefined

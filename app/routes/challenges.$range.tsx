@@ -86,14 +86,13 @@ export default function ChallengesIndex (): JSX.Element {
                   {cat}
                 </div>
               ))}
-              {currentUser?.role === 'ADMIN' &&
               <div className='flex items-center justify-start'>
                 <span className='text-grey mr-2'>|</span>
                 <div className={`w-fit p-1 px-2 rounded-md cursor-pointer ${selfGuided ? 'bg-gray-400' : 'text-black bg-gray-100'}`} onClick={() => { setSelfGuided(prev => !prev) }}>
                   Self-Guided
                 </div>
               </div>
-              }
+
           </div>
           {loading &&
             <div className='flex justify-center items-start h-screen mt-10'>

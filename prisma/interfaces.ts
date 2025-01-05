@@ -170,7 +170,6 @@ export interface Cohort {
   members?: MemberChallenge[];
   comments?: Comment[];
   checkIns?: CheckIn[];
-  dayNumber: number;
   createdAt: Date;
   updatedAt: Date;
   startAt: Date | null;

@@ -16,7 +16,14 @@ import { LiaUserFriendsSolid } from 'react-icons/lia'
 import LinkRenderer from './linkRenderer'
 import { toast } from 'react-hot-toast'
 import { HiOutlineClipboardCopy } from 'react-icons/hi'
-export default function ChallengeOverview ({ challenge, memberChallenge }: { challenge: ChallengeSummary, memberChallenge?: MemberChallenge }): JSX.Element {
+interface ChallengeOverviewProps {
+  challenge: ChallengeSummary
+  memberChallenge?: MemberChallenge
+  cohortId?: number
+}
+export default function ChallengeOverview (props: ChallengeOverviewProps): JSX.Element {
+  const { challenge, memberChallenge } = props
+  const [cohortId, setCohortId] = useState(props.cohortId)
   const expired = challenge?.endAt ? isPast(new Date(challenge.endAt)) : false
   const [started, setStarted] = useState(hasStarted(challenge, memberChallenge))
   const { currentUser } = useContext(CurrentUserContext)
@@ -162,7 +169,7 @@ export default function ChallengeOverview ({ challenge, memberChallenge }: { cha
         }
          <div className='flex justify-center items-center mt-4 w-full'>
               <div className='text-xs'>Copy link to invite friends</div>
-              <div className='text-lessblack ml-1 text-sm md:text-md  border p-2 rounded-md text-left max-w-[250px]'>{getShortUrl(challenge, membership)}</div>
+              <div className='text-lessblack ml-1 text-sm md:text-md  border p-2 rounded-md text-left max-w-[250px]'>{getShortUrl(challenge, membership, cohortId)}</div>
               <HiOutlineClipboardCopy onClick={copyLink} className='h-6 w-6 cursor-pointer ml-1' />
               <div onClick={copyLink} className='ml-1 text-blue underline cursor-pointer text-xs md:text-sm'>copy</div>
             </div>

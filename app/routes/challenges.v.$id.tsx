@@ -13,6 +13,7 @@ interface ViewChallengeData {
   challenge: ChallengeSummary
   membership?: MemberChallenge | undefined
   loadingError?: string
+  cohortId?: number
 }
 interface ChallengeSummaryWithCounts extends ChallengeSummary {
   _count: {
@@ -29,6 +30,7 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs): Promise<
     return currentUser
   }
   const { params } = args
+  const cohortId = params.cohortId ? Number(params.cohortId) : undefined
   if (!params.id) {
     return null
   }
@@ -51,7 +53,7 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs): Promise<
       }
     }) as MemberChallenge | null
   }
-  return { challenge, membership: membership ?? undefined }
+  return { challenge, membership: membership ?? undefined, cohortId }
 }
 export const meta: MetaFunction<typeof loader> = ({
   data
@@ -100,7 +102,7 @@ export default function ViewChallenge (): JSX.Element {
         <div className={`fixed top-0 z-10 bg-white w-full max-w-lg ${which === 'chat' ? 'md:max-w-2xl' : ''} bg-opacity-80 rounded-br-lg`}>
           <ChallengeHeader challenge={challenge as Challenge} size='small' />
           {!isEdit &&
-            <ChallengeTabs challenge={challenge as ChallengeSummary} which={which} membership={membership} />
+            <ChallengeTabs challenge={challenge as ChallengeSummary} which={which} membership={membership} cohortId={data.cohortId} />
           }
         </div>
 

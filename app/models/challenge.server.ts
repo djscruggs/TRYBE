@@ -463,6 +463,10 @@ export const joinChallenge = async (userId: number, challengeId: number, startAt
   } else {
     startAt = challenge.startAt ? challenge.startAt : undefined
   }
+  let dayNum = 1
+  if (cohortId) {
+    dayNum = await getLatestDayNumFromCohort(cohortId)
+  }
   const data: Prisma.MemberChallengeCreateInput = {
     user: {
       connect: { id: userId }
@@ -472,7 +476,8 @@ export const joinChallenge = async (userId: number, challengeId: number, startAt
     },
     startAt,
     notificationHour,
-    notificationMinute
+    notificationMinute,
+    dayNumber: dayNum
   }
   if (cohortId) {
     data.cohort = {
@@ -498,6 +503,24 @@ export const createCohort = async (challengeId: number): Promise<Cohort> => {
       challengeId
     }
   }) as unknown as Cohort
+}
+const getLatestDayNumFromCohort = async (cohortId: number): Promise<number> => {
+  const cohort = await prisma.cohort.findUnique({
+    where: { id: cohortId },
+    include: {
+      members: true
+    }
+  })
+  if (!cohort || cohort.members.length === 0) {
+    return 1
+  }
+
+  // Find the member with the highest dayNum
+  const highestDayNum = cohort.members.reduce((max, member) => {
+    return member.dayNumber > max ? member.dayNumber : max
+  }, 0)
+
+  return highestDayNum
 }
 export async function fetchCheckIns ({ userId, challengeId, orderBy = 'desc' }: { userId?: number, challengeId?: number, orderBy?: 'asc' | 'desc' }): Promise<CheckIn[]> {
   const where: any = {}

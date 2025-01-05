@@ -8,7 +8,7 @@ import DialogJoin from '~/components/dialogJoin'
 import DialogShare from '~/components/dialogShare'
 import axios from 'axios'
 import Spinner from '@material-tailwind/react/components/Spinner'
-import { getShortUrl, isExpired } from '~/utils/helpers/challenge'
+import { getShortUrl } from '~/utils/helpers/challenge'
 import useGatedNavigate from '~/hooks/useGatedNavigate'
 export const meta: MetaFunction = () => {
   return [
@@ -20,8 +20,9 @@ export const meta: MetaFunction = () => {
   ]
 }
 export default function ChallengeAbout (): JSX.Element {
-  const data = useRouteLoaderData<{ challenge: ChallengeSummary, membership: MemberChallenge }>('routes/challenges.v.$id') as unknown as { challenge: ChallengeSummary, membership: MemberChallenge }
+  const data = useRouteLoaderData<{ challenge: ChallengeSummary, membership: MemberChallenge, cohortId: number }>('routes/challenges.v.$id') as unknown as { challenge: ChallengeSummary, membership: MemberChallenge, cohortId: number }
   const { challenge } = data
+  const { cohortId } = data
   const { currentUser } = useContext(CurrentUserContext)
   const navigate = useGatedNavigate()
   const revalidator = useRevalidator()
@@ -93,12 +94,12 @@ export default function ChallengeAbout (): JSX.Element {
           isOpen={true}
           title='Share this Challenge'
           prompt='Here is a link to invite your friends'
-          link={getShortUrl(challenge, membership)}
+          link={getShortUrl(challenge, membership, cohortId)}
           onClose={() => { setInvite(null) }}
         />
 
       }
-      <ChallengeOverview challenge={challenge} memberChallenge={membership}/>
+      <ChallengeOverview challenge={challenge} memberChallenge={membership} cohortId={cohortId}/>
       <div className='max-w-lg text-center rounded-lg p-2'>
       {currentUser?.id === challenge.userId && challenge.type === 'SCHEDULED' && (
         <p className='text-red mt-4'>As the creator of this challenge, you are automatically a member.</p>
@@ -120,6 +121,7 @@ export default function ChallengeAbout (): JSX.Element {
 
           <DialogJoin
             isOpen={showJoin}
+            cohortId={cohortId}
             challenge={challenge as Challenge}
             onConfirm={toggleJoin}
             onCancel={() => { setShowJoin(false) }}
