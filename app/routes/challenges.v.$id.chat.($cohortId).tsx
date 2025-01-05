@@ -62,6 +62,7 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
   const checkIns = await prisma.checkIn.findMany({
     where: {
       challengeId: Number(params.id),
+      cohortId: params.cohortId ? Number(params.cohortId) : null,
       OR: [
         { body: { not: null } },
         { imageMeta: { not: Prisma.JsonNull } },
@@ -158,8 +159,6 @@ export default function ViewChallengeChat (): JSX.Element {
   if (!groupedData) {
     return <p>No data.</p>
   }
-  const isMember = Boolean(membership?.id || membership?.userId === currentUser?.id)
-  const navigate = useNavigate()
   // have to resort the groupedData by date because the data from loader is not guaranteed to be in order
   const postRefs = useRef<Record<string, HTMLDivElement | null>>({})
   const chatFormRef = useRef<HTMLDivElement>(null)

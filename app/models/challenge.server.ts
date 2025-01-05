@@ -421,7 +421,17 @@ export const fetchChallengeMembers = async (cId: string | number): Promise<Membe
   // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
   return await prisma.memberChallenge.findMany(params) as unknown as MemberChallenge[]
 }
-export const joinChallenge = async (userId: number, challengeId: number, startAt?: Date, notificationHour?: number, notificationMinute?: number, cohortId?: number): Promise<Prisma.MemberChallenge> => {
+interface JoinChallengeParams {
+  userId: number
+  challengeId: number
+  startAt?: Date
+  notificationHour?: number
+  notificationMinute?: number
+  cohortId?: number
+}
+export const joinChallenge = async (params: JoinChallengeParams): Promise<Prisma.MemberChallenge> => {
+  const { userId, challengeId, startAt, notificationHour, notificationMinute, cohortId } = params
+
   // Check if the member challenge already exists
   const existingMemberChallenge = await prisma.memberChallenge.findFirst({
     where: {
@@ -441,15 +451,17 @@ export const joinChallenge = async (userId: number, challengeId: number, startAt
   if (existingMemberChallenge) {
     return existingMemberChallenge
   }
-  // otehrwise, create a new member challenge
+
+  // Otherwise, create a new member challenge
   const challenge = await loadChallenge(challengeId)
 
   if (!challenge) {
     throw new Error('Challenge not found')
   }
 
+  let startAtDate = startAt
   if (challenge.type === 'SELF_LED') {
-    if (startAt && isNaN(startAt.getTime())) {
+    if (startAtDate && isNaN(startAtDate.getTime())) {
       throw new Error('Invalid date: startAt must be a valid date string')
     }
 
@@ -461,12 +473,14 @@ export const joinChallenge = async (userId: number, challengeId: number, startAt
       throw new Error('Invalid time: notificationMinute must be between 0 and 59')
     }
   } else {
-    startAt = challenge.startAt ? challenge.startAt : undefined
+    startAtDate = challenge.startAt ? challenge.startAt : undefined
   }
+
   let dayNum = 1
   if (cohortId) {
     dayNum = await getLatestDayNumFromCohort(cohortId)
   }
+
   const data: Prisma.MemberChallengeCreateInput = {
     user: {
       connect: { id: userId }
@@ -474,11 +488,12 @@ export const joinChallenge = async (userId: number, challengeId: number, startAt
     challenge: {
       connect: { id: challengeId }
     },
-    startAt,
+    startAt: startAtDate,
     notificationHour,
     notificationMinute,
     dayNumber: dayNum
   }
+
   if (cohortId) {
     data.cohort = {
       connect: { id: cohortId }

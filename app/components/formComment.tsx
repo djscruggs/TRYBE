@@ -15,6 +15,7 @@ import VideoPreview from './videoPreview'
 
 interface FormCommentProps {
   challengeId?: number
+  cohortId?: number
   postId?: number
   replyToId?: number
   threadId?: number

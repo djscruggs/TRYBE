@@ -38,12 +38,14 @@ export async function action (args: ActionFunctionArgs): Promise<prisma.checkIn>
     }
   })
   let canCheckIn = !!membership
-  if (challenge.userId === currentUser.id) {
+  if (challenge.userId === currentUser.id && !membership) {
     // if it's the creator of the challenge, create a membership on the fly
     membership = await joinChallenge(currentUser.id, Number(challenge.id))
     canCheckIn = true
   }
+
   if (canCheckIn) {
+    const cohortId = membership?.cohortId
     let result
     if (rawData.get('checkinId')) {
       result = await prisma.checkIn.update({
@@ -51,7 +53,8 @@ export async function action (args: ActionFunctionArgs): Promise<prisma.checkIn>
           id: Number(rawData.get('checkinId'))
         },
         data: {
-          body
+          body,
+          cohortId: cohortId ?? null
         }
       })
     } else {
