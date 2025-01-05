@@ -48,12 +48,15 @@ export default function CardChallengeHome ({ challenge, isMember, isPreview }: C
     navigate(url)
   }
   let challengeLength = ''
-  if (challenge.frequency === 'WEEKLY') {
-    challengeLength = differenceInWeeks(challenge.endAt ?? new Date('1970-01-01'), challenge.startAt ?? new Date('1970-01-01')) + 1 + ' wks'
+  if (challenge.type === 'SCHEDULED') {
+    if (challenge.frequency === 'WEEKLY') {
+      challengeLength = differenceInWeeks(challenge.endAt ?? new Date('1970-01-01'), challenge.startAt ?? new Date('1970-01-01')) + 1 + ' wks'
+    } else {
+      challengeLength = differenceInCalendarDays(challenge.endAt ?? new Date('1970-01-01'), challenge.startAt ?? new Date('1970-01-01')) + 1 + ' days'
+    }
   } else {
-    challengeLength = differenceInCalendarDays(challenge.endAt ?? new Date('1970-01-01'), challenge.startAt ?? new Date('1970-01-01')) + 1 + ' days'
+    challengeLength = challenge.numDays + ' days'
   }
-
   const howLongToStart = (): string => {
     if (!challenge.startAt || challenge.type === 'SELF_LED') {
       return ''
