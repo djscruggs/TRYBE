@@ -8,6 +8,7 @@ import { generateUrl } from '~/utils/helpers'
 import { loadCheckIn, loadChallengeSummary } from '~/models/challenge.server'
 import { loadPost } from '~/models/post.server'
 import { loadThread } from '~/models/thread.server'
+import { prisma } from '~/models/prisma.server'
 
 export const action: ActionFunction = async (args) => {
   const currentUser = await requireCurrentUser(args)
@@ -48,6 +49,18 @@ export const action: ActionFunction = async (args) => {
     }
     if (!data.challenge && !data.post && !data.thread && !data.checkIn) {
       return json({ message: 'Post id or callenge id or thread id or checkin id is required' }, 400)
+    }
+    // there might be a bug when a challenge id is submitted but cohort id is no, so do a quick search for the memberchallenge that might have it
+    if (data.challenge && !data.cohort) {
+      const memberChallenge = await prisma.memberChallenge.findFirst({
+        where: {
+          challengeId: data.challenge.id,
+          userId: currentUser?.id
+        }
+      })
+      if (memberChallenge?.cohortId) {
+        data.cohort = { connect: { id: memberChallenge.cohortId } }
+      }
     }
   }
 
