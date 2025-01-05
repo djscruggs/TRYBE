@@ -26,7 +26,7 @@ export default function ChallengeOverview ({ challenge, memberChallenge }: { cha
     month: 'short',
     day: 'numeric'
   }
-  const [membership, setMembership] = useState<MemberChallenge | null | undefined>(memberChallenge)
+  const [membership, setMembership] = useState<MemberChallenge | undefined>(memberChallenge)
   const formatTime = (hour: number, minute: number): string => {
     // Create a Date object with the given hour and minute in GMT
     const date = new Date(Date.UTC(1970, 0, 1, hour, minute))
@@ -44,6 +44,7 @@ export default function ChallengeOverview ({ challenge, memberChallenge }: { cha
   const [editingStartAt, setEditingStartAt] = useState(false)
 
   useEffect(() => {
+    console.log('memberChallenge', memberChallenge)
     setMembership(memberChallenge)
     setStarted(hasStarted(challenge, memberChallenge))
   }, [memberChallenge, challenge, membership])
@@ -53,7 +54,7 @@ export default function ChallengeOverview ({ challenge, memberChallenge }: { cha
     setCheckIns(response.data.checkIns as CheckIn[])
   }
   const copyLink = async (): Promise<void> => {
-    await navigator.clipboard.writeText(getShortUrl(challenge))
+    await navigator.clipboard.writeText(getShortUrl(challenge, membership))
     toast.success('🎉 Link copied to clipboard!')
   }
   const parsedDescription = textToJSX(challenge.description ?? '')
@@ -161,15 +162,14 @@ export default function ChallengeOverview ({ challenge, memberChallenge }: { cha
               </div>
             }
 
-            <div className='flex justify-center items-center mt-4 w-full'>
+          </>
+        }
+         <div className='flex justify-center items-center mt-4 w-full'>
               <div className='text-xs'>Copy link to invite friends</div>
-              <div className='text-lessblack ml-1 text-sm md:text-md  border p-2 rounded-md text-left max-w-[250px]'>{getShortUrl(challenge)}</div>
+              <div className='text-lessblack ml-1 text-sm md:text-md  border p-2 rounded-md text-left max-w-[250px]'>{getShortUrl(challenge, membership)}</div>
               <HiOutlineClipboardCopy onClick={copyLink} className='h-6 w-6 cursor-pointer ml-1' />
               <div onClick={copyLink} className='ml-1 text-blue underline cursor-pointer text-xs md:text-sm'>copy</div>
             </div>
-
-          </>
-        }
 
     </div>
   )
