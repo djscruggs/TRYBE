@@ -82,7 +82,9 @@ export default function Program (): JSX.Element {
           }
         </div>
       }
-      <ChallengeSchedule challenge={challenge} posts={posts} key={challenge.id} isSchedule={false} membership={membership} />
+      <div className='flex flex-col justify-center mt-20   w-full max-w-lg md:max-w-xl'>
+        <ChallengeSchedule challenge={challenge} posts={posts} key={challenge.id} isSchedule={false} membership={membership} />
+      </div>
     </>
   )
 }

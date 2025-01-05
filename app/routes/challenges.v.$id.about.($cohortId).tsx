@@ -91,7 +91,7 @@ export default function ChallengeAbout (): JSX.Element {
     return <div>Loading...</div>
   }
   return (
-    <div className='w-full'>
+    <div className='w-full mt-28'>
       {invite &&
         <DialogShare
           isOpen={true}
