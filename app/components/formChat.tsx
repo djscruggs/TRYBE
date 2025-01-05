@@ -23,6 +23,7 @@ interface FormChatProps {
   comment?: Comment
   prompt?: string
   autoFocus?: boolean
+  cohortId?: number
   inputRef?: React.RefObject<HTMLTextAreaElement | HTMLInputElement | HTMLDivElement>
 }
 
@@ -149,6 +150,9 @@ export default function FormChat (props: FormChatProps): JSX.Element {
 
       if (id) {
         formData.set('id', String(id))
+      }
+      if (props.cohortId) {
+        formData.set('cohortId', String(props.cohortId))
       }
       if (state.image) {
         formData.set('image', state.image)

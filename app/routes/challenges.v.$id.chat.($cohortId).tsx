@@ -345,6 +345,7 @@ export default function ViewChallengeChat (): JSX.Element {
             onPending={onPendingComment}
             onError={onSaveCommentError}
             objectId={challenge.id}
+            cohortId={membership?.cohortId}
             type={'challenge'}
             autoFocus={!highlightedObject && !showfeaturedPost}
             inputRef={chatFormRef}

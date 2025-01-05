@@ -19,6 +19,7 @@ export function CheckInButton ({ challenge, membership, afterCheckIn, size, labe
   if (!challenge?.id) {
     throw new Error('Challenge object with id is required')
   }
+  const cohortId = membership?.cohortId
   const isDraft = challenge.status === 'DRAFT'
   const expired = isExpired(challenge, membership)
   const started = hasStarted(challenge, membership)
@@ -43,7 +44,7 @@ export function CheckInButton ({ challenge, membership, afterCheckIn, size, labe
         </button>
       </div>
       {showForm &&
-        <DialogCheckIn challengeId={challenge.id} onCancel={() => { setShowForm(false) }} afterCheckIn={handleAfterCheckIn} isOpen={showForm} />
+        <DialogCheckIn challengeId={challenge.id} cohortId={cohortId} onCancel={() => { setShowForm(false) }} afterCheckIn={handleAfterCheckIn} isOpen={showForm} />
       }
     </>
   )
@@ -52,10 +53,11 @@ export function CheckInButton ({ challenge, membership, afterCheckIn, size, labe
 interface CheckinProps {
   challengeId: number
   isOpen: boolean
+  cohortId?: number
   onCancel: () => void
   afterCheckIn: (checkIn: CheckIn) => void
 }
-function DialogCheckIn ({ challengeId, onCancel, afterCheckIn, isOpen }: CheckinProps): JSX.Element {
+function DialogCheckIn ({ challengeId, onCancel, afterCheckIn, isOpen, cohortId }: CheckinProps): JSX.Element {
   const [open, setOpen] = useState<boolean>(isOpen)
   const handleOpen = (): void => {
     setOpen(true)
@@ -63,7 +65,7 @@ function DialogCheckIn ({ challengeId, onCancel, afterCheckIn, isOpen }: Checkin
   return (
     <Dialog open={open} handler={handleOpen} size='xs'>
       <DialogBody>
-        <FormCheckIn challengeId={challengeId} onCancel={onCancel} afterCheckIn={afterCheckIn} />
+        <FormCheckIn challengeId={challengeId} cohortId={cohortId} onCancel={onCancel} afterCheckIn={afterCheckIn} />
       </DialogBody>
     </Dialog>
   )

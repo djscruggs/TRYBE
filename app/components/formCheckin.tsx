@@ -18,6 +18,7 @@ interface FormCheckinProps {
   afterCheckIn?: (checkIn: CheckIn) => void
   onCancel?: () => void
   challengeId: number
+  cohortId?: number
   saveLabel?: string
 }
 
@@ -103,6 +104,9 @@ export default function FormCheckIn (props: FormCheckinProps): JSX.Element {
         formData.append('checkinId', checkIn.id.toString())
       }
       formData.append('challengeId', challengeId.toString())
+      if (props.cohortId) {
+        formData.append('cohortId', props.cohortId.toString())
+      }
       if (image) {
         formData.append('image', image)
       }

@@ -43,6 +43,9 @@ export const action: ActionFunction = async (args) => {
     if (formData.checkInId) {
       data.checkIn = { connect: { id: Number(formData.checkInId) } }
     }
+    if (formData.cohortId) {
+      data.cohort = { connect: { id: Number(formData.cohortId) } }
+    }
     if (!data.challenge && !data.post && !data.thread && !data.checkIn) {
       return json({ message: 'Post id or callenge id or thread id or checkin id is required' }, 400)
     }
