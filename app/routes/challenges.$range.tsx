@@ -78,8 +78,7 @@ export default function ChallengesIndex (): JSX.Element {
   return (
         <div className="w-full pl-2">
             <MyChallenges range='active,upcoming' scrollToBrowse={scrollToBrowse} />
-
-          <div ref={browseRef} className='text-red font-bold text-lg mb-2'>Browse Challenges</div>
+            <div ref={browseRef} className='text-red font-bold text-lg mb-2'>Browse Challenges</div>
             <div className='space-x-4 flex items-center max-w-lg w-full justify-start text-xs md:text-sm'>
               {categories.map((cat: string) => (
                 <div
@@ -96,22 +95,19 @@ export default function ChallengesIndex (): JSX.Element {
                   Self-Guided
                 </div>
               </div>
-
-          </div>
-          {loadingUpcoming &&
-            <div className='flex justify-center items-start h-screen mt-0'>
-
-              <div className='flex flex-col w-full'>
-                <CardChallengeHomeSkeleton />
-                <CardChallengeHomeSkeleton />
-                <CardChallengeHomeSkeleton />
-              </div>
             </div>
-          }
+            {loadingUpcoming &&
+              <div className='flex justify-center items-start h-screen mt-0'>
+                <div className='flex flex-col w-full'>
+                  <CardChallengeHomeSkeleton />
+                  <CardChallengeHomeSkeleton />
+                  <CardChallengeHomeSkeleton />
+                </div>
+              </div>
+            }
           {!loadingUpcoming &&
             <>
-
-              {!loadingUpcoming && upcomingChallenges.length === 0 &&
+              {upcomingChallenges.length === 0 &&
                 <p className='text-left text-gray-500 pt-2'>No {selfGuided ? 'self-guided' : 'scheduled'} challenges in this category.</p>
               }
               <div className="flex flex-col items-center max-w-lg w-full mt-4">
