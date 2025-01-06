@@ -16,25 +16,31 @@ export default function MyChallenges (props: MyChallengesProps): JSX.Element {
   const { range, scrollToBrowse, centered } = props
   const [status, setStatus] = useState(range ?? 'active')
   const [loading, setLoading] = useState(true)
+  const [loadingError, setLoadingError] = useState<string | null>(null)
   const [myChallenges, setMyChallenges] = useState<ChallengeSummary[]>([])
   const [memberships, setMemberships] = useState<MemberChallenge[]>([])
   const { currentUser } = useContext(CurrentUserContext)
   const gatedNavigate = useGatedNavigate()
   const loadData = async (): Promise<void> => {
     setLoading(true)
-    const url = `/api/challenges/${status}`
-    const response = await axios.get(url)
+    try {
+      const url = `/api/challenges/${status}`
+      const response = await axios.get(url)
 
-    const allChallenges = response.data.challenges as ChallengeSummary[]
-    const userMemberships = response.data.memberships as MemberChallenge[]
-    // Filter challenges where the user is a member or owner
-    const userChallenges = allChallenges.filter(challenge =>
-      userMemberships.some(membership => membership.challengeId === challenge.id) ||
-      challenge.userId === currentUser?.id
-    )
-    setMyChallenges(userChallenges)
-    setMemberships(userMemberships)
-    setLoading(false)
+      const allChallenges = response.data.challenges as ChallengeSummary[]
+      const userMemberships = response.data.memberships as MemberChallenge[]
+      // Filter challenges where the user is a member or owner
+      const userChallenges = allChallenges.filter(challenge =>
+        userMemberships.some(membership => membership.challengeId === challenge.id) ||
+        challenge.userId === currentUser?.id
+      )
+      setMyChallenges(userChallenges)
+      setMemberships(userMemberships)
+    } catch (error) {
+      setLoadingError(error as string)
+    } finally {
+      setLoading(false)
+    }
   }
   useEffect(() => {
     void loadData()
@@ -43,6 +49,7 @@ export default function MyChallenges (props: MyChallengesProps): JSX.Element {
     <div className={`mb-8 ${centered ? 'flex-col justify-center items-center' : ''}`}>
       <div className={`text-lg w-full relative ${centered ? 'text-center' : ''}`}>
         <div className='text-red cursor-pointer font-bold'>My Challenges</div>
+        {loadingError && <div className='text-red'>{loadingError}</div>}
           {/* {currentUser &&
             <div className={`absolute right-2 text-xs text-gray-500 underline cursor-pointer ${status === 'archived' ? 'text-red' : ''}`} onClick={() => { handleStatusChange('archived') }}>Archived</div>
           } */}
