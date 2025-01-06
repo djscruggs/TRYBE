@@ -1,4 +1,4 @@
-import { type LoaderFunction, type LoaderFunctionArgs, redirect, type MetaFunction } from '@remix-run/node'
+import { type LoaderFunction, type LoaderFunctionArgs, redirect, type MetaFunction, type ActionFunction, type ActionFunctionArgs } from '@remix-run/node'
 import { getAuth } from '@clerk/remix/ssr.server'
 import { useState, useEffect } from 'react'
 import { WelcomePage } from '~/components/welcomepage'
@@ -10,6 +10,11 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
   if (userId) {
     return redirect('/challenges')
   }
+  return null
+}
+
+// TODO: remove this once sentry error is fixed
+export const action: ActionFunction = async (args: ActionFunctionArgs) => {
   return null
 }
 
