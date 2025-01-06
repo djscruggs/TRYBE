@@ -24,10 +24,12 @@ export const loader: LoaderFunction = async (args) => {
       challenges = await fetchChallengeSummaries({ range, category, type }) as { error?: string }
     } else {
       if (range === 'all') {
-        error = 'Range `all` called by non-admin user, returning upcoming'
+        error = 'Range `all` called by non-admin user, returning upcoming, active'
         console.error(error)
+        challenges = await fetchChallengeSummaries({ range: 'upcoming,active', category, type }) as { error?: string }
+      } else {
+        challenges = await fetchChallengeSummaries({ range, category, type }) as { error?: string }
       }
-      challenges = await fetchChallengeSummaries({ range: 'upcoming', category, type }) as { error?: string }
     }
   }
 

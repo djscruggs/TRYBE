@@ -194,7 +194,8 @@ export const fetchChallengeSummaries = async ({
     }
     console.log('RANGE', range)
     switch (range) {
-      case 'active,active': {
+      case 'active,upcoming':
+      case 'upcoming,active': {
         where.push({ OR: [upcomingCondition, activeCondition] })
         break
       }
