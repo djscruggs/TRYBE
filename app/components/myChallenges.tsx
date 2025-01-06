@@ -5,6 +5,7 @@ import { type ChallengeSummary, type MemberChallenge } from '~/utils/types'
 import { useNavigate } from '@remix-run/react'
 import { CurrentUserContext } from '~/utils/CurrentUserContext'
 import useGatedNavigate from '~/hooks/useGatedNavigate'
+import { CardChallengeHomeSkeleton } from './cardChallengeHome'
 
 interface MyChallengesProps {
   range: string
@@ -54,6 +55,11 @@ export default function MyChallenges (props: MyChallengesProps): JSX.Element {
           {/* {currentUser &&
             <div className={`absolute right-2 text-xs text-gray-500 underline cursor-pointer ${status === 'archived' ? 'text-red' : ''}`} onClick={() => { handleStatusChange('archived') }}>Archived</div>
           } */}
+          {loading &&
+           <div className='flex justify-center items-start h-screen mt-0'>
+               <CardChallengeHomeSkeleton />
+            </div>
+          }
         </div>
         <div className="flex flex-col rounded-md max-w-lg w-full">
           {!loading && myChallenges.length === 0 && memberships.length === 0

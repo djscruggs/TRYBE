@@ -14,7 +14,7 @@ export default function ChallengesIndex (): JSX.Element {
   const [upcomingChallenges, setUpcomingChallenges] = useState<ChallengeSummary[]>([])
   const params = useParams()
   const [status, setStatus] = useState(params.range ?? 'active')
-  const [loading, setLoading] = useState(true)
+  const [loadingUpcoming, setLoadingUpcoming] = useState(true)
   const navigate = useNavigate()
   const [memberships, setMemberships] = useState<MemberChallenge[]>([])
   // variable name matches the way it's used in the db
@@ -30,7 +30,7 @@ export default function ChallengesIndex (): JSX.Element {
   }
 
   const loadUpcomingChallenges = async (): Promise<void> => {
-    setLoading(true)
+    setLoadingUpcoming(true)
     try {
       let url = '/api/challenges/upcoming,active'
       if (status === 'all') {
@@ -54,7 +54,7 @@ export default function ChallengesIndex (): JSX.Element {
     } catch (error) {
       console.error(error)
     } finally {
-      setLoading(false)
+      setLoadingUpcoming(false)
     }
   }
   const [triggerRender, setTriggerRender] = useState(1)
@@ -77,12 +77,7 @@ export default function ChallengesIndex (): JSX.Element {
   const categories = ['Meditation', 'Journal', 'Creativity', 'Health']
   return (
         <div className="w-full pl-2">
-          {loading &&
-            <div className='flex justify-center items-start h-screen mt-0'>
-               <CardChallengeHomeSkeleton />
-            </div>
-          }
-          <MyChallenges range='active,upcoming' scrollToBrowse={scrollToBrowse} />
+            <MyChallenges range='active,upcoming' scrollToBrowse={scrollToBrowse} />
 
           <div ref={browseRef} className='text-red font-bold text-lg mb-2'>Browse Challenges</div>
             <div className='space-x-4 flex items-center max-w-lg w-full justify-start text-xs md:text-sm'>
@@ -103,7 +98,7 @@ export default function ChallengesIndex (): JSX.Element {
               </div>
 
           </div>
-          {loading &&
+          {loadingUpcoming &&
             <div className='flex justify-center items-start h-screen mt-0'>
 
               <div className='flex flex-col w-full'>
@@ -113,14 +108,14 @@ export default function ChallengesIndex (): JSX.Element {
               </div>
             </div>
           }
-          {!loading &&
+          {!loadingUpcoming &&
             <>
 
-              {!loading && upcomingChallenges.length === 0 &&
+              {!loadingUpcoming && upcomingChallenges.length === 0 &&
                 <p className='text-left text-gray-500 pt-2'>No {selfGuided ? 'self-guided' : 'scheduled'} challenges in this category.</p>
               }
               <div className="flex flex-col items-center max-w-lg w-full mt-4">
-                <ChallengeList challenges={upcomingChallenges} memberships={memberships} isLoading={loading} />
+                <ChallengeList challenges={upcomingChallenges} memberships={memberships} isLoading={loadingUpcoming} />
               </div>
               {isExtended &&
                 <div className='h-[800px]'></div>
