@@ -72,12 +72,12 @@ export default function ChallengeAbout (): JSX.Element {
         }
         setIsMember(false)
       }
+      revalidator.revalidate()
     } catch (error) {
       console.error(error)
     } finally {
       setLoading(false)
       setShowConfirm(false)
-      revalidator.revalidate()
     }
   }
   const afterJoin = (isMember: boolean, membership?: MemberChallenge): void => {
