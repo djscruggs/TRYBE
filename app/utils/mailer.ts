@@ -17,7 +17,8 @@ const TEMPLATES = {
   REPLY_NOTIFICATION: 'd-6a5d461f89a1417ab36ebea0a50b64be',
   CHECKIN_REMINDER: 'd-e0af565878704bfd85ea71146ccff90f',
   WELCOME: 'd-fd916ab44ef2481ea8c79c7603094732',
-  CHALLENGE_WELCOME: 'd-c0d3fd810fbd4c98ab97a7040f8dc1fc'
+  CHALLENGE_WELCOME: 'd-c0d3fd810fbd4c98ab97a7040f8dc1fc',
+  CHALLENGE_CONTENT: 'd-80810befce16474fb9028b72f1832087'
 }
 
 function setupEnvironment (): void {
@@ -47,6 +48,7 @@ async function sendEmail (msg: MailDataRequired): Promise<any> {
 }
 
 interface PostMailerProps {
+  templateId?: string // defaults to TEMPLATES.POST
   to: EmailData
   replyTo?: EmailData
   fromName?: EmailData
@@ -63,7 +65,7 @@ interface PostMailerProps {
 export async function mailPost (props: PostMailerProps): Promise<any> {
   setupEnvironment()
   // eslint-disable-next-line @typescript-eslint/naming-convention
-  const { to, dynamic_template_data, replyTo, fromName } = props
+  const { to, dynamic_template_data, replyTo, fromName, templateId } = props
   const msg = {
     from: {
       email: process.env.SENDGRID_FROM_EMAIL,
@@ -71,7 +73,7 @@ export async function mailPost (props: PostMailerProps): Promise<any> {
     },
     replyTo,
     to: process.env.NODE_ENV === 'development' ? process.env.EMAIL_NOTIFICATIONS_TO : to,
-    templateId: TEMPLATES.POST,
+    templateId: templateId ?? TEMPLATES.POST,
     dynamic_template_data,
     asm: {
       groupId: 29180
@@ -82,6 +84,9 @@ export async function mailPost (props: PostMailerProps): Promise<any> {
   }
   const result = await sendEmail(msg as MailDataRequired)
   return result[0]
+}
+export async function mailChallengeContent (props: PostMailerProps): Promise<any> {
+  return await mailPost({ templateId: TEMPLATES.CHALLENGE_CONTENT, ...props })
 }
 export interface HostMailerProps {
   to: EmailData

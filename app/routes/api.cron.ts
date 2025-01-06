@@ -1,5 +1,5 @@
 import { prisma } from '../models/prisma.server'
-import { type CheckinReminderMailerProps, mailPost, sendCheckinReminder } from '../utils/mailer'
+import { type CheckinReminderMailerProps, mailPost, mailChallengeContent, sendCheckinReminder } from '../utils/mailer'
 import type { LoaderFunction } from '@remix-run/node'
 import { json } from '@remix-run/node'
 import { generateUrl, textToHtml, convertYouTubeLinksToImages, pathToEmailUrl } from '~/utils/helpers'
@@ -175,7 +175,7 @@ export const sendDayNumberPosts = async (): Promise<{ dayNumberPosts: number, da
         }
       }
       try {
-        // await sendCheckinReminder(props)
+        await sendCheckinReminder(props)
         nonPostNotifications++
       } catch (err) {
         console.error('Error sending reminder email', err.response.body.errors)
@@ -211,7 +211,7 @@ export const sendDayNumberPosts = async (): Promise<{ dayNumberPosts: number, da
           }
           try {
             console.log('props', props)
-            // await mailPost(props)
+            await mailChallengeContent(props)
           } catch (err) {
             console.error('Error sending notification', err)
           }
