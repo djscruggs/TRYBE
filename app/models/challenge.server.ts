@@ -3,6 +3,7 @@ import { type Cohort, type ChallengeType, type Prisma } from '@prisma/client'
 import type { Challenge, ChallengeSummary, MemberChallenge, CheckIn, ChallengeWithHost } from '~/utils/types'
 import { addDays, isFriday, isSaturday } from 'date-fns'
 import { deleteFromCloudinary } from '~/utils/uploadFile'
+import { c } from 'vite/dist/node/types.d-AKzkD8vd'
 
 export const createChallenge = async (challenge: prisma.challengeCreateInput): Promise<Challenge> => {
   const newChallenge = await prisma.challenge.create({
@@ -184,9 +185,20 @@ export const fetchChallengeSummaries = async ({
   if (type === 'SELF_LED') {
     where.push({ type: 'SELF_LED' })
   } else {
+    const upcomingCondition = { startAt: { gt: new Date() } }
+    const activeCondition = {
+      AND: [
+        { startAt: { lt: new Date() } },
+        { endAt: { gte: new Date() } }
+      ]
+    }
+    console.log('RANGE', range)
     switch (range) {
+      case 'active,active': {
+        where.push({ OR: [upcomingCondition, activeCondition] })
+        break
+      }
       case 'upcoming': {
-        const upcomingCondition = { startAt: { gt: new Date() } }
         if (type !== 'all') {
           where.push({
             OR: [
@@ -208,12 +220,6 @@ export const fetchChallengeSummaries = async ({
         where.push({ OR: [{ endAt: { lt: new Date() } }, { status: 'ARCHIVED' }] })
         break
       case 'active': {
-        const activeCondition = {
-          AND: [
-            { startAt: { lt: new Date() } },
-            { endAt: { gte: new Date() } }
-          ]
-        }
         if (type !== 'all') {
           where.push({
             OR: [

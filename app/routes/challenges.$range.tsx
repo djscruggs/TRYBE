@@ -32,7 +32,7 @@ export default function ChallengesIndex (): JSX.Element {
   const loadUpcomingChallenges = async (): Promise<void> => {
     setLoading(true)
     try {
-      let url = '/api/challenges/upcoming'
+      let url = '/api/challenges/upcoming,active'
       if (status === 'all') {
         url = '/api/challenges/all'
       }
