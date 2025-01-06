@@ -6,6 +6,7 @@ import axios, { type AxiosRequestConfig } from 'axios'
 import { CurrentUserContext } from '~/utils/CurrentUserContext'
 import MyChallenges from '~/components/myChallenges'
 import { Spinner } from '@material-tailwind/react'
+import { CardChallengeHomeSkeleton } from '~/components/cardChallengeHome'
 export default function ChallengesIndex (): JSX.Element {
   const browseRef = useRef<HTMLDivElement | null>(null)
   const [isExtended, setIsExtended] = useState(false) // this is used to extend the screen that the scroll into view is applied to
@@ -76,8 +77,13 @@ export default function ChallengesIndex (): JSX.Element {
   const categories = ['Meditation', 'Journal', 'Creativity', 'Health']
   return (
         <div className="w-full pl-2">
-
+          {loading &&
+            <div className='flex justify-center items-start h-screen mt-0'>
+               <CardChallengeHomeSkeleton />
+            </div>
+          }
           <MyChallenges range='active' scrollToBrowse={scrollToBrowse} />
+
           <div ref={browseRef} className='text-red font-bold text-lg mb-2'>Browse Challenges</div>
             <div className='space-x-4 flex items-center max-w-lg w-full justify-start text-xs md:text-sm'>
               {categories.map((cat: string) => (
@@ -98,8 +104,13 @@ export default function ChallengesIndex (): JSX.Element {
 
           </div>
           {loading &&
-            <div className='flex justify-center items-start h-screen mt-10'>
-              <Spinner />
+            <div className='flex justify-center items-start h-screen mt-0'>
+
+              <div className='flex flex-col w-full'>
+                <CardChallengeHomeSkeleton />
+                <CardChallengeHomeSkeleton />
+                <CardChallengeHomeSkeleton />
+              </div>
             </div>
           }
           {!loading &&

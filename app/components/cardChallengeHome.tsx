@@ -170,3 +170,26 @@ function DraftBadge ({ challenge, className = '' }: { challenge: ChallengeSummar
   }
   return <></>
 }
+
+export function CardChallengeHomeSkeleton (): JSX.Element {
+  return (
+    <div className='mt-2 drop-shadow-none mr-2 w-full cursor-pointer'>
+      <div className='drop-shadow-none'>
+        <div className='p-1 bg-white relative'>
+          <div className='w-full flex'>
+            <div className='w-1/5 flex items-center justify-center'>
+              <div className='relative border rounded-md p-2 pb-1 border-gray-200 bg-gray-200 w-[90px] h-[90px]'>
+                <div className='w-full h-16 bg-gray-200 animate-pulse rounded-md'></div>
+              </div>
+            </div>
+            <div className='w-3/5 border-0 mb-2 pt-2 pl-5'>
+              <div className='h-4 bg-gray-200 animate-pulse rounded-md mb-2'></div>
+              <div className='h-4 bg-gray-200 animate-pulse rounded-md mb-2'></div>
+              <div className='h-4 bg-gray-200 animate-pulse rounded-md'></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
