@@ -37,6 +37,7 @@ export default function MyChallenges (props: MyChallengesProps): JSX.Element {
       setMyChallenges(userChallenges)
       setMemberships(userMemberships)
     } catch (error) {
+      console.error(error)
       setLoadingError(error as string)
     } finally {
       setLoading(false)
