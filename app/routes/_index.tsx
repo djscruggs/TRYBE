@@ -40,7 +40,7 @@ export default function Index (): JSX.Element {
   const [loading, setLoading] = useState(true)
   useEffect(() => {
     if (splashSeen) {
-      navigate('/challenges')
+      navigate('/home')
     } else {
       setLoading(false)
       localStorage.setItem('splashSeen', 'true')

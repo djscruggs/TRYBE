@@ -104,8 +104,12 @@ export default function CardChallenge ({ challenge, isShare, isMember, isPreview
 
               <div className="absolute flex flex-col justify-center w-full bottom-4">
                 <div className="flex justify-start items-center mt-2">
+                  { memberCount > 0 &&
+                  <>
                   <FaUserFriends className='h-4 w-4 text-grey' />
                   <span className='text-xs pl-2 text-grey'>{memberCount} joined</span>
+                  </>
+                  }
                   <FaRegCalendarAlt className='h-4 w-4 ml-2 text-grey' />
                   <span className='text-xs pl-1 text-grey'>{howLongToStart()}</span>
                   <div className='text-xs pl-1 text-grey'>
