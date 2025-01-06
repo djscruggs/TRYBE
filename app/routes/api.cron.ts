@@ -95,6 +95,8 @@ export const sendDayNumberPosts = async (): Promise<{ dayNumberPosts: number, da
   const currentTimeGMT = new Date()
   const currentHourGMT = currentTimeGMT.getUTCHours()
   const currentMinuteGMT = currentTimeGMT.getUTCMinutes()
+  console.log('currentHourGMT', currentHourGMT)
+  console.log('currentMinuteGMT', currentMinuteGMT)
   const challenges = await prisma.challenge.findMany({
     where: {
       status: 'PUBLISHED',
@@ -160,7 +162,7 @@ export const sendDayNumberPosts = async (): Promise<{ dayNumberPosts: number, da
   // Step 4: Email the correct post to each member or send a generic reminder if no posts
   let nonPostNotifications = 0 // count of non post notifications sent, added to return value
   if (posts.length === 0) {
-    // Send generic reminder email
+    // no posts found for the day, send generic reminder email
     await Promise.all(Object.values(dayNumberHash).flat().map(async member => {
       const cohortPath = member.cohortId ? `/${member.cohortId}` : ''
       const checkinPath = pathToEmailUrl(`/challenges/v/${member.challenge.id}/checkins${cohortPath}`)
@@ -173,19 +175,20 @@ export const sendDayNumberPosts = async (): Promise<{ dayNumberPosts: number, da
         }
       }
       try {
-        await sendCheckinReminder(props)
+        // await sendCheckinReminder(props)
         nonPostNotifications++
       } catch (err) {
         console.error('Error sending reminder email', err.response.body.errors)
       }
     }))
   } else {
+    // posts found for the day, send post specific emails
     await Promise.all(posts.map(async post => {
       // Skip if publishOnDayNumber is null
       if (post.publishOnDayNumber === null) {
         return
       }
-
+      // get members for the day
       const members = dayNumberHash[post.publishOnDayNumber]
       if (members) {
         await Promise.all(members.map(async member => {
@@ -207,7 +210,8 @@ export const sendDayNumberPosts = async (): Promise<{ dayNumberPosts: number, da
             }
           }
           try {
-            await mailPost(props)
+            console.log('props', props)
+            // await mailPost(props)
           } catch (err) {
             console.error('Error sending notification', err)
           }

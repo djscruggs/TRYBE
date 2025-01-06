@@ -82,7 +82,7 @@ export default function ChallengesIndex (): JSX.Element {
                <CardChallengeHomeSkeleton />
             </div>
           }
-          <MyChallenges range='active' scrollToBrowse={scrollToBrowse} />
+          <MyChallenges range='active,upcoming' scrollToBrowse={scrollToBrowse} />
 
           <div ref={browseRef} className='text-red font-bold text-lg mb-2'>Browse Challenges</div>
             <div className='space-x-4 flex items-center max-w-lg w-full justify-start text-xs md:text-sm'>

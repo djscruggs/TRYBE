@@ -52,6 +52,7 @@ export default function ChallengeOverview (props: ChallengeOverviewProps): JSX.E
 
   useEffect(() => {
     setMembership(memberChallenge)
+    console.log('memberChallenge', memberChallenge)
     setStarted(hasStarted(challenge, memberChallenge))
   }, [memberChallenge, challenge, membership])
   const [checkIns, setCheckIns] = useState<CheckIn[]>([])
@@ -267,8 +268,9 @@ export function EditMemberChallenge (props: EditMemberChallengeProps): JSX.Eleme
     }
     const url = `/api/memberchallenges/${memberChallenge.id}`
     const response = await axios.post(url, data)
+    console.log('response', response)
     setLoading(false)
-    setMemberChallenge(response.data as MemberChallenge)
+    setMemberChallenge(response.data.result as MemberChallenge)
     afterSave(response.data.result as MemberChallenge)
   }
 
