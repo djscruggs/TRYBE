@@ -4,13 +4,29 @@ import { prisma } from '~/models/prisma.server'
 import { mailPost } from '~/utils/mailer'
 import { format } from 'date-fns'
 import { textToHtml, convertYouTubeLinksToImages, pathToEmailUrl } from '~/utils/helpers'
-import escape from 'escape-html'
-import { AxiosError } from 'axios'
+import { createCohort } from '~/models/challenge.server'
 // const ogs = require('open-graph-scraper')
 // const options = { url: 'http://ogp.me/' }
 export const loader: LoaderFunction = async (args) => {
-  const user = await requireCurrentUser(args)
-  const invitePath = pathToEmailUrl('/challenges/v/41/chat/2?i=1&foo=bar')
+  await requireCurrentUser(args)
+  const members = await prisma.memberChallenge.findMany({
+    where: {
+      cohortId: null,
+      challenge: {
+        type: 'SELF_LED'
+      }
+    }
+  })
+  members.forEach(async (member) => {
+    const cohort = await createCohort(member.challengeId)
+    await prisma.memberChallenge.update({
+      where: { id: member.id },
+      data: { cohortId: cohort.id }
+    })
+  })
+  return {
+    members
+  }
 
   // const data = await ogs(options)
   // const { error, html, result } = data
