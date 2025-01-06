@@ -56,8 +56,12 @@ export default function ChallengeOverview (props: ChallengeOverviewProps): JSX.E
   }, [memberChallenge, challenge, membership])
   const [checkIns, setCheckIns] = useState<CheckIn[]>([])
   const fetchCheckIns = async (): Promise<void> => {
-    const response = await axios.get(`/api/checkins/${challenge.id}/${currentUser?.id}`)
-    setCheckIns(response.data.checkIns as CheckIn[])
+    try {
+      const response = await axios.get(`/api/checkins/${challenge.id}/${currentUser?.id}`)
+      setCheckIns(response.data.checkIns as CheckIn[])
+    } catch (error) {
+      console.error('Error fetching check-ins:', error)
+    }
   }
   const copyLink = async (): Promise<void> => {
     await navigator.clipboard.writeText(getShortUrl(challenge, membership))
