@@ -69,6 +69,7 @@ export default function FormPost (props: FormPostProps): JSX.Element {
     notificationSentOn: null,
     publishOnDayNumber: challenge?.type === 'SELF_LED' ? dayNumber : null
   })
+  const [showPublishOnDayNumber] = useState(challenge?.type === 'SELF_LED' && !formData.publishOnDayNumber)
   const postDateTimeFormat = locale === 'en-US' ? 'M-dd-yyyy @ h:mm a' : 'dd-M-yyyy @ HH:MM'
   const challengeDateFormat = locale === 'en-US' ? 'MMM d, yyyy' : 'd MMM, yyyy'
   // this triggers the browser's upload file dialog, not a modal
@@ -82,6 +83,13 @@ export default function FormPost (props: FormPostProps): JSX.Element {
     setFormData(prevFormData => ({
       ...prevFormData,
       [name]: value
+    }))
+  }
+  const handlePublishOnDayNumber = (event: any): void => {
+    const { value } = event.target
+    setFormData(prevFormData => ({
+      ...prevFormData,
+      publishOnDayNumber: value
     }))
   }
   const handleNotifyCheck = (event: any): void => {
@@ -260,7 +268,7 @@ export default function FormPost (props: FormPostProps): JSX.Element {
             <VideoRecorder uploadOnly={videoUploadOnly} onStart={() => { setSaving(true) }} onStop={() => { setSaving(false) }} onSave={setVideo} onFinish={() => { setShowVideoRecorder(false) }} />
           </div>
         }
-        {challenge && formData.publishAt &&
+        {challenge && ((challenge?.type === 'SCHEDULED' && formData.publishAt) ?? (challenge?.type === 'SELF_LED' && formData.publishOnDayNumber)) &&
         <div className='my-4 mt-8 rounded-md p-2 border border-red'>
           <label className="flex w-full  items-center p-0 text-red">
             {challenge?.type === 'SCHEDULED'
@@ -270,6 +278,24 @@ export default function FormPost (props: FormPostProps): JSX.Element {
             </label>
         </div>
         }
+         {showPublishOnDayNumber &&
+          <div className='my-4 mt-8 rounded-md p-2 border border-red'>
+            <label className="flex w-full  items-center p-0 text-red">
+              Post will not be shown or sent to members until you specify a day number for this post
+            </label>
+            <div className='flex w-[100px]'>
+            <FormField
+              name='publishOnDayNumber'
+              type='number'
+              required={true}
+              maxValue={challenge?.numDays ?? undefined}
+              minValue={1}
+              value={formData.publishOnDayNumber}
+              onChange={handlePublishOnDayNumber}
+            />
+            </div>
+          </div>
+         }
 
         {showScheduleOptions && showPublishAt &&
           <div className='my-4'>

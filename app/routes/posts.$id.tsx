@@ -25,7 +25,7 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
   }
   const post = await loadPostSummary(params.id) as PostSummary | null
   // error if no post OR it's not a preview by the user who created it
-  if (!post || (!post.published && post.userId !== currentUser?.id)) {
+  if (!post || (!post.published && post.userId !== currentUser?.id && currentUser?.role !== 'ADMIN')) {
     const error = { loadingError: 'Post not found' }
     return json(error)
   }

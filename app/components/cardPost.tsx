@@ -47,7 +47,7 @@ export default function CardPost (props: CardPostProps): JSX.Element {
   const isOwnRoute = location.pathname === `/posts/${post.id}`
   const navigate = useNavigate()
   const [deleteDialog, setDeleteDialog] = useState(false)
-
+  const canEdit = (currentUser?.role === 'ADMIN' || currentUser?.id === post.userId) && !isShare
   const goToPost = (): void => {
     if (isOwnRoute) return
     navigate(`/posts/${post.id}`)
@@ -58,6 +58,7 @@ export default function CardPost (props: CardPostProps): JSX.Element {
     setShowLightbox(true)
   }
   const handleEdit = (event: any): void => {
+    if (!canEdit) return
     event.preventDefault()
     event.stopPropagation()
     setEditing(true)
@@ -129,7 +130,7 @@ export default function CardPost (props: CardPostProps): JSX.Element {
             </>
             }
             <PostContent post={post} fullPost={fullPost ?? false} handlePhotoClick={handlePhotoClick}>
-              {currentUser?.id === post.userId && !isShare &&
+              {canEdit && !isShare &&
                 <div className="mt-2 text-xs text-gray-500 w-full text-right">
                     <span className='underline cursor-pointer mr-1' onClick={handleEdit}>edit</span>
                     <span className='underline cursor-pointer mr-1' onClick={handleDeleteDialog}>delete</span>

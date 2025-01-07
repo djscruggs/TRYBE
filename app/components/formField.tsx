@@ -8,6 +8,8 @@ interface FormFieldProps {
   placeholder?: string
   type?: string
   value?: any
+  maxValue?: number
+  minValue?: number
   onChange?: (...args: any) => any
   onKeyDown?: (...args: any) => any
   error?: string
@@ -26,6 +28,8 @@ export function FormField ({
   placeholder = '',
   label = '',
   type = 'text',
+  maxValue,
+  minValue,
   value = '',
   onChange = () => { },
   onKeyDown = () => { },
@@ -83,7 +87,7 @@ export function FormField ({
             required={required}
             autoFocus = {autoFocus}
             maxLength={65535}
-            ref={inputRef}
+            ref={inputRef as React.RefObject<HTMLTextAreaElement>}
             disabled={disabled}
           >
           {value}
@@ -103,9 +107,11 @@ export function FormField ({
           required={required}
           className={`w-full p-2 rounded-md my-1 border ${(errorText.length > 0) ? ' border-red' : ''}`}
           value={value}
+          max={maxValue}
+          min={minValue}
           autoComplete={autoComplete}
           autoFocus = {autoFocus}
-          ref={inputRef}
+          ref={inputRef as React.RefObject<HTMLInputElement>}
       />
 
           )}
