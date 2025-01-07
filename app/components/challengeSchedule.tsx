@@ -28,25 +28,27 @@ export default function ChallengeSchedule ({ challenge, posts, isSchedule = fals
   // create arrays of posts by day number and those that are unscheduled
   const { currentUser } = useContext(CurrentUserContext)
   const userIsCreator = currentUser?.id === challenge.userId
+  if (challenge.type === 'SELF_LED') {
+    posts.forEach((post) => {
+      if (!post.publishOnDayNumber) {
+        unscheduled.push(post)
+      }
+    })
+  }
   return (
     <div className={`flex-col  border-red items-center w-screen max-w-2xl  ${isSchedule ? 'md:max-w-xl lg:max-w-2xl' : 'md:max-w-md lg:max-w-lg'}`}>
+       {userIsCreator &&
+          <UnscheduledPosts posts={unscheduled} />
+      }
       {isSchedule &&
-         <>
-          <ScheduleDateRange challenge={challenge} />
-          {userIsCreator &&
-            <UnscheduledPosts posts={unscheduled} />
-          }
-        </>
+        <ScheduleDateRange challenge={challenge} />
       }
       {challenge.type === 'SCHEDULED' &&
         <DateSchedule challenge={challenge} posts={posts} isSchedule={isSchedule} membership={membership} />
       }
       {challenge.type === 'SELF_LED' &&
-
         <NumberSchedule challenge={challenge} posts={posts} isSchedule={isSchedule} membership={membership} />
-
       }
-
     </div>
   )
 }
