@@ -81,6 +81,7 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
   const comments = await prisma.comment.findMany({
     where: {
       challengeId: Number(params.id),
+      cohortId: params.cohortId ? Number(params.cohortId) : null,
       replyToId: null
     },
     include: {
