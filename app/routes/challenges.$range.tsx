@@ -36,13 +36,13 @@ export default function ChallengesIndex (): JSX.Element {
       if (status === 'all') {
         url = '/api/challenges/all'
       }
-      const params: AxiosRequestConfig['params'] = { }
-      if (categoryFilter.length > 0) {
-        params.category = categoryFilter.join(',')
-      }
-      if (selfGuided) {
-        params.type = 'SELF_LED'
-      }
+      // const params: AxiosRequestConfig['params'] = { }
+      // if (categoryFilter.length > 0) {
+      //   params.category = categoryFilter.join(',')
+      // }
+      // if (selfGuided) {
+      //   params.type = 'SELF_LED'
+      // }
       const response = await axios.get(url, { params })
       const allUpcomingChallenges = response.data.challenges as ChallengeSummary[]
       const memberships = response.data.memberships as MemberChallenge[]
@@ -50,7 +50,9 @@ export default function ChallengesIndex (): JSX.Element {
         !memberships.some(membership => membership.challengeId === challenge.id) &&
         challenge.userId !== currentUser?.id
       )
+      console.log('filteredUpcomingChallenges', filteredUpcomingChallenges)
       setUpcomingChallenges(filteredUpcomingChallenges)
+      setFilteredChallenges(filteredUpcomingChallenges)
     } catch (error) {
       console.error(error)
     } finally {
@@ -71,8 +73,29 @@ export default function ChallengesIndex (): JSX.Element {
   useEffect(() => {
     void loadUpcomingChallenges()
   }, [status])
+  const [filteredChallenges, setFilteredChallenges] = useState<ChallengeSummary[]>([])
   useEffect(() => {
-    void loadUpcomingChallenges()
+    let _filtered: ChallengeSummary[] = []
+    if (categoryFilter.length > 0 || selfGuided) {
+      if (categoryFilter.length > 0) {
+        upcomingChallenges.forEach(challenge => {
+          challenge.categories.forEach(category => {
+            if (categoryFilter.includes(category.name)) {
+              _filtered.push(challenge)
+            }
+          })
+        })
+      } else {
+        _filtered = upcomingChallenges.filter(challenge => challenge.type === 'SELF_LED')
+      }
+      if (selfGuided) {
+        _filtered = _filtered.filter(challenge => challenge.type === 'SELF_LED')
+      }
+      setFilteredChallenges(_filtered)
+    } else {
+      setFilteredChallenges(upcomingChallenges)
+    }
+    setIsExtended(true)
   }, [categoryFilter, selfGuided])
   const categories = ['Meditation', 'Journal', 'Creativity', 'Health']
   return (
@@ -107,11 +130,11 @@ export default function ChallengesIndex (): JSX.Element {
             }
           {!loadingUpcoming &&
             <>
-              {upcomingChallenges.length === 0 &&
+              {filteredChallenges.length === 0 &&
                 <p className='text-left text-gray-500 pt-2'>No {selfGuided ? 'self-guided' : 'scheduled'} challenges in this category.</p>
               }
               <div className="flex flex-col items-center max-w-lg w-full mt-4">
-                <ChallengeList challenges={upcomingChallenges} memberships={memberships} isLoading={loadingUpcoming} />
+                <ChallengeList challenges={filteredChallenges} memberships={memberships} isLoading={loadingUpcoming} />
               </div>
               {isExtended &&
                 <div className='h-[800px]'></div>
