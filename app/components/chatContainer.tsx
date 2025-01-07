@@ -13,15 +13,27 @@ export default function ChatContainer (props: ChatContainerProps): JSX.Element {
   const { comments: initialComments, newestComment: initialNewestComment, allowReplies } = props
   const [comments, setComments] = useState(initialComments)
   const [newestComment, setNewestComment] = useState<Comment | null>(initialNewestComment ?? null)
-
+  console.log('comments in chat container', comments)
   useEffect(() => {
     setNewestComment(initialNewestComment ?? null)
     setComments(initialComments ?? [])
   }, [props])
-
+  function cleanComments (comments: Comment[] | Record<string, Comment[]>) {
+    if (Array.isArray(comments)) {
+      return comments.filter(item => item !== null).map(cleanComments)
+    } else if (typeof comments === 'object' && comments !== null) {
+      return Object.fromEntries(
+        Object.entries(comments)
+          .map(([key, value]) => [key, cleanComments(value)])
+          .filter(([_, value]) => value !== null && !(Array.isArray(value) && value.length === 0))
+      )
+    }
+    return comments
+  }
   function getUniqueComments (): Comment[] {
-    const uniqueIds = new Set(comments.map(comment => comment.id))
-    const uniqueComments = Array.from(uniqueIds).map(id => comments.find(comment => comment.id === id))
+    const cleanedComments = cleanComments(comments)
+    const uniqueIds = new Set(cleanedComments.map(comment => comment?.id))
+    const uniqueComments = Array.from(uniqueIds).map(id => cleanedComments.find(comment => comment.id === id))
     return uniqueComments.filter(Boolean).sort((a, b) => new Date(a!.createdAt).getTime() - new Date(b!.createdAt).getTime()) as Comment[]
   }
 

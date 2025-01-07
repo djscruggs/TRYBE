@@ -432,7 +432,18 @@ export const fetchChallengeMembers = async (cId: string | number): Promise<Membe
   const params: Prisma.MemberChallengeFindManyArgs = {
     where: { challengeId: Number(cId.toString()) },
     include: {
-      challenge: true,
+      challenge: {
+        include: {
+          _count: {
+            select: { members: true, comments: true, likes: true }
+          },
+          categories: {
+            select: {
+              category: true
+            }
+          }
+        }
+      },
       user: {
         include: {
           profile: true
