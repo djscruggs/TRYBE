@@ -193,9 +193,14 @@ export const fetchChallengeSummaries = async ({
   } else {
     const upcomingCondition = { startAt: { gt: new Date() } }
     const activeCondition = {
-      AND: [
-        { startAt: { lt: new Date() } },
-        { endAt: { gte: new Date() } }
+      OR: [
+        { type: 'SELF_LED' },
+        {
+          AND: [
+            { startAt: { lt: new Date() } },
+            { endAt: { gte: new Date() } }
+          ]
+        }
       ]
     }
     console.log('RANGE', range)

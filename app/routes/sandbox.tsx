@@ -17,15 +17,35 @@ export const loader: LoaderFunction = async (args) => {
       }
     }
   })
-  members.forEach(async (member) => {
-    const cohort = await createCohort(member.challengeId)
-    await prisma.memberChallenge.update({
-      where: { id: member.id },
-      data: { cohortId: cohort.id }
-    })
-  })
+  const c =
+    {
+      createdAt: '2024-12-31T04:45:33.545Z',
+      updatedAt: '2024-12-31T04:45:33.545Z',
+      publishAt: '2024-12-31T04:45:33.544Z',
+      name: '15 min. Stretching Routine Builder',
+      userId: 11,
+      color: 'purple',
+      description: "Each day we progressively add 1 minute of stretching time, introducing a new segment. By the end, participants will have a balanced, repeatable 15-minute routine they can use when they wake up, before a workout or whenever they're feeling tight.",
+      endAt: null,
+      icon: 'People-11.png',
+      reminders: false,
+      startAt: null,
+      syncCalendar: false,
+      frequency: 'DAILY',
+      mission: null,
+      public: true,
+      video: null,
+      commentCount: 0,
+      likeCount: 0,
+      coverPhotoMeta: 'null',
+      videoMeta: 'null',
+      numDays: 15,
+      type: 'SELF_LED',
+      status: 'PUBLISHED'
+    }
+  const result = await prisma.challenge.create({ data: c })
   return {
-    members
+    result
   }
 
   // const data = await ogs(options)
