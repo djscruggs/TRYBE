@@ -42,6 +42,9 @@ export const loadChallenge = async (challengeId: number, userId?: number): Promi
   const challenge = await prisma.challenge.findUnique({
     where,
     include: {
+      _count: {
+        select: { members: true, comments: true, likes: true }
+      },
       categories: {
         select: {
           category: true
@@ -100,7 +103,7 @@ export const loadUserCreatedChallenges = async (userId: string | number): Promis
     },
     include: {
       _count: {
-        select: { members: true }
+        select: { members: true, comments: true, likes: true }
       },
       user: {
         include: {
@@ -149,6 +152,9 @@ export const fetchChallenges = async (userId: string | number): Promise<Challeng
       userId: uid
     },
     include: {
+      _count: {
+        select: { members: true, comments: true, likes: true }
+      },
       categories: {
         select: {
           category: true
@@ -409,6 +415,9 @@ export const loadMemberChallenge = async (userId: number, challengeId: number): 
       },
       challenge: {
         include: {
+          _count: {
+            select: { members: true, comments: true, likes: true }
+          },
           categories: {
             select: {
               category: true
