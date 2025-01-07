@@ -25,6 +25,7 @@ interface ChallengeScheduleProps {
 export default function ChallengeSchedule ({ challenge, posts, isSchedule = false, membership }: ChallengeScheduleProps): JSX.Element {
   // Need to capture any dangling posts that are unscheduled in the date range
   const unscheduled: Post[] = []
+
   // create arrays of posts by day number and those that are unscheduled
   const { currentUser } = useContext(CurrentUserContext)
   const userIsCreator = currentUser?.id === challenge.userId
@@ -37,7 +38,7 @@ export default function ChallengeSchedule ({ challenge, posts, isSchedule = fals
   }
   return (
     <div className={`flex-col  border-red items-center w-screen max-w-2xl  ${isSchedule ? 'md:max-w-xl lg:max-w-2xl' : 'md:max-w-md lg:max-w-lg'}`}>
-       {userIsCreator &&
+       {(userIsCreator || currentUser?.role === 'ADMIN') &&
           <UnscheduledPosts posts={unscheduled} />
       }
       {isSchedule &&
