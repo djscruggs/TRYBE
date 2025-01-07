@@ -28,7 +28,6 @@ interface CheckinsListProps {
 }
 
 export default function CheckinsList (props: CheckinsListProps): JSX.Element {
-  console.log('props', props)
   const { checkIns, posts, comments, allowComments, id, highlightedObject, highlightedId } = props
   const [checkInsArr, setCheckInsArr] = useState(checkIns)
   const [newestComment, setNewestComment] = useState(props.newestComment)
