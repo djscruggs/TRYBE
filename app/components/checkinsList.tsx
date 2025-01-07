@@ -28,13 +28,13 @@ interface CheckinsListProps {
 }
 
 export default function CheckinsList (props: CheckinsListProps): JSX.Element {
+  console.log('props', props)
   const { checkIns, posts, comments, allowComments, id, highlightedObject, highlightedId } = props
   const [checkInsArr, setCheckInsArr] = useState(checkIns)
   const [newestComment, setNewestComment] = useState(props.newestComment)
   const handleDelete = (deletedCheckIn: CheckIn): void => {
     setCheckInsArr(checkInsArr.filter(checkIn => checkIn.id !== deletedCheckIn.id))
   }
-  console.log('comments', comments)
   // Group check-ins by day
   const checkInsByDay = checkInsArr.reduce<Record<string, CheckIn[]>>((acc, checkIn) => {
     const date = new Date(checkIn.createdAt).toLocaleDateString('en-CA')
@@ -52,20 +52,15 @@ export default function CheckinsList (props: CheckinsListProps): JSX.Element {
     acc[date].push(post)
     return acc
   }, {})
-  const getCommentsByDay = (): Record<string, Comment[]> => {
-    if (!comments) {
-      return {}
+  const commentsByDay = comments?.reduce<Record<string, Comment[]>>((acc, comment) => {
+    const date = new Date(comment.createdAt as unknown as string).toLocaleDateString('en-CA') // Cast to string
+    if (!acc[date]) {
+      acc[date] = []
     }
-    return comments?.reduce<Record<string, Comment[]>>((acc, comment) => {
-      const date = new Date(comment.createdAt as unknown as string).toLocaleDateString('en-CA') // Cast to string
-      if (!acc[date]) {
-        acc[date] = []
-      }
-      acc[date].push(comment)
-      return acc
-    }, {})
-  }
-  const [commentsByDay, setCommentsByDay] = useState<Record<string, Comment[]>>(getCommentsByDay() ?? {})
+    acc[date].push(comment)
+    return acc
+  }, {})
+
   const allDates = new Set([...Object.keys(checkInsByDay), ...Object.keys(postsByDay), ...Object.keys(commentsByDay ?? {})])
   // return <></>
   useEffect(() => {
@@ -73,13 +68,17 @@ export default function CheckinsList (props: CheckinsListProps): JSX.Element {
 
     const currentDate = new Date().toLocaleDateString('en-CA')
     const currentComments = commentsByDay
+    if (!currentComments) {
+      return
+    }
     if (!currentComments[currentDate]) {
       currentComments[currentDate] = []
     }
     currentComments[currentDate].push(existing)
-    setCommentsByDay(currentComments)
-    setNewestComment(props.newestComment)
   }, [props.newestComment])
+  useEffect(() => {
+    setNewestComment(props.newestComment)
+  }, [])
   return (
     <div className='text-left flex flex-col w-full' id={id ?? 'checkins-list'}>
       {Array.from(allDates).map(date => {
@@ -91,7 +90,7 @@ export default function CheckinsList (props: CheckinsListProps): JSX.Element {
         const uniqueUsers = new Set(emptyCheckIns.map(checkIn => checkIn.userId)).size
         return (
           <div key={date}>
-            <DateDivider date={date} />
+          <DateDivider date={date} />
             {uniqueUsers > 0 && <CollapsedCheckins checkIns={emptyCheckIns} />}
             {checkIns.map((checkIn: CheckIn, index: number) => {
               if (!checkIn.body?.length) return null // Skip empty check-ins

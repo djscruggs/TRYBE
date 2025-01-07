@@ -13,7 +13,6 @@ export default function ChatContainer (props: ChatContainerProps): JSX.Element {
   const { comments: initialComments, newestComment: initialNewestComment, allowReplies } = props
   const [comments, setComments] = useState(initialComments)
   const [newestComment, setNewestComment] = useState<Comment | null>(initialNewestComment ?? null)
-  console.log('comments in chat container', comments)
   useEffect(() => {
     setNewestComment(initialNewestComment ?? null)
     setComments(initialComments ?? [])
@@ -28,9 +27,11 @@ export default function ChatContainer (props: ChatContainerProps): JSX.Element {
           .filter(([_, value]) => value !== null && !(Array.isArray(value) && value.length === 0))
       )
     }
+    // console.log('cleaned comments', comments)
     return comments
   }
   function getUniqueComments (): Comment[] {
+    // console.log('comments in getUniqueComments', comments)
     const cleanedComments = cleanComments(comments)
     const uniqueIds = new Set(cleanedComments.map(comment => comment?.id))
     const uniqueComments = Array.from(uniqueIds).map(id => cleanedComments.find(comment => comment.id === id))

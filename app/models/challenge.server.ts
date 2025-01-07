@@ -203,7 +203,6 @@ export const fetchChallengeSummaries = async ({
         }
       ]
     }
-    console.log('RANGE', range)
     switch (range) {
       case 'active,upcoming':
       case 'upcoming,active': {

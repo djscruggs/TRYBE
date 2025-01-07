@@ -50,7 +50,6 @@ export default function ChallengesIndex (): JSX.Element {
         !memberships.some(membership => membership.challengeId === challenge.id) &&
         challenge.userId !== currentUser?.id
       )
-      console.log('filteredUpcomingChallenges', filteredUpcomingChallenges)
       setUpcomingChallenges(filteredUpcomingChallenges)
       setFilteredChallenges(filteredUpcomingChallenges)
     } catch (error) {
