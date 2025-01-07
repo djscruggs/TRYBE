@@ -1,6 +1,6 @@
 import { userLocale, textToJSX, pluralize } from '~/utils/helpers'
 import { Tooltip } from '@material-tailwind/react'
-import { useContext, useState } from 'react'
+import { useContext, useState, useEffect } from 'react'
 import { CurrentUserContext } from '~/utils/CurrentUserContext'
 import { Lightbox } from 'react-modal-image'
 import AvatarLoader from './avatarLoader'
@@ -27,8 +27,10 @@ interface CheckinsListProps {
   highlightedId?: number | null
 }
 
-export default function CheckinsList ({ checkIns, posts, comments, newestComment, allowComments, id, highlightedObject, highlightedId }: CheckinsListProps): JSX.Element {
+export default function CheckinsList (props: CheckinsListProps): JSX.Element {
+  const { checkIns, posts, comments, allowComments, id, highlightedObject, highlightedId } = props
   const [checkInsArr, setCheckInsArr] = useState(checkIns)
+  const [newestComment, setNewestComment] = useState(props.newestComment)
   const handleDelete = (deletedCheckIn: CheckIn): void => {
     setCheckInsArr(checkInsArr.filter(checkIn => checkIn.id !== deletedCheckIn.id))
   }
@@ -50,16 +52,33 @@ export default function CheckinsList ({ checkIns, posts, comments, newestComment
     acc[date].push(post)
     return acc
   }, {})
-  const commentsByDay = comments?.reduce<Record<string, Comment[]>>((acc, comment) => {
-    const date = new Date(comment.createdAt as unknown as string).toLocaleDateString('en-CA') // Cast to string
-    if (!acc[date]) {
-      acc[date] = []
-    }
-    acc[date].push(comment)
-    return acc
-  }, {})
+  const getCommentsByDay = (): Record<string, Comment[]> => {
+    return comments?.reduce<Record<string, Comment[]>>((acc, comment) => {
+      const date = new Date(comment.createdAt as unknown as string).toLocaleDateString('en-CA') // Cast to string
+      if (!acc[date]) {
+        acc[date] = []
+      }
+      acc[date].push(comment)
+      return acc
+    }, {})
+  }
+  const [commentsByDay, setCommentsByDay] = useState<Record<string, Comment[]>>(getCommentsByDay())
+
   const allDates = new Set([...Object.keys(checkInsByDay), ...Object.keys(postsByDay), ...Object.keys(commentsByDay ?? {})])
   // return <></>
+  useEffect(() => {
+    const existing = newestComment
+
+    const currentDate = new Date().toLocaleDateString('en-CA')
+    const currentComments = commentsByDay
+    if (!currentComments[currentDate]) {
+      currentComments[currentDate] = []
+    }
+    currentComments[currentDate].push(existing)
+    setCommentsByDay(currentComments)
+    setNewestComment(props.newestComment)
+    console.log('newestComment', props.newestComment)
+  }, [props.newestComment])
   return (
     <div className='text-left flex flex-col w-full' id={id ?? 'checkins-list'}>
       {Array.from(allDates).map(date => {

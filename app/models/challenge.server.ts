@@ -318,6 +318,9 @@ export const fetchUserChallengesAndMemberships = async ({ userId, type = 'all' }
       include: {
         challenge: {
           include: {
+            _count: {
+              select: { members: true, comments: true, likes: true }
+            },
             categories: {
               select: {
                 category: true
