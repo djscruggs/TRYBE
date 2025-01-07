@@ -202,7 +202,9 @@ export default function ViewChallengeChat (): JSX.Element {
               ...comment,
               createdAt: comment.createdAt.toISOString(),
               updatedAt: comment.updatedAt.toISOString(),
-              challenge: comment.challenge as unknown as Challenge
+              challenge: comment.challenge as unknown as Challenge,
+              imageMeta: comment.imageMeta ? JSON.parse(JSON.stringify(comment.imageMeta)) : undefined,
+              videoMeta: comment.videoMeta ? JSON.parse(JSON.stringify(comment.videoMeta)) : undefined
             }
           : c
       )

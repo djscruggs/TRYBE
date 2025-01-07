@@ -2,7 +2,7 @@ import { useState } from 'react'
 import FormChat from './formChat'
 import { textToJSX } from '~/utils/helpers'
 import type { Comment } from '~/utils/types'
-import { formatDistanceToNow } from 'date-fns'
+import { formatDistanceToNow, isValid } from 'date-fns'
 import Liker from './liker'
 import { Lightbox } from 'react-modal-image'
 import AvatarLoader from './avatarLoader'
@@ -112,6 +112,11 @@ const CommentContent = (props: {
   isDrawerTop?: boolean
 }): JSX.Element => {
   const { comment, showLightbox, setShowLightbox, isDrawerTop } = props
+  let date = new Date()
+  if (isValid(comment?.createdAt)) {
+    date = new Date(comment.createdAt)
+  }
+  const formattedDate = formatDistanceToNow(date, { addSuffix: true })
   return (
     <>
       <div className={`flex ${isDrawerTop ? 'pl-2' : ''}`}>
@@ -120,7 +125,7 @@ const CommentContent = (props: {
         </div>
         <div className='flex-grow'>
           <div className='text-xs mb-2'>
-            <span className='font-bold'>{comment.user?.profile?.fullName}</span> - <span className='text-xs'>{formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true })}</span>
+            <span className='font-bold'>{comment.user?.profile?.fullName}</span> - <span className='text-xs'>{formattedDate}</span>
           </div>
           {textToJSX(comment.body)}
         </div>
