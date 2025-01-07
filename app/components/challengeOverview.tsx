@@ -171,13 +171,14 @@ export default function ChallengeOverview (props: ChallengeOverviewProps): JSX.E
 
           </>
         }
-         <div className='flex justify-center items-center mt-4 w-full'>
-              <div className='text-xs'>Copy link to invite friends</div>
-              <div className='text-lessblack ml-1 text-sm md:text-md  border p-2 rounded-md text-left max-w-[250px]'>{getShortUrl(challenge, membership, cohortId)}</div>
-              <HiOutlineClipboardCopy onClick={copyLink} className='h-6 w-6 cursor-pointer ml-1' />
-              <div onClick={copyLink} className='ml-1 text-blue underline cursor-pointer text-xs md:text-sm'>copy</div>
-            </div>
-
+        {membership &&
+          <div className='flex justify-center items-center mt-4 w-full'>
+            <div className='text-xs'>Copy link to invite friends</div>
+            <div className='text-lessblack ml-1 text-sm md:text-md  border p-2 rounded-md text-left max-w-[250px]'>{getShortUrl(challenge, membership, cohortId)}</div>
+            <HiOutlineClipboardCopy onClick={copyLink} className='h-6 w-6 cursor-pointer ml-1' />
+            <div onClick={copyLink} className='ml-1 text-blue underline cursor-pointer text-xs md:text-sm'>copy</div>
+          </div>
+        }
     </div>
   )
 }
