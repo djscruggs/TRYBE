@@ -80,7 +80,7 @@ export default function ChallengesIndex (): JSX.Element {
       if (categoryFilter.length > 0) {
         upcomingChallenges.forEach(challenge => {
           challenge.categories.forEach(category => {
-            if (categoryFilter.includes(category.name)) {
+            if (categoryFilter.includes(category.name ?? '')) {
               _filtered.push(challenge)
             }
           })
