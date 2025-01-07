@@ -112,7 +112,7 @@ export default function ChallengeAbout (): JSX.Element {
       {currentUser?.id === challenge.userId && challenge.type === 'SCHEDULED' && (
         <p className='text-red mt-4'>As the creator of this challenge, you are automatically a member.</p>
       )}
-      {currentUser?.id !== challenge.userId && (
+
         <>
         <button
             onClick={confirmJoinUnjoin}
@@ -137,8 +137,6 @@ export default function ChallengeAbout (): JSX.Element {
           />
         {currentUser && challenge.type === 'SCHEDULED' && <div className='mt-4 cursor-pointer text-red text-center text-xs underline' onClick={() => { navigate(`/challenges/v/${challenge.id}/contact`, true) }}>Contact Host</div>}
         </>
-
-      )}
 
       </div>
 

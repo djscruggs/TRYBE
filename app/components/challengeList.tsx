@@ -37,7 +37,7 @@ export default function ChallengeList ({ challenges, memberships, isLoading }: C
         : mergedChallenges.length > 0 &&
           mergedChallenges.map((challenge: ChallengeSummary) => (
             <div key={challenge.id} className="w-full mb-4">
-              <CardChallengeHome challenge={challenge} isMember={isMember(challenge)} />
+              <CardChallengeHome challenge={challenge} isMember={isMember(challenge)} membership={memberships.find((membership: MemberChallenge) => membership.challengeId === challenge.id)} />
             </div>
           ))
       }

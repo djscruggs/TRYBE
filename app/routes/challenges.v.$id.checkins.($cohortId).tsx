@@ -1,8 +1,6 @@
 import { type MetaFunction, useRouteLoaderData } from '@remix-run/react'
 import type { Challenge, CheckIn, MemberChallenge } from '~/utils/types'
 import CheckinsList from '~/components/checkinsList'
-import { differenceInDays, format } from 'date-fns'
-import { CircularProgressbarWithChildren, buildStyles } from 'react-circular-progressbar'
 import { useContext, useEffect, useState } from 'react'
 import { CurrentUserContext } from '~/utils/CurrentUserContext'
 import axios from 'axios'
@@ -40,6 +38,7 @@ export default function MyCheckIns (): JSX.Element {
     setCheckIns(response.data.checkIns as CheckIn[])
     setIsLoading(false)
   }
+
   useEffect(() => {
     void fetchCheckIns()
   }, [challenge.id, currentUser?.id])

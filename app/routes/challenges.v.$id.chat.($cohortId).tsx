@@ -192,25 +192,35 @@ export default function ViewChallengeChat (): JSX.Element {
   }, [])
 
   const afterSaveComment = (comment: Comment): void => {
-    // only saved comments will have an id
-    if (newestComment?.id) {
-      // merge the existing newest comment in the groupedData with the new comment
-      const date = new Date(newestComment.createdAt).toISOString().split('T')[0]
-      const group = groupedData[date]
-      if (group) {
-        group.comments = group.comments.map(c => c.id === comment.id
+    const date = new Date(comment.createdAt).toISOString().split('T')[0]
+    const updatedGroupedData = { ...groupedData }
+
+    if (updatedGroupedData[date]) {
+      updatedGroupedData[date].comments = updatedGroupedData[date].comments.map(c =>
+        c.id === comment.id
           ? {
               ...comment,
               createdAt: comment.createdAt.toISOString(),
               updatedAt: comment.updatedAt.toISOString(),
               challenge: comment.challenge as unknown as Challenge
             }
-          : c)
-      }
+          : c
+      )
     }
+
+    setGroupedData(updatedGroupedData)
     setNewestComment(comment)
   }
   const onPendingComment = (comment: Comment): void => {
+    const date = new Date(comment.createdAt).toISOString().split('T')[0]
+    const updatedGroupedData = { ...groupedData }
+
+    if (!updatedGroupedData[date]) {
+      updatedGroupedData[date] = { posts: [], checkIns: { empty: [], nonEmpty: [] }, comments: [] }
+    }
+
+    updatedGroupedData[date].comments.push(comment)
+    setGroupedData(updatedGroupedData)
     setNewestComment(comment)
     scrollToBottom()
   }

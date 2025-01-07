@@ -56,7 +56,8 @@ export default function MyChallenges (props: MyChallengesProps): JSX.Element {
             <div className={`absolute right-2 text-xs text-gray-500 underline cursor-pointer ${status === 'archived' ? 'text-red' : ''}`} onClick={() => { handleStatusChange('archived') }}>Archived</div>
           } */}
           {loading &&
-           <div className='flex justify-center items-start h-screen mt-0'>
+           <div className='flex-col justify-center items-start h-screen mt-0'>
+               <CardChallengeHomeSkeleton />
                <CardChallengeHomeSkeleton />
             </div>
           }

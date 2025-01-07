@@ -13,14 +13,15 @@ import { SlShareAlt } from 'react-icons/sl'
 interface CardChallengeProps {
   challenge: ChallengeSummary
   isMember?: boolean
+  membership?: MemberChallenge
   isPreview?: boolean
 }
 
-export default function CardChallengeHome ({ challenge, isMember, isPreview }: CardChallengeProps): JSX.Element {
+export default function CardChallengeHome ({ challenge, isMember, isPreview, membership }: CardChallengeProps): JSX.Element {
   const { currentUser } = useContext(CurrentUserContext)
   // in some chases isMember is undefined but a members array is included; check to see if the currentUser is in the members array
   if (isMember === undefined) {
-    isMember = challenge?.members?.some(member => member.userId === currentUser?.id) ?? challenge.userId === currentUser?.id
+    isMember = challenge?.members?.some(member => member.userId === currentUser?.id) ?? (challenge.type === 'SCHEDULED' && challenge.userId === currentUser?.id)
   }
   const [sharing, setSharing] = useState(false)
   const isHost = challenge.userId === currentUser?.id
@@ -41,7 +42,11 @@ export default function CardChallengeHome ({ challenge, isMember, isPreview }: C
         if (memberCount >= 2 || challenge.type === 'SCHEDULED') {
           url = `/challenges/v/${challenge.id}/chat`
         } else {
-          url = `/challenges/v/${challenge.id}/checkins`
+          if (membership?.cohortId) {
+            url = `/challenges/v/${challenge.id}/checkins/${membership.cohortId}`
+          } else {
+            url = `/challenges/v/${challenge.id}/checkins`
+          }
         }
       }
     }
