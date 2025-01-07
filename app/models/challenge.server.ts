@@ -369,6 +369,9 @@ export const fetchUserMemberships = async (userId: string | number): Promise<Mem
     include: {
       challenge: {
         include: {
+          _count: {
+            select: { members: true, comments: true, likes: true }
+          },
           categories: {
             select: {
               category: true
