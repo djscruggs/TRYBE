@@ -14,6 +14,7 @@ import { userLocale, pluralize } from '~/utils/helpers'
 import { CurrentUserContext } from '~/utils/CurrentUserContext'
 import { BsExclamationCircleFill } from 'react-icons/bs'
 import { useContext } from 'react'
+import { hasStarted } from '~/utils/helpers/challenge'
 
 interface ChallengeScheduleProps {
   challenge: Challenge
@@ -170,11 +171,12 @@ const PostsBlock = ({ post, challenge, isSchedule, membership }: { post: Post, c
   const navigate = useNavigate()
   // if post is in the future, don't link to the full post UNLESS it's the user's post
   let linkable = false
+  const started = hasStarted(challenge, membership)
   if (challenge.type === 'SCHEDULED') {
     linkable = Boolean(((post.publishAt) && (!isFuture(post.publishAt))))
   }
   if (challenge.type === 'SELF_LED') {
-    if (post.publishOnDayNumber && membership && post.publishOnDayNumber <= membership.dayNumber) {
+    if (started && post.publishOnDayNumber && membership && post.publishOnDayNumber <= membership.dayNumber) {
       linkable = true
     }
   }

@@ -259,7 +259,7 @@ export default function ViewChallengeChat (): JSX.Element {
   }
   const checkedInToday = (): boolean => {
     if (!currentUser) {
-      return false
+      return true
     }
     const todayGroup = groupedData[today]
     if (!todayGroup) {

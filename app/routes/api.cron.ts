@@ -95,8 +95,7 @@ export const sendDayNumberPosts = async (): Promise<{ dayNumberPosts: number, da
   const currentTimeGMT = new Date()
   const currentHourGMT = currentTimeGMT.getUTCHours()
   const currentMinuteGMT = currentTimeGMT.getUTCMinutes()
-  console.log('currentHourGMT', currentHourGMT)
-  console.log('currentMinuteGMT', currentMinuteGMT)
+
   const challenges = await prisma.challenge.findMany({
     where: {
       status: 'PUBLISHED',
@@ -192,7 +191,10 @@ export const sendDayNumberPosts = async (): Promise<{ dayNumberPosts: number, da
       const members = dayNumberHash[post.publishOnDayNumber]
       if (members) {
         await Promise.all(members.map(async member => {
-          // const postLink = `${protocol}://${host}/challenges/v/${post.challengeId}/chat#featured-id-${post.id}`
+          // skip members who haven't started yet
+          if (member.startAt && member.startAt > new Date()) {
+            return
+          }
           const cohortPath = member.cohortId ? `/${member.cohortId}` : ''
           const postPath = pathToEmailUrl(`/challenges/v/${post.challengeId}/chat#featured-id-${post.id}${cohortPath}`)
           const postLink = generateUrl(postPath)
@@ -210,7 +212,6 @@ export const sendDayNumberPosts = async (): Promise<{ dayNumberPosts: number, da
             }
           }
           try {
-            console.log('props', props)
             await mailChallengeContent(props)
           } catch (err) {
             console.error('Error sending notification', err)
