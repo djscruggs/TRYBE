@@ -37,13 +37,7 @@ export const FullLayout = (): JSX.Element => {
   const location = useLocation()
   const navigate = useNavigate()
   const [newOpen, setNewOpen] = useState(false)
-  if (currentUser) {
-    const redirectTo = localStorage.getItem('redirectTo') ?? ''
-    if (redirectTo) {
-      localStorage.removeItem('redirectTo')
-      navigate(redirectTo)
-    }
-  }
+
   // hack to remove padding on welcome screen mobile
   // hide nav if on index, login or register
   const [showNav, setShowNav] = useState(true)
@@ -52,6 +46,14 @@ export const FullLayout = (): JSX.Element => {
   const isLanding = location.pathname.includes('/landing')
   const [showSpacer, setShowSpacer] = useState(true)
   useEffect(() => {
+    if (currentUser) {
+      const redirectTo = localStorage.getItem('redirectTo') ?? ''
+      if (redirectTo) {
+        localStorage.removeItem('redirectTo')
+        navigate(redirectTo)
+        return
+      }
+    }
     if (['/', '/landing'].includes(location.pathname)) {
       setShowNav(false)
       setShowSpacer(false)
