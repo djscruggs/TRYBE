@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from 'react'
 import { useLoaderData, useNavigate } from '@remix-run/react'
-import { CurrentUserContext } from '~/utils/CurrentUserContext'
+import { CurrentUserContext } from '~/contexts/CurrentUserContext'
 import getRandomQuote from '~/utils/quotes'
 import { type LoaderFunction, type LoaderFunctionArgs } from '@remix-run/node'
 import { prisma } from '~/models/prisma.server'

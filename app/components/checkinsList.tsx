@@ -1,7 +1,7 @@
 import { userLocale, textToJSX, pluralize } from '~/utils/helpers'
 import { Tooltip } from '@material-tailwind/react'
 import { useContext, useState, useEffect } from 'react'
-import { CurrentUserContext } from '~/utils/CurrentUserContext'
+import { CurrentUserContext } from '~/contexts/CurrentUserContext'
 import { Lightbox } from 'react-modal-image'
 import AvatarLoader from './avatarLoader'
 import FormCheckIn from './formCheckin'

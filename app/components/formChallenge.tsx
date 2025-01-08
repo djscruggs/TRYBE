@@ -16,7 +16,7 @@ import { toast } from 'react-hot-toast'
 import { hasStarted } from '~/utils/helpers/challenge'
 import { colorToClassName, handleFileUpload } from '~/utils/helpers'
 import { useRevalidator } from 'react-router-dom'
-import { CurrentUserContext } from '~/utils/CurrentUserContext'
+import { CurrentUserContext } from '~/contexts/CurrentUserContext'
 import CardChallenge from '~/components/cardChallenge'
 
 import ChallengeIcon, { iconFiles } from '~/components/challengeIcon'

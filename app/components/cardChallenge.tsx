@@ -5,7 +5,7 @@ import {
 import { FaRegCalendarAlt, FaUserFriends } from 'react-icons/fa'
 import { type ChallengeSummary } from '~/utils/types'
 import { colorToClassName, resizeImageToFit, textToJSX } from '~/utils/helpers'
-import { CurrentUserContext } from '~/utils/CurrentUserContext'
+import { CurrentUserContext } from '~/contexts/CurrentUserContext'
 import { useNavigate } from '@remix-run/react'
 import { differenceInCalendarDays, differenceInWeeks, differenceInBusinessDays, isPast } from 'date-fns'
 import ShareMenu from './shareMenu'

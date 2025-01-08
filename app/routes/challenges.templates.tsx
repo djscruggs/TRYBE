@@ -1,6 +1,6 @@
 import { Navigate } from '@remix-run/react'
 import { useEffect, useContext } from 'react'
-import { CurrentUserContext } from '~/utils/CurrentUserContext'
+import { CurrentUserContext } from '~/contexts/CurrentUserContext'
 import type { MetaFunction } from '@remix-run/react'
 export const meta: MetaFunction = () => {
   return [

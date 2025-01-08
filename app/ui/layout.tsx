@@ -4,7 +4,7 @@ import useHasLoaded from '~/hooks/useHasLoaded'
 import { useLocation, Outlet, useNavigate, Link } from '@remix-run/react'
 import { HiOutlineLogin } from 'react-icons/hi'
 import NavLinks from './navlinks'
-import { CurrentUserContext } from '~/utils/CurrentUserContext'
+import { CurrentUserContext } from '~/contexts/CurrentUserContext'
 import {
   HomeIcon,
   PlusCircleIcon,

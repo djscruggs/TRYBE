@@ -1,6 +1,6 @@
 import { useEffect, useState, useContext, useRef } from 'react'
 import axios from 'axios'
-import { CurrentUserContext } from '~/utils/CurrentUserContext'
+import { CurrentUserContext } from '~/contexts/CurrentUserContext'
 import { toast } from 'react-hot-toast'
 interface UserLikes {
   post?: number[]

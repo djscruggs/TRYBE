@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect } from 'react'
 import FormComment from './formComment'
 import { Avatar, Spinner } from '@material-tailwind/react'
-import { CurrentUserContext } from '~/utils/CurrentUserContext'
+import { CurrentUserContext } from '~/contexts/CurrentUserContext'
 import { textToJSX } from '~/utils/helpers'
 import { toast } from 'react-hot-toast'
 import axios from 'axios'

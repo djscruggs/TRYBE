@@ -1,5 +1,5 @@
 import { useSearchParams } from '@remix-run/react'
-import { MemberContext } from '~/utils/MemberContext'
+import { MemberContext } from '~/contexts/MemberContext'
 import { useContext } from 'react'
 
 export default function useCohortId (): number | null {

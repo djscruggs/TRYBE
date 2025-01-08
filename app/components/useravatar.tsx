@@ -1,5 +1,5 @@
 import { Avatar } from '@material-tailwind/react'
-import { CurrentUserContext } from '~/utils/CurrentUserContext'
+import { CurrentUserContext } from '~/contexts/CurrentUserContext'
 import React, { useContext } from 'react'
 import type { AvatarProps } from '@material-tailwind/react'
 import { userInitials } from '~/utils/helpers'

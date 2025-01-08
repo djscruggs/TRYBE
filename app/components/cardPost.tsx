@@ -7,7 +7,7 @@ import type { PostSummary } from '~/utils/types'
 // import { GoComment } from 'react-icons/go'
 import { textToJSX, removeYouTubeLinks } from '~/utils/helpers'
 
-import { CurrentUserContext } from '~/utils/CurrentUserContext'
+import { CurrentUserContext } from '~/contexts/CurrentUserContext'
 import AvatarLoader from './avatarLoader'
 import { useNavigate, useLocation } from '@remix-run/react'
 import { toast } from 'react-hot-toast'

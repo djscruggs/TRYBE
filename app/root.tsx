@@ -13,7 +13,7 @@ import {
 } from '@remix-run/react'
 import { withEmotionCache } from '@emotion/react'
 import { useEffect, useState } from 'react'
-import { CurrentUserContext } from './utils/CurrentUserContext'
+import { CurrentUserContext } from './contexts/CurrentUserContext'
 import Layout from './ui/layout'
 import stylesheet from './output.css'
 import datepickerStyle from 'react-datepicker/dist/react-datepicker.css'

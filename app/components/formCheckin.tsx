@@ -1,5 +1,5 @@
 import React, { useState, useRef, useMemo, useContext } from 'react'
-import { CurrentUserContext } from '~/utils/CurrentUserContext'
+import { CurrentUserContext } from '~/contexts/CurrentUserContext'
 import { Form, useNavigate } from '@remix-run/react'
 import axios from 'axios'
 import { FormField } from './formField'

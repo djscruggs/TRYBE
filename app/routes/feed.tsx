@@ -1,4 +1,4 @@
-import { CurrentUserContext } from '~/utils/CurrentUserContext'
+import { CurrentUserContext } from '~/contexts/CurrentUserContext'
 import { getCurrentUser } from '~/models/auth.server'
 import { likesByType } from '~/models/like.server'
 import { useContext, useState, useEffect } from 'react'

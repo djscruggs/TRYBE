@@ -4,7 +4,7 @@ import {
   type ChallengeSummary,
   type MemberChallenge
 } from '~/utils/types'
-import { CurrentUserContext } from '~/utils/CurrentUserContext'
+import { CurrentUserContext } from '~/contexts/CurrentUserContext'
 import { useContext } from 'react'
 interface ChallengeListProps {
   challenges: ChallengeSummary[]

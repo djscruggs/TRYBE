@@ -8,7 +8,7 @@ import {
   UsersIcon
 } from '@heroicons/react/24/outline'
 import { HiOutlineLogout, HiOutlineLogin } from 'react-icons/hi'
-import { CurrentUserContext } from '~/utils/CurrentUserContext'
+import { CurrentUserContext } from '~/contexts/CurrentUserContext'
 import { useContext, useState } from 'react'
 import { Spinner } from '@material-tailwind/react'
 import { Link } from '@remix-run/react'

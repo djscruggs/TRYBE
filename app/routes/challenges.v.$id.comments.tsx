@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react'
 import { useParams, useLoaderData, json, type MetaFunction } from '@remix-run/react'
-import { CurrentUserContext } from '~/utils/CurrentUserContext'
+import { CurrentUserContext } from '~/contexts/CurrentUserContext'
 import { type LoaderFunction } from '@remix-run/server-runtime'
 import { fetchComments } from '~/models/comment.server'
 import { likesByType } from '~/models/like.server'

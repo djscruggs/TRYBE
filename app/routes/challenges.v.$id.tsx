@@ -8,7 +8,7 @@ import { FaChevronCircleLeft } from 'react-icons/fa'
 import { prisma } from '~/models/prisma.server'
 import ChallengeHeader from '~/components/challengeHeader'
 import ChallengeTabs from '~/components/challengeTabs'
-import { MemberContext } from '~/utils/MemberContext'
+import { MemberContext } from '~/contexts/MemberContext'
 
 interface ViewChallengeData {
   challenge: ChallengeSummary

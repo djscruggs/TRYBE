@@ -5,7 +5,7 @@ import {
   Button
 } from '@material-tailwind/react'
 import { type Challenge, type MemberChallenge } from '~/utils/types'
-import { CurrentUserContext } from '~/utils/CurrentUserContext'
+import { CurrentUserContext } from '~/contexts/CurrentUserContext'
 import { userLocale } from '~/utils/helpers'
 import ShareMenu from './shareMenu'
 

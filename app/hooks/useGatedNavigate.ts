@@ -1,6 +1,6 @@
 import { useNavigate } from '@remix-run/react'
 import { useContext } from 'react'
-import { CurrentUserContext } from '~/utils/CurrentUserContext'
+import { CurrentUserContext } from '~/contexts/CurrentUserContext'
 
 export default function useGatedNavigate (): (path: string, gated?: boolean) => void {
   const { currentUser } = useContext(CurrentUserContext)

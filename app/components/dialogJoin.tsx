@@ -1,6 +1,6 @@
 import { useState, useContext, useEffect } from 'react'
 import type { Challenge, MemberChallenge } from '~/utils/types'
-import { CurrentUserContext } from '~/utils/CurrentUserContext'
+import { CurrentUserContext } from '~/contexts/CurrentUserContext'
 import {
   Button,
   Dialog,

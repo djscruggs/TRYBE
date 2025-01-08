@@ -7,8 +7,8 @@ import { prisma } from '~/models/prisma.server'
 import { Prisma } from '@prisma/client'
 import CheckinsList from '~/components/checkinsList'
 import FormChat from '~/components/formChat'
-import { CurrentUserContext } from '~/utils/CurrentUserContext'
-import { MemberContext } from '~/utils/MemberContext'
+import { CurrentUserContext } from '~/contexts/CurrentUserContext'
+import { MemberContext } from '~/contexts/MemberContext'
 import DialogCheckin from '~/components/dialogCheckin'
 import DialogPost from '~/components/dialogPost'
 import { CheckInButton } from '~/components/checkinButton'
@@ -18,7 +18,6 @@ import HideFeedbackButton from '~/components/hideFeedbackButton'
 import { hasStarted, isExpired } from '~/utils/helpers/challenge'
 import { loadChallengeSummary } from '~/models/challenge.server'
 import { v4 as uuidv4 } from 'uuid'
-import useCohortId from '~/hooks/useCohortId'
 export const meta: MetaFunction = () => {
   return [
     { title: 'Chat' },
@@ -142,7 +141,7 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
     if (!groupedData[date]) {
       groupedData[date] = { posts: [], checkIns: { empty: [], nonEmpty: [] }, comments: [] }
     }
-    groupedData[date].comments.push(comment)
+    groupedData[date].comments.push(comment as unknown as Comment)
   })
 
   checkIns.forEach(checkIn => {

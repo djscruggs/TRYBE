@@ -1,7 +1,7 @@
 import { useState, useEffect, useContext } from 'react'
 import { type ChallengeSummary, type MemberChallenge, type CheckIn } from '~/utils/types'
-import { CurrentUserContext } from '~/utils/CurrentUserContext'
-import { MemberContext } from '~/utils/MemberContext'
+import { CurrentUserContext } from '~/contexts/CurrentUserContext'
+import { MemberContext } from '~/contexts/MemberContext'
 import { isPast, isFuture } from 'date-fns'
 import {
   userLocale,
