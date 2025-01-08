@@ -25,16 +25,17 @@ Sentry.init({
   dsn: 'https://4f3a1762974e77da7b1e347738080185@o4506538845929472.ingest.us.sentry.io/4506538846126080',
   tunnel: '/tunnel',
   ignoreErrors: ['Network Error'],
-  beforeSend (event, hint) {
-    if (!ignoreAxiosCancel(event, hint)) {
-      return null
-    }
-    // Check if it is an exception, and if so, show the report dialog
-    if (event.exception && event.event_id) {
-      Sentry.showReportDialog({ eventId: event.event_id })
-    }
-    return event
-  },
+  beforeSend: ignoreAxiosCancel,
+  // beforeSend (event, hint) {
+  //   if (!handleSentryBeforeSend(event, hint)) {
+  //     return null
+  //   }
+  //   // Check if it is an exception, and if so, show the report dialog
+  //   if (event.exception && event.event_id) {
+  //     Sentry.showReportDialog({ eventId: event.event_id })
+  //   }
+  //   return event
+  // },
   integrations: [
     // See docs for support of different versions of variation of react router
     // https://docs.sentry.io/platforms/javascript/guides/react/configuration/integrations/react-router/
