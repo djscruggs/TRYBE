@@ -1,4 +1,4 @@
-import { useLoaderData, useRouteLoaderData, useRevalidator, useNavigate } from '@remix-run/react'
+import { useLoaderData, useRouteLoaderData, useRevalidator } from '@remix-run/react'
 import { useEffect, useRef, useState, useContext } from 'react'
 import { requireCurrentUser } from '~/models/auth.server'
 import type { Post, CheckIn, Challenge, Comment, MemberChallenge } from '~/utils/types'
@@ -15,6 +15,7 @@ import DateDivider from '~/components/dateDivider'
 import MobileBackButton from '~/components/mobileBackButton'
 import HideFeedbackButton from '~/components/hideFeedbackButton'
 import { hasStarted, isExpired } from '~/utils/helpers/challenge'
+import { loadChallengeSummary } from '~/models/challenge.server'
 export const meta: MetaFunction = () => {
   return [
     { title: 'Chat' },
@@ -35,19 +36,45 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
   if (!params.id) {
     return null
   }
+  // load the challenge
+  const challenge = await loadChallengeSummary(Number(params.id))
+  if (!challenge) {
+    return null
+  }
+  // have to build the where clause for posts based on the challenge type and cohortId
+  const postsWhere: Prisma.PostWhereInput = {
+    challengeId: Number(params.id),
+    published: true
+  }
+  // get the current day number, but make sure it's not before the challenge start date
+  let maxDayNumber
+  if (challenge.type === 'SELF_LED' && params.cohortId) {
+    maxDayNumber = await prisma.memberChallenge.aggregate({
+      _max: {
+        dayNumber: true,
+        startAt: true
+      },
+      where: {
+        startAt: {
+          lte: new Date()
+        },
+        challengeId: Number(params.id),
+        cohortId: Number(params.cohortId)
+      }
+    })
+    postsWhere.publishOnDayNumber = {
+      lte: maxDayNumber._max.dayNumber ?? 0
+    }
+  } else {
+    postsWhere.OR = [
+      { publishAt: null },
+      { publishAt: { lte: new Date() } }
+    ]
+  }
 
   // load posts
   const posts = await prisma.post.findMany({
-    where: {
-      AND: {
-        challengeId: Number(params.id),
-        published: true,
-        OR: [
-          { publishAt: null },
-          { publishAt: { lte: new Date() } }
-        ]
-      }
-    },
+    where: postsWhere,
     include: {
       user: {
         include: {
