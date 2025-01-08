@@ -69,7 +69,7 @@ export default function FormPost (props: FormPostProps): JSX.Element {
     notificationSentOn: null,
     publishOnDayNumber: challenge?.type === 'SELF_LED' ? dayNumber : null
   })
-  const [showPublishOnDayNumber] = useState(challenge?.type === 'SELF_LED' && !formData.publishOnDayNumber)
+  const [showPublishOnDayNumber] = useState(challenge?.type === 'SELF_LED')
   const postDateTimeFormat = locale === 'en-US' ? 'M-dd-yyyy @ h:mm a' : 'dd-M-yyyy @ HH:MM'
   const challengeDateFormat = locale === 'en-US' ? 'MMM d, yyyy' : 'd MMM, yyyy'
   // this triggers the browser's upload file dialog, not a modal
@@ -279,20 +279,20 @@ export default function FormPost (props: FormPostProps): JSX.Element {
         </div>
         }
          {showPublishOnDayNumber &&
-          <div className='my-4 mt-8 rounded-md p-2 border border-red'>
-            <label className="flex w-full  items-center p-0 text-red">
-              Post will not be shown or sent to members until you specify a day number for this post
+          <div className='my-4 mt-8 rounded-md p-2 border items-center flex flex-row'>
+            <label className='mr-2'>
+              Day number that post will be shown to members
             </label>
-            <div className='flex w-[100px]'>
-            <FormField
-              name='publishOnDayNumber'
-              type='number'
-              required={true}
-              maxValue={challenge?.numDays ?? undefined}
-              minValue={1}
-              value={formData.publishOnDayNumber}
-              onChange={handlePublishOnDayNumber}
-            />
+            <div className='w-[60px] '>
+              <FormField
+                name='publishOnDayNumber'
+                type='number'
+                required={true}
+                maxValue={challenge?.numDays ?? undefined}
+                minValue={1}
+                value={formData.publishOnDayNumber}
+                onChange={handlePublishOnDayNumber}
+              />
             </div>
           </div>
          }

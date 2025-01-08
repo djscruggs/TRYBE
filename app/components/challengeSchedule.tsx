@@ -180,7 +180,7 @@ const PostsBlock = ({ post, challenge, isSchedule, membership }: { post: Post, c
       linkable = true
     }
   }
-  if (currentUser?.id === post.userId) {
+  if (currentUser?.id === post.userId || currentUser?.role === 'ADMIN') {
     linkable = true
   }
   const goToPost = (): void => {
