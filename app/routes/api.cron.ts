@@ -1,5 +1,5 @@
 import { prisma } from '../models/prisma.server'
-import { type CheckinReminderMailerProps, mailPost, mailChallengeContent, sendCheckinReminder } from '../utils/mailer'
+import { type CheckinReminderMailerProps, mailChallengeContent, sendCheckinReminder } from '../utils/mailer'
 import type { LoaderFunction } from '@remix-run/node'
 import { json } from '@remix-run/node'
 import { generateUrl, textToHtml, convertYouTubeLinksToImages, pathToEmailUrl } from '~/utils/helpers'
@@ -75,7 +75,7 @@ export const sendScheduledPosts = async (): Promise<number> => {
           }
         }
         try {
-          await mailPost(props)
+          await mailChallengeContent(props)
           await prisma.post.update({
             where: {
               id: post.id
