@@ -26,6 +26,9 @@ export const sendScheduledPosts = async (): Promise<number> => {
           challenge: {
             status: 'PUBLISHED',
             type: 'SCHEDULED'
+          },
+          publishAt: {
+            lt: new Date()
           }
         }
       ]

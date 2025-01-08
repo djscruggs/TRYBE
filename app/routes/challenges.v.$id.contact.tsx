@@ -1,7 +1,6 @@
-import { useContext, useState } from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
-import { CurrentUserContext } from '~/utils/CurrentUserContext'
 import { FormField } from '~/components/formField'
 import { type ChallengeWithHost } from '~/utils/types'
 import { toast } from 'react-hot-toast'

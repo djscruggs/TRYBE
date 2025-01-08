@@ -14,12 +14,12 @@ import { TiDeleteOutline } from 'react-icons/ti'
 import VideoPreview from './videoPreview'
 
 interface FormCommentProps {
-  challengeId?: number
-  cohortId?: number
-  postId?: number
-  replyToId?: number
-  threadId?: number
-  checkInId?: number
+  challengeId?: number | null
+  cohortId?: number | null
+  postId?: number | null
+  replyToId?: number | null
+  threadId?: number | null
+  checkInId?: number | null
   afterSave: (comment: Comment) => void
   onCancel?: () => void
   comment?: Comment

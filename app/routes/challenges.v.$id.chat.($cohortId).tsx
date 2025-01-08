@@ -1,13 +1,14 @@
 import { useLoaderData, useRouteLoaderData, useRevalidator } from '@remix-run/react'
 import { useEffect, useRef, useState, useContext } from 'react'
 import { requireCurrentUser } from '~/models/auth.server'
-import type { Post, CheckIn, Challenge, Comment, MemberChallenge } from '~/utils/types'
+import type { Post, CheckIn, Challenge, Comment } from '~/utils/types'
 import { json, type MetaFunction, type LoaderFunction, type LoaderFunctionArgs, type SerializeFrom } from '@remix-run/node'
 import { prisma } from '~/models/prisma.server'
 import { Prisma } from '@prisma/client'
 import CheckinsList from '~/components/checkinsList'
 import FormChat from '~/components/formChat'
 import { CurrentUserContext } from '~/utils/CurrentUserContext'
+import { MemberContext } from '~/utils/MemberContext'
 import DialogCheckin from '~/components/dialogCheckin'
 import DialogPost from '~/components/dialogPost'
 import { CheckInButton } from '~/components/checkinButton'
@@ -16,6 +17,8 @@ import MobileBackButton from '~/components/mobileBackButton'
 import HideFeedbackButton from '~/components/hideFeedbackButton'
 import { hasStarted, isExpired } from '~/utils/helpers/challenge'
 import { loadChallengeSummary } from '~/models/challenge.server'
+import { v4 as uuidv4 } from 'uuid'
+import useCohortId from '~/hooks/useCohortId'
 export const meta: MetaFunction = () => {
   return [
     { title: 'Chat' },
@@ -25,11 +28,13 @@ export const meta: MetaFunction = () => {
     }
   ]
 }
+
 interface ChallengeChatData {
   groupedData: Record<string, { posts: Post[], checkIns: { empty: CheckIn[], nonEmpty: CheckIn[] }, comments: Comment[] }>
-  membership: MemberChallenge | null | undefined
 }
+
 type GroupedDataEntry = SerializeFrom<ChallengeChatData['groupedData']>
+
 export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
   const currentUser = await requireCurrentUser(args)
   const { params } = args
@@ -160,30 +165,18 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
   // Sort the groupedData by date
   const sortedGroupedData = Object.entries(groupedData)
     .sort(([dateA], [dateB]) => new Date(dateA).getTime() - new Date(dateB).getTime())
-  const membership = await prisma.memberChallenge.findFirst({
-    where: {
-      challengeId: Number(params.id),
-      userId: currentUser?.id
-    },
-    include: {
-      user: {
-        include: {
-          profile: true
-        }
-      },
-      challenge: true
-    }
-  })
-  const data: ChallengeChatData = { groupedData: Object.fromEntries(sortedGroupedData), membership }
+
+  const data: ChallengeChatData = { groupedData: Object.fromEntries(sortedGroupedData) }
   return json(data)
 }
 
 export default function ViewChallengeChat (): JSX.Element {
   const { currentUser } = useContext(CurrentUserContext)
+  const { membership } = useContext(MemberContext)
   const loaderData = useLoaderData<ChallengeChatData>()
   const [groupedData, setGroupedData] = useState<GroupedDataEntry>(loaderData.groupedData)
   const bottomRef = useRef<HTMLDivElement>(null)
-  const { challenge, membership } = useRouteLoaderData<{ challenge: Challenge, membership: MemberChallenge }>('routes/challenges.v.$id') as unknown as { challenge: Challenge, membership: MemberChallenge }
+  const { challenge } = useRouteLoaderData<{ challenge: Challenge }>('routes/challenges.v.$id') as unknown as { challenge: Challenge }
   if (!groupedData) {
     return <p>No data.</p>
   }
@@ -218,30 +211,11 @@ export default function ViewChallengeChat (): JSX.Element {
   useEffect(() => {
     scrollToBottom()
   }, [])
-
-  const afterSaveComment = (comment: Comment): void => {
-    const date = new Date(comment.createdAt).toISOString().split('T')[0]
-    const updatedGroupedData = { ...groupedData }
-
-    if (updatedGroupedData[date]) {
-      updatedGroupedData[date].comments = updatedGroupedData[date].comments.map(c =>
-        c.id === comment.id
-          ? {
-              ...comment,
-              createdAt: comment.createdAt.toISOString(),
-              updatedAt: comment.updatedAt.toISOString(),
-              challenge: comment.challenge as unknown as Challenge,
-              imageMeta: comment.imageMeta ? JSON.parse(JSON.stringify(comment.imageMeta)) : undefined,
-              videoMeta: comment.videoMeta ? JSON.parse(JSON.stringify(comment.videoMeta)) : undefined
-            }
-          : c
-      )
-    }
-
-    setGroupedData(updatedGroupedData)
-    setNewestComment(comment)
-  }
-  const onPendingComment = (comment: Comment): void => {
+  const [pendingComments, setPendingComments] = useState<Comment[]>([])
+  const onPendingComment = (comment: Omit<Comment, 'id'>): void => {
+    const tempId = uuidv4()
+    const pendingComment = { ...comment, id: tempId }
+    setPendingComments([...pendingComments, pendingComment])
     const date = new Date(comment.createdAt).toISOString().split('T')[0]
     const updatedGroupedData = { ...groupedData }
 
@@ -249,10 +223,34 @@ export default function ViewChallengeChat (): JSX.Element {
       updatedGroupedData[date] = { posts: [], checkIns: { empty: [], nonEmpty: [] }, comments: [] }
     }
 
-    updatedGroupedData[date].comments.push(comment)
+    updatedGroupedData[date].comments.push(pendingComment)
     setGroupedData(updatedGroupedData)
-    setNewestComment(comment)
+    setNewestComment(pendingComment)
     scrollToBottom()
+  }
+  const afterSaveComment = (savedComment: Comment): void => {
+    const date = new Date(savedComment.createdAt).toISOString().split('T')[0]
+    const updatedGroupedData = { ...groupedData }
+
+    if (updatedGroupedData[date]) {
+      updatedGroupedData[date].comments = updatedGroupedData[date].comments.map(c =>
+        c.id === savedComment.tempId
+          ? {
+              ...savedComment,
+              createdAt: savedComment.createdAt.toISOString(),
+              updatedAt: savedComment.updatedAt.toISOString(),
+              challenge: savedComment.challenge as unknown as Challenge,
+              imageMeta: savedComment.imageMeta ? JSON.parse(JSON.stringify(savedComment.imageMeta)) : undefined,
+              videoMeta: savedComment.videoMeta ? JSON.parse(JSON.stringify(savedComment.videoMeta)) : undefined
+            }
+          : c
+      )
+    }
+
+    // Remove the pending comment using the temporary ID
+    setPendingComments(pendingComments.filter(c => c.id !== savedComment.tempId))
+    setGroupedData(updatedGroupedData)
+    setNewestComment(savedComment)
   }
   const onSaveCommentError = (): void => {
     scrollToBottom()
@@ -379,12 +377,11 @@ export default function ViewChallengeChat (): JSX.Element {
           <MobileBackButton to={`/challenges/v/${challenge.id}`} />
 
           <FormChat
-            afterSave={afterSaveComment}
             prompt="Type here..."
             onPending={onPendingComment}
+            afterSave={afterSaveComment}
             onError={onSaveCommentError}
             objectId={challenge.id}
-            cohortId={membership?.cohortId}
             type={'challenge'}
             autoFocus={!highlightedObject && !showfeaturedPost}
             inputRef={chatFormRef}

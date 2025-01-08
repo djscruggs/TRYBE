@@ -14,7 +14,7 @@ import axios from 'axios'
 interface DeleteDialogProps {
   challenge: Challenge
   isOpen: boolean
-  cohortId?: number
+  cohortId?: number | null
   onConfirm: (event: any) => void
   onCancel?: (event: any) => void
   afterJoin?: (isMember: boolean, membership?: MemberChallenge) => void

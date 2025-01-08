@@ -1,5 +1,6 @@
 import FormNote from '~/components/formNote'
 import { type MetaFunction, useNavigate, useRouteLoaderData } from '@remix-run/react'
+import type { ChallengeSummary } from '~/utils/types'
 
 export const meta: MetaFunction = () => {
   return [
@@ -11,7 +12,7 @@ export const meta: MetaFunction = () => {
   ]
 }
 export default function ShareChallenge (): JSX.Element {
-  const data = useRouteLoaderData('routes/challenges.v.$id')
+  const data = useRouteLoaderData('routes/challenges.v.$id') as { challenge: ChallengeSummary }
   const navigate = useNavigate()
   return (
     <div className='md:max-w-lg w-full'>

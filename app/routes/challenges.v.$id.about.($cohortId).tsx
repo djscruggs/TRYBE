@@ -1,8 +1,10 @@
 import ChallengeOverview from '~/components/challengeOverview'
 import { type MetaFunction, useRouteLoaderData, useRevalidator, useSearchParams } from '@remix-run/react'
-import { type Challenge, type ChallengeSummary, type MemberChallenge } from '~/utils/types'
+import { type Challenge, type ChallengeSummary } from '~/utils/types'
 import { useContext, useState } from 'react'
 import { CurrentUserContext } from '~/utils/CurrentUserContext'
+import { MemberContext } from '~/utils/MemberContext'
+import useCohortId from '~/hooks/useCohortId'
 import DialogConfirm from '~/components/dialogConfirm'
 import DialogJoin from '~/components/dialogJoin'
 import DialogShare from '~/components/dialogShare'
@@ -20,9 +22,10 @@ export const meta: MetaFunction = () => {
   ]
 }
 export default function ChallengeAbout (): JSX.Element {
-  const data = useRouteLoaderData<{ challenge: ChallengeSummary, membership: MemberChallenge, cohortId: number, loadingError: string }>('routes/challenges.v.$id') as unknown as { challenge: ChallengeSummary, membership: MemberChallenge, cohortId: number, loadingError: string }
+  const data = useRouteLoaderData<{ challenge: ChallengeSummary, loadingError: string }>('routes/challenges.v.$id') as unknown as { challenge: ChallengeSummary, loadingError: string }
+  const { membership, setMembership } = useContext(MemberContext)
+  console.log('membership', membership)
   const { challenge } = data
-  const { cohortId } = data
   const { loadingError } = data
   const { currentUser } = useContext(CurrentUserContext)
   const navigate = useGatedNavigate()
@@ -30,10 +33,9 @@ export default function ChallengeAbout (): JSX.Element {
   const [loading, setLoading] = useState<boolean>(false)
   const [showConfirm, setShowConfirm] = useState<boolean>(false)
   const [showJoin, setShowJoin] = useState<boolean>(false)
-  const [isMember, setIsMember] = useState<boolean>(Boolean(data.membership?.id ?? (challenge?.type === 'SCHEDULED' && challenge?.userId === currentUser?.id)))
-  const [membership, setMembership] = useState<MemberChallenge | undefined>(data.membership)
-
+  const [isMember, setIsMember] = useState<boolean>(Boolean(membership?.id ?? (challenge?.type === 'SCHEDULED' && challenge?.userId === currentUser?.id)))
   const [searchParams] = useSearchParams()
+  const cohortId = useCohortId()
   const [invite, setInvite] = useState<string | null>(searchParams.get('i'))
 
   const confirmJoinUnjoin = async (): Promise<void> => {
@@ -65,9 +67,9 @@ export default function ChallengeAbout (): JSX.Element {
         setIsMember(true)
         setMembership(response.data.result as MemberChallenge)
       } else {
-        if (membership?.cohortId) {
+        if (cohortId) {
           const url = `/challenges/v/${challenge.id}/about`
-          setMembership(undefined)
+          setMembership(null)
           navigate(url, true)
         }
         setIsMember(false)
@@ -82,10 +84,10 @@ export default function ChallengeAbout (): JSX.Element {
   }
   const afterJoin = (isMember: boolean, membership?: MemberChallenge): void => {
     setIsMember(isMember)
-    setMembership(membership)
+    setMembership(membership ?? null)
     setShowJoin(false)
-    if (membership?.cohortId) {
-      navigate(`/challenges/v/${challenge.id}/about/${membership.cohortId}`, true)
+    if (cohortId) {
+      navigate(`/challenges/v/${challenge.id}/about/${cohortId}`, true)
     }
     revalidator.revalidate()
   }
@@ -102,12 +104,12 @@ export default function ChallengeAbout (): JSX.Element {
           isOpen={true}
           title='Share this Challenge'
           prompt='Here is a link to invite your friends'
-          link={getShortUrl(challenge, membership, cohortId)}
+          link={getShortUrl(challenge, membership)}
           onClose={() => { setInvite(null) }}
         />
 
       }
-      <ChallengeOverview challenge={challenge} memberChallenge={membership} cohortId={cohortId}/>
+      <ChallengeOverview challenge={challenge} />
       <div className='max-w-lg text-center rounded-lg p-2'>
       {currentUser?.id === challenge.userId && challenge.type === 'SCHEDULED' && (
         <p className='text-red mt-4'>As the creator of this challenge, you are automatically a member.</p>

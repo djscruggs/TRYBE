@@ -6,21 +6,23 @@ import { toast } from 'react-hot-toast'
 import { getShortUrl } from '~/utils/helpers/challenge'
 import DialogShare from './dialogShare'
 import { CurrentUserContext } from '~/utils/CurrentUserContext'
+import { useCohortId } from '~/utils/hooks'
+import { MemberContext } from '~/utils/MemberContext'
 interface ChallengeTabsProps {
   challenge: ChallengeSummary
   className?: string
   which?: string
   membership?: MemberChallenge
-  cohortId?: number
 }
 
 export default function ChallengeTabs (props: ChallengeTabsProps): JSX.Element {
   const { challenge, which } = props
   const { currentUser } = useContext(CurrentUserContext)
-  const [isMember, setIsMember] = useState(Boolean(props.membership?.id ?? (challenge.type === 'SCHEDULED' && props.challenge.userId === currentUser?.id)))
+  const { membership } = useContext(MemberContext)
+  const cohortId = useCohortId()
+  const isMember = useState(Boolean(membership?.id ?? (challenge.type === 'SCHEDULED' && props.challenge.userId === currentUser?.id)))
   const gatedNavigate = useGatedNavigate()
   const [currentTab, setCurrentTab] = useState(which)
-  const [cohortId, setCohortId] = useState(props.cohortId ?? props.membership?.cohortId)
   const goTo = (path: string, which: string, gated: boolean = false): void => {
     if (!isMember) {
       if (path === '/chat' || path === '/checkins') {
@@ -43,12 +45,7 @@ export default function ChallengeTabs (props: ChallengeTabsProps): JSX.Element {
   useEffect(() => {
     setCurrentTab(which)
   }, [which])
-  useEffect(() => {
-    if (props.cohortId ?? props.membership?.cohortId) {
-      setCohortId(props.cohortId ?? props.membership?.cohortId)
-    }
-    setIsMember(Boolean(props.membership?.id ?? (challenge.type === 'SCHEDULED' && props.challenge.userId === currentUser?.id)))
-  }, [props.membership, props.challenge.userId, currentUser?.id, props.cohortId])
+
   return (
     <>
     <div className='relative text-lg py-2 flex items-center justify-center w-full gap-4'>

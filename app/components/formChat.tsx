@@ -12,6 +12,7 @@ import VideoChooser from './videoChooser'
 import { handleFileUpload } from '~/utils/helpers'
 import { TiDeleteOutline } from 'react-icons/ti'
 import VideoPreview from './videoPreview'
+import useCohortId from '~/hooks/useCohortId'
 
 interface FormChatProps {
   type?: 'post' | 'challenge' | 'reply' | 'thread' | 'checkin' | 'comment'
@@ -23,7 +24,7 @@ interface FormChatProps {
   comment?: Comment
   prompt?: string
   autoFocus?: boolean
-  cohortId?: number
+  cohortId?: number | null
   inputRef?: React.RefObject<HTMLTextAreaElement | HTMLInputElement | HTMLDivElement>
 }
 
@@ -38,6 +39,7 @@ function getTypeAndId (comment: Comment): { type: string, id: number } {
 
 export default function FormChat (props: FormChatProps): JSX.Element {
   const { comment, onCancel } = props
+  const cohortId = useCohortId()
   let type: string | undefined
   let id: number | undefined
   let objectId: number | undefined
@@ -151,7 +153,7 @@ export default function FormChat (props: FormChatProps): JSX.Element {
       if (id) {
         formData.set('id', String(id))
       }
-      if (props.cohortId) {
+      if (cohortId) {
         formData.set('cohortId', String(props.cohortId))
       }
       if (state.image) {

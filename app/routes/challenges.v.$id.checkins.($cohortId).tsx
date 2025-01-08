@@ -1,8 +1,9 @@
 import { type MetaFunction, useRouteLoaderData } from '@remix-run/react'
-import type { Challenge, CheckIn, MemberChallenge } from '~/utils/types'
+import type { Challenge, CheckIn } from '~/utils/types'
 import CheckinsList from '~/components/checkinsList'
 import { useContext, useEffect, useState } from 'react'
 import { CurrentUserContext } from '~/utils/CurrentUserContext'
+import { MemberContext } from '~/utils/MemberContext'
 import axios from 'axios'
 import { Spinner } from '@material-tailwind/react'
 import 'react-circular-progressbar/dist/styles.css'
@@ -18,8 +19,9 @@ export const meta: MetaFunction = () => {
   ]
 }
 export default function MyCheckIns (): JSX.Element {
-  const { membership, challenge } = useRouteLoaderData<typeof useRouteLoaderData>('routes/challenges.v.$id') as { membership: MemberChallenge, challenge: Challenge }
+  const { challenge } = useRouteLoaderData<typeof useRouteLoaderData>('routes/challenges.v.$id') as { challenge: Challenge }
   const { currentUser } = useContext(CurrentUserContext)
+  const { membership } = useContext(MemberContext)
   const [checkIns, setCheckIns] = useState<CheckIn[]>([])
   const [isLoading, setIsLoading] = useState(true)
   if (!membership && challenge.userId !== currentUser?.id) {
@@ -33,7 +35,10 @@ export default function MyCheckIns (): JSX.Element {
     }
     const uid = membership?.userId ?? currentUser?.id
     setIsLoading(true)
-    const url = `/api/checkins/${challenge.id}/${uid}`
+    let url = `/api/checkins/${challenge.id}/${uid}`
+    if (challenge.type === 'SELF_LED' && membership?.cohortId) {
+      url += `/${membership.cohortId}`
+    }
     const response = await axios.get(url)
     setCheckIns(response.data.checkIns as CheckIn[])
     setIsLoading(false)

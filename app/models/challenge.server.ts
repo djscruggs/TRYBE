@@ -432,14 +432,18 @@ export const loadMemberChallenge = async (userId: number, challengeId: number): 
     }
   }) as MemberChallenge | null
 }
-export const fetchChallengeMembers = async (cId: string | number): Promise<MemberChallenge[]> => {
+export const fetchChallengeMembers = async (challengeId: string | number, cohortId?: number): Promise<MemberChallenge[]> => {
   const params: Prisma.MemberChallengeFindManyArgs = {
-    where: { challengeId: Number(cId.toString()) },
+    where: { challengeId: Number(challengeId.toString()) },
     include: {
       challenge: {
         include: {
           _count: {
-            select: { members: true, comments: true, likes: true }
+            select: {
+              members: { where: { cohortId } },
+              comments: true,
+              likes: true
+            }
           },
           categories: {
             select: {
@@ -595,13 +599,16 @@ const getLatestStartDateFromCohort = async (cohortId: number): Promise<Date> => 
 
   return highestStartAt
 }
-export async function fetchCheckIns ({ userId, challengeId, orderBy = 'desc' }: { userId?: number, challengeId?: number, orderBy?: 'asc' | 'desc' }): Promise<CheckIn[]> {
+export async function fetchCheckIns ({ userId, challengeId, orderBy = 'desc', cohortId }: { userId?: number, challengeId?: number, orderBy?: 'asc' | 'desc', cohortId?: number }): Promise<CheckIn[]> {
   const where: any = {}
   if (userId) {
     where.userId = userId
   }
   if (challengeId) {
     where.challengeId = challengeId
+  }
+  if (cohortId) {
+    where.cohortId = cohortId
   }
   return await prisma.checkIn.findMany({
     where,

@@ -1,6 +1,7 @@
 import { useState, useEffect, useContext } from 'react'
 import { type ChallengeSummary, type MemberChallenge, type CheckIn } from '~/utils/types'
 import { CurrentUserContext } from '~/utils/CurrentUserContext'
+import { MemberContext } from '~/utils/MemberContext'
 import { isPast, isFuture } from 'date-fns'
 import {
   userLocale,
@@ -18,14 +19,13 @@ import { toast } from 'react-hot-toast'
 import { HiOutlineClipboardCopy } from 'react-icons/hi'
 interface ChallengeOverviewProps {
   challenge: ChallengeSummary
-  memberChallenge?: MemberChallenge
-  cohortId?: number
 }
 export default function ChallengeOverview (props: ChallengeOverviewProps): JSX.Element {
-  const { challenge, memberChallenge } = props
-  const [cohortId, setCohortId] = useState(props.cohortId)
+  const { challenge } = props
+  const { membership, setMembership } = useContext(MemberContext)
+  const cohortId = membership?.cohortId
   const expired = challenge?.endAt ? isPast(new Date(challenge.endAt)) : false
-  const [started, setStarted] = useState(hasStarted(challenge, memberChallenge))
+  const [started, setStarted] = useState(hasStarted(challenge, membership))
   const { currentUser } = useContext(CurrentUserContext)
   const locale = currentUser ? userLocale(currentUser) : 'en-US'
   const dateOptions: DateTimeFormatOptions = {
@@ -33,7 +33,6 @@ export default function ChallengeOverview (props: ChallengeOverviewProps): JSX.E
     month: 'short',
     day: 'numeric'
   }
-  const [membership, setMembership] = useState<MemberChallenge | undefined>(memberChallenge)
   const formatTime = (hour: number, minute: number): string => {
     // Create a Date object with the given hour and minute in GMT
     const date = new Date(Date.UTC(1970, 0, 1, hour, minute))
@@ -51,9 +50,9 @@ export default function ChallengeOverview (props: ChallengeOverviewProps): JSX.E
   const [editingStartAt, setEditingStartAt] = useState(false)
 
   useEffect(() => {
-    setMembership(memberChallenge)
-    setStarted(hasStarted(challenge, memberChallenge))
-  }, [memberChallenge, challenge, membership])
+    setMembership(membership)
+    setStarted(hasStarted(challenge, membership))
+  }, [membership, challenge])
   const [checkIns, setCheckIns] = useState<CheckIn[]>([])
   const fetchCheckIns = async (): Promise<void> => {
     try {
@@ -105,7 +104,7 @@ export default function ChallengeOverview (props: ChallengeOverviewProps): JSX.E
                   {isFuture(membership.startAt) ? 'Starts' : 'Started'}
               </div>
             {editingStartAt
-              ? <EditMemberChallenge which='startAt' memberChallenge={membership} onCancel={() => { setEditingStartAt(false) }} afterSave={(memberChallenge) => { setMembership(memberChallenge); setEditingStartAt(false) }} />
+              ? <EditMembership which='startAt' membership={membership} onCancel={() => { setEditingStartAt(false) }} afterSave={() => { setEditingStartAt(false) }} />
               : <>
               {formatDate(String(membership.startAt))}
               {!editingNotificationTime &&
@@ -121,7 +120,7 @@ export default function ChallengeOverview (props: ChallengeOverviewProps): JSX.E
               {editingNotificationTime
                 ? (
                 <div>
-                  <EditMemberChallenge which='notificationTime' memberChallenge={membership} onCancel={() => { setEditingNotificationTime(false) }} afterSave={(memberChallenge) => { setMembership(memberChallenge); setEditingNotificationTime(false) }} />
+                  <EditMembership which='notificationTime' membership={membership} onCancel={() => { setEditingNotificationTime(false) }} afterSave={() => { setEditingNotificationTime(false) } } />
                 </div>
                   )
                 : (
@@ -183,24 +182,24 @@ export default function ChallengeOverview (props: ChallengeOverviewProps): JSX.E
   )
 }
 
-interface EditMemberChallengeProps {
-  memberChallenge: MemberChallenge | null | undefined
+interface EditMembershipProps {
+  membership: MemberChallenge | null
   onCancel: () => void
-  afterSave: (memberChallenge: MemberChallenge) => void
+  afterSave: (membership: MemberChallenge) => void
   which: 'notificationTime' | 'startAt'
 }
 
-export function EditMemberChallenge (props: EditMemberChallengeProps): JSX.Element {
+export function EditMembership (props: EditMembershipProps): JSX.Element {
   const { onCancel, afterSave, which } = props
-  const [memberChallenge, setMemberChallenge] = useState<MemberChallenge | null | undefined>(props.memberChallenge)
-  if (!memberChallenge) {
+  const { membership, setMembership } = useContext(MemberContext)
+  if (!membership) {
     return <></>
   }
   let initialNotificationTime: Date | null = null
   if (which === 'notificationTime') {
     initialNotificationTime = new Date()
-    initialNotificationTime.setUTCHours(memberChallenge.notificationHour ?? 0)
-    initialNotificationTime.setUTCMinutes(memberChallenge.notificationMinute ?? 0)
+    initialNotificationTime.setUTCHours(membership.notificationHour ?? 0)
+    initialNotificationTime.setUTCMinutes(membership.notificationMinute ?? 0)
   } else {
     initialNotificationTime = null
   }
@@ -209,7 +208,7 @@ export function EditMemberChallenge (props: EditMemberChallengeProps): JSX.Eleme
   const localDateFormat = currentUser?.locale === 'en-US' ? 'M-dd-YYYY' : 'dd-M-YYYY'
   const [formData, setFormData] = useState({
     notificationTime: which === 'notificationTime' ? initialNotificationTime : null,
-    startAt: which === 'startAt' ? memberChallenge.startAt ? new Date(memberChallenge.startAt) : null : null
+    startAt: which === 'startAt' ? membership.startAt ? new Date(membership.startAt) : null : null
   })
   const selectDate = (date: Date): void => {
     setFormData({ ...formData, startAt: date })
@@ -217,7 +216,10 @@ export function EditMemberChallenge (props: EditMemberChallengeProps): JSX.Eleme
   const selectNotificationTime = (time: Date | null): void => {
     setFormData({ ...formData, notificationTime: time })
   }
-  const [errors, setErrors] = useState({
+  const [errors, setErrors] = useState<{
+    notificationTime: string | null
+    startAt: string | null
+  }>({
     notificationTime: null,
     startAt: null
   })
@@ -244,7 +246,7 @@ export function EditMemberChallenge (props: EditMemberChallengeProps): JSX.Eleme
     return valid
   }
   const save = async (): Promise<void> => {
-    if (!memberChallenge?.id) {
+    if (!membership?.id) {
       throw new Error('cannot save notification time without an id')
     }
     if (!validate()) {
@@ -266,10 +268,10 @@ export function EditMemberChallenge (props: EditMemberChallengeProps): JSX.Eleme
       const startAt = new Date(formData.startAt)
       data.append('startAt', startAt.toISOString())
     }
-    const url = `/api/memberchallenges/${memberChallenge.id}`
+    const url = `/api/memberchallenges/${membership.id}`
     const response = await axios.post(url, data)
     setLoading(false)
-    setMemberChallenge(response.data.result as MemberChallenge)
+    setMembership(response.data.result as MemberChallenge)
     afterSave(response.data.result as MemberChallenge)
   }
 

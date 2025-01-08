@@ -8,10 +8,11 @@ import { FaChevronCircleLeft } from 'react-icons/fa'
 import { prisma } from '~/models/prisma.server'
 import ChallengeHeader from '~/components/challengeHeader'
 import ChallengeTabs from '~/components/challengeTabs'
+import { MemberContext } from '~/utils/MemberContext'
 
 interface ViewChallengeData {
   challenge: ChallengeSummary
-  membership?: MemberChallenge | undefined
+  membership?: MemberChallenge | null
   loadingError?: string
   cohortId?: number
 }
@@ -54,7 +55,7 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs): Promise<
         }
       }) as MemberChallenge | null
     }
-    return { challenge, membership: membership ?? undefined, cohortId }
+    return { challenge, membership: membership ?? null, cohortId }
   } catch (error) {
     console.error(error)
     return { loadingError: 'Error loading challenge' }
@@ -67,7 +68,7 @@ export const meta: MetaFunction<typeof loader> = ({
 }
 export default function ViewChallenge (): JSX.Element {
   const data = useLoaderData<ViewChallengeData>()
-  const membership = data.membership
+  const [membership, setMembership] = useState<MemberChallenge | null>(data.membership as MemberChallenge | null)
   const { challenge } = data
   const [which, setWhich] = useState('') // matches[0] is root, matches[1] is the challenges, matches[2] is challenges/v/$idtab
   const location = useLocation()
@@ -102,7 +103,8 @@ export default function ViewChallenge (): JSX.Element {
     }
   }, [matches])
   return (
-    <div className={`w-full ${isEdit ? '' : ' relative'}`}>
+    <MemberContext.Provider value={{ membership, setMembership }}>
+      <div className={`w-full ${isEdit ? '' : ' relative'}`}>
         {/* make wider on chat tab */}
         <div className={`fixed top-0 z-10 bg-white w-full max-w-lg ${which === 'chat' ? 'md:max-w-2xl' : ''} bg-opacity-80 rounded-br-lg`}>
           <ChallengeHeader challenge={challenge as Challenge} size='small' />
@@ -123,5 +125,6 @@ export default function ViewChallenge (): JSX.Element {
           }
         </div>
       </div>
+    </MemberContext.Provider>
   )
 }

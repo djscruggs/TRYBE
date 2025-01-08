@@ -21,7 +21,6 @@ export const meta: MetaFunction = () => {
 export const loader: LoaderFunction = async (args) => {
   const currentUser: CurrentUser | null = await requireCurrentUser(args)
   const comments = await fetchComments({ challengeId: Number(args.params.id) })
-  const likes = currentUser?.id ? await likesByType({ userId: currentUser.id }) : { comment: [] as number[] }
   if (!comments) {
     const error = { loadingError: 'Challenge not found' }
     return json(error)
@@ -47,7 +46,7 @@ export default function ViewChallengeComments (): JSX.Element {
           {showForm
             ? (
                 <div className="mt-1">
-                  <FormComment afterSave={handleFormSubmit} onCancel={() => { setShowForm(false) }} challengeId={params.id ?? ''} />
+                  <FormComment afterSave={handleFormSubmit} onCancel={() => { setShowForm(false) }} challengeId={Number(params.id) ?? null} />
                 </div>
               )
             : (

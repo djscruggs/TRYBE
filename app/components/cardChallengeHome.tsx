@@ -1,6 +1,6 @@
 import { useContext, useState } from 'react'
 import { FaRegCalendarAlt, FaUserFriends } from 'react-icons/fa'
-import { type Challenge, type ChallengeSummary } from '~/utils/types'
+import { type MemberChallenge, type Challenge, type ChallengeSummary } from '~/utils/types'
 import { colorToClassName } from '~/utils/helpers'
 import { CurrentUserContext } from '~/utils/CurrentUserContext'
 import { useNavigate } from '@remix-run/react'
@@ -23,6 +23,9 @@ export default function CardChallengeHome ({ challenge, isMember, isPreview, mem
   if (isMember === undefined) {
     isMember = challenge?.members?.some(member => member.userId === currentUser?.id) ?? (challenge.type === 'SCHEDULED' && challenge.userId === currentUser?.id)
   }
+  if (challenge.id === 27) {
+    console.log('membership in cardChallengeHome', membership)
+  }
   const [sharing, setSharing] = useState(false)
   const isHost = challenge.userId === currentUser?.id
   const navigate = useNavigate()
@@ -42,11 +45,10 @@ export default function CardChallengeHome ({ challenge, isMember, isPreview, mem
         if (memberCount >= 2 || challenge.type === 'SCHEDULED') {
           url = `/challenges/v/${challenge.id}/chat`
         } else {
-          if (membership?.cohortId) {
-            url = `/challenges/v/${challenge.id}/checkins/${membership.cohortId}`
-          } else {
-            url = `/challenges/v/${challenge.id}/checkins`
-          }
+          url = `/challenges/v/${challenge.id}/checkins`
+        }
+        if (membership?.cohortId) {
+          url += `/${membership.cohortId}`
         }
       }
     }

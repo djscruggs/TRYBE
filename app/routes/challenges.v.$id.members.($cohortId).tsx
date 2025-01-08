@@ -3,7 +3,7 @@ import { type LoaderFunction } from '@remix-run/server-runtime'
 import { fetchChallengeMembers } from '~/models/challenge.server'
 import AvatarLoader from '~/components/avatarLoader'
 import { type MemberChallenge } from '~/utils/types'
-
+import useCohortId from '~/hooks/useCohortId'
 export const meta: MetaFunction = () => {
   return [
     { title: 'Members' },
@@ -17,7 +17,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
   if (!params.id) {
     return json({ loadingError: 'Challenge id not included' })
   }
-  const result = await fetchChallengeMembers(params.id)
+  const result = await fetchChallengeMembers(params.id, params.cohortId ? Number(params.cohortId) : undefined)
 
   if (!result) {
     const error = { loadingError: 'Challenge not found' }
