@@ -15,16 +15,17 @@ export const sendScheduledPosts = async (): Promise<number> => {
       published: true,
       notifyMembers: true,
       notificationSentOn: null,
-      publishAt: {
-        lt: new Date()
-      },
       OR: [
         {
-          challengeId: null
+          challengeId: null,
+          publishAt: {
+            lt: new Date()
+          }
         },
         {
           challenge: {
-            status: 'PUBLISHED' // Add this condition
+            status: 'PUBLISHED',
+            type: 'SCHEDULED'
           }
         }
       ]
