@@ -7,12 +7,28 @@ import ClientStyleContext from './ClientStyleContext'
 import createEmotionCache from './createEmotionCache'
 import { ThemeProvider } from '@material-tailwind/react'
 import * as Sentry from '@sentry/react'
+
+import type { EventHint, Event } from '@sentry/browser'
+import { isCancel } from 'axios'
+
+// based on https://github.com/axios/axios/issues/6209
+function ignoreAxiosCancel (event: Event, hint: EventHint): Event | null {
+  if (isCancel(hint?.originalException)) {
+    console.debug('Cancelled request ignored by Sentry', hint.originalException)
+    return null
+  }
+  return event
+}
+
 Sentry.init({
   environment: process.env.NODE_ENV,
   dsn: 'https://4f3a1762974e77da7b1e347738080185@o4506538845929472.ingest.us.sentry.io/4506538846126080',
   tunnel: '/tunnel',
   ignoreErrors: ['Network Error'],
   beforeSend (event, hint) {
+    if (!ignoreAxiosCancel(event, hint)) {
+      return null
+    }
     // Check if it is an exception, and if so, show the report dialog
     if (event.exception && event.event_id) {
       Sentry.showReportDialog({ eventId: event.event_id })
