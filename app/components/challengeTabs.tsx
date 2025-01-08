@@ -6,7 +6,7 @@ import { toast } from 'react-hot-toast'
 import { getShortUrl } from '~/utils/helpers/challenge'
 import DialogShare from './dialogShare'
 import { CurrentUserContext } from '~/utils/CurrentUserContext'
-import { useCohortId } from '~/utils/hooks'
+import useCohortId from '~/hooks/useCohortId'
 import { MemberContext } from '~/utils/MemberContext'
 interface ChallengeTabsProps {
   challenge: ChallengeSummary
