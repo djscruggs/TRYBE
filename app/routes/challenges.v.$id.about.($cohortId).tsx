@@ -66,12 +66,12 @@ export default function ChallengeAbout (): JSX.Element {
         setIsMember(true)
         setMembership(response.data.result as MemberChallenge)
       } else {
+        setIsMember(false)
+        setMembership(null)
         if (cohortId) {
           const url = `/challenges/v/${challenge.id}/about`
-          setMembership(null)
           navigate(url, true)
         }
-        setIsMember(false)
       }
       revalidator.revalidate()
     } catch (error) {

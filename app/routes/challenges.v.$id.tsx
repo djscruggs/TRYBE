@@ -103,6 +103,7 @@ export default function ViewChallenge (): JSX.Element {
       navigate(url)
     }
   }, [matches])
+
   return (
     <MemberContextProvider membership={membership} setMembership={setMembership}>
       <div className={`w-full ${isEdit ? '' : ' relative'}`}>
@@ -110,7 +111,7 @@ export default function ViewChallenge (): JSX.Element {
         <div className={`fixed top-0 z-10 bg-white w-full max-w-lg ${which === 'chat' ? 'md:max-w-2xl' : ''} bg-opacity-80 rounded-br-lg`}>
           <ChallengeHeader challenge={challenge as Challenge} size='small' />
           {!isEdit &&
-            <ChallengeTabs challenge={challenge as ChallengeSummary} which={which}cohortId={data.cohortId} />
+            <ChallengeTabs challenge={challenge as ChallengeSummary} which={which} />
           }
         </div>
 

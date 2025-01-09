@@ -19,7 +19,7 @@ export default function ChallengeTabs (props: ChallengeTabsProps): JSX.Element {
   const { currentUser } = useContext(CurrentUserContext)
   const { membership, refreshUserCheckIns } = useMemberContext()
   const cohortId = useCohortId()
-  const isMember = useState(Boolean(membership?.id ?? (challenge.type === 'SCHEDULED' && props.challenge.userId === currentUser?.id)))
+  const [isMember, setIsMember] = useState(Boolean(membership?.id ?? (challenge.type === 'SCHEDULED' && props.challenge.userId === currentUser?.id)))
   const gatedNavigate = useGatedNavigate()
   const [currentTab, setCurrentTab] = useState(which)
   const goTo = (path: string, which: string, gated: boolean = false): void => {
@@ -44,6 +44,9 @@ export default function ChallengeTabs (props: ChallengeTabsProps): JSX.Element {
   useEffect(() => {
     setCurrentTab(which)
   }, [which])
+  useEffect(() => {
+    setIsMember(Boolean(membership?.id ?? (challenge.type === 'SCHEDULED' && props.challenge.userId === currentUser?.id)))
+  }, [membership])
 
   return (
     <>
