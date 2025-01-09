@@ -363,7 +363,7 @@ export default function ViewChallengeChat (): JSX.Element {
       ))}
 
       {showCheckinPopup && (
-        <DialogCheckin challenge={challenge} open={true} onClose={() => { setShowCheckinPopup(false) }} afterCheckIn={handleAfterCheckIn} />
+        <DialogCheckin challenge={challenge} open={true} onClose={() => { setShowCheckinPopup(false) }} afterCheckIn={() => { setHasCheckedInToday(true) }} />
       )}
       {currentUser && (
         <div className='fixed w-screen md:max-w-2xl pr-2 bottom-0 pb-2 bg-white bg-opacity-90 max-h-3/4' >
@@ -383,7 +383,7 @@ export default function ViewChallengeChat (): JSX.Element {
         <DialogPost post={featuredPost as Post} open={showfeaturedPost} onClose={handleClosefeaturedPost} >
           {started && !hasCheckedInToday && !expired && challenge.status !== 'DRAFT' &&
             <div className='flex items-center justify-center mt-4'>
-              <CheckInButton challenge={challenge} afterCheckIn={handleAfterCheckIn} />
+              <CheckInButton challenge={challenge} afterCheckIn={() => { setHasCheckedInToday(true) }} />
             </div>
           }
         </DialogPost>
