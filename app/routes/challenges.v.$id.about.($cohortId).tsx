@@ -3,7 +3,7 @@ import { type MetaFunction, useRouteLoaderData, useRevalidator, useSearchParams 
 import { type Challenge, type ChallengeSummary } from '~/utils/types'
 import { useContext, useState } from 'react'
 import { CurrentUserContext } from '~/contexts/CurrentUserContext'
-import { MemberContext } from '~/contexts/MemberContext'
+import { useMemberContext } from '~/contexts/MemberContext'
 import useCohortId from '~/hooks/useCohortId'
 import DialogConfirm from '~/components/dialogConfirm'
 import DialogJoin from '~/components/dialogJoin'
@@ -23,7 +23,7 @@ export const meta: MetaFunction = () => {
 }
 export default function ChallengeAbout (): JSX.Element {
   const data = useRouteLoaderData<{ challenge: ChallengeSummary, loadingError: string }>('routes/challenges.v.$id') as unknown as { challenge: ChallengeSummary, loadingError: string }
-  const { membership, setMembership } = useContext(MemberContext)
+  const { membership, setMembership } = useMemberContext()
   const { challenge } = data
   const { loadingError } = data
   const { currentUser } = useContext(CurrentUserContext)

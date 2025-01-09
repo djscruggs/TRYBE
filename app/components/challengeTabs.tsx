@@ -7,18 +7,17 @@ import { getShortUrl } from '~/utils/helpers/challenge'
 import DialogShare from './dialogShare'
 import { CurrentUserContext } from '~/contexts/CurrentUserContext'
 import useCohortId from '~/hooks/useCohortId'
-import { MemberContext } from '~/contexts/MemberContext'
+import { useMemberContext } from '~/contexts/MemberContext'
 interface ChallengeTabsProps {
   challenge: ChallengeSummary
   className?: string
   which?: string
-  membership?: MemberChallenge
 }
 
 export default function ChallengeTabs (props: ChallengeTabsProps): JSX.Element {
   const { challenge, which } = props
   const { currentUser } = useContext(CurrentUserContext)
-  const { membership } = useContext(MemberContext)
+  const { membership, refreshUserCheckIns } = useMemberContext()
   const cohortId = useCohortId()
   const isMember = useState(Boolean(membership?.id ?? (challenge.type === 'SCHEDULED' && props.challenge.userId === currentUser?.id)))
   const gatedNavigate = useGatedNavigate()
@@ -54,7 +53,7 @@ export default function ChallengeTabs (props: ChallengeTabsProps): JSX.Element {
       <div className={`w-fit ${isMember ? 'cursor-pointer' : 'cursor-not-allowed'} border-b-2 border-red ${currentTab === 'progress' ? 'border-red' : 'border-white  hover:border-grey '}`} onClick={() => { goTo(addCohortId('/checkins'), 'progress', true) }}>Progress</div>
       {(challenge.type === 'SCHEDULED' || challenge?._count?.members > 1) && <div className={`w-fit ${isMember ? 'cursor-pointer' : 'cursor-not-allowed'} border-b-2 border-red ${currentTab === 'chat' ? 'border-red' : 'border-white  hover:border-grey'}`} onClick={() => { goTo(addCohortId('/chat'), 'chat', true) }}>Chat</div>}
       <div className=' float-right -mt-1'>
-        {isMember && <CheckInButton challenge={challenge} size='xs' />}
+        {isMember && <CheckInButton challenge={challenge} size='xs' afterCheckIn={refreshUserCheckIns}/>}
       </div>
       {/* <div className='flex justify-center'>
           <button onClick={() => { setSharing(true) }} className='text-red underline text-xs'>Share Challenge</button>

@@ -43,16 +43,16 @@ export default function CheckinsList (props: CheckinsListProps): JSX.Element {
     return <></>
   }
   return (
-    <div className='text-left flex flex-col w-full' id={id ?? 'checkins-list'}>
+        <div className='text-left flex flex-col w-full' id={id ?? 'checkins-list'}>
           <div key={props.date}>
             <DateDivider date={props.date} />
             {uniqueUsers > 0 && <CollapsedCheckins checkIns={emptyCheckIns} />}
-            {checkIns.map((checkIn: CheckIn, index: number) => {
+            {checkIns.map((checkIn: CheckIn) => {
               if (!checkIn.body?.length) return null // Skip empty check-ins
 
               return (
-                <div key={checkIn.id} className={`relative pt-2 ${index === 0 ? '' : 'border-t'}`}>
-                  <div className='mt-2'>
+                <div key={checkIn.id} className={'relative pt-2 '}>
+                  <div className='mb-2 bg-yellow bg-opacity-10 rounded-md'>
                     <CheckinRow checkIn={checkIn} comments={[]} allowComments={allowComments} highlightedObject={highlightedObject} highlightedId={highlightedId} afterDelete={handleDelete} />
                   </div>
                 </div>
@@ -75,7 +75,7 @@ export default function CheckinsList (props: CheckinsListProps): JSX.Element {
               </>
             }
           </div>
-    </div>
+        </div>
   )
 }
 
@@ -180,7 +180,7 @@ interface CheckInProps {
   checkIn: CheckIn
   timestamp: string
 }
-const CheckInContent = ({ checkIn, timestamp }: CheckInProps): JSX.Element => {
+export const CheckInContent = ({ checkIn, timestamp }: CheckInProps): JSX.Element => {
   const [showLightbox, setShowLightbox] = useState(false)
   const handlePhotoClick = (event: any): void => {
     event.preventDefault()
@@ -193,7 +193,9 @@ const CheckInContent = ({ checkIn, timestamp }: CheckInProps): JSX.Element => {
         <CheckInAvatar checkIn={checkIn} />
         <div className='ml-0'>
           <div className='text-xs mb-2'>
-            <span className='font-bold'>{checkIn.user?.profile?.fullName}</span> <span className='text-xs'>{timestamp}</span>
+            <span className='font-bold'>{checkIn.user?.profile?.fullName}</span>
+            { timestamp && <span className='text-xs'> checked in {timestamp === 'just now' ? 'just now' : `at ${timestamp}`}</span>}
+
           </div>
           <div className='mb-2'>
             {checkIn.body?.length > 0

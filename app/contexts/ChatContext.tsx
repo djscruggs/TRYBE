@@ -38,7 +38,9 @@ export const ChatContextProvider = (props: ChatContextProviderProps) => {
   const [pendingComments, setPendingComments] = useState<Comment[]>([])
   const [commentsByDate, setCommentsByDate] = useState<Record<string, Comment[]>>(props.commentsByDate)
   useEffect(() => {
-    props.onChange?.(getCommentsByDate())
+    if (pendingComments.length > 0) {
+      props.onChange?.(getCommentsByDate())
+    }
   }, [pendingComments])
 
   const getCommentsByDate = (): Record<string, Comment[]> => {

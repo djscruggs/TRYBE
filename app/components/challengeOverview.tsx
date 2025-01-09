@@ -1,7 +1,7 @@
 import { useState, useEffect, useContext } from 'react'
 import { type ChallengeSummary, type MemberChallenge, type CheckIn } from '~/utils/types'
 import { CurrentUserContext } from '~/contexts/CurrentUserContext'
-import { MemberContext } from '~/contexts/MemberContext'
+import { useMemberContext } from '~/contexts/MemberContext'
 import { isPast, isFuture } from 'date-fns'
 import {
   userLocale,
@@ -22,7 +22,7 @@ interface ChallengeOverviewProps {
 }
 export default function ChallengeOverview (props: ChallengeOverviewProps): JSX.Element {
   const { challenge } = props
-  const { membership, setMembership } = useContext(MemberContext)
+  const { membership, setMembership } = useMemberContext()
   const cohortId = membership?.cohortId
   const expired = challenge?.endAt ? isPast(new Date(challenge.endAt)) : false
   const [started, setStarted] = useState(hasStarted(challenge, membership))

@@ -8,7 +8,7 @@ import { FaChevronCircleLeft } from 'react-icons/fa'
 import { prisma } from '~/models/prisma.server'
 import ChallengeHeader from '~/components/challengeHeader'
 import ChallengeTabs from '~/components/challengeTabs'
-import { MemberContext } from '~/contexts/MemberContext'
+import { MemberContextProvider } from '~/contexts/MemberContext'
 
 interface ViewChallengeData {
   challenge: ChallengeSummary
@@ -51,7 +51,8 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs): Promise<
         include: {
           _count: {
             select: { checkIns: true }
-          }
+          },
+          challenge: true
         }
       }) as MemberChallenge | null
     }
@@ -103,13 +104,13 @@ export default function ViewChallenge (): JSX.Element {
     }
   }, [matches])
   return (
-    <MemberContext.Provider value={{ membership, setMembership }}>
+    <MemberContextProvider membership={membership} setMembership={setMembership}>
       <div className={`w-full ${isEdit ? '' : ' relative'}`}>
         {/* make wider on chat tab */}
         <div className={`fixed top-0 z-10 bg-white w-full max-w-lg ${which === 'chat' ? 'md:max-w-2xl' : ''} bg-opacity-80 rounded-br-lg`}>
           <ChallengeHeader challenge={challenge as Challenge} size='small' />
           {!isEdit &&
-            <ChallengeTabs challenge={challenge as ChallengeSummary} which={which} membership={membership} cohortId={data.cohortId} />
+            <ChallengeTabs challenge={challenge as ChallengeSummary} which={which}cohortId={data.cohortId} />
           }
         </div>
 
@@ -125,6 +126,6 @@ export default function ViewChallenge (): JSX.Element {
           }
         </div>
       </div>
-    </MemberContext.Provider>
+    </MemberContextProvider>
   )
 }

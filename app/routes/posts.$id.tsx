@@ -39,21 +39,19 @@ export default function ViewPost (): JSX.Element {
   if (location.pathname.includes('edit')) {
     return <Outlet />
   }
-  const { currentUser } = useContext(CurrentUserContext)
-  const { loadingError, post, challenge, membership } = useLoaderData() as PostData
+  const { loadingError, post, challenge } = useLoaderData() as PostData
   if (loadingError) {
     return <h1>{loadingError}</h1>
   }
   if (!post) {
     return <p>Loading...</p>
   }
-  const isMember = Boolean(challenge?.userId === currentUser?.id || membership?.id)
   return (
     <>
       {challenge &&
         <div className='fixed top-0 z-10 bg-white w-full max-w-lg bg-opacity-80 rounded-br-lg'>
           <ChallengeHeader size='small' challenge={challenge} />
-          <ChallengeTabs challenge={challenge} which='posts' isMember={isMember} />
+          <ChallengeTabs challenge={challenge} which='posts'/>
         </div>
       }
       <div className={`w-screen px-4 md:px-0 md:max-w-xl ${post.challenge ? 'mt-24' : 'mt-10'}`}>

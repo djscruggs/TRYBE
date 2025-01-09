@@ -3,7 +3,7 @@ import type { Challenge, CheckIn } from '~/utils/types'
 import CheckinsList from '~/components/checkinsList'
 import { useContext, useEffect, useState } from 'react'
 import { CurrentUserContext } from '~/contexts/CurrentUserContext'
-import { MemberContext } from '~/contexts/MemberContext'
+import { useMemberContext } from '~/contexts/MemberContext'
 import axios from 'axios'
 import { Spinner } from '@material-tailwind/react'
 import 'react-circular-progressbar/dist/styles.css'
@@ -33,7 +33,7 @@ function groupCheckInsByDate (checkIns: CheckIn[]): Record<string, CheckIn[]> {
 export default function MyCheckIns (): JSX.Element {
   const { challenge } = useRouteLoaderData<typeof useRouteLoaderData>('routes/challenges.v.$id') as { challenge: Challenge }
   const { currentUser } = useContext(CurrentUserContext)
-  const { membership } = useContext(MemberContext)
+  const { membership } = useMemberContext()
   const [checkIns, setCheckIns] = useState<CheckIn[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [groupedCheckIns, setGroupedCheckIns] = useState<Record<string, CheckIn[]>>({})

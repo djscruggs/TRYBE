@@ -1,9 +1,8 @@
 import { useSearchParams } from '@remix-run/react'
-import { MemberContext } from '~/contexts/MemberContext'
-import { useContext } from 'react'
+import { useMemberContext } from '~/contexts/MemberContext'
 
 export default function useCohortId (): number | null {
-  const { membership } = useContext(MemberContext)
+  const { membership } = useMemberContext()
   const [searchParams] = useSearchParams()
   const cohortId = membership?.cohortId ?? searchParams.get('cohortId')
   return cohortId ? Number(cohortId) : null

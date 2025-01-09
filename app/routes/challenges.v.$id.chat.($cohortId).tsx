@@ -5,10 +5,10 @@ import type { Post, CheckIn, Challenge, Comment } from '~/utils/types'
 import { json, type MetaFunction, type LoaderFunction, type LoaderFunctionArgs, type SerializeFrom } from '@remix-run/node'
 import { prisma } from '~/models/prisma.server'
 import { type MemberChallenge, Prisma } from '@prisma/client'
-import CheckinsList from '~/components/checkinsList'
+import CheckinsList, { CheckInContent, CheckinRow } from '~/components/checkinsList'
 import FormChat from '~/components/formChat'
 import { CurrentUserContext } from '~/contexts/CurrentUserContext'
-import { MemberContext } from '~/contexts/MemberContext'
+import { useMemberContext } from '~/contexts/MemberContext'
 import DialogCheckin from '~/components/dialogCheckin'
 import DialogPost from '~/components/dialogPost'
 import { CheckInButton } from '~/components/checkinButton'
@@ -17,7 +17,6 @@ import MobileBackButton from '~/components/mobileBackButton'
 import HideFeedbackButton from '~/components/hideFeedbackButton'
 import { hasStarted, isExpired } from '~/utils/helpers/challenge'
 import { loadChallengeSummary } from '~/models/challenge.server'
-import { v4 as uuidv4 } from 'uuid'
 import { ChatContextProvider } from '~/contexts/ChatContext'
 export const meta: MetaFunction = () => {
   return [
@@ -155,7 +154,7 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
       createdAt: new Date(checkIn.createdAt).toISOString(),
       updatedAt: new Date(checkIn.updatedAt).toISOString()
     }
-    if (checkIn.body !== null || checkIn.imageMeta !== null || checkIn.videoMeta !== null) {
+    if (checkIn.body || checkIn.imageMeta !== null || checkIn.videoMeta !== null) {
       groupedData[date].checkIns.nonEmpty.push(formattedCheckIn as unknown as CheckIn)
     } else {
       groupedData[date].checkIns.empty.push(formattedCheckIn as unknown as CheckIn)
@@ -172,8 +171,7 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
 
 export default function ViewChallengeChat (): JSX.Element {
   const { currentUser } = useContext(CurrentUserContext)
-
-  const { membership } = useContext(MemberContext)
+  const { membership, updated: checkInsUpdated, refreshUserCheckIns } = useMemberContext()
   const loaderData = useLoaderData<ChallengeChatData>()
   const [groupedData, setGroupedData] = useState<GroupedDataEntry>(loaderData.groupedData)
   const bottomRef = useRef<HTMLDivElement>(null)
@@ -229,13 +227,6 @@ export default function ViewChallengeChat (): JSX.Element {
   const [hasCheckedInToday, setHasCheckedInToday] = useState(checkedInToday())
   // only show the checkin popup if the user is logged in and they haven't checked in today, the challenge isn't expired, and there's no featured post
   const [showCheckinPopup, setShowCheckinPopup] = useState(started && currentUser && !hasCheckedInToday && !expired && !featuredPost && challenge.status !== 'DRAFT')
-  const revalidator = useRevalidator()
-  const handleAfterCheckIn = (checkIn: CheckIn): void => {
-    setDayCount(dayCount + 1)
-    setHasCheckedInToday(true)
-    setHasToday(true)
-    revalidator.revalidate()
-  }
   // flag to check if today is in the groupedData. if not we'll need to add an empty block to hold it
   const [hasToday, setHasToday] = useState(Object.keys(groupedData).includes(today))
   // Define the type for limitedGroupedData
@@ -263,6 +254,32 @@ export default function ViewChallengeChat (): JSX.Element {
     // transform back into object keyed by date
     const latestEntriesObject = Object.fromEntries(latestEntries)
     return latestEntriesObject
+  }
+  const [newCheckIns, setNewCheckIns] = useState<CheckIn[]>([])
+  useEffect(() => {
+    if (checkInsUpdated) {
+      refreshUserCheckIns().then((checkIns) => {
+        const currentCheckIns = JSON.parse(JSON.stringify(newCheckIns))
+        currentCheckIns.push(checkIns[0] as unknown as CheckIn)
+        setNewCheckIns(currentCheckIns as unknown as CheckIn[])
+        setDayCount(dayCount + 1)
+        setHasCheckedInToday(true)
+        setHasToday(true)
+      }).catch((error) => {
+        console.error('Error refreshing checkIns', error)
+      })
+    }
+  }, [checkInsUpdated])
+  useEffect(() => {
+    scrollToBottom()
+  }, [newCheckIns])
+  const handleDeleteNewCheckIn = (checkIn: CheckIn): void => {
+    const currentCheckIns = JSON.parse(JSON.stringify(newCheckIns))
+    const index = currentCheckIns.findIndex(c => c.id === checkIn.id)
+    if (index !== -1) {
+      currentCheckIns.splice(index, 1)
+      setNewCheckIns(currentCheckIns)
+    }
   }
 
   const handleClosefeaturedPost = (): void => {
@@ -339,6 +356,12 @@ export default function ViewChallengeChat (): JSX.Element {
       {!hasToday && (
         <DateDivider date={today} />
       )}
+      {newCheckIns.map((checkIn, index) => (
+        <div key={`checkin-${checkIn.id}`}className='mb-2 bg-yellow bg-opacity-10 rounded-md'>
+          <CheckinRow checkIn={checkIn} comments={[]} allowComments={true} afterDelete={handleDeleteNewCheckIn}/>
+        </div>
+      ))}
+
       {showCheckinPopup && (
         <DialogCheckin challenge={challenge} open={true} onClose={() => { setShowCheckinPopup(false) }} afterCheckIn={handleAfterCheckIn} />
       )}
