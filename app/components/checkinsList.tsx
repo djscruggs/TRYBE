@@ -14,13 +14,13 @@ import ChatDrawer from '~/components/chatDrawer'
 import DateDivider from '~/components/dateDivider'
 import CardPost from './cardPost'
 import ChatContainer from './chatContainer'
+import { useChatContext } from '~/contexts/ChatContext'
 // Import the hook
 
 interface CheckinsListProps {
-  checkIns: CheckIn[]
-  posts: Post[]
-  comments?: Comment[]
-  pendingComments: Comment[] | null
+  date: string
+  checkIns?: CheckIn[]
+  posts?: Post[]
   allowComments: boolean
   id?: string
   highlightedObject?: string | null
@@ -28,60 +28,24 @@ interface CheckinsListProps {
 }
 
 export default function CheckinsList (props: CheckinsListProps): JSX.Element {
-  const { checkIns, posts, comments, allowComments, id, highlightedObject, highlightedId } = props
-  const [checkInsArr, setCheckInsArr] = useState(checkIns)
-  const [pendingComments, setPendingComments] = useState<Comment[]>(props.pendingComments ?? [])
-
+  const { checkIns = [], posts = [], allowComments, id, highlightedObject, highlightedId } = props
+  const [checkInsArr, setCheckInsArr] = useState(checkIns ?? [])
   const handleDelete = (deletedCheckIn: CheckIn): void => {
     setCheckInsArr(checkInsArr.filter(checkIn => checkIn.id !== deletedCheckIn.id))
   }
 
-  // Group check-ins by day
-  const checkInsByDay = checkInsArr.reduce<Record<string, CheckIn[]>>((acc, checkIn) => {
-    const date = new Date(checkIn.createdAt).toLocaleDateString('en-CA')
-    if (!acc[date]) {
-      acc[date] = []
-    }
-    acc[date].push(checkIn)
-    return acc
-  }, {})
+  const { getCommentsByDate } = useChatContext()
+  const comments = getCommentsByDate()[props.date] ?? []
 
-  const postsByDay = posts.reduce<Record<string, Post[]>>((acc, post) => {
-    const date = post.publishAt ? new Date(post.publishAt).toLocaleDateString('en-CA') : new Date(post.createdAt).toLocaleDateString('en-CA')
-    if (!acc[date]) {
-      acc[date] = []
-    }
-    acc[date].push(post)
-    return acc
-  }, {})
-
-  const commentsByDay = comments?.reduce<Record<string, Comment[]>>((acc, comment) => {
-    const date = new Date(comment.createdAt as unknown as string).toLocaleDateString('en-CA') // Cast to string
-    if (!acc[date]) {
-      acc[date] = []
-    }
-    acc[date].push(comment)
-    return acc
-  }, {})
-
-  const allDates = new Set([...Object.keys(checkInsByDay), ...Object.keys(postsByDay), ...Object.keys(commentsByDay ?? {})])
-
-  useEffect(() => {
-    setPendingComments(props.pendingComments ?? [])
-  }, [props.pendingComments])
-
+  const emptyCheckIns = checkIns?.filter(checkIn => !checkIn.body?.length)
+  const uniqueUsers = new Set(emptyCheckIns?.map(checkIn => checkIn.userId)).size
+  if (checkIns.length === 0 && posts.length === 0 && comments.length === 0) {
+    return <></>
+  }
   return (
     <div className='text-left flex flex-col w-full' id={id ?? 'checkins-list'}>
-      {Array.from(allDates).map(date => {
-        const checkIns = checkInsByDay[date] || []
-        const posts = postsByDay[date] || []
-
-        // Filter out empty check-ins and count unique users for the day
-        const emptyCheckIns = checkIns.filter(checkIn => !checkIn.body?.length)
-        const uniqueUsers = new Set(emptyCheckIns.map(checkIn => checkIn.userId)).size
-        return (
-          <div key={date}>
-            <DateDivider date={date} />
+          <div key={props.date}>
+            <DateDivider date={props.date} />
             {uniqueUsers > 0 && <CollapsedCheckins checkIns={emptyCheckIns} />}
             {checkIns.map((checkIn: CheckIn, index: number) => {
               if (!checkIn.body?.length) return null // Skip empty check-ins
@@ -99,12 +63,11 @@ export default function CheckinsList (props: CheckinsListProps): JSX.Element {
                 <CardPost post={post} hideMeta={false} fullPost={false} isChat={true} highlightedObject={highlightedObject} highlightedId={highlightedId} />
               </div>
             ))}
-            {commentsByDay?.[date] &&
+            {comments &&
               <>
                 <ChatContainer
-                  key={date} // Add a unique key prop
-                  comments={commentsByDay[date] || []}
-                  pendingComments={pendingComments}
+                  key={`comments-${props.date}`}
+                  date={props.date}
                   allowReplies={true}
                   highlightedObject={highlightedObject as string | undefined}
                   highlightedId={highlightedId as number | undefined}
@@ -112,8 +75,6 @@ export default function CheckinsList (props: CheckinsListProps): JSX.Element {
               </>
             }
           </div>
-        )
-      })}
     </div>
   )
 }

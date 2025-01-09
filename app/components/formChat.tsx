@@ -3,24 +3,23 @@ import { Form } from '@remix-run/react'
 import axios from 'axios'
 import { FormField } from './formField'
 import type { Comment } from '~/utils/types'
-import { toast } from 'react-hot-toast'
 import { Spinner } from '@material-tailwind/react'
 import { MdImage, MdSend } from 'react-icons/md'
-import { CurrentUserContext } from '~/contexts/CurrentUserContext'
 import VideoRecorder from './videoRecorder'
 import VideoChooser from './videoChooser'
 import { handleFileUpload } from '~/utils/helpers'
 import { TiDeleteOutline } from 'react-icons/ti'
 import VideoPreview from './videoPreview'
 import useCohortId from '~/hooks/useCohortId'
-
+import { toast } from 'react-hot-toast'
+import { useChatContext } from '~/contexts/ChatContext'
+import { useCurrentUser } from '~/contexts/CurrentUserContext'
 interface FormChatProps {
   type?: 'post' | 'challenge' | 'reply' | 'thread' | 'checkin' | 'comment'
   objectId?: number
-  onPending: (comment: Comment) => void
-  afterSave: (comment: Comment) => void
   onCancel?: () => void
   onError?: (error: Error) => void
+  afterSave?: (comment: Comment) => void
   comment?: Comment
   prompt?: string
   autoFocus?: boolean
@@ -38,6 +37,8 @@ function getTypeAndId (comment: Comment): { type: string, id: number } {
 }
 
 export default function FormChat (props: FormChatProps): JSX.Element {
+  const { addComment } = useChatContext()
+  const { currentUser } = useCurrentUser()
   const { comment, onCancel } = props
   const cohortId = useCohortId()
   let type: string | undefined
@@ -56,17 +57,23 @@ export default function FormChat (props: FormChatProps): JSX.Element {
     throw new Error('type and objectId are required in formChat (props: ' + JSON.stringify(props) + ')')
   }
 
-  const { currentUser } = useContext(CurrentUserContext)
-  const [state, setState] = useState({
-    body: comment ? comment.body : '',
+  const defaultState = {
+    body: '',
     error: '',
     recording: false,
     image: null as File | string | null,
     video: null as File | string | null,
-    videoUrl: comment?.videoMeta?.secure_url ?? null,
+    videoUrl: null as string | null,
     videoUploadOnly: false,
     showVideoRecorder: false,
     submitting: false
+  }
+
+  const [state, setState] = useState<typeof defaultState>({
+    ...defaultState,
+    body: comment ? comment.body : '',
+    videoUrl: comment?.videoMeta?.secure_url ?? null,
+    image: comment?.imageMeta?.secure_url ?? null
   })
   const imageRef = useRef<HTMLInputElement>(null)
   const imageDialog = useCallback((): void => {
@@ -118,43 +125,55 @@ export default function FormChat (props: FormChatProps): JSX.Element {
     <VideoPreview video={state.videoUrl ?? state.video} onClear={deleteVideo} />
   ), [state.video, state.videoUrl, deleteVideo])
 
-  const handleSubmit = useCallback(async (): Promise<void> => {
+  const handleSubmit = async (): Promise<void> => {
     if (!state.body) {
       return
     }
+    setState(prev => ({ ...prev, submitting: true }))
 
-    const tempBody = state.body
-    const tempImage = state.image
-    const tempVideo = state.video
-    setState(prev => ({ ...prev, body: '', video: null, image: null, submitting: true }))
     try {
+      // dummy object to pass up the tree for immediate rendering
+      const dummyObject = {
+        id: comment?.id ?? undefined,
+        body: state.body,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        imageMeta: null,
+        videoMeta: null,
+        user: currentUser,
+        cohortId: cohortId ?? undefined
+      }
+      let isChat = true
       const formData = new FormData()
       formData.set('body', state.body)
       switch (type) {
         case 'post':
           formData.set('postId', String(objectId))
+          isChat = false
           break
         case 'challenge':
           formData.set('challengeId', String(objectId))
           break
         case 'checkin':
           formData.set('checkInId', String(objectId))
+          isChat = false
           break
         case 'thread':
           formData.set('threadId', String(objectId))
+          isChat = false
           break
         case 'comment':
           formData.set('replyToId', String(objectId))
+          isChat = false
           break
         default:
           throw new Error('Invalid type in formChat: ' + type)
       }
-
       if (id) {
         formData.set('id', String(id))
       }
       if (cohortId) {
-        formData.set('cohortId', String(props.cohortId))
+        formData.set('cohortId', String(cohortId))
       }
       if (state.image) {
         formData.set('image', state.image)
@@ -162,57 +181,27 @@ export default function FormChat (props: FormChatProps): JSX.Element {
       if (state.video) {
         formData.set('video', state.video)
       }
-      if (props.onPending) {
-        const _comment = {
-          body: state.body,
-          type,
-          id,
-          imageMeta: state.image
-            ? {
-                secure_url: URL.createObjectURL(state.image as File),
-                url: '',
-                public_id: '',
-                format: '',
-                resource_type: ''
-              }
-            : undefined,
-          videoMeta: state.video
-            ? {
-                secure_url: URL.createObjectURL(state.video as File),
-                url: '',
-                public_id: '',
-                format: '',
-                resource_type: ''
-              }
-            : undefined,
-          user: currentUser,
-          userId: currentUser?.id ?? 0,
-          likeCount: 0,
-          replyCount: 0,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          ...(type === 'post' && { postId: props.objectId }),
-          ...(type === 'challenge' && { challengeId: props.objectId }),
-          ...(type === 'checkin' && { checkInId: props.objectId }),
-          ...(type === 'thread' && { threadId: props.objectId }),
-          ...(type === 'comment' && { replyToId: props.objectId })
-        }
-        props.onPending(_comment as Comment)
+      // skip adding to chat if it's not a chat (i.e. it's a comment on a post, challenge, checkin, thread, or reply)
+      if (isChat) {
+        addComment(dummyObject as unknown as Comment)
       }
-      const updated = await axios.post('/api/comments', formData)
 
-      props.afterSave(updated.data as Comment)
-    } catch (error: any) {
-      if (props.onError && !id) {
-        props.onError(error as Error)
+      const updated = await axios.post('/api/comments', formData)
+      if (props.afterSave) {
+        props.afterSave(updated.data as Comment)
       }
-      const errorMessage = typeof error?.response?.data.message === 'string' ? error?.response?.data.message : 'An unexpected error occurred'
-      toast.error(errorMessage as string)
-      setState(prev => ({ ...prev, error: errorMessage, body: tempBody, video: tempVideo, image: tempImage }))
+      if (isChat) {
+        addComment(updated.data as unknown as Comment)
+      }
+      setState(defaultState)
+    } catch (error) {
+      console.error('error in handleSubmit', error)
+      console.error(error)
+      toast.error('Failed to send message:' + String(error))
     } finally {
       setState(prev => ({ ...prev, submitting: false }))
     }
-  }, [state.body, state.image, state.video, type, objectId, id, props, currentUser])
+  }
 
   const handleKeyDown = useCallback((event: React.KeyboardEvent<HTMLTextAreaElement>): void => {
     if (event.key === 'Enter' && !event.shiftKey) {
@@ -231,6 +220,7 @@ export default function FormChat (props: FormChatProps): JSX.Element {
           inputRef={props.inputRef as React.RefObject<HTMLTextAreaElement>}
           required={true}
           autoFocus={props.autoFocus ?? true}
+          disabled={state.submitting}
           value={state.body}
           onChange={(ev) => {
             setState(prev => ({ ...prev, body: String(ev.target.value) }))

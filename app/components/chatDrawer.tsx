@@ -7,6 +7,7 @@ import { toast } from 'react-hot-toast'
 import FormChat from './formChat'
 import axios from 'axios'
 import { useShouldRefresh } from '~/hooks/useShouldRefresh'
+import CommentContainer from './commentContainer'
 interface ChatDrawerProps {
   isOpen: boolean
   placement: 'left' | 'right' | 'top' | 'bottom'
@@ -21,13 +22,12 @@ interface ChatDrawerProps {
 }
 
 export default function ChatDrawer (props: ChatDrawerProps): JSX.Element {
-  const { isOpen, placement, onClose, size, type, id, commentCount, comments: initialComments, children, onOpen } = props
+  const { isOpen, placement, onClose, size, type, id, commentCount, children, onOpen } = props
   const skeletonRows = commentCount ?? 0
   const bottomRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
-  const [comments, setComments] = useState<Comment[] | null>(initialComments ?? null)
+  const [comments, setComments] = useState<Comment[]>(props.comments ?? [])
   const [open, setOpen] = useState(isOpen)
-  const [newestComment, setNewestComment] = useState<Comment | null>(null)
   const { setShouldRefresh } = useShouldRefresh()
   const [isLoading, setIsLoading] = useState(false)
   const closeDrawer = useCallback((): void => {
@@ -36,26 +36,6 @@ export default function ChatDrawer (props: ChatDrawerProps): JSX.Element {
     setShouldRefresh(true)
     document.body.classList.remove('overflow-hidden') // Enable body scroll
   }, [onClose])
-
-  // Memoize the function to avoid unnecessary re-renders of child components
-  const afterSaveComment = useCallback((comment: Comment): void => {
-    setComments(prevComments => {
-      // Filter out comments without an id and prepend the new comment
-      const filteredComments = prevComments?.filter(c => c.id !== undefined) ?? []
-      return [comment, ...filteredComments]
-    })
-    setNewestComment(null)
-  }, [])
-
-  // this is used to immediately display the pending without waiting for the server
-  const onPendingComment = useCallback((comment: Comment): void => {
-    setNewestComment(comment)
-  }, [])
-
-  const onSaveCommentError = useCallback((error: Error): void => {
-    setNewestComment(null)
-    toast.error('Failed to send message:' + String(error))
-  }, [])
 
   const fetchComments = useCallback(async (): Promise<void> => {
     setIsLoading(true)
@@ -68,6 +48,9 @@ export default function ChatDrawer (props: ChatDrawerProps): JSX.Element {
       setIsLoading(false)
     }
   }, [type, id])
+  const afterSaveComment = (comment: Comment): void => {
+    setComments([...comments, comment])
+  }
 
   useEffect(() => {
     setOpen(isOpen)
@@ -119,11 +102,11 @@ export default function ChatDrawer (props: ChatDrawerProps): JSX.Element {
       <div className='overflow-y-auto'>
         {isLoading
           ? <ChatRowSkeleton count={skeletonRows} />
-          : <ChatContainer comments={comments ?? []} newestComment={newestComment} allowReplies={false} />
+          : <CommentContainer comments={comments ?? []} />
         }
         {id &&
           <div className='px-2' ref={bottomRef}>
-            <FormChat afterSave={afterSaveComment} onPending={onPendingComment} onError={onSaveCommentError} objectId={id} type={type} inputRef={inputRef} autoFocus={false} />
+            <FormChat objectId={id} type={type} inputRef={inputRef} autoFocus={false} afterSave={afterSaveComment} />
           </div>
         }
       </div>

@@ -270,7 +270,7 @@ export interface CloudinaryMeta extends JSONObject {
   resource_type: string
 }
 export interface Comment {
-  id: number
+  id: number | string
   body: string
   imageMeta?: CloudinaryMeta
   videoMeta?: CloudinaryMeta

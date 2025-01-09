@@ -24,7 +24,6 @@ export const meta: MetaFunction = () => {
 export default function ChallengeAbout (): JSX.Element {
   const data = useRouteLoaderData<{ challenge: ChallengeSummary, loadingError: string }>('routes/challenges.v.$id') as unknown as { challenge: ChallengeSummary, loadingError: string }
   const { membership, setMembership } = useContext(MemberContext)
-  console.log('membership', membership)
   const { challenge } = data
   const { loadingError } = data
   const { currentUser } = useContext(CurrentUserContext)

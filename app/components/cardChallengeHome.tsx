@@ -23,9 +23,6 @@ export default function CardChallengeHome ({ challenge, isMember, isPreview, mem
   if (isMember === undefined) {
     isMember = challenge?.members?.some(member => member.userId === currentUser?.id) ?? (challenge.type === 'SCHEDULED' && challenge.userId === currentUser?.id)
   }
-  if (challenge.id === 27) {
-    console.log('membership in cardChallengeHome', membership)
-  }
   const [sharing, setSharing] = useState(false)
   const isHost = challenge.userId === currentUser?.id
   const navigate = useNavigate()

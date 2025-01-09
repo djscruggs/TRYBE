@@ -11,7 +11,7 @@ interface ActionsPopupMenuProps {
   object: Comment | CheckIn | Post
   type: string
   editCallback: (event: any) => void
-  afterDelete: (event: any) => void
+  afterDelete: (object: any) => void
   className?: string
 }
 

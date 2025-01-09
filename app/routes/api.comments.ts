@@ -44,7 +44,7 @@ export const action: ActionFunction = async (args) => {
     if (formData.checkInId) {
       data.checkIn = { connect: { id: Number(formData.checkInId) } }
     }
-    if (formData.cohortId) {
+    if (typeof formData.cohortId === 'string') {
       data.cohort = { connect: { id: Number(formData.cohortId) } }
     }
     if (!data.challenge && !data.post && !data.thread && !data.checkIn) {

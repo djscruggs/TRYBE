@@ -1,22 +1,22 @@
 import ChatItem from './chatItem'
 import type { Comment } from '~/utils/types'
-import { useChatContext } from '~/contexts/ChatContext'
+import { useEffect, useState } from 'react'
 
 interface ChatContainerProps {
-  date: string
   allowReplies?: boolean
   highlightedObject?: string
   highlightedId?: number | null
+  comments: Comment[]
 }
 
-export default function ChatContainer (props: ChatContainerProps): JSX.Element {
-  const { getCommentsByDate, deleteComment } = useChatContext()
-  const comments = getCommentsByDate()[props.date] ?? []
-  if (comments.length === 0) return <></>
+export default function CommentContainer (props: ChatContainerProps): JSX.Element {
+  const [comments, setComments] = useState<Comment[]>(props.comments)
   const afterDelete = (comment: Comment): void => {
-    deleteComment(comment)
+    setComments(comments.filter(c => c.id !== comment.id))
   }
-
+  useEffect(() => {
+    setComments(props.comments)
+  }, [props.comments])
   return (
     <div className='w-full' id='comments'>
       {comments.map(comment => (

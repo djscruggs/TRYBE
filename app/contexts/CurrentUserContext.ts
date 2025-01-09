@@ -1,4 +1,4 @@
-import { createContext } from 'react'
+import { createContext, useContext } from 'react'
 import { type CurrentUser } from './types'
 
 export interface CurrentUserContextType {
@@ -9,3 +9,7 @@ export const CurrentUserContext = createContext<CurrentUserContextType>({
   currentUser: null,
   setCurrentUser: () => {}
 })
+
+export const useCurrentUser = (): CurrentUserContextType => {
+  return useContext(CurrentUserContext)
+}

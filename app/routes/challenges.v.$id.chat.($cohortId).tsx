@@ -4,7 +4,7 @@ import { requireCurrentUser } from '~/models/auth.server'
 import type { Post, CheckIn, Challenge, Comment } from '~/utils/types'
 import { json, type MetaFunction, type LoaderFunction, type LoaderFunctionArgs, type SerializeFrom } from '@remix-run/node'
 import { prisma } from '~/models/prisma.server'
-import { Prisma } from '@prisma/client'
+import { type MemberChallenge, Prisma } from '@prisma/client'
 import CheckinsList from '~/components/checkinsList'
 import FormChat from '~/components/formChat'
 import { CurrentUserContext } from '~/contexts/CurrentUserContext'
@@ -18,6 +18,7 @@ import HideFeedbackButton from '~/components/hideFeedbackButton'
 import { hasStarted, isExpired } from '~/utils/helpers/challenge'
 import { loadChallengeSummary } from '~/models/challenge.server'
 import { v4 as uuidv4 } from 'uuid'
+import { ChatContextProvider } from '~/contexts/ChatContext'
 export const meta: MetaFunction = () => {
   return [
     { title: 'Chat' },
@@ -171,6 +172,7 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
 
 export default function ViewChallengeChat (): JSX.Element {
   const { currentUser } = useContext(CurrentUserContext)
+
   const { membership } = useContext(MemberContext)
   const loaderData = useLoaderData<ChallengeChatData>()
   const [groupedData, setGroupedData] = useState<GroupedDataEntry>(loaderData.groupedData)
@@ -200,8 +202,7 @@ export default function ViewChallengeChat (): JSX.Element {
   const [showfeaturedPost, setShowfeaturedPost] = useState(Boolean(featuredPost))
   const [dayCount, setDayCount] = useState(10)
   const [limitedGroupedData, setLimitedGroupedData] = useState<GroupedDataEntry>(getCorrectDays(groupedData))
-  const [newestComment, setNewestComment] = useState<Comment | null>(null)
-  const started = hasStarted(challenge, membership)
+  const started = hasStarted(challenge, membership as MemberChallenge)
   // used in various places to get the current date formatted as YYYY-MM-DD
   const today = new Date().toLocaleDateString('en-CA')
   const scrollToBottom = (): void => {
@@ -210,50 +211,7 @@ export default function ViewChallengeChat (): JSX.Element {
   useEffect(() => {
     scrollToBottom()
   }, [])
-  const [pendingComments, setPendingComments] = useState<Comment[]>([])
-  const onPendingComment = (comment: Omit<Comment, 'id'>): void => {
-    const tempId = uuidv4()
-    const pendingComment = { ...comment, id: tempId }
-    setPendingComments([...pendingComments, pendingComment])
-    const date = new Date(comment.createdAt).toISOString().split('T')[0]
-    const updatedGroupedData = { ...groupedData }
 
-    if (!updatedGroupedData[date]) {
-      updatedGroupedData[date] = { posts: [], checkIns: { empty: [], nonEmpty: [] }, comments: [] }
-    }
-
-    updatedGroupedData[date].comments.push(pendingComment)
-    setGroupedData(updatedGroupedData)
-    setNewestComment(pendingComment)
-    scrollToBottom()
-  }
-  const afterSaveComment = (savedComment: Comment): void => {
-    const date = new Date(savedComment.createdAt).toISOString().split('T')[0]
-    const updatedGroupedData = { ...groupedData }
-
-    if (updatedGroupedData[date]) {
-      updatedGroupedData[date].comments = updatedGroupedData[date].comments.map(c =>
-        c.id === savedComment.tempId
-          ? {
-              ...savedComment,
-              createdAt: savedComment.createdAt.toISOString(),
-              updatedAt: savedComment.updatedAt.toISOString(),
-              challenge: savedComment.challenge as unknown as Challenge,
-              imageMeta: savedComment.imageMeta ? JSON.parse(JSON.stringify(savedComment.imageMeta)) : undefined,
-              videoMeta: savedComment.videoMeta ? JSON.parse(JSON.stringify(savedComment.videoMeta)) : undefined
-            }
-          : c
-      )
-    }
-
-    // Remove the pending comment using the temporary ID
-    setPendingComments(pendingComments.filter(c => c.id !== savedComment.tempId))
-    setGroupedData(updatedGroupedData)
-    setNewestComment(savedComment)
-  }
-  const onSaveCommentError = (): void => {
-    scrollToBottom()
-  }
   const checkedInToday = (): boolean => {
     if (!currentUser) {
       return true
@@ -335,12 +293,27 @@ export default function ViewChallengeChat (): JSX.Element {
   const handleShowPreviousDays = (): void => {
     setDayCount(dayCount + 5)
   }
+  function extractCommentsByDate (groupedData: GroupedDataEntry): Record<string, Comment[]> {
+    const commentsByDate: Record<string, Comment[]> = {}
+    Object.entries(groupedData).forEach(([date, { comments }]) => {
+      commentsByDate[date] = comments as unknown as Comment[]
+    })
+    return commentsByDate
+  }
+  const [refreshChat, setRefreshChat] = useState(false)
+  useEffect(() => {
+    if (refreshChat) {
+      scrollToBottom()
+      setRefreshChat(false)
+    }
+  }, [refreshChat])
 
   return (
-    <div className='max-w-2xl mt-32 md:mt-28'>
+    <ChatContextProvider challengeId={Number(challenge.id)} cohortId={Number(membership?.cohortId ?? 0)} commentsByDate={extractCommentsByDate(groupedData)} onChange={() => { setRefreshChat(true) }}>
+      <div className='max-w-2xl mt-32 md:mt-28'>
       <HideFeedbackButton />
       {hasEarlierDays && <div className='text-center text-sm text-gray-500 mb-8 cursor-pointer' onClick={handleShowPreviousDays}>show previous days</div>}
-      {limitedGroupedData && Object.entries(limitedGroupedData)?.map(([date, { posts, checkIns, comments }], index) => (
+      {limitedGroupedData && Object.entries(limitedGroupedData)?.map(([date, { posts, checkIns }], index) => (
 
         <div
           key={date}
@@ -353,9 +326,8 @@ export default function ViewChallengeChat (): JSX.Element {
         >
           <CheckinsList
             id={`checkins-${index}`}
+            date={date}
             posts={posts as Post[]}
-            comments={comments as unknown as Comment[]}
-            newestComment={newestComment}
             checkIns={[...checkIns.empty, ...checkIns.nonEmpty] as CheckIn[]}
             allowComments={true}
             highlightedObject={highlightedObject}
@@ -377,9 +349,6 @@ export default function ViewChallengeChat (): JSX.Element {
 
           <FormChat
             prompt="Type here..."
-            onPending={onPendingComment}
-            afterSave={afterSaveComment}
-            onError={onSaveCommentError}
             objectId={challenge.id}
             type={'challenge'}
             autoFocus={!highlightedObject && !showfeaturedPost}
@@ -400,7 +369,8 @@ export default function ViewChallengeChat (): JSX.Element {
       {/* this is a spacer at the bottom that the app scrolls to on load */}
       <div ref={bottomRef} className={`min-h-[${hasCheckedInToday ? '50px' : '100px'}]`}>
 
+        </div>
       </div>
-    </div>
+    </ChatContextProvider>
   )
 }

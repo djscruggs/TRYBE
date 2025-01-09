@@ -133,7 +133,7 @@ export const updateComment = async (comment: prisma.commentCreateInput): Promise
     return error
   }
 }
-export const loadComment = async (commentId: string | number, userId?: string | number | undefined): Promise<prisma.comment> => {
+export const loadComment = async (commentId: string | number, userId?: string | number | undefined): Promise<prisma.Comment> => {
   const id = Number(commentId)
   const where: prisma.commentWhereUniqueInput = { id }
   if (userId) {

@@ -14,6 +14,7 @@ interface CommentsProps {
   allowReply?: boolean
   highlightedObject?: string | null
   highlightedId?: number | null
+  onDelete?: (comment: Comment) => void
 }
 
 export default function ChatItem (props: CommentsProps): JSX.Element {
@@ -28,7 +29,10 @@ export default function ChatItem (props: CommentsProps): JSX.Element {
     if (!comment || deleted) return
     setShowForm(true)
   }
-
+  const afterDelete = (comment: Comment): void => {
+    setDeleted(true)
+    props.onDelete?.(comment)
+  }
   const handleComments = (event: any): void => {
     event.preventDefault()
     event.stopPropagation()
@@ -76,14 +80,12 @@ export default function ChatItem (props: CommentsProps): JSX.Element {
                     type='comment'
                     commentCount={comment.replyCount}
                     >
-
                       <CommentContent
                         comment={comment}
                         showLightbox={showLightbox}
                         setShowLightbox={setShowLightbox}
                         isDrawerTop={props.highlightedObject === 'comment' && props.highlightedId === comment.id}
                       />
-
                   </ChatDrawer>
                 </>
               }
@@ -92,7 +94,7 @@ export default function ChatItem (props: CommentsProps): JSX.Element {
                 object={comment}
                 type='comment'
                 editCallback={handleEdit}
-                afterDelete={() => { setDeleted(true) }}
+                afterDelete={afterDelete}
                 className='ml-2'
               />
             </div>
