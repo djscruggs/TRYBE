@@ -2,7 +2,7 @@ import { useLoaderData, useRouteLoaderData, useRevalidator } from '@remix-run/re
 import { useEffect, useRef, useState, useContext } from 'react'
 import { requireCurrentUser } from '~/models/auth.server'
 import type { Post, CheckIn, Challenge, Comment } from '~/utils/types'
-import { json, type MetaFunction, type LoaderFunction, type LoaderFunctionArgs, type SerializeFrom } from '@remix-run/node'
+import { json, type MetaFunction, type LoaderFunction, type LoaderFunctionArgs, type SerializeFrom, redirect } from '@remix-run/node'
 import { prisma } from '~/models/prisma.server'
 import { type MemberChallenge, Prisma } from '@prisma/client'
 import CheckinsList, { CheckInContent, CheckinRow } from '~/components/checkinsList'
@@ -38,7 +38,21 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
   const currentUser = await requireCurrentUser(args)
   const { params } = args
   if (!params.id) {
-    return null
+    return redirect('/challenges')
+  }
+
+  if (currentUser?.role !== 'ADMIN') {
+    // check that they are a member of the challenge
+    const membership = await prisma.memberChallenge.findFirst({
+      where: {
+        userId: currentUser?.id,
+        challengeId: Number(params.id),
+        cohortId: Number(params.cohortId)
+      }
+    })
+    if (!membership) {
+      return redirect('/challenges')
+    }
   }
   // load the challenge
   const challenge = await loadChallengeSummary(Number(params.id))
@@ -172,6 +186,7 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
 export default function ViewChallengeChat (): JSX.Element {
   const { currentUser } = useContext(CurrentUserContext)
   const { membership, updated: checkInsUpdated, refreshUserCheckIns } = useMemberContext()
+  console.log('membership', membership)
   const loaderData = useLoaderData<ChallengeChatData>()
   const [groupedData, setGroupedData] = useState<GroupedDataEntry>(loaderData.groupedData)
   const bottomRef = useRef<HTMLDivElement>(null)
@@ -214,6 +229,9 @@ export default function ViewChallengeChat (): JSX.Element {
     if (!currentUser) {
       return true
     }
+    if (!membership) {
+      return true
+    }
     const todayGroup = groupedData[today]
     if (!todayGroup) {
       return false
@@ -226,7 +244,7 @@ export default function ViewChallengeChat (): JSX.Element {
   const expired = isExpired(challenge, membership)
   const [hasCheckedInToday, setHasCheckedInToday] = useState(checkedInToday())
   // only show the checkin popup if the user is logged in and they haven't checked in today, the challenge isn't expired, and there's no featured post
-  const [showCheckinPopup, setShowCheckinPopup] = useState(started && currentUser && !hasCheckedInToday && !expired && !featuredPost && challenge.status !== 'DRAFT')
+  const [showCheckinPopup, setShowCheckinPopup] = useState(started && membership && currentUser && !hasCheckedInToday && !expired && !featuredPost && challenge.status !== 'DRAFT')
   // flag to check if today is in the groupedData. if not we'll need to add an empty block to hold it
   const [hasToday, setHasToday] = useState(Object.keys(groupedData).includes(today))
   // Define the type for limitedGroupedData

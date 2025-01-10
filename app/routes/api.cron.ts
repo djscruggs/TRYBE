@@ -181,7 +181,7 @@ export const sendDayNumberPosts = async (): Promise<{ dayNumberPosts: number, da
         await sendCheckinReminder(props)
         nonPostNotifications++
       } catch (err) {
-        console.error('Error sending reminder email', err.response.body.errors)
+        console.error('Error sending reminder email', err)
       }
     }))
   } else {
