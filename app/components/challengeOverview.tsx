@@ -191,7 +191,7 @@ interface EditMembershipProps {
 
 export function EditMembership (props: EditMembershipProps): JSX.Element {
   const { onCancel, afterSave, which } = props
-  const { membership, setMembership } = useContext(MemberContext)
+  const { membership, setMembership } = useMemberContext()
   if (!membership) {
     return <></>
   }
