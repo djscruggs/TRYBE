@@ -348,3 +348,11 @@ export function pathToEmailUrl (path: string): string {
   if (!path) return ''
   return '/c/' + pathToDotRoute(path)
 }
+
+export function errorFromUrl (code: string): string {
+  if (code === 'noMember') {
+    return 'You must be a member to do that.'
+  }
+  console.error('Unknown error code: ' + code)
+  return 'An error occurred'
+}

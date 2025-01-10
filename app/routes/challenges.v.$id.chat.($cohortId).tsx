@@ -1,11 +1,11 @@
-import { useLoaderData, useRouteLoaderData, useRevalidator } from '@remix-run/react'
+import { useLoaderData, useRouteLoaderData } from '@remix-run/react'
 import { useEffect, useRef, useState, useContext } from 'react'
 import { requireCurrentUser } from '~/models/auth.server'
 import type { Post, CheckIn, Challenge, Comment } from '~/utils/types'
 import { json, type MetaFunction, type LoaderFunction, type LoaderFunctionArgs, type SerializeFrom, redirect } from '@remix-run/node'
 import { prisma } from '~/models/prisma.server'
 import { type MemberChallenge, Prisma } from '@prisma/client'
-import CheckinsList, { CheckInContent, CheckinRow } from '~/components/checkinsList'
+import CheckinsList, { CheckinRow } from '~/components/checkinsList'
 import FormChat from '~/components/formChat'
 import { CurrentUserContext } from '~/contexts/CurrentUserContext'
 import { useMemberContext } from '~/contexts/MemberContext'
@@ -40,20 +40,17 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
   if (!params.id) {
     return redirect('/challenges')
   }
-
-  if (currentUser?.role !== 'ADMIN') {
-    // check that they are a member of the challenge
-    const membership = await prisma.memberChallenge.findFirst({
-      where: {
-        userId: currentUser?.id,
-        challengeId: Number(params.id),
-        cohortId: Number(params.cohortId)
-      }
-    })
-    if (!membership) {
-      return redirect('/challenges')
+  const membership = await prisma.memberChallenge.findFirst({
+    where: {
+      userId: currentUser?.id,
+      challengeId: Number(params.id),
+      cohortId: Number(params.cohortId)
     }
+  })
+  if (!membership) {
+    return redirect('/challenges/v/' + params.id + '?err=noMember')
   }
+
   // load the challenge
   const challenge = await loadChallengeSummary(Number(params.id))
   if (!challenge) {
@@ -138,7 +135,7 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
     },
     orderBy: { createdAt: 'asc' }
   })
-
+  console.log(comments)
   // group posts, comments and checkins by date
   const groupedData: ChallengeChatData['groupedData'] = {}
 
@@ -186,7 +183,6 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
 export default function ViewChallengeChat (): JSX.Element {
   const { currentUser } = useContext(CurrentUserContext)
   const { membership, updated: checkInsUpdated, refreshUserCheckIns } = useMemberContext()
-  console.log('membership', membership)
   const loaderData = useLoaderData<ChallengeChatData>()
   const [groupedData, setGroupedData] = useState<GroupedDataEntry>(loaderData.groupedData)
   const bottomRef = useRef<HTMLDivElement>(null)

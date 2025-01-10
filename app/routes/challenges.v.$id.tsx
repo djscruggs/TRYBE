@@ -1,5 +1,5 @@
 import { loadChallengeSummary } from '~/models/challenge.server'
-import { Outlet, useLoaderData, useNavigate, useLocation, useMatches, type MetaFunction } from '@remix-run/react'
+import { Outlet, useLoaderData, useNavigate, useLocation, useMatches, type MetaFunction, useSearchParams } from '@remix-run/react'
 import { useEffect, useState } from 'react'
 import { requireAdminOrValidCohortMembership } from '~/models/auth.server'
 import type { MemberChallenge, Challenge, ChallengeSummary } from '~/utils/types'
@@ -114,11 +114,10 @@ export default function ViewChallenge (): JSX.Element {
             <ChallengeTabs challenge={challenge as ChallengeSummary} which={which} />
           }
         </div>
-
         <div className='mb-16 mt-28 md:mt-24'>
           <Outlet />
         </div>
-        <div className='flex items-center md:hidden justify-center w-full my-1'>
+       <div className='flex items-center md:hidden justify-center w-full my-1'>
           {which !== 'chat' &&
             <FaChevronCircleLeft
               className='w-6 h-6 text-grey cursor-pointer'

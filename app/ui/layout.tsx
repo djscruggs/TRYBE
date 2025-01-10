@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { SignedIn, SignedOut, UserButton } from '@clerk/remix'
 import useHasLoaded from '~/hooks/useHasLoaded'
-import { useLocation, Outlet, useNavigate, Link } from '@remix-run/react'
+import { useLocation, Outlet, useNavigate, Link, useSearchParams } from '@remix-run/react'
 import { HiOutlineLogin } from 'react-icons/hi'
 import NavLinks from './navlinks'
 import { CurrentUserContext } from '~/contexts/CurrentUserContext'
@@ -11,6 +11,8 @@ import {
   IdentificationIcon,
   TrophyIcon
 } from '@heroicons/react/24/outline'
+import { toast } from 'react-hot-toast'
+import { errorFromUrl } from '~/utils/helpers'
 export default function Layout (): JSX.Element {
   const hasLoaded = useHasLoaded()
   if (!hasLoaded) {
@@ -45,6 +47,7 @@ export const FullLayout = (): JSX.Element => {
   const isWelcome = location.pathname.includes('/challenges/')
   const isLanding = location.pathname.includes('/landing')
   const [showSpacer, setShowSpacer] = useState(true)
+  const [searchParams] = useSearchParams()
   useEffect(() => {
     if (currentUser) {
       const redirectTo = localStorage.getItem('redirectTo') ?? ''
@@ -62,6 +65,15 @@ export const FullLayout = (): JSX.Element => {
       setShowSpacer(true)
     }
     setIsChat(location.pathname.includes('/chat'))
+    // show any errors passed in the url
+    const err = searchParams.get('err')
+    if (err) {
+      toast.error(errorFromUrl(err))
+      searchParams.delete('err')
+      navigate(location.pathname, {
+        replace: true
+      })
+    }
   }, [location.pathname])
 
   const handlePlusClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>): void => {

@@ -220,7 +220,7 @@ export default function FormChat (props: FormChatProps): JSX.Element {
           inputRef={props.inputRef as React.RefObject<HTMLTextAreaElement>}
           required={true}
           autoFocus={props.autoFocus ?? true}
-          disabled={state.submitting}
+
           value={state.body}
           onChange={(ev) => {
             setState(prev => ({ ...prev, body: String(ev.target.value) }))
