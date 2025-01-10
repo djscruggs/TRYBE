@@ -5,18 +5,15 @@ import { addDays, isFriday, isSaturday } from 'date-fns'
 import { deleteFromCloudinary } from '~/utils/uploadFile'
 import { c } from 'vite/dist/node/types.d-AKzkD8vd'
 
-export const createChallenge = async (challenge: prisma.challengeCreateInput): Promise<Challenge> => {
+export const createChallenge = async (challenge: Prisma.ChallengeCreateInput): Promise<Challenge> => {
   const newChallenge = await prisma.challenge.create({
     data: challenge
   })
-  // also create a membership for the user that created the challenge
-  await prisma.memberChallenge.create({
-    data: {
-      userId: challenge.userId,
-      challengeId: newChallenge.id
-    }
-  })
-  return newChallenge as Challenge
+  // also, if it's a scheduled challenge, create a membership for the user that created the challenge
+  if (newChallenge.type === 'SCHEDULED') {
+    await joinChallenge({ userId: newChallenge.userId, challengeId: newChallenge.id })
+  }
+  return newChallenge as unknown as Challenge
 }
 export const updateChallenge = async (challenge: Partial<Challenge>): Promise<Challenge> => {
   const { id, userId, ...data } = challenge
@@ -25,11 +22,14 @@ export const updateChallenge = async (challenge: Partial<Challenge>): Promise<Ch
     data: data as Prisma.ChallengeUpdateInput
   }) as unknown as Challenge
   // update startAt on memberChallenges if it is set
-  if (data.startAt) {
+  if (updatedChallenge.type === 'SCHEDULED' && data.startAt) {
     void prisma.memberChallenge.updateMany({
       where: { challengeId: id },
       data: { startAt: data.startAt }
     })
+    if (id) {
+      void joinChallenge({ userId: updatedChallenge.userId, challengeId: id })
+    }
   }
   return updatedChallenge
 }
