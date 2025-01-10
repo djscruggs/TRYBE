@@ -114,7 +114,7 @@ export default function CardPost (props: CardPostProps): JSX.Element {
               <div className='h-6'> </div>
               </>
               : <>
-            {!post.published &&
+            {!post.published && !post.challengeId &&
               <>
               <div className='bg-yellow w-full p-0 text-center absolute left-0 top-0 b-4 rounded-t-md'>Draft</div>
               {/* spacer to push down the conent below */}

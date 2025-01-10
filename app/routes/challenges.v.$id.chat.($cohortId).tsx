@@ -47,8 +47,7 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
   }
   // have to build the where clause for posts based on the challenge type and cohortId
   const postsWhere: Prisma.PostWhereInput = {
-    challengeId: Number(params.id),
-    published: true
+    challengeId: Number(params.id)
   }
   // get the current day number, but make sure it's not before the challenge start date
   let maxDayNumber
@@ -69,6 +68,7 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
     postsWhere.publishOnDayNumber = {
       lte: maxDayNumber._max.dayNumber ?? 0
     }
+    console.log('postsWhere', postsWhere)
   } else {
     postsWhere.OR = [
       { publishAt: null },
