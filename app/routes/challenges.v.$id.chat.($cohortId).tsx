@@ -79,7 +79,6 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
     postsWhere.publishOnDayNumber = {
       lte: maxDayNumber._max.dayNumber ?? 0
     }
-    console.log('postsWhere', postsWhere)
   } else {
     postsWhere.OR = [
       { publishAt: null },

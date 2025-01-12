@@ -4,12 +4,12 @@ import { type MemberChallenge, type Challenge, type ChallengeSummary } from '~/u
 import { colorToClassName } from '~/utils/helpers'
 import { CurrentUserContext } from '~/contexts/CurrentUserContext'
 import { useNavigate } from '@remix-run/react'
-import { differenceInCalendarDays, differenceInWeeks, isPast } from 'date-fns'
-import { getShortUrl } from '~/utils/helpers/challenge'
+import { differenceInCalendarDays, differenceInWeeks } from 'date-fns'
+import { getShortUrl, hasStarted, isExpired } from '~/utils/helpers/challenge'
 import ChallengeIcon from './challengeIcon'
 import { CheckInButton } from './checkinButton'
-import DialogShare from './dialogShare'
 import { SlShareAlt } from 'react-icons/sl'
+import { toast } from 'react-hot-toast'
 interface CardChallengeProps {
   challenge: ChallengeSummary
   isMember?: boolean
@@ -23,22 +23,21 @@ export default function CardChallengeHome ({ challenge, isMember, isPreview, mem
   if (isMember === undefined) {
     isMember = challenge?.members?.some(member => member.userId === currentUser?.id) ?? (challenge.type === 'SCHEDULED' && challenge.userId === currentUser?.id)
   }
-  const [sharing, setSharing] = useState(false)
-  const isHost = challenge.userId === currentUser?.id
+  const showHostLabel = (challenge.userId === currentUser?.id) && challenge.status !== 'DRAFT'
   const navigate = useNavigate()
   const bgColor = colorToClassName(challenge?.color ?? '', 'red')
   const memberCount = challenge?._count?.members ?? 0
-  const expired = isPast(challenge.endAt ?? new Date('1970-01-01'))
-  const started = !expired && challenge.startAt ? isPast(challenge.startAt) : false
+  const expired = isExpired(challenge, membership)
+  const started = hasStarted(challenge, membership)
   const checkInButtonDisabled = expired || !started || challenge.status === 'DRAFT'
   const goToChallenge = (event: any): void => {
     event.stopPropagation()
-    if (isPreview ?? sharing) {
+    if (isPreview) {
       return
     }
     let url = `/challenges/v/${challenge.id}/about`
     if (challenge.status === 'PUBLISHED') {
-      if (isMember) {
+      if (isMember && started && !expired) {
         if (memberCount >= 2 || challenge.type === 'SCHEDULED') {
           url = `/challenges/v/${challenge.id}/chat`
         } else {
@@ -85,10 +84,12 @@ export default function CardChallengeHome ({ challenge, isMember, isPreview, mem
       return 'In progress'
     }
   }
-
-  const getShareUrl = (): string => {
-    return `${window.location.origin}/challenges/v/${challenge.id}/about?i=1`
+  const copyLink = async (event: any): Promise<void> => {
+    event.stopPropagation()
+    await navigator.clipboard.writeText(getShortUrl(challenge, membership))
+    toast.success('Link copied to clipboard')
   }
+
   const categoryNames = challenge.categories?.map(category => category.name).filter((name): name is string => name !== undefined) ?? []
   return (
     <div className="mt-2 drop-shadow-none mr-2 w-full cursor-pointer">
@@ -106,61 +107,71 @@ export default function CardChallengeHome ({ challenge, isMember, isPreview, mem
                   <ChallengeIcon icon={challenge.icon as string | undefined} />
                 </div>
               </div>
-              <div className="w-4/5 border-0 mb-2 pt-2 pl-5">
-                {isMember && !checkInButtonDisabled &&
-                  <div onClick={(event) => { event.stopPropagation() }}>
-                    <CheckInButton challenge={challenge} className={`shadow-lg shadow-darkgrey float-right w-fit bg-red hover:bg-green-500 text-white rounded-md p-2 justify-center text-xs italic disabled:bg-gray-400 ${checkInButtonDisabled ? 'opacity-50 cursor-not-allowed' : ''}`} />
-                  </div>
-                }
+              <div className="w-4/5 mb-2 pl-5">
+
                 <div className='font-bold mb-1 text-start text-black'>
 
-                  <div className='text-xs text-darkgrey flex items-center justify-start'>
+                  <div className='text-xs text-darkgrey flex items-start justify-start'>
                     <span className='text-black text-lg'>{challenge.name}</span>
-
-                    {isHost &&
-                      <> <span className='mx-2'>| </span> <span className='text-xs font-taprom text-blue'>Hosting</span></>
-                    }
-                    <SlShareAlt className="cursor-pointer text-grey text-sm mr-1 inline w-4 h-4 ml-2" onClick={(event) => { event?.stopPropagation(); setSharing(true) }}/>
-                    <DialogShare
-                      isOpen={sharing}
-                      prompt='Copy this link to invite your friends'
-                      link={getShortUrl(challenge)}
-                      onClose={() => { setSharing(false) }}
-                    />
 
                   </div>
                 </div>
-                {challenge.type === 'SELF_LED'
-                  ? <>
+                <div className='flex w-full'>
+                <div className='flex items-center justify-start w-2/3'>
+                  <div className = 'w-2/3'>
 
-                  <div className='text-xs text-darkgrey'>Self-Guided
-                    <DraftBadge challenge={challenge} className='ml-2 inline' />
-                    </div>
-                  </>
+                    {challenge.type === 'SELF_LED' &&
+                      <div className='text-xs text-darkgrey w-full'>Self-Guided
+                        <DraftBadge challenge={challenge} className='ml-2 inline' />
+                        {showHostLabel &&
+                          <span className='text-xs font-taprom text-blue ml-2'>Hosting</span>
+                        }
+                      </div>
+                    }
 
-                  : <>
-                    <div className=''>
-                      {memberCount > 0 &&
-                        <>
-                          <FaUserFriends className='h-4 w-4 text-darkgrey inline' />
-                          <span className='text-xs pl-2 text-darkgrey inline'>{memberCount} joined</span>
-                        </>
-                      }
-                      {!challenge.public &&
-                        <span className='text-xs text-darkgrey ml-2'>Private</span>
-                      }
+                    {challenge.type !== 'SELF_LED' &&
+                    <>
+                        <div className=''>
+                          <FaRegCalendarAlt className='h-4 w-4 text-darkgrey inline' />
+                          <span className='text-xs pl-1 text-darkgrey inline'>{howLongToStart()}</span>
+                          <DraftBadge challenge={challenge} className='ml-2 inline' />
+                          {showHostLabel &&
+                            <span className='text-xs font-taprom text-blue ml-2'>Hosting</span>
+                          }
+
+                        </div>
+                        <div className=''>
+                          {memberCount > 0 &&
+                            <>
+                              <FaUserFriends className='h-4 w-4 text-darkgrey inline' />
+                              <span className='text-xs pl-2 text-darkgrey inline'>{memberCount} joined</span>
+                            </>
+                          }
+                          {!challenge.public &&
+                            <span className='text-xs text-darkgrey ml-2'>Private</span>
+                          }
+                        </div>
+
+                      </>
+                    }
+                  {categoryNames.length > 0 &&
+                    <div className='text-xs text-blue inline mr-1'>{categoryNames.join(', ')}</div>
+                  }
+                  </div>
+                  {challenge.status === 'PUBLISHED' &&
+                    <div className = 'w-1/3 flex items-center justify-end h-full' onClick={copyLink}>
+                      <SlShareAlt className="cursor-pointer text-grey text-sm inline w-4 h-4 mr-2" />
                     </div>
-                    <div className=''>
-                      <FaRegCalendarAlt className='h-4 w-4 text-darkgrey inline' />
-                      <span className='text-xs pl-1 text-darkgrey inline'>{howLongToStart()}</span>
-                      <DraftBadge challenge={challenge} className='ml-2 inline' />
-                    </div>
-                  </>
+                  }
+                </div>
+                {isMember && !checkInButtonDisabled &&
+                  <div className='w-1/3'>
+                      <div onClick={(event) => { event.stopPropagation() }} className='flex items-center justify-center w-full h-full'>
+                        <CheckInButton challenge={challenge} className={`shadow-lg shadow-darkgrey  bg-red hover:bg-green-500 text-white rounded-md p-2 justify-center text-xs italic disabled:bg-gray-400 ${checkInButtonDisabled ? 'opacity-50 cursor-not-allowed' : ''}`} />
+                      </div>
+                  </div>
                 }
-                {categoryNames.length > 0 &&
-                  <div className='text-xs text-blue inline mr-1'>{categoryNames.join(', ')}</div>
-                }
-
+                </div>
               </div>
             </div>
           </div>
@@ -172,10 +183,14 @@ export default function CardChallengeHome ({ challenge, isMember, isPreview, mem
 }
 
 function DraftBadge ({ challenge, className = '' }: { challenge: ChallengeSummary | Challenge, className?: string }): JSX.Element {
-  if (challenge?.status === 'DRAFT') {
-    return <div className={`text-sm font-bold text-yellow ${className}`}>Draft</div>
+  if (challenge?.status !== 'DRAFT') {
+    return <></>
   }
-  return <></>
+  return (
+    <div className={`text-sm font-bold text-yellow ${className}`}>
+      Draft
+    </div>
+  )
 }
 
 export function CardChallengeHomeSkeleton (): JSX.Element {
