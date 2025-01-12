@@ -1,7 +1,7 @@
 import ChallengeOverview from '~/components/challengeOverview'
 import { type MetaFunction, useRouteLoaderData, useRevalidator, useSearchParams } from '@remix-run/react'
 import { type Challenge, type ChallengeSummary } from '~/utils/types'
-import { useContext, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { CurrentUserContext } from '~/contexts/CurrentUserContext'
 import { useMemberContext } from '~/contexts/MemberContext'
 import useCohortId from '~/hooks/useCohortId'
@@ -36,6 +36,11 @@ export default function ChallengeAbout (): JSX.Element {
   const [searchParams] = useSearchParams()
   const cohortId = useCohortId()
   const [invite, setInvite] = useState<string | null>(searchParams.get('i'))
+  useEffect(() => {
+    if (challenge.name) {
+      document.title = challenge.name
+    }
+  }, [])
 
   const confirmJoinUnjoin = async (): Promise<void> => {
     if (!currentUser) {
