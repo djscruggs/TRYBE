@@ -135,9 +135,9 @@ export default function ChallengesIndex (): JSX.Element {
               <div className="flex flex-col items-center max-w-lg w-full mt-4">
                 <ChallengeList challenges={filteredChallenges} memberships={memberships} isLoading={loadingUpcoming} />
               </div>
-              {isExtended &&
-                <div className='h-[800px]'></div>
-              }
+              {/* {isExtended &&
+                <div className='h-[50px]'></div>
+              } */}
             </>
           }
         </div>
