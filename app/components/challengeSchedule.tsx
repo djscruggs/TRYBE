@@ -9,7 +9,7 @@ import {
   , addDays
 } from 'date-fns'
 import { HiMiniPlusSmall } from 'react-icons/hi2'
-import type { Challenge, MemberChallenge, Post } from '~/utils/types'
+import type { Challenge, CurrentUser, MemberChallenge, Post } from '~/utils/types'
 import { userLocale, pluralize } from '~/utils/helpers'
 import { CurrentUserContext } from '~/contexts/CurrentUserContext'
 import { BsExclamationCircleFill } from 'react-icons/bs'
@@ -73,7 +73,7 @@ const DateSchedule = ({ challenge, posts, isSchedule, membership }: { challenge:
     return acc
   }, {})
   const { currentUser } = useContext(CurrentUserContext)
-  const locale = userLocale(currentUser)
+  const locale = userLocale(currentUser as CurrentUser)
   const startDate = new Date(challenge?.startAt as unknown as Date)
   startDate.setHours(0, 0, 0, 0) // set it to midnight
   const endDate = new Date(challenge?.endAt as unknown as Date)
@@ -94,36 +94,36 @@ const DateSchedule = ({ challenge, posts, isSchedule, membership }: { challenge:
           const isInRange = day >= startDate && day <= endDate
           const dayNum = differenceInDays(day, startDate) + 1
           return (
-            <>
-            {(postsByDayNum[dayNum] || isSchedule) &&
-            <div
-              key={day.toISOString()}
-              className={`relative p-2  h-24   ${isInRange ? ' bg-lightgrey border border-[#CECECE]' : 'bg-white hidden md:block'}`}
-            >
-              <div className="absolute top-0 left-0 m-1 text-xs ">
-                <span className={`${isSchedule ? 'md:hidden' : ''}`}>
-                  {day.toLocaleDateString(locale, {
-                    weekday: 'short',
-                    month: 'long',
-                    day: 'numeric'
-                  })}
-                </span>
-                <span className={`hidden ${isSchedule ? 'md:block' : ''}`}>
-                  {day.getDate()}
-                </span>
-              </div>
-              <div className="flex flex-col items-start justify-start h-full mt-4 mb-2 overflow-hidden pb-2">
-                {postsByDayNum[dayNum]?.map((post) => (
-                  <PostsBlock post={post} isSchedule={isSchedule} challenge={challenge} key={post.id} membership={membership} />
-                ))}
-                {isSchedule && isInRange && !postsByDayNum[dayNum] && userIsCreator &&
-                  <NewPostLink day={dayNum} challenge={challenge} />
-                }
+            <div key={day.toISOString()}>
+              {(postsByDayNum[dayNum] || isSchedule) &&
+              <div
+                key={day.toISOString()}
+                className={`relative p-2  h-24   ${isInRange ? ' bg-lightgrey border border-[#CECECE]' : 'bg-white hidden md:block'}`}
+              >
+                <div className="absolute top-0 left-0 m-1 text-xs">
+                  <span className={`${isSchedule ? 'md:hidden' : ''}`}>
+                    {day.toLocaleDateString(locale, {
+                      weekday: 'short',
+                      month: 'long',
+                      day: 'numeric'
+                    })}
+                  </span>
+                  <span className={`hidden ${isSchedule ? 'md:block' : ''}`}>
+                    {day.getDate()}
+                  </span>
+                </div>
+                <div className="flex flex-col items-start justify-start h-full mt-4 mb-2 overflow-hidden pb-2">
+                  {postsByDayNum[dayNum]?.map((post) => (
+                    <PostsBlock post={post} key={post.id} isSchedule={isSchedule} challenge={challenge} membership={membership} />
+                  ))}
+                  {isSchedule && isInRange && !postsByDayNum[dayNum] && userIsCreator &&
+                    <NewPostLink day={dayNum} challenge={challenge} />
+                  }
 
-              </div>
+                </div>
+                </div>
+              }
             </div>
-            }
-            </>
           )
         })}
       </div>
