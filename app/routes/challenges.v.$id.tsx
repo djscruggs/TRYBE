@@ -76,6 +76,7 @@ export default function ViewChallenge (): JSX.Element {
   const navigate = useNavigate()
   const matches = useMatches()
   useEffect(() => {
+    let isChat = false
     if (location.pathname.includes('about')) {
       setWhich('about')
     } else if (location.pathname.includes('program')) {
@@ -84,6 +85,10 @@ export default function ViewChallenge (): JSX.Element {
       setWhich('progress')
     } else if (location.pathname.includes('chat')) {
       setWhich('chat')
+      isChat = true
+    }
+    if (!isChat) {
+      window.scrollTo(0, 0) // Scroll to the top of the page
     }
   }, [location.pathname])
   const isEdit = location.pathname.includes('edit')
