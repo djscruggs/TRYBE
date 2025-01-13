@@ -1,11 +1,10 @@
-import { useNavigate, useParams } from '@remix-run/react'
+import { useParams } from '@remix-run/react'
 import { useEffect, useState, useContext, useRef } from 'react'
 import type { ChallengeSummary, MemberChallenge } from '~/utils/types'
 import ChallengeList from '~/components/challengeList'
-import axios, { type AxiosRequestConfig } from 'axios'
+import axios from 'axios'
 import { CurrentUserContext } from '~/contexts/CurrentUserContext'
 import MyChallenges from '~/components/myChallenges'
-import { Spinner } from '@material-tailwind/react'
 import { CardChallengeHomeSkeleton } from '~/components/cardChallengeHome'
 export default function ChallengesIndex (): JSX.Element {
   const browseRef = useRef<HTMLDivElement | null>(null)
@@ -13,18 +12,13 @@ export default function ChallengesIndex (): JSX.Element {
   const [categoryFilter, setCategoryFilter] = useState<string[]>([])
   const [upcomingChallenges, setUpcomingChallenges] = useState<ChallengeSummary[]>([])
   const params = useParams()
-  const [status, setStatus] = useState(params.range ?? 'active')
+  const status = params.range ?? 'active'
   const [loadingUpcoming, setLoadingUpcoming] = useState(true)
-  const navigate = useNavigate()
   const [memberships, setMemberships] = useState<MemberChallenge[]>([])
   // variable name matches the way it's used in the db
   // eslint-disable-next-line @typescript-eslint/naming-convention
   const [selfGuided, setSelfGuided] = useState(false)
   const { currentUser } = useContext(CurrentUserContext)
-  const handleStatusChange = (newStatus: string): void => {
-    setStatus(newStatus)
-    navigate(`/challenges/${newStatus}`)
-  }
   const handleCategoryChange = (newCategory: string): void => {
     setCategoryFilter(prev => prev.includes(newCategory) ? prev.filter(cat => cat !== newCategory) : [...prev, newCategory])
   }
@@ -45,7 +39,7 @@ export default function ChallengesIndex (): JSX.Element {
       // }
       const response = await axios.get(url, { params })
       const allUpcomingChallenges = response.data.challenges as ChallengeSummary[]
-      const memberships = response.data.memberships as MemberChallenge[]
+      setMemberships(response.data.memberships as MemberChallenge[])
       const filteredUpcomingChallenges = allUpcomingChallenges.filter(challenge =>
         !memberships.some(membership => membership.challengeId === challenge.id) &&
         challenge.userId !== currentUser?.id
@@ -121,6 +115,8 @@ export default function ChallengesIndex (): JSX.Element {
             {loadingUpcoming &&
               <div className='flex justify-center items-start h-screen mt-0'>
                 <div className='flex flex-col w-full'>
+                  <CardChallengeHomeSkeleton />
+                  <CardChallengeHomeSkeleton />
                   <CardChallengeHomeSkeleton />
                   <CardChallengeHomeSkeleton />
                   <CardChallengeHomeSkeleton />

@@ -48,7 +48,7 @@ export default function MyChallenges (props: MyChallengesProps): JSX.Element {
     void loadData()
   }, [status])
   return (
-    <div className={`mb-8 ${centered ? 'flex-col justify-center items-center' : ''}`}>
+    <div className={`mb-8 w-full ${centered ? 'flex-col justify-center items-center' : ''}`}>
       <div className={`text-lg w-full relative ${centered ? 'text-center' : ''}`}>
         <div className='text-red cursor-pointer font-bold'>My Challenges</div>
         {loadingError && <div className='text-red'>{loadingError}</div>}
@@ -57,9 +57,10 @@ export default function MyChallenges (props: MyChallengesProps): JSX.Element {
           } */}
           {loading &&
            <div className='flex-col justify-center items-start h-screen mt-0'>
-               <CardChallengeHomeSkeleton />
-               <CardChallengeHomeSkeleton />
-            </div>
+               {Array.from({ length: 4 }).map((_, index) => (
+                 <CardChallengeHomeSkeleton key={index} />
+               ))}
+          </div>
           }
         </div>
         <div className="flex flex-col rounded-md max-w-lg w-full">
