@@ -99,7 +99,7 @@ export default function CardChallengeHome ({ challenge, isMember, isPreview, mem
           <div onClick={goToChallenge} className='md:col-span-2 rounded-xl'>
             <div className="w-full flex">
               <div className='w-1/5 flex items-center justify-center'>
-                <div className={`relative border rounded-md p-2 pb-1 border-${bgColor}`}>
+                <div className={`relative border rounded-md p-2 pb-1 h-[70px] w-[73px] md:h-[95px] md:w-[99px] border-${bgColor}`}>
                 {challengeLength !== '' &&
                     <div className="absolute -right-3 text-center -mt-5 capitalize p-1 px-2 rounded-md shadow-lg shadow-darkgrey w-[60px] bg-teal text-[0.6rem] text-white">{challengeLength}</div>
 
@@ -112,19 +112,19 @@ export default function CardChallengeHome ({ challenge, isMember, isPreview, mem
                 <div className='font-bold mb-1 text-start text-black'>
 
                   <div className='text-xs text-darkgrey flex items-start justify-start'>
-                    <span className='text-black text-lg'>{challenge.name}</span>
+                    <span className='text-black text-sm md:text-lg'>{challenge.name}</span>
 
                   </div>
                 </div>
                 <div className='flex w-full'>
-                <div className='flex items-center justify-start w-2/3'>
+                <div className='flex items-center justify-start w-2/3 text-xs md:text-sm'>
                   <div className = 'w-2/3'>
 
                     {challenge.type === 'SELF_LED' &&
                       <div className='text-xs text-darkgrey w-full'>Self-Guided
                         <DraftBadge challenge={challenge} className='ml-2 inline' />
                         {showHostLabel &&
-                          <span className='text-xs font-taprom text-blue ml-2'>Hosting</span>
+                          <span className='text-xs font-taprom text-blue ml-2 inline'>Hosting</span>
                         }
                       </div>
                     }
