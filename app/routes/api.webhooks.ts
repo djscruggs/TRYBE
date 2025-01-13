@@ -89,7 +89,6 @@ export const action: ActionFunction = async ({ request }) => {
           profile: true
         }
       })
-      await sendWelcomeEmail({ to: 'me@derekscruggs.com' })
       // update email address
       const primaryEmailAddress = bodyJson.data.email_addresses.find((address: any) => address.id === bodyJson.data.primary_email_address_id).email_address
       await prisma.user.update({

@@ -98,7 +98,7 @@ const DateSchedule = ({ challenge, posts, isSchedule, membership }: { challenge:
             {(postsByDayNum[dayNum] || isSchedule) &&
             <div
               key={day.toISOString()}
-              className={`relative p-2  h-24   ${isInRange ? 'bg-lightgrey border border-[#CECECE]' : 'bg-white'}`}
+              className={`relative p-2  h-24   ${isInRange ? ' bg-lightgrey border border-[#CECECE]' : 'bg-white hidden md:block'}`}
             >
               <div className="absolute top-0 left-0 m-1 text-xs ">
                 <span className={`${isSchedule ? 'md:hidden' : ''}`}>
