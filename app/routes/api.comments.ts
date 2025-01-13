@@ -107,6 +107,10 @@ export const action: ActionFunction = async (args) => {
     if (parent && challengeId && (updated.postId || updated.replyToId || updated.threadId || updated.checkInId)) {
       sendNotification = true
     }
+    // don't send a reply to yourself
+    if (parent?.userId === currentUser?.id) {
+      sendNotification = false
+    }
     if (sendNotification) {
       const commentUrl = generateUrl(`/challenges/v/${challengeId}/chat#${type}-${parent.id}`)
       void sendCommentReplyNotification({
