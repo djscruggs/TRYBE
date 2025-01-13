@@ -13,11 +13,21 @@ import {
 } from '@heroicons/react/24/outline'
 import { toast } from 'react-hot-toast'
 import { errorFromUrl } from '~/utils/helpers'
+
+import ReactGA from 'react-ga'
+const TRACKING_ID = 'G-2RFLDZDY57' // OUR_TRACKING_ID
+ReactGA.initialize(TRACKING_ID)
+
 export default function Layout (): JSX.Element {
   const hasLoaded = useHasLoaded()
   if (!hasLoaded) {
     return <Loading />
   }
+  useEffect(() => {
+    if (hasLoaded) {
+      ReactGA.pageview(location.pathname + location.search, [])
+    }
+  }, [location.pathname])
   return (
     <>
       <FullLayout />
