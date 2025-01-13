@@ -20,14 +20,16 @@ ReactGA.initialize(TRACKING_ID)
 
 export default function Layout (): JSX.Element {
   const hasLoaded = useHasLoaded()
+  const location = useLocation()
+  useEffect(() => {
+    if (hasLoaded) {
+      ReactGA.pageview(location.pathname + location.search)
+    }
+  }, [location.pathname])
   if (!hasLoaded) {
     return <Loading />
   }
-  useEffect(() => {
-    if (hasLoaded) {
-      ReactGA.pageview(location.pathname + location.search, [])
-    }
-  }, [location.pathname])
+
   return (
     <>
       <FullLayout />
