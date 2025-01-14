@@ -42,7 +42,7 @@ function WhatsNew1 (): JSX.Element {
             <button className='bg-blue rounded-full text-white px-2 py-1 mt-2 text-xs shadow-md shadow-gray-400 w-20' onClick={goto}>Sign Up</button>
           </div>
         </div>
-        <p className='font-bold italic mt-2'>Starts Jan 17th | 12 Days | Writing</p>
+        <p className='font-bold italic mt-2'>Starts Jan 20th | 12 Days | Writing</p>
       </div>
     </div>
   )
