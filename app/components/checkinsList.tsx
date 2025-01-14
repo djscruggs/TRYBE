@@ -51,11 +51,8 @@ export default function CheckinsList (props: CheckinsListProps): JSX.Element {
               if (!checkIn.body?.length) return null // Skip empty check-ins
 
               return (
-                <div key={checkIn.id} className={'relative pt-2 '}>
-                  <div className='mb-2 bg-yellow bg-opacity-10 rounded-md'>
-                    <CheckinRow checkIn={checkIn} comments={[]} allowComments={allowComments} highlightedObject={highlightedObject} highlightedId={highlightedId} afterDelete={handleDelete} />
-                  </div>
-                </div>
+                <CheckinRow key={checkIn.id} checkIn={checkIn} comments={[]} allowComments={allowComments} highlightedObject={highlightedObject} highlightedId={highlightedId} afterDelete={handleDelete} />
+
               )
             })}
             {posts.map((post: Post) => (

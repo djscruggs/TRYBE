@@ -210,7 +210,7 @@ export const sendDayNumberPosts = async (): Promise<{ dayNumberPosts: number, da
               name: (`${post.user.profile?.firstName ?? ''} ${post.user.profile?.lastName ?? ''}`).trim(),
               post_url: postLink,
               date: new Date().toLocaleDateString(),
-              subject: `${post.title}`,
+              subject: `${post.challenge?.name}: ${post.title}`,
               title: post.title,
               body: textToHtml(convertYouTubeLinksToImages(post.body ?? '', postLink))
             }

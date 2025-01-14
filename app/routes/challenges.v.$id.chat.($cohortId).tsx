@@ -370,9 +370,7 @@ export default function ViewChallengeChat (): JSX.Element {
         <DateDivider date={today} />
       )}
       {newCheckIns.map((checkIn, index) => (
-        <div key={`checkin-${checkIn.id}`}className='mb-2 bg-yellow bg-opacity-10 rounded-md'>
-          <CheckinRow checkIn={checkIn} comments={[]} allowComments={true} afterDelete={handleDeleteNewCheckIn}/>
-        </div>
+        <CheckinRow key={`checkin-${checkIn.id}`} checkIn={checkIn} comments={[]} allowComments={true} afterDelete={handleDeleteNewCheckIn}/>
       ))}
 
       {showCheckinPopup && (
