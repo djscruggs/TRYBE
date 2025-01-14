@@ -2910,6 +2910,10 @@ video {
   --tw-bg-opacity: 0.9;
 }
 
+.bg-opacity-20 {
+  --tw-bg-opacity: 0.2;
+}
+
 .bg-gradient-to-b {
   background-image: linear-gradient(to bottom, var(--tw-gradient-stops));
 }

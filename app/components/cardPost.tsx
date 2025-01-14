@@ -149,7 +149,7 @@ export default function CardPost (props: CardPostProps): JSX.Element {
       {!isShare && !hideMeta &&
         <>
           <hr className={`${isChat ? 'border-0 none' : 'border-gray'}`} />
-          <div className={`grid grid-cols-3 text-center ${isChat ? 'pt-0' : 'py-2'} cursor-pointer w-full`}>
+          <div className={`grid grid-cols-3 text-center ${isChat ? 'pt-2' : 'py-2'} cursor-pointer w-full`}>
             <div className="ml-6 flex justify-center items-center" onClick={() => { setShowComments(true) }}>
                 <FaRegComment className="text-grey mr-1 inline" />
                 <span className="text-xs">{post.commentCount} comments</span>
