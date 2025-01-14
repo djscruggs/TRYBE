@@ -222,7 +222,7 @@ interface CheckInAvatarProps {
 }
 const CheckInAvatar = ({ checkIn, size = 'sm', shape = 'circle' }: CheckInAvatarProps): JSX.Element => {
   return (
-    <div className='mr-2'>
+    <div className='mr-2 min-w-10'>
       <AvatarLoader object={checkIn} clickable={true} size={size} shape={shape}/>
     </div>
   )
