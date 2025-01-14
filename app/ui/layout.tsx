@@ -15,7 +15,8 @@ import { toast } from 'react-hot-toast'
 import { errorFromUrl } from '~/utils/helpers'
 
 import ReactGA from 'react-ga'
-const TRACKING_ID = 'G-2RFLDZDY57' // OUR_TRACKING_ID
+const TRACKING_ID = 'G-N9EC460FCP' // OUR_TRACKING_ID
+
 ReactGA.initialize(TRACKING_ID)
 
 export default function Layout (): JSX.Element {
