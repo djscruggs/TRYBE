@@ -159,8 +159,8 @@ export default function CardChallengeHome ({ challenge, isMember, isPreview, mem
                   }
                   </div>
                   {challenge.status === 'PUBLISHED' &&
-                    <div className = 'w-1/3 flex items-center justify-end h-full' onClick={copyLink}>
-                      <SlShareAlt className="cursor-pointer text-grey text-sm inline w-4 h-4 mr-2" />
+                    <div className = 'w-1/3 flex items-center justify-end h-full' >
+                      <SlShareAlt className='cursor-pointer text-grey text-sm inline w-4 h-4 mr-2' onClick={copyLink} />
                     </div>
                   }
                 </div>
