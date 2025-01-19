@@ -92,15 +92,7 @@ export default function ViewChallenge (): JSX.Element {
     }
   }, [location.pathname])
   const isEdit = location.pathname.includes('edit')
-  if (!data) {
-    return <p>No data.</p>
-  }
-  if (data?.loadingError) {
-    return <h1>{data.loadingError}</h1>
-  }
-  if (!data?.challenge) {
-    return <p>Loading...</p>
-  }
+
   // force redirect to about tab if no tab is selected
   useEffect(() => {
     if (matches.length === 3) {
@@ -108,29 +100,34 @@ export default function ViewChallenge (): JSX.Element {
       navigate(url)
     }
   }, [matches])
-
   return (
     <MemberContextProvider membership={membership} setMembership={setMembership}>
-      <div className={`w-full ${isEdit ? '' : ' relative'}`}>
-        {/* make wider on chat tab */}
-        <div className={`fixed top-0 z-10 bg-white w-full max-w-lg ${which === 'chat' ? 'md:max-w-2xl' : ''} bg-opacity-80 rounded-br-lg`}>
-          <ChallengeHeader challenge={challenge as Challenge} size='small' />
-          {!isEdit &&
-            <ChallengeTabs challenge={challenge as ChallengeSummary} which={which} />
-          }
+      { !data?.challenge && !data.loadingError && <p>Loading...</p>}
+
+      { data?.loadingError && <h1 className='mt-10 text-2xl text-red'>{data.loadingError}</h1>}
+
+      { !data?.loadingError && data?.challenge && (
+        <div className={`w-full ${isEdit ? '' : ' relative'}`}>
+          {/* make wider on chat tab */}
+          <div className={`fixed top-0 z-10 bg-white w-full max-w-lg ${which === 'chat' ? 'md:max-w-2xl' : ''} bg-opacity-80 rounded-br-lg`}>
+            <ChallengeHeader challenge={challenge as Challenge} size='small' />
+            {!isEdit &&
+              <ChallengeTabs challenge={challenge as ChallengeSummary} which={which} />
+            }
+          </div>
+          <div className='mb-16 mt-28 md:mt-24'>
+            <Outlet />
+          </div>
+          <div className='flex items-center md:hidden justify-center w-full my-1'>
+            {which !== 'chat' &&
+              <FaChevronCircleLeft
+                className='w-6 h-6 text-grey cursor-pointer'
+                onClick={() => { navigate('/challenges/') }}
+              />
+            }
+          </div>
         </div>
-        <div className='mb-16 mt-28 md:mt-24'>
-          <Outlet />
-        </div>
-       <div className='flex items-center md:hidden justify-center w-full my-1'>
-          {which !== 'chat' &&
-            <FaChevronCircleLeft
-              className='w-6 h-6 text-grey cursor-pointer'
-              onClick={() => { navigate('/challenges/') }}
-            />
-          }
-        </div>
-      </div>
+      )}
     </MemberContextProvider>
   )
 }
