@@ -134,7 +134,6 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
     },
     orderBy: { createdAt: 'asc' }
   })
-  console.log(comments)
   // group posts, comments and checkins by date
   const groupedData: ChallengeChatData['groupedData'] = {}
 

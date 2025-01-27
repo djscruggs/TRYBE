@@ -51,7 +51,6 @@ export const FullLayout = (): JSX.Element => {
   const { currentUser } = useContext(CurrentUserContext)
   const location = useLocation()
   const navigate = useNavigate()
-  const [newOpen, setNewOpen] = useState(false)
 
   // hack to remove padding on welcome screen mobile
   // hide nav if on index, login or register
@@ -89,18 +88,6 @@ export const FullLayout = (): JSX.Element => {
     }
   }, [location.pathname])
 
-  const handlePlusClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>): void => {
-    event.stopPropagation()
-    setNewOpen(!newOpen)
-  }
-  const hideMenu = (): void => {
-    setNewOpen(false)
-  }
-  const handleNewOpt = (action: string, event: React.MouseEvent<HTMLDivElement, MouseEvent>): void => {
-    event.stopPropagation()
-    navigate(action)
-    hideMenu()
-  }
   const [wrapperVisible, setWrapperVisible] = useState(true)
   let scrollTimeout: NodeJS.Timeout
   const handleScroll = (): void => {
@@ -163,7 +150,7 @@ export const FullLayout = (): JSX.Element => {
 
         </div>
         {/* mobile layout */}
-        <div className="md:hidden px-1  flex flex-col min-h-screen min-w-screen p-0" onClick={hideMenu}>
+        <div className="md:hidden px-1  flex flex-col min-h-screen min-w-screen p-0" >
 
                 {showNav &&
                 <>

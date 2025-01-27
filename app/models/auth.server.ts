@@ -89,16 +89,16 @@ export async function requireCurrentUser (args: LoaderFunctionArgs): Promise<Cur
   const currentUser = await getCurrentUser(args)
 
   const path = new URL(request.url).pathname
-  if (!currentUser) {
-    if (!['/login', '/register', '/signup'].includes(path)) {
-      const url = new URL(request.url)
-      const redirectPath = new URL(request.url).pathname
-      const urlWithoutPath = `${url.protocol}//${url.host}${url.search}${url.hash}`
-      const newUrl = new URL(urlWithoutPath)
-      newUrl.searchParams.set('redirectTo', redirectPath)
-      // eslint-disable-next-line @typescript-eslint/no-throw-literal
-      throw redirect(newUrl.toString())
-    }
+  const allowedPaths = ['/login', '/register', '/signup']
+  const isAllowedPath = allowedPaths.some(allowedPath => path.startsWith(allowedPath))
+  if (!isAllowedPath) {
+    const url = new URL(request.url)
+    const redirectPath = new URL(request.url).pathname
+    const urlWithoutPath = `${url.protocol}//${url.host}${url.search}${url.hash}`
+    const newUrl = new URL(urlWithoutPath)
+    newUrl.searchParams.set('redirectTo', redirectPath)
+    // eslint-disable-next-line @typescript-eslint/no-throw-literal
+    throw redirect(newUrl.toString())
   }
   return currentUser
 }
