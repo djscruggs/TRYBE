@@ -1,6 +1,6 @@
 // NavLinks.tsx
 
-import { useLocation, useNavigation } from 'react-router-dom'
+import { useLocation, useNavigate, useNavigation } from 'react-router-dom'
 import {
   PlusCircleIcon,
   TrophyIcon,
@@ -14,10 +14,24 @@ import { Spinner } from '@material-tailwind/react'
 import { Link } from '@remix-run/react'
 import { useClerk } from '@clerk/remix'
 import useGatedNavigate from '~/hooks/useGatedNavigate'
+import { useDeviceContext } from '~/contexts/DeviceContext'
 const NavLinks = (): JSX.Element => {
   const { currentUser } = useContext(CurrentUserContext)
   const location = useLocation()
-  const { signOut } = useClerk()
+  const { signOut: ClerkSignOut } = useClerk()
+  const navigate = useNavigate()
+  const { isMobile } = useDeviceContext()
+  const logout = async (): Promise<void> => {
+    if (!isMobile) {
+      await ClerkSignOut()
+    } else {
+      navigate('/logout', {
+        state: {
+          redirectUrl: '/challenges'
+        }
+      })
+    }
+  }
   const [isNewOpen, setIsNewOpen] = useState(false)
   const navigation = useNavigation()
   const gatedNavigate = useGatedNavigate()
@@ -121,7 +135,7 @@ const NavLinks = (): JSX.Element => {
           </div> */}
            {currentUser &&
           <div className='absolute bottom-10 left-0 w-24 h-20 text-darkgrey text-center mb-4 rounded-lg hover:bg-gray-300 flex flex-col items-center justify-center'>
-            <HiOutlineLogout className='h-8 w-8 cursor-pointer mb-1 text-darkgrey' onClick={() => { void signOut({ redirectUrl: '/challenges' }) }}/>
+            <HiOutlineLogout className='h-8 w-8 cursor-pointer mb-1 text-darkgrey' onClick={logout}/>
               <div className="cursor-pointer">Logout</div>
             </div>
           }

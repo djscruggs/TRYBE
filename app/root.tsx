@@ -27,7 +27,7 @@ import { getUserByClerkId } from './models/user.server'
 import { rootAuthLoader } from '@clerk/remix/ssr.server'
 import { ClerkApp, useUser } from '@clerk/remix'
 import { captureRemixErrorBoundaryError } from '@sentry/remix'
-
+import { getUserSession, getUser } from './models/auth.server'
 interface DocumentProps {
   children: React.ReactNode
   title?: string
@@ -62,10 +62,19 @@ export const loader: LoaderFunction = async args => {
     CLERK_PUBLISHABLE_KEY: process.env.CLERK_PUBLISHABLE_KEY,
     NODE_ENV: process.env.NODE_ENV
   }
-
   const userAgent = args.request.headers.get('user-agent') ?? 'unknown'
-  console.log('userAgent', userAgent)
+
   return await rootAuthLoader(args, async ({ request }) => {
+    // check server session first
+    const session = await getUserSession(request)
+    const userId = session.get('userId')
+    console.log('userId', userId)
+    if (userId) {
+      const user: CurrentUser | null = await getUser(request)
+      if (user) {
+        return { ENV, user, auth: null, userAgent }
+      }
+    }
     const auth = request.auth
     if (auth?.userId) {
       const user: CurrentUser = await getUserByClerkId(auth.userId)

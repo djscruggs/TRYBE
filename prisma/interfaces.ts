@@ -26,6 +26,15 @@ export interface User {
   Note?: Note[];
   posts?: Post[];
   profile?: Profile | null;
+  passwordResetTokens?: PasswordResetToken[];
+}
+
+export interface PasswordResetToken {
+  id: number;
+  userId: number;
+  token: string;
+  expiresAt: Date;
+  user?: User;
 }
 
 export interface Profile {

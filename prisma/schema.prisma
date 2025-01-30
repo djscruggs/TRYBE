@@ -29,10 +29,17 @@ model User {
   Note             Note[]
   posts            Post[]
   profile          Profile?
-
+  passwordResetTokens PasswordResetToken[]
   @@index([clerkId])
 }
-
+model PasswordResetToken {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  token     String   @unique
+  expiresAt DateTime
+  user      User     @relation(fields: [userId], references: [id])
+  @@index([userId])
+}
 model Profile {
   id           Int     @id @default(autoincrement())
   userId       Int     @unique

@@ -1,6 +1,6 @@
 import { useDeviceContext } from '~/contexts/DeviceContext'
 import type { LoaderFunctionArgs, LoaderFunction, ActionFunction } from '@remix-run/node'
-import { Link, useNavigate, Form, useActionData } from '@remix-run/react'
+import { Link, useNavigate, Form, useActionData, useSearchParams } from '@remix-run/react'
 import { useEffect, useState } from 'react'
 import { login } from '~/models/auth.server'
 import { FormField } from '~/components/formField'
@@ -14,9 +14,12 @@ export const action: ActionFunction = async ({ request }) => {
   const form = await request.formData()
   const email = form.get('email')?.toString().trim() ?? ''
   const password = form.get('password')?.toString() ?? ''
-  return await login({ email, password, request })
+  const result = await login({ email, password, request })
+  return result
 }
 export default function SignInPage (): JSX.Element {
+  const [searchParams] = useSearchParams()
+  const passwordUpdated = searchParams.get('passwordUpdated')
   const actionData = useActionData<typeof action>()
   const [formData, setFormData] = useState({
     email: actionData?.fields?.email ?? '',
@@ -38,6 +41,14 @@ export default function SignInPage (): JSX.Element {
     <div className="max-w-sm justify-center items-center mt-10">
       {isMobile() && (
           <Form method="post" className="rounded-2xl bg-gray-200 p-6 w-96">
+            <div className="font-semibold text-center tracking-wide text-red w-full">
+                {actionData?.error}
+            </div>
+            {passwordUpdated && !actionData?.error && (
+              <div className="relative">
+                <p className="text-center text-green">Password updated successfully. Please login again.</p>
+              </div>
+            )}
             <div className="relative">
               <FormField
                 type="email"
