@@ -256,6 +256,7 @@ export interface RegisterForm {
   password?: string
   firstName: string
   lastName: string
+  redirectTo?: string
 }
 export interface LoginForm {
   email: string

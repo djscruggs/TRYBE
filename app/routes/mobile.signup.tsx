@@ -1,19 +1,19 @@
 import { useState, useEffect } from 'react'
-import { type ActionFunction, json, type LoaderFunction, type LoaderFunctionArgs, redirect } from '@remix-run/node'
-import { Form, Link, useActionData, useLoaderData, useNavigate } from '@remix-run/react'
+import { type ActionFunction, json, type LoaderFunction, type LoaderFunctionArgs } from '@remix-run/node'
+import { Form, Link, useActionData, useNavigate } from '@remix-run/react'
 import { register, requireCurrentUser } from '~/models/auth.server'
 import { validateEmail, validateName, validatePassword } from '~/models/validators.server'
 import * as React from 'react'
 import { FormField } from '~/components/formField'
 import { Button } from '@material-tailwind/react'
 import { useDeviceContext } from '~/contexts/DeviceContext'
-import Logo from '~/components/logo'
 
-export const loader: LoaderFunction = async ({ params }: LoaderFunctionArgs) => {
+export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
   // If there's already acurrentUser in the session, redirect to the home page
-  return { params }
-  return (await requireCurrentUser(args)) ? redirect('/challenges') : null
+  await requireCurrentUser(args)
+  return { params: args.params }
 }
+
 export const action: ActionFunction = async ({ request }) => {
   const form = await request.formData()
   const email = form.get('email')?.toString().trim() ?? ''
@@ -35,20 +35,16 @@ export const action: ActionFunction = async ({ request }) => {
 
 export default function Register (): JSX.Element {
   const actionData = useActionData<typeof action>()
-  const { params } = useLoaderData<typeof loader>()
   const [formData, setFormData] = useState({
     email: actionData?.fields?.email ?? '',
     password: actionData?.fields?.password ?? '',
     firstName: actionData?.fields?.firstName ?? '',
     lastName: actionData?.fields?.lastName ?? '',
-    passwordMatch: actionData?.fields?.passwordMatch ?? ''
+    passwordMatch: actionData?.fields?.passwordMatch ?? '',
+    redirectTo: localStorage.getItem('redirectTo') ?? ''
   })
   const navigate = useNavigate()
-  const [isRegister, setIsRegister] = useState(true)
   const { isMobile } = useDeviceContext()
-  const handleSwitch = (): void => {
-    setIsRegister(!isRegister)
-  }
   // this page is only for mobile. if a normal web browser is used, redirect to the signup page
   useEffect(() => {
     if (!isMobile()) {
@@ -130,12 +126,12 @@ export default function Register (): JSX.Element {
                 }
               </div>
               <div className="w-full text-center mt-2">
-              <Button
-                type="submit"
-                className='bg-red'
-              >
-                Sign Up
-              </Button>
+                <Button
+                  type="submit"
+                  className='bg-red'
+                >
+                  Sign Up
+                </Button>
               </div>
 
             <div className="relative text-center mt-2">
