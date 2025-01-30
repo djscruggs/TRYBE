@@ -31,7 +31,7 @@ export default function LandingPage (): JSX.Element {
 
             <div className='flex justify-center items-center w-full'>
                 <Logo size='48px' backgroundColor='white' />
-              </div>
+            </div>
             </div>
             {step === 1 &&
               <div className='relative flex flex-col h-screen flex-grow items-start justify-start  text-red font-light max-w-[800px] w-full'>

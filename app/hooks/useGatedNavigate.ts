@@ -11,7 +11,7 @@ export default function useGatedNavigate (): (path: string, gated?: boolean) => 
         _navigate(path)
       } else {
         const redirectTo = path
-        _navigate(`/signup?redirectTo=${redirectTo}`)
+        _navigate(`/signup-cta?redirectTo=${redirectTo}`)
       }
     } else {
       _navigate(path)

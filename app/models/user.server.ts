@@ -11,7 +11,7 @@ export const createUser = async (user: RegisterForm | prisma.UserCreateInput): P
   const data = {
     email: user.email,
     password: passwordHash,
-    clerkId: user.clerkId,
+    clerkId: user.clerkId ?? null,
     profile: {
       create: {
         firstName: user.firstName,

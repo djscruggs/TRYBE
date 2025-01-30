@@ -26,7 +26,7 @@ export async function createUserSession (userId: string | number, redirectTo: st
   const session = await storage.getSession()
   session.set('userId', userId)
   if (!redirectTo) {
-    return redirect('/challenges')
+    redirectTo = '/challenges'
   }
   return redirect(redirectTo, {
     headers: {
@@ -89,7 +89,7 @@ export async function requireCurrentUser (args: LoaderFunctionArgs): Promise<Cur
   const currentUser = await getCurrentUser(args)
 
   const path = new URL(request.url).pathname
-  const allowedPaths = ['/login', '/register', '/signup']
+  const allowedPaths = ['/login', '/mobile/login', '/mobile/signup', '/signup']
   const isAllowedPath = allowedPaths.some(allowedPath => path.startsWith(allowedPath))
   if (!isAllowedPath) {
     const url = new URL(request.url)

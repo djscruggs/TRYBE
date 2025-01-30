@@ -14,6 +14,7 @@ import {
 import { withEmotionCache } from '@emotion/react'
 import { useEffect, useState } from 'react'
 import { CurrentUserContext } from './contexts/CurrentUserContext'
+import DeviceContext from './contexts/DeviceContext'
 import Layout from './ui/layout'
 import stylesheet from './output.css'
 import datepickerStyle from 'react-datepicker/dist/react-datepicker.css'
@@ -26,6 +27,7 @@ import { getUserByClerkId } from './models/user.server'
 import { rootAuthLoader } from '@clerk/remix/ssr.server'
 import { ClerkApp, useUser } from '@clerk/remix'
 import { captureRemixErrorBoundaryError } from '@sentry/remix'
+
 interface DocumentProps {
   children: React.ReactNode
   title?: string
@@ -35,14 +37,15 @@ export const links: LinksFunction = () => [
   { rel: 'stylesheet', href: stylesheet },
   { rel: 'stylesheet', href: datepickerStyle },
   { rel: 'stylesheet', href: circularProgressbarStyle }
-
 ]
+
 export const meta: MetaFunction = () => {
   return [
     { title: 'Trybe' },
     { viewport: 'width=device-width,initial-scale=1' }
   ]
 }
+
 export interface RootLoaderData {
   ENV: {
     CLERK_PUBLISHABLE_KEY: string
@@ -51,28 +54,34 @@ export interface RootLoaderData {
   user: CurrentUser | null
   auth: typeof rootAuthLoader
 }
+
 export const loader: LoaderFunction = async args => {
   const userLocale = getUserLocale()
+
   const ENV = {
     CLERK_PUBLISHABLE_KEY: process.env.CLERK_PUBLISHABLE_KEY,
     NODE_ENV: process.env.NODE_ENV
   }
+
+  const userAgent = args.request.headers.get('user-agent') ?? 'unknown'
+  console.log('userAgent', userAgent)
   return await rootAuthLoader(args, async ({ request }) => {
     const auth = request.auth
     if (auth?.userId) {
       const user: CurrentUser = await getUserByClerkId(auth.userId)
       if (!user) {
-        return { user: null, auth: null, ENV }
+        return { user: null, auth: null, ENV, userAgent }
       }
       user.locale = userLocale
       user.dateFormat = user.locale === 'en-US' ? 'M-dd-yyyy' : 'dd-M-yyyy'
       user.timeFormat = user.locale === 'en-US' ? 'h:mm a' : 'HH:MM'
       user.dateTimeFormat = `${user.dateFormat} @ ${user.timeFormat}`
-      return { user, auth, ENV }
+      return { user, auth, ENV, userAgent }
     }
-    return { ENV, user: null, auth: null }
+    return { ENV, user: null, auth: null, userAgent }
   })
 }
+
 const Document = withEmotionCache(({ children, title }: DocumentProps, emotionCache) => {
   return (
     <html lang="en">
@@ -84,6 +93,7 @@ const Document = withEmotionCache(({ children, title }: DocumentProps, emotionCa
         <Links />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
+        <script type="text/javascript" src="https://unpkg.com/median-js-bridge@latest/dist/median.min.js"></script>
         <link
           rel="stylesheet"
           href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;500;600;700&display=swap"
@@ -104,20 +114,31 @@ const Document = withEmotionCache(({ children, title }: DocumentProps, emotionCa
   )
 })
 
+// Create a context for device information
+
 // https://remix.run/docs/en/main/route/component
 // https://remix.run/docs/en/main/file-conventions/routes
 function App (): JSX.Element {
   const { user } = useLoaderData<{ user: CurrentUser }>()
+  const { userAgent } = useLoaderData<{ userAgent: string }>()
   const clerkUser = useUser()
   const revalidator = useRevalidator()
   const [currentUser, setCurrentUser] = useState<CurrentUser | null>(user as CurrentUser)
+
+  // Determine if the user agent is "gonative median" and if  iphone or android
+  const isGoNativeMedian = userAgent.includes('gonative median')
+  const isIphone = isGoNativeMedian && userAgent.toLowerCase().includes('iphone')
+  const isAndroid = isGoNativeMedian && userAgent.toLowerCase().includes('android')
+
   useEffect(() => {
     setCurrentUser(user as CurrentUser)
   }, [user])
+
   // callback for when user profile is updated via clerk
   useEffect(() => {
     revalidator.revalidate()
   }, [clerkUser.user])
+
   const searchParams = useSearchParams()
   if (!user && typeof window !== 'undefined') {
     const redirectTo = searchParams[0].get('redirectTo')
@@ -126,16 +147,18 @@ function App (): JSX.Element {
       localStorage.setItem('redirectTo', redirectTo)
     }
   }
-
   return (
-    <Document>
+    <DeviceContext.Provider value={{ isGoNativeMedian, isIphone, isAndroid, isMobile: () => isIphone || isAndroid }}>
+      <Document>
         <Toaster position='top-center' />
         <CurrentUserContext.Provider value={{ currentUser, setCurrentUser }}>
           <Layout />
         </CurrentUserContext.Provider>
-    </Document>
+      </Document>
+    </DeviceContext.Provider>
   )
 }
+
 export default ClerkApp(App)
 
 // https://remix.run/docs/en/main/route/error-boundary
