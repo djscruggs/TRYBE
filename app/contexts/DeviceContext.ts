@@ -1,14 +1,14 @@
 import { createContext, useContext } from 'react'
 
 interface DeviceContextType {
-  isGoNativeMedian: boolean
+  isMobileDevice: boolean
   isIphone: boolean
   isAndroid: boolean
   isMobile: () => boolean
 }
 
 const DeviceContext = createContext<DeviceContextType>({
-  isGoNativeMedian: false,
+  isMobileDevice: false,
   isIphone: false,
   isAndroid: false,
   isMobile: (): boolean => false

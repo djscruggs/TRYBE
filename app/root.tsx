@@ -135,9 +135,9 @@ function App (): JSX.Element {
   const [currentUser, setCurrentUser] = useState<CurrentUser | null>(user as CurrentUser)
 
   // Determine if the user agent is "gonative median" and if  iphone or android
-  const isGoNativeMedian = userAgent.includes('gonative median')
-  const isIphone = isGoNativeMedian && userAgent.toLowerCase().includes('iphone')
-  const isAndroid = isGoNativeMedian && userAgent.toLowerCase().includes('android')
+  const isMobileDevice = userAgent.includes('gonative median') || userAgent.includes('capacitor')
+  const isIphone = isMobileDevice && userAgent.toLowerCase().includes('iphone')
+  const isAndroid = isMobileDevice && userAgent.toLowerCase().includes('android')
 
   useEffect(() => {
     setCurrentUser(user as CurrentUser)
@@ -157,7 +157,7 @@ function App (): JSX.Element {
     }
   }
   return (
-    <DeviceContext.Provider value={{ isGoNativeMedian, isIphone, isAndroid, isMobile: () => isIphone || isAndroid }}>
+    <DeviceContext.Provider value={{ isMobileDevice, isIphone, isAndroid, isMobile: () => isIphone || isAndroid }}>
       <Document>
         <Toaster position='top-center' />
         <CurrentUserContext.Provider value={{ currentUser, setCurrentUser }}>
