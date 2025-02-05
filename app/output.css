@@ -3431,6 +3431,10 @@ video {
   padding-top: 1px;
 }
 
+.pt-10 {
+  padding-top: 2.5rem;
+}
+
 .text-left {
   text-align: left;
 }

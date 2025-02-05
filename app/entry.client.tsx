@@ -14,7 +14,6 @@ import { isCancel } from 'axios'
 // based on https://github.com/axios/axios/issues/6209
 function ignoreAxiosCancel (event: Event, hint: EventHint): Event | null {
   if (isCancel(hint?.originalException)) {
-    console.debug('Cancelled request ignored by Sentry', hint.originalException)
     return null
   }
   return event
@@ -26,16 +25,6 @@ Sentry.init({
   tunnel: '/tunnel',
   ignoreErrors: ['Network Error'],
   beforeSend: ignoreAxiosCancel,
-  // beforeSend (event, hint) {
-  //   if (!handleSentryBeforeSend(event, hint)) {
-  //     return null
-  //   }
-  //   // Check if it is an exception, and if so, show the report dialog
-  //   if (event.exception && event.event_id) {
-  //     Sentry.showReportDialog({ eventId: event.event_id })
-  //   }
-  //   return event
-  // },
   integrations: [
     // See docs for support of different versions of variation of react router
     // https://docs.sentry.io/platforms/javascript/guides/react/configuration/integrations/react-router/
@@ -78,7 +67,6 @@ interface ClientCacheProviderProps {
 }
 function ClientCacheProvider ({ children }: ClientCacheProviderProps): JSX.Element {
   const [cache, setCache] = React.useState(createEmotionCache())
-
   const clientStyleContextValue = React.useMemo(
     () => ({
       reset () {

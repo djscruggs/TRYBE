@@ -2,9 +2,11 @@ import React, { useContext, useEffect, useState } from 'react'
 import { SignedIn, SignedOut, UserButton } from '@clerk/remix'
 import useHasLoaded from '~/hooks/useHasLoaded'
 import { useLocation, Outlet, useNavigate, Link, useSearchParams } from '@remix-run/react'
+import useGatedNavigate from '~/hooks/useGatedNavigate'
 import { HiOutlineLogin } from 'react-icons/hi'
 import NavLinks from './navlinks'
 import { CurrentUserContext } from '~/contexts/CurrentUserContext'
+import { useDeviceContext } from '~/contexts/DeviceContext'
 import {
   HomeIcon,
   PlusCircleIcon,
@@ -22,18 +24,21 @@ ReactGA.initialize(TRACKING_ID)
 export default function Layout (): JSX.Element {
   const hasLoaded = useHasLoaded()
   const location = useLocation()
+  const { isMobile } = useDeviceContext()
   useEffect(() => {
     if (hasLoaded) {
       ReactGA.pageview(location.pathname + location.search)
     }
   }, [location.pathname])
-  if (!hasLoaded) {
-    return <Loading />
-  }
 
   return (
     <>
-      <FullLayout />
+      {!hasLoaded
+        ? <Loading />
+        : <>
+        {isMobile() ? <MobileLayout /> : <FullLayout />}
+        </>
+      }
     </>
   )
 }
@@ -97,6 +102,7 @@ export const FullLayout = (): JSX.Element => {
       setWrapperVisible(true)
     }, 300) // Set the footer to reappear after 1 second of no scrolling
   }
+
   useEffect(() => {
     window.addEventListener('scroll', handleScroll)
     return () => {
@@ -104,7 +110,6 @@ export const FullLayout = (): JSX.Element => {
       clearTimeout(scrollTimeout)
     }
   }, [])
-
   return (
       <>
         <div className='hidden md:block w-screen min-h-screen'>
@@ -136,7 +141,7 @@ export const FullLayout = (): JSX.Element => {
                     />
                   </div>
                 }
-                  <Outlet />
+                <Outlet />
               </div>
             </SignedIn>
             <SignedOut>
@@ -151,79 +156,87 @@ export const FullLayout = (): JSX.Element => {
         </div>
         {/* mobile layout */}
         <div className="md:hidden px-1  flex flex-col min-h-screen min-w-screen p-0" >
-
-                {showNav &&
-                <>
-                {/*
-                <div className="flex justify-between items-start mb-4 pt-2 pr-0">
-                     <MagnifyingGlassIcon className='w-6 mr-4 ml-2' />
-                    <BellIcon className='w-6 mr-4' />
-                    <Link to="/messages">
-                    <ChatBubbleLeftRightIcon className='w-6 mr-4' />
+          <div className={`flex flex-col items-center justify-center  ${isWelcome ? 'p-0' : ' px-2'}`}>
+            <Outlet />
+            {showSpacer &&
+              <div className='min-h-[100px]'>
+                {/* this is a spacer so you can scroll to bottom and menu doesn't cover content */}
+              </div>
+            }
+          </div>
+          {showNav && !isChat &&
+            <div className={`${wrapperVisible ? 'opacity-100' : 'opacity-30'}  transition-opacity duration-500 fixed bottom-0 left-0 right-0 max-w-screen flex items-center w-full justify-center m-0 p-0 px-2 py-1 bg-gray-50 border-2 border-slate-200 z-10`}>
+              <div className='max-w-lg flex justify-between w-full'>
+                <div className={`flex  items-center  ${currentUser ? 'w-1/3 justify-between' : 'w-1/2 justify-center  '}`}>
+                  {currentUser && (
+                    <Link to="/home" className='w-8 h-8 flex justify-center items-center'>
+                      <HomeIcon className='cursor-pointer w-8 h-8' />
                     </Link>
+                  )}
+                  <Link to="/challenges" className='w-8 h-8 flex justify-center items-center'>
+                    <TrophyIcon className='cursor-pointer w-8 h-8' />
+                  </Link>
                 </div>
-                */}
-                </>
-                }
-
-                <div className={`flex flex-col items-center justify-center  ${isWelcome ? 'p-0' : ' px-2'}`}>
-
-                    <Outlet />
-                    {showSpacer &&
-                      <div className='min-h-[100px]'>
-                        {/* this is a spacer so you can scroll to bottom and menu doesn't cover content */}
-                      </div>
-                    }
-                    {/* <AnimatePresence mode='wait' initial={false}>
-                        <motion.main
-                         key={useLocation().pathname}
-                         initial={{opacity: 0}}
-                         animate={{opacity: 1}}
-                         // exit={{opacity: 0}}
-                         transition={{duration: 0.3}}
-                        >
-                        <Outlet />
-                        </motion.main>
-                    </AnimatePresence> */}
+                <div className={`flex justify-center items-center ${currentUser ? 'w-1/3' : 'hidden'}`}>
+                  {currentUser && (
+                    <Link to="/challenges/new" prefetch='render'>
+                      <PlusCircleIcon className='w-12 h-12 text-white rounded-full bg-red text-color-white cursor-pointer text-6xl' />
+                    </Link>
+                  )}
                 </div>
-                {showNav && !isChat &&
-                  <div className={`${wrapperVisible ? 'opacity-100' : 'opacity-30'}  transition-opacity duration-500 fixed bottom-0 left-0 right-0 max-w-screen flex items-center w-full justify-center m-0 p-0 px-2 py-1 bg-gray-50 border-2 border-slate-200 z-10`}>
-                    <div className='max-w-lg flex justify-between w-full'>
-                      <div className={`flex  items-center  ${currentUser ? 'w-1/3 justify-between' : 'w-1/2 justify-center  '}`}>
-                        {currentUser && (
-                          <Link to="/home" className='w-8 h-8 flex justify-center items-center'>
-                            <HomeIcon className='cursor-pointer w-8 h-8' />
-                          </Link>
-                        )}
-                        <Link to="/challenges" className='w-8 h-8 flex justify-center items-center'>
-                          <TrophyIcon className='cursor-pointer w-8 h-8' />
-                        </Link>
-                      </div>
-                      <div className={`flex justify-center items-center ${currentUser ? 'w-1/3' : 'hidden'}`}>
-                        {currentUser && (
-                          <Link to="/challenges/new" prefetch='render'>
-                            <PlusCircleIcon className='w-12 h-12 text-white rounded-full bg-red text-color-white cursor-pointer text-6xl' />
-                          </Link>
-                        )}
-                      </div>
-                      <div className={`flex justify-center items-center ${currentUser ? 'w-1/3' : 'w-1/2'}`}>
-                        {currentUser
-                          ? (
-                          <Link to="/profile" className='w-8 h-8 mr-10 flex justify-center items-center'>
-                            <IdentificationIcon className='cursor-pointer w-8 h-8' />
-                          </Link>
-                            )
-                          : (
-                          <Link to="/signup" className='w-8 h-8 flex justify-center items-center'>
-                            <HiOutlineLogin className='cursor-pointer w-8 h-8' />
-                          </Link>
-                            )}
+                <div className={`flex justify-center items-center ${currentUser ? 'w-1/3' : 'w-1/2'}`}>
+                  {currentUser
+                    ? (
+                    <Link to="/profile" className='w-8 h-8 mr-10 flex justify-center items-center'>
+                      <IdentificationIcon className='cursor-pointer w-8 h-8' />
+                    </Link>
+                      )
+                    : (
+                    <Link to="/signup" className='w-8 h-8 flex justify-center items-center'>
+                      <HiOutlineLogin className='cursor-pointer w-8 h-8' />
+                    </Link>
+                      )}
 
-                      </div>
-                  </div>
-                  </div>
-                }
+                </div>
             </div>
+            </div>
+          }
+        </div>
       </>
+  )
+}
+
+const MobileLayout = (): JSX.Element => {
+  const navigate = useGatedNavigate()
+  function handleMessage (event: MessageEvent): void {
+    // Ensure the message is from a trusted origin
+    // if (event.origin !== 'http://your-trusted-origin.com') return
+
+    // Handle the message
+    const ev = event
+    console.log('Message received:', ev)
+    let gated = false
+    if (['/challenges/new', '/profile'].includes(ev.data)) {
+      gated = true
+    }
+    navigate(ev.data, gated)
+  }
+  const isWelcome = location.pathname.includes('/challenges/')
+  useEffect(() => {
+    window.addEventListener('message', handleMessage)
+    console.log('mobile layout mounted')
+    return () => {
+      window.removeEventListener('message', handleMessage)
+    }
+  }, [])
+  return (
+      <div className="px-1  flex flex-col min-h-screen min-w-screen p-0 pt-10" >
+        <div className={`flex flex-col items-center justify-center  ${isWelcome ? 'p-0' : ' px-2'}`}>
+          <Outlet />
+          <div className='min-h-[100px]'>
+          {/* this is a spacer so you can scroll to bottom and menu doesn't cover content */}
+          </div>
+        </div>
+      </div>
   )
 }

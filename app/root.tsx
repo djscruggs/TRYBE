@@ -68,7 +68,6 @@ export const loader: LoaderFunction = async args => {
     // check server session first
     const session = await getUserSession(request)
     const userId = session.get('userId')
-    console.log('userId', userId)
     if (userId) {
       const user: CurrentUser | null = await getUser(request)
       if (user) {
@@ -102,7 +101,6 @@ const Document = withEmotionCache(({ children, title }: DocumentProps, emotionCa
         <Links />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
-        <script type="text/javascript" src="https://unpkg.com/median-js-bridge@latest/dist/median.min.js"></script>
         <link
           rel="stylesheet"
           href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;500;600;700&display=swap"
