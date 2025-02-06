@@ -139,7 +139,10 @@ export async function getCurrentUser (args: LoaderFunctionArgs): Promise<Current
 export async function requireCurrentUser (args: LoaderFunctionArgs): Promise<CurrentUser | null> {
   const request = args.request
   const currentUser = await getCurrentUser(args)
-
+  if (currentUser) {
+    return currentUser
+  }
+  // if no user, check if the path is allowed
   const path = new URL(request.url).pathname
   const allowedPaths = ['/login', '/mobile/login', '/mobile/signup', '/signup', '/mobile/oauth']
   const isAllowedPath = allowedPaths.some(allowedPath => path.startsWith(allowedPath))

@@ -1,6 +1,6 @@
 import { useContext } from 'react'
 import ChallengeForm from '~/components/formChallenge'
-import { requireCurrentUser } from '~/models/auth.server'
+import { getCurrentUser, requireCurrentUser } from '~/models/auth.server'
 import { type LoaderFunction } from '@remix-run/node'
 import { CurrentUserContext } from '~/contexts/CurrentUserContext'
 import type { MetaFunction } from '@remix-run/react'

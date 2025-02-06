@@ -331,8 +331,10 @@ export default function FormChallenge ({ challenge }: { challenge: ChallengeInpu
                     }
                   </Select>
                 </div>
-                {currentUser?.role === 'ADMIN' &&
+
                   <fieldset className='border-grey border rounded-md p-2 pb-4 mb-4 max-w-[400px]'>
+                  {currentUser?.role === 'ADMIN' &&
+                  <>
                     <legend className="text-md">Scheduled or Self-Directed?</legend>
                     {!canSwitchType() &&
                       <div className="text-xs text-red mb-2">
@@ -383,6 +385,8 @@ export default function FormChallenge ({ challenge }: { challenge: ChallengeInpu
                             {errors?.numDays}
                           </div>
                     )}
+                    </>
+                    }
                     {formData.type === 'SCHEDULED' &&
                     <>
                      {!canChangeStartDate() &&
@@ -432,8 +436,6 @@ export default function FormChallenge ({ challenge }: { challenge: ChallengeInpu
                       </>
                     }
                   </fieldset>
-
-                }
 
                 <div className="relative mb-2 max-w-[400px] text-sm">
                   <label htmlFor='public'>Who can join?</label>

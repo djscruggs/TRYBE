@@ -3367,10 +3367,6 @@ video {
   padding-left: 1.25rem;
 }
 
-.pr-0 {
-  padding-right: 0px;
-}
-
 .pr-2 {
   padding-right: 0.5rem;
 }
@@ -3397,6 +3393,10 @@ video {
 
 .pt-1 {
   padding-top: 0.25rem;
+}
+
+.pt-10 {
+  padding-top: 2.5rem;
 }
 
 .pt-2 {
@@ -3429,10 +3429,6 @@ video {
 
 .pt-px {
   padding-top: 1px;
-}
-
-.pt-10 {
-  padding-top: 2.5rem;
 }
 
 .text-left {
