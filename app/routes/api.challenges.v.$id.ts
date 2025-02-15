@@ -1,12 +1,10 @@
 import {
   loadChallengeSummary
 } from '~/models/challenge.server'
-import { requireCurrentUser } from '~/models/auth.server'
 import { type ChallengeSummary } from '~/utils/types'
 import { type LoaderFunction, type LoaderFunctionArgs } from '@remix-run/node'
 
 export const loader: LoaderFunction = async (args: LoaderFunctionArgs): Promise<ChallengeSummary | null | { error: string }> => {
-  await requireCurrentUser(args)
   const { params } = args
   if (!params.id) {
     return null
