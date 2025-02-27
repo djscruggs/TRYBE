@@ -58,7 +58,7 @@ export async function action (args: ActionFunctionArgs): Promise<Response> {
         }
         result = await joinChallenge({ userId: Number(user.id), challengeId: Number(params.id), startAt: startAtDate, notificationHour: notificationHourNumber, notificationMinute: notificationMinuteNumber, cohortId })
         tempData.startDate = formatDate(startAtDate?.toISOString() ?? '', getUserLocale())
-        tempData.duration = challenge.numDays?.toString() + ' days' ?? 'none'
+        tempData.duration = challenge.numDays?.toString() ? `${challenge.numDays} days` : 'none'
       } else {
         result = await joinChallenge({ userId: Number(user.id), challengeId: Number(params.id) })
         tempData.startDate = formatDate(challenge.startAt?.toISOString() ?? '', getUserLocale())
@@ -75,10 +75,10 @@ export async function action (args: ActionFunctionArgs): Promise<Response> {
       }, { status: 201 }) // 201 Created
     }
   } catch (error) {
-    console.error('error in action', error.message)
+    console.error('error in action', error instanceof Error ? error.message : error)
     return json({
       result: 'error',
-      message: error?.message ?? 'An unknown error occurred'
+      message: error instanceof Error ? error.message : 'An unknown error occurred'
     }, { status: 400 }) // 400 Bad Request
   }
 }

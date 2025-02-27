@@ -23,7 +23,7 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs): Promise<
 
   const posts = await prisma.post.findMany({
     where: {
-      challengeId: Number(params.id),
+      // challengeId: Number(params.id),
       publishOnDayNumber: { gt: 0 }
     },
     orderBy: [
