@@ -1,5 +1,5 @@
 import { createContext, type ReactNode, useContext, useState } from 'react'
-import { type MemberChallenge, type CheckIn } from '~/utils/types'
+import { type MemberChallenge, type CheckIn, type Challenge } from '~/utils/types'
 import { useCurrentUser } from '~/contexts/CurrentUserContext'
 import axios from 'axios'
 
@@ -10,6 +10,8 @@ export interface MemberContextType {
   getUserCheckIns: () => CheckIn[]
   loading: boolean
   updated: boolean
+  challenge: Challenge | null
+  setChallenge: React.Dispatch<React.SetStateAction<Challenge | null>>
 }
 
 const defaultValues: MemberContextType = {
@@ -18,7 +20,9 @@ const defaultValues: MemberContextType = {
   refreshUserCheckIns: async () => [],
   getUserCheckIns: () => [],
   loading: false,
-  updated: false
+  updated: false,
+  challenge: null,
+  setChallenge: () => {}
 }
 
 const MemberContext = createContext<MemberContextType>(defaultValues)
@@ -27,17 +31,22 @@ interface MemberContextProviderProps {
   children: ReactNode
   membership: MemberChallenge | null
   setMembership: React.Dispatch<React.SetStateAction<MemberChallenge | null>>
+  challenge: Challenge | null
+  setChallenge: React.Dispatch<React.SetStateAction<Challenge | null>>
 }
 
 export const MemberContextProvider = ({
   children,
   membership,
-  setMembership
+  setMembership,
+  challenge,
+  setChallenge
 }: MemberContextProviderProps): JSX.Element => {
   const { currentUser } = useCurrentUser()
   const [checkIns, setCheckIns] = useState<CheckIn[]>([])
   const [loading, setLoading] = useState(false)
   const [updated, setUpdated] = useState(false)
+
   const refreshUserCheckIns = async (): Promise<CheckIn[]> => {
     if (!membership?.user && !membership?.userId && membership?.challenge.userId !== currentUser?.id) {
       setCheckIns([])
@@ -66,7 +75,7 @@ export const MemberContextProvider = ({
   }
 
   return (
-    <MemberContext.Provider value={{ membership, setMembership, refreshUserCheckIns, getUserCheckIns, loading, updated }}>
+    <MemberContext.Provider value={{ membership, setMembership, refreshUserCheckIns, getUserCheckIns, loading, updated, challenge, setChallenge }}>
       {children}
     </MemberContext.Provider>
   )

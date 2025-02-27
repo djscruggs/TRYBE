@@ -5,6 +5,7 @@ import type { MemberChallenge, Challenge, Post } from '~/utils/types'
 import { type LoaderFunction, type LoaderFunctionArgs } from '@remix-run/node'
 import { getCurrentUser } from '~/models/auth.server'
 import { prisma } from '~/models/prisma.server'
+import type { Prisma } from '@prisma/client'
 
 interface ChallengeScheduleData {
   posts: Post[]
@@ -16,12 +17,17 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs): Promise<
   if (!challenge) {
     return { posts: [] }
   }
+  const orderBy: Prisma.PostOrderByWithRelationInput[] = challenge.type === 'SELF_LED'
+    ? [{ publishOnDayNumber: 'asc' }]
+    : [{ publishAt: 'asc' }]
+
   const posts = await prisma.post.findMany({
     where: {
-      challengeId: Number(params.id)
+      challengeId: Number(params.id),
+      publishOnDayNumber: { gt: 0 }
     },
     orderBy: [
-      { publishAt: 'asc' },
+      ...orderBy,
       { createdAt: 'asc' }
     ]
   }) as Post[]

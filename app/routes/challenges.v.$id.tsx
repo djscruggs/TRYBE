@@ -70,7 +70,7 @@ export const meta: MetaFunction<typeof loader> = ({
 export default function ViewChallenge (): JSX.Element {
   const data = useLoaderData<ViewChallengeData>()
   const [membership, setMembership] = useState<MemberChallenge | null>(data.membership as MemberChallenge | null)
-  const { challenge } = data
+  const [challenge, setChallenge] = useState<Challenge | null>(data.challenge as Challenge | null)
   const [which, setWhich] = useState('') // matches[0] is root, matches[1] is the challenges, matches[2] is challenges/v/$idtab
   const location = useLocation()
   const navigate = useNavigate()
@@ -101,7 +101,7 @@ export default function ViewChallenge (): JSX.Element {
     }
   }, [matches])
   return (
-    <MemberContextProvider membership={membership} setMembership={setMembership}>
+    <MemberContextProvider membership={membership} setMembership={setMembership} challenge={challenge} setChallenge={setChallenge}>
       { !data?.challenge && !data.loadingError && <p>Loading...</p>}
 
       { data?.loadingError && <h1 className='mt-10 text-2xl text-red'>{data.loadingError}</h1>}
@@ -110,7 +110,7 @@ export default function ViewChallenge (): JSX.Element {
         <div className={`w-full ${isEdit ? '' : ' relative'}`}>
           {/* make wider on chat tab */}
           <div className={`fixed top-0 z-10 bg-white w-full max-w-lg ${which === 'chat' ? 'md:max-w-2xl' : ''} bg-opacity-80 rounded-br-lg`}>
-            <ChallengeHeader challenge={challenge as Challenge} size='small' />
+            <ChallengeHeader challenge={challenge!} size='small' />
             {!isEdit &&
               <ChallengeTabs challenge={challenge as ChallengeSummary} which={which} />
             }

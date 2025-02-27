@@ -2,30 +2,29 @@ import {
   joinChallenge,
   unjoinChallenge,
   loadChallenge,
-  createCohort,
-  getLatestDayNumFromCohort
+  createCohort
 } from '~/models/challenge.server'
 import { requireCurrentUser } from '~/models/auth.server'
 import { loadUser } from '~/models/user.server'
 import { json, type LoaderFunction, type ActionFunctionArgs } from '@remix-run/node'
 import type { MemberChallenge } from '@prisma/client'
 import { type ChallengeWelcomeMailerProps, sendChallengeWelcome } from '~/utils/mailer'
-import { formatDate, textToHtml, convertYouTubeLinksToImages, pathToEmailUrl, generateUrl } from '~/utils/helpers'
+import { formatDate, textToHtml, pathToEmailUrl, generateUrl } from '~/utils/helpers'
 import getUserLocale from 'get-user-locale'
 import { differenceInCalendarDays } from 'date-fns'
+
 export async function action (args: ActionFunctionArgs): Promise<Response> {
   const currentUser = await requireCurrentUser(args)
   const { params } = args
   const user = await loadUser(currentUser?.id)
   const memberChallenge = user.memberChallenges.find((c: MemberChallenge) => c.challengeId === Number(params.id))
-
   try {
     if (memberChallenge) {
       const result = await unjoinChallenge(Number(user.id), Number(params.id))
-      return new Response(JSON.stringify({
+      return json({
         result: 'unjoined',
         data: result
-      }), { status: 200 }) // 200 OK
+      }, { status: 200 }) // 200 OK
     } else {
       // load the challenge
       const challenge = await loadChallenge(Number(params.id))
@@ -41,6 +40,9 @@ export async function action (args: ActionFunctionArgs): Promise<Response> {
       }
       if (challenge?.type === 'SELF_LED') {
         const formData = await args.request.formData()
+        if (!formData.get('notificationHour') || !formData.get('notificationMinute') || !formData.get('startAt')) {
+          throw new Error('Missing required fields')
+        }
         const notificationHour = formData.get('notificationHour') as string
         const notificationMinute = formData.get('notificationMinute') as string
         const startAt = formData.get('startAt') as string
@@ -67,17 +69,17 @@ export async function action (args: ActionFunctionArgs): Promise<Response> {
         to: user.email,
         dynamic_template_data: tempData as ChallengeWelcomeMailerProps['dynamic_template_data']
       })
-      return new Response(JSON.stringify({
+      return json({
         result: 'joined',
         data: result
-      }), { status: 201 }) // 201 Created
+      }, { status: 201 }) // 201 Created
     }
   } catch (error) {
-    console.error(error)
-    return new Response(JSON.stringify({
+    console.error('error in action', error.message)
+    return json({
       result: 'error',
-      message: error instanceof Error ? error.message : 'An unknown error occurred'
-    }), { status: 400 }) // 400 Bad Request
+      message: error?.message ?? 'An unknown error occurred'
+    }, { status: 400 }) // 400 Bad Request
   }
 }
 export const loader: LoaderFunction = async (args) => {
