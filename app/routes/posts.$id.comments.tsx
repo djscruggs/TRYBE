@@ -2,7 +2,8 @@ import React, { useState, useContext } from 'react'
 import { useParams, useLoaderData, json, useOutletContext } from 'react-router';
 import { type LoaderFunction } from 'react-router';
 import { useNavigate } from 'react-router';
-import { Button } from '@material-tailwind/react'
+import pkg from '@material-tailwind/react';
+const { Button } = pkg;
 import type { Comment, CurrentUser } from '~/utils/types'
 import CommentsContainer from '~/components/commentsContainer'
 import FormComment from '~/components/formComment'

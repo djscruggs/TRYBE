@@ -11,7 +11,8 @@ import { createClerkClient } from '@clerk/backend'
 import { validatePassword } from '~/models/validators.server'
 import * as React from 'react'
 import { FormField } from '~/components/formField'
-import { Button } from '@material-tailwind/react'
+import pkg from '@material-tailwind/react';
+const { Button } = pkg;
 import { useDeviceContext } from '~/contexts/DeviceContext'
 import bcrypt from 'bcryptjs'
 import { prisma } from '~/models/prisma.server'

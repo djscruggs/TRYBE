@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { useEffect, useContext, useState } from 'react'
-import { Spinner } from '@material-tailwind/react'
+import pkg from '@material-tailwind/react';
+const { Spinner } = pkg;
 import { CurrentUserContext } from '~/contexts/CurrentUserContext'
 import ChallengeList from '~/components/challengeList'
 import { type MetaFunction, Navigate } from 'react-router';

@@ -5,7 +5,8 @@ import { useContext, useEffect, useState } from 'react'
 import { CurrentUserContext } from '~/contexts/CurrentUserContext'
 import { useMemberContext } from '~/contexts/MemberContext'
 import axios from 'axios'
-import { Spinner } from '@material-tailwind/react'
+import pkg from '@material-tailwind/react';
+const { Spinner } = pkg;
 import 'react-circular-progressbar/dist/styles.css'
 import { ProgressChart } from '~/components/progressChart'
 

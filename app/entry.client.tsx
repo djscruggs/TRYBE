@@ -5,7 +5,8 @@ import { HydratedRouter } from 'react-router/dom';
 import { CacheProvider } from '@emotion/react'
 import ClientStyleContext from './ClientStyleContext'
 import createEmotionCache from './createEmotionCache'
-import { ThemeProvider } from '@material-tailwind/react'
+import pkg from '@material-tailwind/react';
+const { ThemeProvider } = pkg;
 import * as Sentry from '@sentry/react'
 
 import type { EventHint, Event } from '@sentry/browser'

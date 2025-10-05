@@ -2,12 +2,14 @@ import { useNavigate, useLocation, useRevalidator } from 'react-router';
 import { useState, useContext } from 'react'
 import { CurrentUserContext } from '~/contexts/CurrentUserContext'
 import { type Challenge, type ChallengeSummary } from '~/utils/types'
-import { Button, Menu, MenuHandler, MenuList, MenuItem } from '@material-tailwind/react'
+import pkg from '@material-tailwind/react';
+const { Button, Menu, MenuHandler, MenuList, MenuItem } = pkg;
 import DialogDelete from './dialogDelete'
 import { GiHamburgerMenu } from 'react-icons/gi'
 import axios from 'axios'
 import { toast } from 'react-hot-toast'
-import { type MenuProps } from '@material-tailwind/react'
+import pkg from '@material-tailwind/react';
+const { type MenuProps } = pkg;
 import { useMobileSize } from '~/hooks/useMobileSize'
 
 interface MenuChallengeProps {

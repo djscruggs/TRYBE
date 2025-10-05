@@ -5,7 +5,8 @@ import getRandomQuote from '~/utils/quotes'
 import { type LoaderFunction, type LoaderFunctionArgs } from 'react-router';
 import { prisma } from '~/models/prisma.server'
 import { requireCurrentUser } from '~/models/auth.server'
-import { Spinner } from '@material-tailwind/react'
+import pkg from '@material-tailwind/react';
+const { Spinner } = pkg;
 interface LoaderData {
   userChallengeCount: number
   userCount: number

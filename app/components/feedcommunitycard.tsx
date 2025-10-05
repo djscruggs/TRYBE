@@ -1,4 +1,5 @@
-import { Card } from '@material-tailwind/react'
+import pkg from '@material-tailwind/react';
+const { Card } = pkg;
 import { FcLike } from 'react-icons/fc'
 import { SlShareAlt } from 'react-icons/sl'
 import { FaRegComment } from 'react-icons/fa'

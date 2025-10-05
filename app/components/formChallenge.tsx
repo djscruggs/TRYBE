@@ -8,7 +8,8 @@ import React, {
 import { Form, useNavigate } from 'react-router';
 import axios from 'axios'
 import type { Category, Challenge, ChallengeType, ChallengeStatus, ChallengeInputs } from '~/utils/types'
-import { Button, Select, Option, Radio, Menu, MenuHandler, MenuItem, MenuList, Checkbox } from '@material-tailwind/react'
+import pkg from '@material-tailwind/react';
+const { Button, Select, Option, Radio, Menu, MenuHandler, MenuItem, MenuList, Checkbox } = pkg;
 import { FormField } from '~/components/formField'
 import DatePicker from 'react-datepicker'
 import { addDays, endOfMonth, isFirstDayOfMonth } from 'date-fns'

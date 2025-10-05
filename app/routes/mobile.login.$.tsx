@@ -4,7 +4,8 @@ import { Link, useNavigate, Form, useActionData, useSearchParams } from 'react-r
 import { useEffect, useState } from 'react'
 import { login } from '~/models/auth.server'
 import { FormField } from '~/components/formField'
-import { Button } from '@material-tailwind/react'
+import pkg from '@material-tailwind/react';
+const { Button } = pkg;
 
 export const loader: LoaderFunction = async ({ params }: LoaderFunctionArgs) => {
   return { params }

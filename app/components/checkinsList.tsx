@@ -1,5 +1,6 @@
 import { userLocale, textToJSX, pluralize } from '~/utils/helpers'
-import { Tooltip } from '@material-tailwind/react'
+import pkg from '@material-tailwind/react';
+const { Tooltip } = pkg;
 import { useContext, useState, useEffect } from 'react'
 import { CurrentUserContext } from '~/contexts/CurrentUserContext'
 import { Lightbox } from 'react-modal-image'

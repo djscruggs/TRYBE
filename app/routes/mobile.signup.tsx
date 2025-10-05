@@ -5,7 +5,8 @@ import { register, requireCurrentUser } from '~/models/auth.server'
 import { validateEmail, validateName, validatePassword } from '~/models/validators.server'
 import * as React from 'react'
 import { FormField } from '~/components/formField'
-import { Button } from '@material-tailwind/react'
+import pkg from '@material-tailwind/react';
+const { Button } = pkg;
 import { useDeviceContext } from '~/contexts/DeviceContext'
 
 export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {

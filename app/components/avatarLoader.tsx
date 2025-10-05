@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
-import { Avatar } from '@material-tailwind/react'
+import pkg from '@material-tailwind/react';
+const { Avatar } = pkg;
 import { Link } from 'react-router';
 import { userInitials } from '~/utils/helpers'
 interface AvatarLoaderProps {

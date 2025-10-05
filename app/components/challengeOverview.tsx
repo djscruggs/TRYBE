@@ -10,7 +10,8 @@ import {
 } from '~/utils/helpers'
 import { hasStarted, getShortUrl } from '~/utils/helpers/challenge'
 import axios from 'axios'
-import { Spinner } from '@material-tailwind/react'
+import pkg from '@material-tailwind/react';
+const { Spinner } = pkg;
 import DatePicker from 'react-datepicker'
 import { type DateTimeFormatOptions } from 'intl'
 import { LiaUserFriendsSolid } from 'react-icons/lia'

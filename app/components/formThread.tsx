@@ -5,7 +5,8 @@ import { FormField } from './formField'
 import { handleFileUpload } from '~/utils/helpers'
 import CardChallenge from './cardChallenge'
 import { type Thread, type ThreadSummary, type Challenge, type ChallengeSummary } from '~/utils/types'
-import { Button } from '@material-tailwind/react'
+import pkg from '@material-tailwind/react';
+const { Button } = pkg;
 import { MdOutlineAddPhotoAlternate } from 'react-icons/md'
 import { TiDeleteOutline } from 'react-icons/ti'
 import VideoRecorder from './videoRecorder'

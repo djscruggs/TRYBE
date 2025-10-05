@@ -1,5 +1,6 @@
 import { HiDotsHorizontal } from 'react-icons/hi'
-import { Spinner } from '@material-tailwind/react'
+import pkg from '@material-tailwind/react';
+const { Spinner } = pkg;
 import { toast } from 'react-hot-toast'
 import { CurrentUserContext } from '~/contexts/CurrentUserContext'
 import { useContext, useState, useRef, useEffect } from 'react'

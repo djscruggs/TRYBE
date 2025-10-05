@@ -4,7 +4,8 @@ import axios from 'axios'
 import { FormField } from '~/components/formField'
 import { type ChallengeWithHost } from '~/utils/types'
 import { toast } from 'react-hot-toast'
-import { Button } from '@material-tailwind/react'
+import pkg from '@material-tailwind/react';
+const { Button } = pkg;
 import { loadChallengeWithHost } from '~/models/challenge.server'
 import { type MetaFunction, type LoaderFunction } from 'react-router';
 import { useLoaderData } from 'react-router';
