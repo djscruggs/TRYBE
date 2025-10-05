@@ -23,7 +23,7 @@ import { type CurrentUser } from './utils/types'
 import { Toaster } from 'react-hot-toast'
 import getUserLocale from 'get-user-locale'
 import { getUserByClerkId } from './models/user.server'
-import { ClerkProvider, useUser } from '@clerk/clerk-react'
+import { ClerkProvider, useUser } from '@clerk/react-router'
 import { captureRemixErrorBoundaryError } from '@sentry/remix'
 import { getUserSession, getUser } from './models/auth.server'
 interface DocumentProps {

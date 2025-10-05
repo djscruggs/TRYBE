@@ -1,5 +1,5 @@
 import { type LoaderFunction, type LoaderFunctionArgs } from 'react-router';
-import { SignUp } from '@clerk/clerk-react'
+import { SignUp } from '@clerk/react-router'
 import Logo from '~/components/logo'
 import { useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router';

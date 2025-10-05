@@ -1,6 +1,6 @@
 import { type LoaderFunction, type LoaderFunctionArgs, redirect } from 'react-router';
 // import { getAuth } from '@clerk/remix/ssr.server' // TODO: Update for React Router v7
-import { SignedIn, SignedOut, SignIn, UserProfile, useClerk } from '@clerk/clerk-react'
+import { SignedIn, SignedOut, SignIn, UserProfile, useClerk } from '@clerk/react-router'
 import { HiOutlineLogout } from 'react-icons/hi'
 export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
   // TODO: Implement server-side auth with React Router v7

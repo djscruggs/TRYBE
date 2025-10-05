@@ -1,6 +1,6 @@
 import {
   SignIn
-} from '@clerk/clerk-react'
+} from '@clerk/react-router'
 import { useDeviceContext } from '~/contexts/DeviceContext'
 import { type LoaderFunctionArgs, type LoaderFunction } from 'react-router';
 import { useLoaderData, useNavigate } from 'react-router';
