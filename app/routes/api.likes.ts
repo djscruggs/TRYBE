@@ -1,5 +1,5 @@
 import { requireCurrentUser } from '~/models/auth.server'
-import { json, type LoaderFunction, type ActionFunction, type ActionFunctionArgs } from '@remix-run/node'
+import { data, type LoaderFunction, type ActionFunction, type ActionFunctionArgs } from 'react-router'
 import { prisma, prisma } from '~/models/prisma.server'
 import { type Like } from '@prisma/client'
 
@@ -25,7 +25,7 @@ export const action: ActionFunction = async (args: ActionFunctionArgs) => {
     const like = await prisma.like.deleteMany({ where })
     const toUpdate = { challengeId, commentId, postId, noteId, checkinId }
     void updateLikeCounts(toUpdate)
-    return json({ like })
+    return data({ like })
   }
 
   const data: prisma.likeCreateInput = {
@@ -68,7 +68,7 @@ export const action: ActionFunction = async (args: ActionFunctionArgs) => {
   if (existingLike) {
     void updateLikeCounts(existingLike)
     totalLikes = await getLikeCount(itemId, fieldName)
-    return json({ like: existingLike, totalLikes })
+    return data({ like: existingLike, totalLikes })
   }
   totalLikes = await getLikeCount(itemId, fieldName)
   const like = await prisma.like.create({ data })
@@ -79,7 +79,7 @@ export const action: ActionFunction = async (args: ActionFunctionArgs) => {
 
 export const loader: LoaderFunction = async (args) => {
   void requireCurrentUser(args)
-  return json({ message: 'This route does not accept GET requests' }, 200)
+  return data({ message: 'This route does not accept GET requests' }, 200)
 }
 
 const getLikeCount = async (itemId: number, fieldName: string): Promise<number> => {

@@ -127,16 +127,14 @@ function App (): JSX.Element {
     }
   }
   return (
-    <ClerkProvider publishableKey={process.env.CLERK_PUBLISHABLE_KEY}>
-      <DeviceContext.Provider value={{ isMobileDevice, isIphone, isAndroid, isMobile: () => isIphone || isAndroid }}>
-        <Document>
-          <Toaster position='top-center' />
-          <CurrentUserContext.Provider value={{ currentUser, setCurrentUser }}>
-            <Layout />
-          </CurrentUserContext.Provider>
-        </Document>
-      </DeviceContext.Provider>
-    </ClerkProvider>
+    <DeviceContext.Provider value={{ isMobileDevice, isIphone, isAndroid, isMobile: () => isIphone || isAndroid }}>
+      <Document>
+        <Toaster position='top-center' />
+        <CurrentUserContext.Provider value={{ currentUser, setCurrentUser }}>
+          <Layout />
+        </CurrentUserContext.Provider>
+      </Document>
+    </DeviceContext.Provider>
   )
 }
 

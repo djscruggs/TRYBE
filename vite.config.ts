@@ -9,4 +9,12 @@ export default defineConfig({
       "~": path.resolve(__dirname, "./app"),
     },
   },
+  optimizeDeps: {
+    include: ["@clerk/clerk-react"],
+  },
+  build: {
+    commonjsOptions: {
+      include: [/node_modules/],
+    },
+  },
 });
