@@ -1,6 +1,6 @@
 // NavLinks.tsx
 
-import { useLocation, useNavigate, useNavigation } from 'react-router-dom'
+import { useLocation, useNavigate, useNavigation } from 'react-router';
 import {
   PlusCircleIcon,
   TrophyIcon,
@@ -11,7 +11,7 @@ import { HiOutlineLogout, HiOutlineLogin } from 'react-icons/hi'
 import { CurrentUserContext } from '~/contexts/CurrentUserContext'
 import { useContext, useState } from 'react'
 import { Spinner } from '@material-tailwind/react'
-import { Link } from '@remix-run/react'
+import { Link } from 'react-router';
 import { useClerk } from '@clerk/remix'
 import useGatedNavigate from '~/hooks/useGatedNavigate'
 import { useDeviceContext } from '~/contexts/DeviceContext'

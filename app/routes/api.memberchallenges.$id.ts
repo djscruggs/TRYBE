@@ -1,5 +1,5 @@
 import { prisma } from '~/models/prisma.server'
-import { type ActionFunction, json, type LoaderFunction } from '@remix-run/node'
+import { type ActionFunction, json, type LoaderFunction } from 'react-router';
 import { requireCurrentUser } from '~/models/auth.server'
 
 export const loader: LoaderFunction = async (args) => {

@@ -1,7 +1,7 @@
 import { createNote, updateNote, loadNoteSummary } from '~/models/note.server'
 import { requireCurrentUser } from '~/models/auth.server'
-import { json, type LoaderFunction, type ActionFunction } from '@remix-run/node'
-import { unstable_parseMultipartFormData } from '@remix-run/node'
+import { json, type LoaderFunction, type ActionFunction } from 'react-router';
+import { unstable_parseMultipartFormData } from 'react-router';
 import { uploadHandler, handleFormUpload } from '~/utils/uploadFile'
 import { type CurrentUser } from '~/utils/types'
 import { type Note } from '@prisma/client'

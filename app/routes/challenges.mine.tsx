@@ -3,7 +3,7 @@ import { useEffect, useContext, useState } from 'react'
 import { Spinner } from '@material-tailwind/react'
 import { CurrentUserContext } from '~/contexts/CurrentUserContext'
 import ChallengeList from '~/components/challengeList'
-import { type MetaFunction, Navigate } from '@remix-run/react'
+import { type MetaFunction, Navigate } from 'react-router';
 import type { ChallengeSummary } from '~/utils/types'
 export const meta: MetaFunction = () => {
   return [

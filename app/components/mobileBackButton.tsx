@@ -1,5 +1,5 @@
 import { FaChevronCircleLeft } from 'react-icons/fa'
-import { useNavigate } from '@remix-run/react'
+import { useNavigate } from 'react-router';
 export default function MobileBackButton ({ to }: { to?: string }): JSX.Element {
   const navigate = useNavigate()
   const goTo = (): void => {

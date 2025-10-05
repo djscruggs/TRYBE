@@ -1,7 +1,7 @@
-import { Navigate } from '@remix-run/react'
+import { Navigate } from 'react-router';
 import { useEffect, useContext } from 'react'
 import { CurrentUserContext } from '~/contexts/CurrentUserContext'
-import type { MetaFunction } from '@remix-run/react'
+import type { MetaFunction } from 'react-router';
 export const meta: MetaFunction = () => {
   return [
     { title: 'Challenge Templates' },

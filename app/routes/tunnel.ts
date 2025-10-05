@@ -1,4 +1,4 @@
-import { json, type ActionFunction, type LoaderFunction } from '@remix-run/node'
+import { json, type ActionFunction, type LoaderFunction } from 'react-router';
 
 // based on https://docs.sentry.io/platforms/javascript/troubleshooting/#dealing-with-ad-blockers
 const SENTRY_HOST = 'o4506538845929472.ingest.us.sentry.io'

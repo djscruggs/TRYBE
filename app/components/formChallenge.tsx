@@ -5,7 +5,7 @@ import React, {
   useEffect,
   type ChangeEvent
 } from 'react'
-import { Form, useNavigate } from '@remix-run/react'
+import { Form, useNavigate } from 'react-router';
 import axios from 'axios'
 import type { Category, Challenge, ChallengeType, ChallengeStatus, ChallengeInputs } from '~/utils/types'
 import { Button, Select, Option, Radio, Menu, MenuHandler, MenuItem, MenuList, Checkbox } from '@material-tailwind/react'
@@ -15,7 +15,7 @@ import { addDays, endOfMonth, isFirstDayOfMonth } from 'date-fns'
 import { toast } from 'react-hot-toast'
 import { hasStarted } from '~/utils/helpers/challenge'
 import { colorToClassName, handleFileUpload } from '~/utils/helpers'
-import { useRevalidator } from 'react-router-dom'
+import { useRevalidator } from 'react-router';
 import { CurrentUserContext } from '~/contexts/CurrentUserContext'
 import CardChallenge from '~/components/cardChallenge'
 
@@ -250,7 +250,7 @@ export default function FormChallenge ({ challenge }: { challenge: ChallengeInpu
       if (!currentCategoryIds?.includes(value)) {
         setFormData((prevFormData) => ({
           ...prevFormData,
-          categories: [...prevFormData.categories ?? [], { id: value }]
+          categories: [...(prevFormData.categories ?? []), { id: value }]
         }))
       }
     } else {

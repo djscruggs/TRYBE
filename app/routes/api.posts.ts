@@ -3,8 +3,8 @@ import type { Post, Challenge } from '@prisma/client'
 import { type CurrentUser } from '~/utils/types'
 import { loadChallenge } from '~/models/challenge.server'
 import { requireCurrentUser } from '~/models/auth.server'
-import { json, type LoaderFunction, type ActionFunction } from '@remix-run/node'
-import { unstable_parseMultipartFormData } from '@remix-run/node'
+import { json, type LoaderFunction, type ActionFunction } from 'react-router';
+import { unstable_parseMultipartFormData } from 'react-router';
 import { uploadHandler, handleFormUpload } from '~/utils/uploadFile'
 import { mailPost } from '~/utils/mailer'
 import getUserLocale from 'get-user-locale'

@@ -1,8 +1,8 @@
 import { requireCurrentUser } from '~/models/auth.server'
-import { useLoaderData, type MetaFunction, useLocation } from '@remix-run/react'
+import { useLoaderData, type MetaFunction, useLocation } from 'react-router';
 import type { ChallengeSummary, Post, PostSummary } from '~/utils/types'
-import { useNavigate } from 'react-router-dom'
-import { type LoaderFunction, type LoaderFunctionArgs } from '@remix-run/node'
+import { useNavigate } from 'react-router';
+import { type LoaderFunction, type LoaderFunctionArgs } from 'react-router';
 import { loadChallengeSummary } from '~/models/challenge.server'
 import FormPost from '~/components/formPost'
 import ChallengeHeader from '~/components/challengeHeader'

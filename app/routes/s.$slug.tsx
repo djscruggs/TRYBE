@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from '@remix-run/react'
+import { useNavigate, useParams } from 'react-router';
 import { useEffect } from 'react'
 import { Spinner } from '@material-tailwind/react'
 interface ShareProps {

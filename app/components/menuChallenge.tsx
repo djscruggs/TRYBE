@@ -1,4 +1,4 @@
-import { useNavigate, useLocation, useRevalidator } from 'react-router-dom'
+import { useNavigate, useLocation, useRevalidator } from 'react-router';
 import { useState, useContext } from 'react'
 import { CurrentUserContext } from '~/contexts/CurrentUserContext'
 import { type Challenge, type ChallengeSummary } from '~/utils/types'

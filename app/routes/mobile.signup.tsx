@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
-import { type ActionFunction, json, type LoaderFunction, type LoaderFunctionArgs } from '@remix-run/node'
-import { Form, Link, useActionData, useNavigate } from '@remix-run/react'
+import { type ActionFunction, json, type LoaderFunction, type LoaderFunctionArgs } from 'react-router';
+import { Form, Link, useActionData, useNavigate } from 'react-router';
 import { register, requireCurrentUser } from '~/models/auth.server'
 import { validateEmail, validateName, validatePassword } from '~/models/validators.server'
 import * as React from 'react'

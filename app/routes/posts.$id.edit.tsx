@@ -1,7 +1,4 @@
-import {
-  useRouteLoaderData,
-  useNavigate
-} from '@remix-run/react'
+import { useRouteLoaderData, useNavigate } from 'react-router';
 import type { PostSummary } from '~/utils/types'
 import FormPost from '~/components/formPost'
 export default function EditPost (): JSX.Element {

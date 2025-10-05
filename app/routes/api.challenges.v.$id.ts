@@ -2,7 +2,7 @@ import {
   loadChallengeSummary
 } from '~/models/challenge.server'
 import { type ChallengeSummary } from '~/utils/types'
-import { type LoaderFunction, type LoaderFunctionArgs } from '@remix-run/node'
+import { type LoaderFunction, type LoaderFunctionArgs } from 'react-router';
 
 export const loader: LoaderFunction = async (args: LoaderFunctionArgs): Promise<ChallengeSummary | null | { error: string }> => {
   const { params } = args

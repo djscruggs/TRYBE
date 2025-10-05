@@ -1,8 +1,15 @@
-import { useLoaderData, useRouteLoaderData } from '@remix-run/react'
+import { useLoaderData, useRouteLoaderData } from 'react-router';
 import { useEffect, useRef, useState, useContext } from 'react'
 import { requireCurrentUser } from '~/models/auth.server'
 import type { Post, CheckIn, Challenge, Comment } from '~/utils/types'
-import { json, type MetaFunction, type LoaderFunction, type LoaderFunctionArgs, type SerializeFrom, redirect } from '@remix-run/node'
+import {
+  json,
+  type MetaFunction,
+  type LoaderFunction,
+  type LoaderFunctionArgs,
+  type SerializeFrom,
+  redirect,
+} from 'react-router';
 import { prisma } from '~/models/prisma.server'
 import { type MemberChallenge, Prisma } from '@prisma/client'
 import CheckinsList, { CheckinRow } from '~/components/checkinsList'

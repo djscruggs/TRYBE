@@ -1,5 +1,5 @@
 import { requireCurrentUser } from '~/models/auth.server'
-import { type LoaderFunction } from '@remix-run/node'
+import { type LoaderFunction } from 'react-router';
 import { prisma } from '~/models/prisma.server'
 
 export const loader: LoaderFunction = async (args) => {

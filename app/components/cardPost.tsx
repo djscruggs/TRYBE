@@ -9,7 +9,7 @@ import { textToJSX, removeYouTubeLinks } from '~/utils/helpers'
 
 import { CurrentUserContext } from '~/contexts/CurrentUserContext'
 import AvatarLoader from './avatarLoader'
-import { useNavigate, useLocation } from '@remix-run/react'
+import { useNavigate, useLocation } from 'react-router';
 import { toast } from 'react-hot-toast'
 import FormPost from './formPost'
 import axios from 'axios'

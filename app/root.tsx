@@ -1,7 +1,6 @@
 import * as React from 'react'
 import {
   Links,
-  LiveReload,
   Meta,
   Scripts,
   ScrollRestoration,
@@ -9,17 +8,17 @@ import {
   isRouteErrorResponse,
   useLoaderData,
   useSearchParams,
-  useRevalidator
-} from '@remix-run/react'
+  useRevalidator,
+} from 'react-router';
 import { withEmotionCache } from '@emotion/react'
 import { useEffect, useState } from 'react'
 import { CurrentUserContext } from './contexts/CurrentUserContext'
 import DeviceContext from './contexts/DeviceContext'
 import Layout from './ui/layout'
-import stylesheet from './output.css'
-import datepickerStyle from 'react-datepicker/dist/react-datepicker.css'
-import circularProgressbarStyle from 'react-circular-progressbar/dist/styles.css'
-import type { LinksFunction, LoaderFunction, MetaFunction } from '@remix-run/node'
+import './output.css'
+import 'react-datepicker/dist/react-datepicker.css'
+import 'react-circular-progressbar/dist/styles.css'
+import type { LinksFunction, LoaderFunction, MetaFunction } from 'react-router';
 import { type CurrentUser } from './utils/types'
 import { Toaster } from 'react-hot-toast'
 import getUserLocale from 'get-user-locale'
@@ -33,11 +32,7 @@ interface DocumentProps {
   title?: string
 }
 
-export const links: LinksFunction = () => [
-  { rel: 'stylesheet', href: stylesheet },
-  { rel: 'stylesheet', href: datepickerStyle },
-  { rel: 'stylesheet', href: circularProgressbarStyle }
-]
+export const links: LinksFunction = () => []
 
 export const meta: MetaFunction = () => {
   return [
@@ -115,7 +110,6 @@ const Document = withEmotionCache(({ children, title }: DocumentProps, emotionCa
         {children}
         <ScrollRestoration />
         <Scripts />
-        <LiveReload />
       </body>
     </html>
   )

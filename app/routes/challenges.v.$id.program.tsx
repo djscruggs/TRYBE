@@ -1,8 +1,8 @@
-import { useLoaderData, useRouteLoaderData, Link } from '@remix-run/react'
+import { useLoaderData, useRouteLoaderData, Link } from 'react-router';
 import { useContext, useState, useEffect } from 'react'
 import { loadChallenge } from '~/models/challenge.server'
 import { CurrentUserContext } from '~/contexts/CurrentUserContext'
-import { type MetaFunction, type LoaderFunction, type LoaderFunctionArgs } from '@remix-run/node'
+import { type MetaFunction, type LoaderFunction, type LoaderFunctionArgs } from 'react-router';
 import { prisma } from '~/models/prisma.server'
 import type { Challenge, MemberChallenge, Post } from '~/utils/types'
 import ChallengeSchedule from '~/components/challengeSchedule'

@@ -1,9 +1,16 @@
-import { type LoaderFunction, type LoaderFunctionArgs, redirect, type MetaFunction, type ActionFunction, type ActionFunctionArgs } from '@remix-run/node'
+import {
+  type LoaderFunction,
+  type LoaderFunctionArgs,
+  redirect,
+  type MetaFunction,
+  type ActionFunction,
+  type ActionFunctionArgs,
+} from 'react-router';
 import { getAuth } from '@clerk/remix/ssr.server'
 import { useState, useEffect } from 'react'
 import { WelcomePage } from '~/components/welcomepage'
 import LandingPage from '~/components/landingPage'
-import { useNavigate } from '@remix-run/react'
+import { useNavigate } from 'react-router';
 
 export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
   const { userId } = await getAuth(args)

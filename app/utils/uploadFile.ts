@@ -1,5 +1,9 @@
 import { promises as fs } from 'fs'
-import { unstable_composeUploadHandlers, unstable_createFileUploadHandler, unstable_createMemoryUploadHandler } from '@remix-run/node'
+import {
+  unstable_composeUploadHandlers,
+  unstable_createFileUploadHandler,
+  unstable_createMemoryUploadHandler,
+} from 'react-router';
 import { v2 as cloudinary } from 'cloudinary'
 import type { UploadApiResponse } from 'cloudinary'
 import type { Note, Thread, Post, CheckIn, Challenge } from '@prisma/client'
@@ -58,7 +62,7 @@ export const deleteFromCloudinary = async (publicId: string, type: ResourceType)
 }
 
 function escapeRegExp (string: string): string {
-  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') // $& means the whole matched string
+  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
 }
 
 export const uploadHandler = unstable_composeUploadHandlers(

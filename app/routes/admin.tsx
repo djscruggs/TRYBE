@@ -1,8 +1,8 @@
-import { type LoaderFunctionArgs, redirect } from '@remix-run/node'
-import { json } from '@remix-run/node'
+import { type LoaderFunctionArgs, redirect } from 'react-router';
+import { json } from 'react-router';
 import { prisma } from '~/models/prisma.server'
 import { getCurrentUser } from '~/models/auth.server'
-import { useLoaderData } from '@remix-run/react'
+import { useLoaderData } from 'react-router';
 import DataTable from 'react-data-table-component'
 import type { MemberChallenge, Challenge } from '@prisma/client'
 export const loader = async (args: LoaderFunctionArgs) => {

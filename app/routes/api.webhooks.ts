@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import { json, type LoaderFunction, type ActionFunction } from '@remix-run/node'
+import { json, type LoaderFunction, type ActionFunction } from 'react-router';
 import { updateUser, createUser, deleteUser } from '~/models/user.server'
 import { Webhook } from 'svix'
 import { prisma } from '~/models/prisma.server'

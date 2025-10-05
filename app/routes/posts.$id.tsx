@@ -1,10 +1,10 @@
 import { loadPostSummary } from '~/models/post.server'
-import { Outlet, useLoaderData, useLocation } from '@remix-run/react'
+import { Outlet, useLoaderData, useLocation } from 'react-router';
 import CardPost from '~/components/cardPost'
 import ChallengeHeader from '~/components/challengeHeader'
 import { requireCurrentUser } from '~/models/auth.server'
 import type { ChallengeSummary, MemberChallenge, PostSummary } from '~/utils/types'
-import { json, type LoaderFunction, type LoaderFunctionArgs } from '@remix-run/node'
+import { json, type LoaderFunction, type LoaderFunctionArgs } from 'react-router';
 import MobileBackButton from '~/components/mobileBackButton'
 import ChallengeTabs from '~/components/challengeTabs'
 import { loadChallengeSummary, loadMemberChallenge } from '~/models/challenge.server'

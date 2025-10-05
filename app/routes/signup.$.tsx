@@ -1,8 +1,8 @@
-import { type LoaderFunction, type LoaderFunctionArgs } from '@remix-run/node'
+import { type LoaderFunction, type LoaderFunctionArgs } from 'react-router';
 import { SignUp } from '@clerk/remix'
 import Logo from '~/components/logo'
 import { useState } from 'react'
-import { Link, useNavigate, useSearchParams } from '@remix-run/react'
+import { Link, useNavigate, useSearchParams } from 'react-router';
 import { useDeviceContext } from '~/contexts/DeviceContext'
 import { isMobile } from 'react-device-detect'
 

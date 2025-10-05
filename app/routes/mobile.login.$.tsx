@@ -1,6 +1,6 @@
 import { useDeviceContext } from '~/contexts/DeviceContext'
-import type { LoaderFunctionArgs, LoaderFunction, ActionFunction } from '@remix-run/node'
-import { Link, useNavigate, Form, useActionData, useSearchParams } from '@remix-run/react'
+import type { LoaderFunctionArgs, LoaderFunction, ActionFunction } from 'react-router';
+import { Link, useNavigate, Form, useActionData, useSearchParams } from 'react-router';
 import { useEffect, useState } from 'react'
 import { login } from '~/models/auth.server'
 import { FormField } from '~/components/formField'

@@ -1,7 +1,7 @@
 import { prisma } from '../models/prisma.server'
 import { type CheckinReminderMailerProps, mailChallengeContent, sendCheckinReminder } from '../utils/mailer'
-import type { LoaderFunction } from '@remix-run/node'
-import { json } from '@remix-run/node'
+import type { LoaderFunction } from 'react-router';
+import { json } from 'react-router';
 import { generateUrl, textToHtml, convertYouTubeLinksToImages, pathToEmailUrl } from '~/utils/helpers'
 export const loader: LoaderFunction = async (args) => {
   const scheduledPosts = await sendScheduledPosts()

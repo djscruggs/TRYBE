@@ -1,10 +1,10 @@
 import { loadNoteSummary, loadRepost } from '~/models/note.server'
-import { Outlet, useLoaderData, useLocation } from '@remix-run/react'
+import { Outlet, useLoaderData, useLocation } from 'react-router';
 
 import CardNote from '~/components/cardNote'
 import { requireCurrentUser } from '~/models/auth.server'
 import type { ObjectData, Note } from '~/utils/types'
-import { json, type LoaderFunction, type LoaderFunctionArgs } from '@remix-run/node'
+import { json, type LoaderFunction, type LoaderFunctionArgs } from 'react-router';
 import { prisma } from '~/models/prisma.server'
 
 interface NoteObjectData {

@@ -5,7 +5,7 @@ import {
   fetchUserChallengesAndMemberships
 } from '~/models/challenge.server'
 import { getCurrentUser } from '~/models/auth.server'
-import { json, type LoaderFunction } from '@remix-run/node'
+import { json, type LoaderFunction } from 'react-router';
 
 export const loader: LoaderFunction = async (args) => {
   const { range = 'active' } = args.params
@@ -37,6 +37,6 @@ export const loader: LoaderFunction = async (args) => {
     return json({ loadingError: 'Unable to load challenges' })
   }
 
-  const memberships = await fetchMemberChallenges(userId) || [] as number[]
+  const memberships = (await fetchMemberChallenges(userId)) || [] as number[]
   return json({ challenges, memberships, error })
 }

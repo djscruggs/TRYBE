@@ -1,4 +1,4 @@
-import { useParams } from '@remix-run/react'
+import { useParams } from 'react-router';
 import { useEffect, useState, useContext, useRef } from 'react'
 import type { ChallengeSummary, MemberChallenge } from '~/utils/types'
 import ChallengeList from '~/components/challengeList'

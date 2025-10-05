@@ -1,5 +1,5 @@
 import FormNote from '~/components/formNote'
-import { useNavigate, useRouteLoaderData } from '@remix-run/react'
+import { useNavigate, useRouteLoaderData } from 'react-router';
 
 export default function ViewChallengeMembers (): JSX.Element {
   const data = useRouteLoaderData('routes/posts.$id')

@@ -1,6 +1,6 @@
 import { formatDistanceToNowStrict, format, differenceInDays, differenceInHours, isPast } from 'date-fns'
 import type { Challenge, MemberChallenge, CheckIn } from '~/utils/types'
-import { Link, useLocation } from '@remix-run/react'
+import { Link, useLocation } from 'react-router';
 import { CheckInButton } from '~/components/checkinButton'
 
 import { hasStarted, isExpired } from '~/utils/helpers/challenge'

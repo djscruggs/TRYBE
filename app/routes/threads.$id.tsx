@@ -1,10 +1,10 @@
 import { loadThreadSummary } from '~/models/thread.server'
 import { fetchComments, recursivelyCollectCommentIds } from '~/models/comment.server'
-import { Outlet, useLoaderData, useLocation } from '@remix-run/react'
+import { Outlet, useLoaderData, useLocation } from 'react-router';
 import { useState } from 'react'
 import { requireCurrentUser } from '~/models/auth.server'
 import type { ThreadSummary, Comment } from '~/utils/types'
-import { type LoaderFunction, type LoaderFunctionArgs } from '@remix-run/node'
+import { type LoaderFunction, type LoaderFunctionArgs } from 'react-router';
 import FormComment from '~/components/formComment'
 import CardThread from '~/components/cardThread'
 import CommentsContainer from '~/components/commentsContainer'

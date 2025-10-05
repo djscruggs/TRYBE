@@ -1,5 +1,5 @@
 import { Spinner } from '@material-tailwind/react'
-import { useParams } from '@remix-run/react'
+import { useParams } from 'react-router';
 import { useEffect } from 'react'
 import useGatedNavigate from '~/hooks/useGatedNavigate'
 import { pathFromDotRoute } from '~/utils/helpers'

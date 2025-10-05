@@ -1,7 +1,7 @@
 import { createNote, updateNote, loadRepost, deleteNote } from '~/models/note.server'
 import { requireCurrentUser } from '~/models/auth.server'
-import { json, type LoaderFunction, type ActionFunction } from '@remix-run/node'
-import { unstable_parseMultipartFormData } from '@remix-run/node'
+import { json, type LoaderFunction, type ActionFunction } from 'react-router';
+import { unstable_parseMultipartFormData } from 'react-router';
 import { uploadHandler, writeFile } from '~/utils/uploadFile'
 
 export const action: ActionFunction = async (args) => {

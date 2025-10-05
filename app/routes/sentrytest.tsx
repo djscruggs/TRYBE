@@ -1,4 +1,4 @@
-import { type LoaderFunction, type LoaderFunctionArgs } from '@remix-run/node'
+import { type LoaderFunction, type LoaderFunctionArgs } from 'react-router';
 import * as Sentry from '@sentry/remix'
 
 export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {

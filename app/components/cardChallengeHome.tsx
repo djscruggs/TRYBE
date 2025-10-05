@@ -3,7 +3,7 @@ import { FaRegCalendarAlt, FaUserFriends } from 'react-icons/fa'
 import { type MemberChallenge, type Challenge, type ChallengeSummary } from '~/utils/types'
 import { colorToClassName } from '~/utils/helpers'
 import { CurrentUserContext } from '~/contexts/CurrentUserContext'
-import { useNavigate } from '@remix-run/react'
+import { useNavigate } from 'react-router';
 import { differenceInCalendarDays, differenceInWeeks } from 'date-fns'
 import { getShortUrl, hasStarted, isExpired } from '~/utils/helpers/challenge'
 import ChallengeIcon from './challengeIcon'

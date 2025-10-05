@@ -1,5 +1,5 @@
 import type { MemberChallenge } from '~/utils/types'
-import { type LoaderFunction, type LoaderFunctionArgs } from '@remix-run/node'
+import { type LoaderFunction, type LoaderFunctionArgs } from 'react-router';
 import { getCurrentUser } from '~/models/auth.server'
 import { loadMemberChallenge } from '~/models/challenge.server'
 

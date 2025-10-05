@@ -1,4 +1,4 @@
-import { type LoaderFunction, type LoaderFunctionArgs, redirect } from '@remix-run/node'
+import { type LoaderFunction, type LoaderFunctionArgs, redirect } from 'react-router';
 import { getAuth } from '@clerk/remix/ssr.server'
 import { SignedIn, SignedOut, SignIn, UserProfile, useClerk } from '@clerk/remix'
 import { HiOutlineLogout } from 'react-icons/hi'

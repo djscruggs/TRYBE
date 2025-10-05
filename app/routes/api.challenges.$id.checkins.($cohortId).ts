@@ -1,8 +1,8 @@
 import { prisma } from '~/models/prisma.server'
 import { requireCurrentUser } from '~/models/auth.server'
 import { joinChallenge, loadChallenge, calculateNextCheckin, updateCheckin } from '~/models/challenge.server'
-import { json, type LoaderFunction, type ActionFunctionArgs } from '@remix-run/node'
-import { unstable_parseMultipartFormData } from '@remix-run/node'
+import { json, type LoaderFunction, type ActionFunctionArgs } from 'react-router';
+import { unstable_parseMultipartFormData } from 'react-router';
 import { uploadHandler, handleFormUpload } from '~/utils/uploadFile'
 
 export async function action (args: ActionFunctionArgs): Promise<prisma.checkIn> {

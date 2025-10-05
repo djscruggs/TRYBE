@@ -6,7 +6,7 @@ import {
 } from '~/models/challenge.server'
 import { requireCurrentUser } from '~/models/auth.server'
 import { loadUser } from '~/models/user.server'
-import { json, type LoaderFunction, type ActionFunctionArgs } from '@remix-run/node'
+import { json, type LoaderFunction, type ActionFunctionArgs } from 'react-router';
 import type { MemberChallenge } from '@prisma/client'
 import { type ChallengeWelcomeMailerProps, sendChallengeWelcome } from '~/utils/mailer'
 import { formatDate, textToHtml, pathToEmailUrl, generateUrl } from '~/utils/helpers'

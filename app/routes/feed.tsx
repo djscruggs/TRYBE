@@ -4,10 +4,10 @@ import { likesByType } from '~/models/like.server'
 import { useContext, useState, useEffect } from 'react'
 import UserAvatar from '~/components/useravatar'
 import FormNote from '~/components/formNote'
-import { useLoaderData, type MetaFunction } from '@remix-run/react'
+import { useLoaderData, type MetaFunction } from 'react-router';
 import type { ChallengeSummary, NoteSummary } from '~/utils/types'
 import { useMobileSize } from '~/hooks/useMobileSize'
-import { type LoaderFunction } from '@remix-run/node'
+import { type LoaderFunction } from 'react-router';
 import { prisma } from '~/models/prisma.server'
 import CardChallenge from '~/components/cardChallenge'
 import CardNote from '~/components/cardNote'

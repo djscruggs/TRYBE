@@ -1,6 +1,6 @@
 import * as ReactDOMServer from 'react-dom/server'
-import { RemixServer } from '@remix-run/react'
-import type { EntryContext } from '@remix-run/node'
+import { ServerRouter } from 'react-router';
+import type { EntryContext } from 'react-router';
 import createEmotionCache from './createEmotionCache'
 import { CacheProvider } from '@emotion/react'
 import createEmotionServer from '@emotion/server/create-instance'
@@ -17,7 +17,7 @@ export default function handleRequest (
   request: Request,
   responseStatusCode: number,
   responseHeaders: Headers,
-  remixContext: EntryContext
+  reactRouterContext: EntryContext
 ): Response {
   const cache = createEmotionCache()
   // eslint-disable-next-line @typescript-eslint/unbound-method
@@ -25,10 +25,10 @@ export default function handleRequest (
 
   function MuiRemixServer (): JSX.Element {
     return (
-      <CacheProvider value={cache}>
-        <RemixServer context={remixContext} url={request.url} />
-      </CacheProvider>
-    )
+      (<CacheProvider value={cache}>
+        <ServerRouter context={reactRouterContext} url={request.url} />
+      </CacheProvider>)
+    );
   }
 
   // Render the component to a string.

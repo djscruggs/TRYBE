@@ -1,5 +1,5 @@
 import { loadUser } from '~/models/user.server'
-import { json, type LoaderFunction } from '@remix-run/node'
+import { json, type LoaderFunction } from 'react-router';
 import { type Like } from '~/utils/types'
 import { prisma } from '~/models/prisma.server'
 

@@ -1,4 +1,4 @@
-import { useNavigate } from '@remix-run/react'
+import { useNavigate } from 'react-router';
 import { useContext } from 'react'
 import { CurrentUserContext } from '~/contexts/CurrentUserContext'
 

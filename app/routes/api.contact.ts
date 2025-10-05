@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import { loadChallengeWithHost } from '~/models/challenge.server'
 import { contactHost, type HostMailerProps } from '~/utils/mailer'
-import type { ActionFunction, LoaderFunction } from '@remix-run/node'
-import { json } from '@remix-run/node'
+import type { ActionFunction, LoaderFunction } from 'react-router';
+import { json } from 'react-router';
 import { requireCurrentUser } from '~/models/auth.server'
 import { type CurrentUser, type ChallengeWithHost } from '~/utils/types'
 export const action: ActionFunction = async (args) => {

@@ -2,7 +2,7 @@ import ChallengeList from '~/components/challengeList'
 import { useState, useEffect, useContext } from 'react'
 import axios from 'axios'
 import { type ChallengeSummary, type MemberChallenge } from '~/utils/types'
-import { useNavigate } from '@remix-run/react'
+import { useNavigate } from 'react-router';
 import { CurrentUserContext } from '~/contexts/CurrentUserContext'
 import useGatedNavigate from '~/hooks/useGatedNavigate'
 import { CardChallengeHomeSkeleton } from './cardChallengeHome'

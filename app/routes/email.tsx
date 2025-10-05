@@ -1,7 +1,7 @@
 import { requireCurrentUser } from '~/models/auth.server'
-import { type LoaderFunction } from '@remix-run/node'
+import { type LoaderFunction } from 'react-router';
 import { loadPostSummary } from '~/models/post.server'
-import { json } from '@remix-run/node'
+import { json } from 'react-router';
 import { mailPost, contactHost, type HostMailerProps } from '~/utils/mailer'
 function textToHtml (text): string {
   return text.split('\n').map(line => `<p style="margin-bottom:.5em">${line}</p>`).join('')

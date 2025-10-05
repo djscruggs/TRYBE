@@ -1,9 +1,17 @@
 import { loadChallengeSummary } from '~/models/challenge.server'
-import { Outlet, useLoaderData, useNavigate, useLocation, useMatches, type MetaFunction, useSearchParams } from '@remix-run/react'
+import {
+  Outlet,
+  useLoaderData,
+  useNavigate,
+  useLocation,
+  useMatches,
+  type MetaFunction,
+  useSearchParams,
+} from 'react-router';
 import { useEffect, useState } from 'react'
 import { requireAdminOrValidCohortMembership } from '~/models/auth.server'
 import type { MemberChallenge, Challenge, ChallengeSummary } from '~/utils/types'
-import { type LoaderFunction, type LoaderFunctionArgs } from '@remix-run/node'
+import { type LoaderFunction, type LoaderFunctionArgs } from 'react-router';
 import { FaChevronCircleLeft } from 'react-icons/fa'
 import { prisma } from '~/models/prisma.server'
 import ChallengeHeader from '~/components/challengeHeader'

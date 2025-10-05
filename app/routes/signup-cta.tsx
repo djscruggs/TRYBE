@@ -1,6 +1,6 @@
-import { type LoaderFunction, type LoaderFunctionArgs } from '@remix-run/node'
+import { type LoaderFunction, type LoaderFunctionArgs } from 'react-router';
 import Logo from '~/components/logo'
-import { Link, useNavigate, useSearchParams } from '@remix-run/react'
+import { Link, useNavigate, useSearchParams } from 'react-router';
 import { useDeviceContext } from '~/contexts/DeviceContext'
 
 export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {

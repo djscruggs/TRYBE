@@ -1,6 +1,6 @@
 import { deleteNote } from '~/models/note.server'
 import { requireCurrentUser } from '~/models/auth.server'
-import { json, type LoaderFunction, type ActionFunctionArgs } from '@remix-run/node'
+import { json, type LoaderFunction, type ActionFunctionArgs } from 'react-router';
 
 export async function action (args: ActionFunctionArgs) {
   const { params } = args

@@ -1,6 +1,6 @@
-import { useNavigate, useParams, Outlet, useLocation } from '@remix-run/react'
+import { useNavigate, useParams, Outlet, useLocation } from 'react-router';
 import { useEffect } from 'react'
-import type { MetaFunction } from '@remix-run/react'
+import type { MetaFunction } from 'react-router';
 export const meta: MetaFunction = () => {
   return [
     { title: 'Challenges' }

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 import { Avatar } from '@material-tailwind/react'
-import { Link } from '@remix-run/react'
+import { Link } from 'react-router';
 import { userInitials } from '~/utils/helpers'
 interface AvatarLoaderProps {
   object: any

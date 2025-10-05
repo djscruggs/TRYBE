@@ -1,5 +1,5 @@
 import FormNote from '~/components/formNote'
-import { type MetaFunction, useNavigate, useRouteLoaderData } from '@remix-run/react'
+import { type MetaFunction, useNavigate, useRouteLoaderData } from 'react-router';
 import type { ChallengeSummary } from '~/utils/types'
 
 export const meta: MetaFunction = () => {

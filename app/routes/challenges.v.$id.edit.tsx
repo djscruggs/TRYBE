@@ -2,7 +2,7 @@ import ChallengeForm from '~/components/formChallenge'
 import { useEffect, useState } from 'react'
 import axios from 'axios'
 import { type ChallengeSummary } from '~/utils/types'
-import { type MetaFunction, useParams } from '@remix-run/react'
+import { type MetaFunction, useParams } from 'react-router';
 interface ChallengeInputs extends ChallengeSummary {
   deleteImage: boolean
 }

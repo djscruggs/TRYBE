@@ -1,8 +1,8 @@
-import { Outlet, useLoaderData } from '@remix-run/react'
+import { Outlet, useLoaderData } from 'react-router';
 import React from 'react'
 import { requireCurrentUser } from '~/models/auth.server'
 import type { Post } from '~/utils/types'
-import { type MetaFunction, type LoaderFunction, type LoaderFunctionArgs } from '@remix-run/node'
+import { type MetaFunction, type LoaderFunction, type LoaderFunctionArgs } from 'react-router';
 import { prisma } from '~/models/prisma.server'
 import CardPost from '~/components/cardPost'
 

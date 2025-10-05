@@ -2,7 +2,7 @@ import {
   loadChallenge
 } from '~/models/challenge.server'
 import type { MemberChallenge, Challenge, Post } from '~/utils/types'
-import { type LoaderFunction, type LoaderFunctionArgs } from '@remix-run/node'
+import { type LoaderFunction, type LoaderFunctionArgs } from 'react-router';
 import { getCurrentUser } from '~/models/auth.server'
 import { prisma } from '~/models/prisma.server'
 import type { Prisma } from '@prisma/client'

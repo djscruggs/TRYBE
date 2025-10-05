@@ -1,7 +1,13 @@
 import { prisma } from './prisma.server'
 import { createUser, getUserByClerkId } from './user.server'
 import { type RegisterForm, type LoginForm, type CurrentUser } from '~/utils/types'
-import { type LoaderFunctionArgs, redirect, json, createCookieSessionStorage, type Session } from '@remix-run/node'
+import {
+  type LoaderFunctionArgs,
+  redirect,
+  json,
+  createCookieSessionStorage,
+  type Session,
+} from 'react-router';
 import bcrypt from 'bcryptjs'
 import { getAuth } from '@clerk/remix/ssr.server'
 import { URL } from 'url'

@@ -1,12 +1,12 @@
 import React, { useContext, useState } from 'react'
-import { useParams, useLoaderData, json, type MetaFunction } from '@remix-run/react'
+import { useParams, useLoaderData, json, type MetaFunction } from 'react-router';
 import { CurrentUserContext } from '~/contexts/CurrentUserContext'
-import { type LoaderFunction } from '@remix-run/server-runtime'
+import { type LoaderFunction } from 'react-router';
 import { fetchComments } from '~/models/comment.server'
 import { likesByType } from '~/models/like.server'
 import FormComment from '~/components/formComment'
 import CommentsContainer from '~/components/commentsContainer'
-import { useRevalidator } from 'react-router-dom'
+import { useRevalidator } from 'react-router';
 import { type CurrentUser } from '~/utils/types'
 import { requireCurrentUser } from '~/models/auth.server'
 export const meta: MetaFunction = () => {

@@ -1,5 +1,5 @@
 import { loadUser } from '~/models/user.server'
-import { json, type LoaderFunction } from '@remix-run/node'
+import { json, type LoaderFunction } from 'react-router';
 
 export const loader: LoaderFunction = async (args) => {
   const user = await loadUser(args.params.id)

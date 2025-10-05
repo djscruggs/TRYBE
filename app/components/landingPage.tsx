@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { FaArrowCircleRight } from 'react-icons/fa'
-import { useSearchParams, useNavigate } from 'react-router-dom'
+import { useSearchParams, useNavigate } from 'react-router';
 import { FaLessThan } from 'react-icons/fa6'
 import Logo from '../components/logo'
 import HideFeedbackButton from './hideFeedbackButton'

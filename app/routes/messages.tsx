@@ -1,6 +1,6 @@
 
 import { requireCurrentUser } from '~/models/auth.server'
-import { type LoaderFunction } from '@remix-run/node'
+import { type LoaderFunction } from 'react-router';
 
 export const loader: LoaderFunction = async (args) => {
   // if thecurrentUser isn't authenticated, this will redirect to login

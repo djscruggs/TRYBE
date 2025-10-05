@@ -1,7 +1,7 @@
 import { createThread, updateThread, loadThreadSummary } from '~/models/thread.server'
 import { requireCurrentUser } from '~/models/auth.server'
-import { json, type LoaderFunction, type ActionFunction } from '@remix-run/node'
-import { unstable_parseMultipartFormData } from '@remix-run/node'
+import { json, type LoaderFunction, type ActionFunction } from 'react-router';
+import { unstable_parseMultipartFormData } from 'react-router';
 import { uploadHandler, handleFormUpload } from '~/utils/uploadFile'
 import { type CurrentUser } from '~/utils/types'
 import { type Thread } from '@prisma/client'

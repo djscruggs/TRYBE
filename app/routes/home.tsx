@@ -1,5 +1,5 @@
 import MyChallenges from '~/components/myChallenges'
-import { useNavigate } from '@remix-run/react'
+import { useNavigate } from 'react-router';
 import Logo from '~/components/logo'
 import { WhatsNew } from '~/components/whatsNew'
 import { copyToClipboard } from '~/utils/helpers'

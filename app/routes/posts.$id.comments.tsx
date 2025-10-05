@@ -1,7 +1,7 @@
 import React, { useState, useContext } from 'react'
-import { useParams, useLoaderData, json, useOutletContext } from '@remix-run/react'
-import { type LoaderFunction } from '@remix-run/server-runtime'
-import { useNavigate } from 'react-router-dom'
+import { useParams, useLoaderData, json, useOutletContext } from 'react-router';
+import { type LoaderFunction } from 'react-router';
+import { useNavigate } from 'react-router';
 import { Button } from '@material-tailwind/react'
 import type { Comment, CurrentUser } from '~/utils/types'
 import CommentsContainer from '~/components/commentsContainer'
@@ -9,7 +9,7 @@ import FormComment from '~/components/formComment'
 import { CurrentUserContext } from '~/contexts/CurrentUserContext'
 import { fetchComments } from '~/models/comment.server'
 import { likesByType } from '~/models/like.server'
-import { type LoaderFunctionArgs } from '@remix-run/node'
+import { type LoaderFunctionArgs } from 'react-router';
 import { requireCurrentUser } from '~/models/auth.server'
 
 export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {

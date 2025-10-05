@@ -1,6 +1,6 @@
 import { resizeImageToFit } from '~/utils/helpers'
 import { type Challenge, type ChallengeSummary } from '~/utils/types'
-import { Link } from '@remix-run/react'
+import { Link } from 'react-router';
 import ChallengeIcon from './challengeIcon'
 import MenuChallenge from './menuChallenge'
 export default function ChallengeHeader ({ challenge, size, className }: { challenge: Challenge | ChallengeSummary, size: 'small' | 'large', className?: string, isMember?: boolean }): JSX.Element {

@@ -2,8 +2,8 @@ import {
   SignIn
 } from '@clerk/remix'
 import { useDeviceContext } from '~/contexts/DeviceContext'
-import { type LoaderFunctionArgs, type LoaderFunction } from '@remix-run/node'
-import { useLoaderData, useNavigate } from '@remix-run/react'
+import { type LoaderFunctionArgs, type LoaderFunction } from 'react-router';
+import { useLoaderData, useNavigate } from 'react-router';
 import { useEffect } from 'react'
 
 export const loader: LoaderFunction = async ({ params }: LoaderFunctionArgs) => {

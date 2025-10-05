@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
-import { useLocation, useNavigationType, createRoutesFromChildren, matchRoutes } from 'react-router-dom'
+import { useLocation, useNavigationType, createRoutesFromChildren, matchRoutes } from 'react-router';
 import * as ReactDOM from 'react-dom/client'
-import { RemixBrowser } from '@remix-run/react'
+import { HydratedRouter } from 'react-router/dom';
 import { CacheProvider } from '@emotion/react'
 import ClientStyleContext from './ClientStyleContext'
 import createEmotionCache from './createEmotionCache'
@@ -89,7 +89,7 @@ const hydrate = (): void => {
       document,
       <ClientCacheProvider>
         <ThemeProvider>
-          <RemixBrowser />
+          <HydratedRouter />
         </ThemeProvider>
       </ClientCacheProvider>
     )

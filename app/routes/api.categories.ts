@@ -1,5 +1,5 @@
 import { prisma } from '~/models/prisma.server'
-import { json, type LoaderFunction } from '@remix-run/node'
+import { json, type LoaderFunction } from 'react-router';
 
 export const loader: LoaderFunction = async (args) => {
   const categories = await prisma.category.findMany()

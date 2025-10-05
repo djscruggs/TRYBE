@@ -1,4 +1,4 @@
-import { type MetaFunction, useRouteLoaderData } from '@remix-run/react'
+import { type MetaFunction, useRouteLoaderData } from 'react-router';
 import type { Challenge, CheckIn } from '~/utils/types'
 import CheckinsList from '~/components/checkinsList'
 import { useContext, useEffect, useState } from 'react'

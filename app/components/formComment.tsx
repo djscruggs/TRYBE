@@ -1,5 +1,5 @@
 import React, { useState, useContext, useRef, useMemo } from 'react'
-import { Form } from '@remix-run/react'
+import { Form } from 'react-router';
 import axios from 'axios'
 import { FormField } from './formField'
 import type { Comment } from '~/utils/types'

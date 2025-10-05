@@ -1,8 +1,8 @@
 import { createComment, updateComment, loadComment, deleteComment } from '~/models/comment.server'
 import { sendCommentReplyNotification } from '~/utils/mailer'
 import { requireCurrentUser } from '~/models/auth.server'
-import { json, type LoaderFunction, type ActionFunction } from '@remix-run/node'
-import { unstable_parseMultipartFormData } from '@remix-run/node'
+import { json, type LoaderFunction, type ActionFunction } from 'react-router';
+import { unstable_parseMultipartFormData } from 'react-router';
 import { uploadHandler, handleFormUpload } from '~/utils/uploadFile'
 import { generateUrl } from '~/utils/helpers'
 import { loadCheckIn, loadChallengeSummary } from '~/models/challenge.server'

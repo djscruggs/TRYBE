@@ -1,5 +1,5 @@
-import { useLoaderData, json, type MetaFunction } from '@remix-run/react'
-import { type LoaderFunction } from '@remix-run/server-runtime'
+import { useLoaderData, json, type MetaFunction } from 'react-router';
+import { type LoaderFunction } from 'react-router';
 import { fetchChallengeMembers } from '~/models/challenge.server'
 import AvatarLoader from '~/components/avatarLoader'
 import { type MemberChallenge } from '~/utils/types'

@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { SignedIn, SignedOut, UserButton } from '@clerk/remix'
 import useHasLoaded from '~/hooks/useHasLoaded'
-import { useLocation, Outlet, useNavigate, Link, useSearchParams } from '@remix-run/react'
+import { useLocation, Outlet, useNavigate, Link, useSearchParams } from 'react-router';
 import useGatedNavigate from '~/hooks/useGatedNavigate'
 import { HiOutlineLogin } from 'react-icons/hi'
 import NavLinks from './navlinks'

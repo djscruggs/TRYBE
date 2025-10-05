@@ -1,5 +1,5 @@
 import LandingPage from '~/components/landingPage'
-import { type MetaFunction } from '@remix-run/node'
+import { type MetaFunction } from 'react-router';
 export const meta: MetaFunction = () => [
   { title: 'Trybe' },
   { name: 'description', content: 'Build new habits. Join challenges. Meet your Trybe.' },

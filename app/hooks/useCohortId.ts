@@ -1,4 +1,4 @@
-import { useSearchParams } from '@remix-run/react'
+import { useSearchParams } from 'react-router';
 import { useMemberContext } from '~/contexts/MemberContext'
 
 export default function useCohortId (): number | null {

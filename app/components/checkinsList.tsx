@@ -5,7 +5,7 @@ import { CurrentUserContext } from '~/contexts/CurrentUserContext'
 import { Lightbox } from 'react-modal-image'
 import AvatarLoader from './avatarLoader'
 import FormCheckIn from './formCheckin'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router';
 import type { CheckIn, Comment, Post, Profile } from '~/utils/types'
 import Liker from '~/components/liker'
 import ActionsPopupMenu from './actionsPopupMenu'

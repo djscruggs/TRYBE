@@ -1,6 +1,6 @@
 import { requireCurrentUser } from '~/models/auth.server'
-import { type LoaderFunction } from '@remix-run/node'
-import React, { useLoaderData } from '@remix-run/react'
+import { type LoaderFunction } from 'react-router';
+import React, { useLoaderData } from 'react-router';
 import { prisma } from '~/models/prisma.server'
 import type { Post } from '@prisma/client'
 import CardPost from '~/components/cardPost'
