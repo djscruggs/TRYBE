@@ -46,8 +46,9 @@ export async function action (args: ActionFunctionArgs): Promise<Response> {
         const notificationHour = formData.get('notificationHour') as string
         const notificationMinute = formData.get('notificationMinute') as string
         const startAt = formData.get('startAt') as string
-
+        console.log('startAt', startAt)
         const startAtDate = startAt ? new Date(startAt.toString()) : undefined
+        console.log('startAtDate', startAtDate)
         const notificationHourNumber = notificationHour != null ? Number(notificationHour.toString()) : undefined
         const notificationMinuteNumber = notificationMinute != null ? Number(notificationMinute.toString()) : undefined
         let cohortId = Number(formData.get('cohortId') as string)
@@ -56,7 +57,14 @@ export async function action (args: ActionFunctionArgs): Promise<Response> {
           const cohort = await createCohort(Number(params.id))
           cohortId = cohort.id
         }
-        result = await joinChallenge({ userId: Number(user.id), challengeId: Number(params.id), startAt: startAtDate, notificationHour: notificationHourNumber, notificationMinute: notificationMinuteNumber, cohortId })
+        result = await joinChallenge({
+          userId: Number(user.id),
+          challengeId: Number(params.id),
+          startAt: startAtDate,
+          notificationHour: notificationHourNumber,
+          notificationMinute: notificationMinuteNumber,
+          cohortId
+        })
         tempData.startDate = formatDate(startAtDate?.toISOString() ?? '', getUserLocale())
         tempData.duration = challenge.numDays?.toString() ? `${challenge.numDays} days` : 'none'
       } else {
@@ -64,7 +72,7 @@ export async function action (args: ActionFunctionArgs): Promise<Response> {
         tempData.startDate = formatDate(challenge.startAt?.toISOString() ?? '', getUserLocale())
         tempData.duration = differenceInCalendarDays(challenge.endAt ?? new Date(), challenge.startAt ?? new Date()).toString() + ' days'
       }
-
+      console.log(result)
       await sendChallengeWelcome({
         to: user.email,
         dynamic_template_data: tempData as ChallengeWelcomeMailerProps['dynamic_template_data']

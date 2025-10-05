@@ -503,7 +503,10 @@ export const joinChallenge = async (params: JoinChallengeParams): Promise<Prisma
   let startAtDate = startAt
   if (challenge.type === 'SELF_LED') {
     if (cohortId) {
-      startAtDate = await getLatestStartDateFromCohort(cohortId)
+      const latestStartDate = await getLatestStartDateFromCohort(cohortId)
+      if (latestStartDate) {
+        startAtDate = latestStartDate
+      }
     }
     if (startAtDate && isNaN(startAtDate.getTime())) {
       throw new Error('Invalid date: startAt must be a valid date string')
@@ -524,7 +527,7 @@ export const joinChallenge = async (params: JoinChallengeParams): Promise<Prisma
   if (cohortId) {
     dayNum = await getLatestDayNumFromCohort(cohortId)
   }
-
+  console.log('final startAtDate', startAtDate)
   const data: Prisma.MemberChallengeCreateInput = {
     user: {
       connect: { id: userId }
@@ -589,7 +592,7 @@ const getLatestStartDateFromCohort = async (cohortId: number): Promise<Date> => 
     }
   })
   if (!cohort || cohort.members.length === 0) {
-    return new Date()
+    return null
   }
 
   // Find the member with the highest dayNum
