@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { SignedIn, SignedOut, UserButton } from '@clerk/remix'
+import { SignedIn, SignedOut, UserButton } from '@clerk/clerk-react'
 import useHasLoaded from '~/hooks/useHasLoaded'
 import { useLocation, Outlet, useNavigate, Link, useSearchParams } from 'react-router';
 import useGatedNavigate from '~/hooks/useGatedNavigate'

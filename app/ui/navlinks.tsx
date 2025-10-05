@@ -12,7 +12,7 @@ import { CurrentUserContext } from '~/contexts/CurrentUserContext'
 import { useContext, useState } from 'react'
 import { Spinner } from '@material-tailwind/react'
 import { Link } from 'react-router';
-import { useClerk } from '@clerk/remix'
+import { useClerk } from '@clerk/clerk-react'
 import useGatedNavigate from '~/hooks/useGatedNavigate'
 import { useDeviceContext } from '~/contexts/DeviceContext'
 const NavLinks = (): JSX.Element => {

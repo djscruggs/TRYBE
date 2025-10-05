@@ -6,7 +6,7 @@ import {
   type ActionFunction,
   type ActionFunctionArgs,
 } from 'react-router';
-import { getAuth } from '@clerk/remix/ssr.server'
+// import { getAuth } from '@clerk/remix/ssr.server' // TODO: Update for React Router v7
 import { useState, useEffect } from 'react'
 import { WelcomePage } from '~/components/welcomepage'
 import LandingPage from '~/components/landingPage'

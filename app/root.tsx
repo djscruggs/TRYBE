@@ -23,8 +23,7 @@ import { type CurrentUser } from './utils/types'
 import { Toaster } from 'react-hot-toast'
 import getUserLocale from 'get-user-locale'
 import { getUserByClerkId } from './models/user.server'
-import { rootAuthLoader } from '@clerk/remix/ssr.server'
-import { ClerkApp, useUser } from '@clerk/remix'
+import { ClerkProvider, useUser } from '@clerk/clerk-react'
 import { captureRemixErrorBoundaryError } from '@sentry/remix'
 import { getUserSession, getUser } from './models/auth.server'
 interface DocumentProps {
@@ -59,30 +58,9 @@ export const loader: LoaderFunction = async args => {
   }
   const userAgent = args.request.headers.get('user-agent') ?? 'unknown'
 
-  return await rootAuthLoader(args, async ({ request }) => {
-    // check server session first
-    const session = await getUserSession(request)
-    const userId = session.get('userId')
-    if (userId) {
-      const user: CurrentUser | null = await getUser(request)
-      if (user) {
-        return { ENV, user, auth: null, userAgent }
-      }
-    }
-    const auth = request.auth
-    if (auth?.userId) {
-      const user: CurrentUser = await getUserByClerkId(auth.userId)
-      if (!user) {
-        return { user: null, auth: null, ENV, userAgent }
-      }
-      user.locale = userLocale
-      user.dateFormat = user.locale === 'en-US' ? 'M-dd-yyyy' : 'dd-M-yyyy'
-      user.timeFormat = user.locale === 'en-US' ? 'h:mm a' : 'HH:MM'
-      user.dateTimeFormat = `${user.dateFormat} @ ${user.timeFormat}`
-      return { user, auth, ENV, userAgent }
-    }
-    return { ENV, user: null, auth: null, userAgent }
-  })
+  // For now, we'll handle auth on the client side with Clerk
+  // TODO: Implement server-side auth with React Router v7
+  return { ENV, user: null, auth: null, userAgent }
 }
 
 const Document = withEmotionCache(({ children, title }: DocumentProps, emotionCache) => {
@@ -149,18 +127,20 @@ function App (): JSX.Element {
     }
   }
   return (
-    <DeviceContext.Provider value={{ isMobileDevice, isIphone, isAndroid, isMobile: () => isIphone || isAndroid }}>
-      <Document>
-        <Toaster position='top-center' />
-        <CurrentUserContext.Provider value={{ currentUser, setCurrentUser }}>
-          <Layout />
-        </CurrentUserContext.Provider>
-      </Document>
-    </DeviceContext.Provider>
+    <ClerkProvider publishableKey={process.env.CLERK_PUBLISHABLE_KEY}>
+      <DeviceContext.Provider value={{ isMobileDevice, isIphone, isAndroid, isMobile: () => isIphone || isAndroid }}>
+        <Document>
+          <Toaster position='top-center' />
+          <CurrentUserContext.Provider value={{ currentUser, setCurrentUser }}>
+            <Layout />
+          </CurrentUserContext.Provider>
+        </Document>
+      </DeviceContext.Provider>
+    </ClerkProvider>
   )
 }
 
-export default ClerkApp(App)
+export default App
 
 // https://remix.run/docs/en/main/route/error-boundary
 export function ErrorBoundary (): JSX.Element {
