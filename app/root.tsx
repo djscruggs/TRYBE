@@ -104,8 +104,7 @@ function App ({ loaderData }: { loaderData: RootLoaderData }): JSX.Element {
   const revalidator = useRevalidator()
   const [currentUser, setCurrentUser] = useState<CurrentUser | null>(user as CurrentUser)
   
-  console.log('App component - loaderData:', data, 'user:', user, 'currentUser:', currentUser)
-
+  
   // Determine if the user agent is "gonative median" and if  iphone or android
   const isMobileDevice = userAgent?.includes('gonative median') || userAgent?.includes('capacitor')
   const isIphone = isMobileDevice && userAgent?.toLowerCase().includes('iphone')
