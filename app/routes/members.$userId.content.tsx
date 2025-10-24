@@ -1,5 +1,5 @@
 import { requireCurrentUser } from '~/models/auth.server'
-import { type LoaderFunction, json } from 'react-router';
+import { type LoaderFunction } from 'react-router';
 import { useLoaderData, Link, useParams, useNavigate } from 'react-router';
 import { fetchUserChallenges, fetchUserMemberships } from '~/models/challenge.server'
 import { fetchUserNotes } from '~/models/note.server'
@@ -12,7 +12,7 @@ import {
   TabsBody,
   Tab,
   TabPanel
-} from '@material-tailwind/react'
+} from '~/utils/material-tailwind'
 import CardChallenge from '~/components/cardChallenge'
 import CardChallengeMembership from '~/components/cardChallengeMembership'
 import CardPost from '~/components/cardPost'
@@ -31,7 +31,7 @@ export const loader: LoaderFunction = async (args) => {
   const memberships = await fetchUserMemberships(userId) as { error?: string }
   const notes = await fetchUserNotes(userId) as { error?: string }
   const posts = await fetchUserPosts(userId, showPrivate) as { error?: string }
-  return json({ challenges, notes, posts, memberships, userId })
+  return Response.json({ challenges, notes, posts, memberships, userId })
 }
 export default function UserSpecificContent (): JSX.Element {
   const data: any = useLoaderData()

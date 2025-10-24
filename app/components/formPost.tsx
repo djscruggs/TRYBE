@@ -1,11 +1,11 @@
+import { Button,Radio,Checkbox } from '~/utils/material-tailwind';
 import React, { useMemo, useState, useRef, useContext } from 'react'
 import { Form, useNavigate } from 'react-router';
 import axios from 'axios'
 import { FormField } from './formField'
 import { handleFileUpload } from '~/utils/helpers'
 import { type PostSummary, type ChallengeSummary, type Challenge } from '~/utils/types'
-import pkg from '@material-tailwind/react';
-const { Button, Radio, Checkbox } = pkg;
+import { Button, Radio, Checkbox } from '~/utils/material-tailwind';
 import { MdOutlineAddPhotoAlternate } from 'react-icons/md'
 import { TiDeleteOutline } from 'react-icons/ti'
 import VideoRecorder from './videoRecorder'

@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react'
 import {
   Card
-} from '@material-tailwind/react'
+} from '~/utils/material-tailwind'
 import type { PostSummary } from '~/utils/types'
 // import { AiOutlineRetweet } from 'react-icons/ai'
 // import { GoComment } from 'react-icons/go'

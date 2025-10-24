@@ -1,7 +1,7 @@
 import { createThread, updateThread, loadThreadSummary } from '~/models/thread.server'
 import { requireCurrentUser } from '~/models/auth.server'
-import { json, type LoaderFunction, type ActionFunction } from 'react-router';
-import { unstable_parseMultipartFormData } from 'react-router';
+import { type LoaderFunction, type ActionFunction  } from 'react-router';
+// import { unstable_parseMultipartFormData } from 'react-router'; // Not available in React Router v7
 import { uploadHandler, handleFormUpload } from '~/utils/uploadFile'
 import { type CurrentUser } from '~/utils/types'
 import { type Thread } from '@prisma/client'
@@ -13,10 +13,10 @@ interface ThreadData extends Thread {
 export const action: ActionFunction = async (args) => {
   const currentUser: CurrentUser | null = await requireCurrentUser(args)
   if (!currentUser) {
-    return json({ message: 'You must be logged in to create a thread or thread' }, 401)
+    return Response.json({ message: 'You must be logged in to create a thread or thread' }, 401)
   }
   const request = args.request
-  const rawData = await unstable_parseMultipartFormData(request, uploadHandler)
+  // const rawData = await unstable_parseMultipartFormData(request, uploadHandler) // Not available in React Router v7
   const data: Partial<ThreadData> = {
     title: rawData.get('title') as string ?? '',
     body: rawData.get('body') as string ?? '',
@@ -41,5 +41,5 @@ export const action: ActionFunction = async (args) => {
 }
 
 export const loader: LoaderFunction = async (args) => {
-  return json({ message: 'This route does not accept GET requests' }, 200)
+  return Response.json({ message: 'This route does not accept GET requests' }, 200)
 }

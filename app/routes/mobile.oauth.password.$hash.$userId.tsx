@@ -1,18 +1,15 @@
+import { Button } from '~/utils/material-tailwind';
 import { useState, useEffect } from 'react'
-import {
-  type ActionFunction,
-  json,
+import { type ActionFunction,
   type LoaderFunction,
   type LoaderFunctionArgs,
   redirect,
-} from 'react-router';
+ } from 'react-router';
 import { Form, Link, useActionData, useNavigate } from 'react-router';
 import { createClerkClient } from '@clerk/backend'
 import { validatePassword } from '~/models/validators.server'
 import * as React from 'react'
 import { FormField } from '~/components/formField'
-import pkg from '@material-tailwind/react';
-const { Button } = pkg;
 import { useDeviceContext } from '~/contexts/DeviceContext'
 import bcrypt from 'bcryptjs'
 import { prisma } from '~/models/prisma.server'
@@ -75,7 +72,7 @@ export const action: ActionFunction = async ({ request, params }) => {
     password: validatePassword(password, passwordMatch)
   }
   if (Object.values(errors).some(Boolean)) {
-    return json({ errors, fields: { password, passwordMatch }, form: action }, { status: 400 })
+    return Response.json({ errors, fields: { password, passwordMatch }, form: action }, { status: 400 })
   }
   // load the user, test password with clerk if necessary
   const user = await prisma.user.findUnique({
@@ -96,7 +93,7 @@ export const action: ActionFunction = async ({ request, params }) => {
       }
     } catch (error: any) {
       console.error(error.errors)
-      return json({ error: error.errors[0].longMessage || 'Failed to update password' }, { status: 500 })
+      return Response.json({ error: error.errors[0].longMessage || 'Failed to update password' }, { status: 500 })
     }
   }
 }

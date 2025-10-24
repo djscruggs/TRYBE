@@ -9,7 +9,7 @@ import DialogConfirm from '~/components/dialogConfirm'
 import DialogJoin from '~/components/dialogJoin'
 import DialogShare from '~/components/dialogShare'
 import axios from 'axios'
-import Spinner from '@material-tailwind/react/components/Spinner'
+import { Spinner } from '~/utils/material-tailwind'
 import { getShortUrl } from '~/utils/helpers/challenge'
 import useGatedNavigate from '~/hooks/useGatedNavigate'
 export const meta: MetaFunction = () => {

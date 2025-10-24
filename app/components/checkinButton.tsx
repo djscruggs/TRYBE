@@ -5,7 +5,7 @@ import { hasStarted, isExpired } from '~/utils/helpers/challenge'
 import {
   Dialog,
   DialogBody
-} from '@material-tailwind/react'
+} from '~/utils/material-tailwind'
 interface ChallengeMemberCheckinProps {
   challenge: Challenge
   label?: string

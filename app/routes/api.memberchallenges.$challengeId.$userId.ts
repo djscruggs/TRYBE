@@ -1,5 +1,5 @@
 import { prisma } from '~/models/prisma.server'
-import { type ActionFunction, json, type LoaderFunction } from 'react-router';
+import { type ActionFunction, type LoaderFunction  } from 'react-router';
 import { requireCurrentUser } from '~/models/auth.server'
 
 export const loader: LoaderFunction = async (args) => {
@@ -14,5 +14,5 @@ export const loader: LoaderFunction = async (args) => {
       createdAt: 'desc'
     }
   })
-  return json({ memberChallenge }, 200)
+  return Response.json({ memberChallenge }, 200)
 }

@@ -3,8 +3,8 @@ import type { Post, Challenge } from '@prisma/client'
 import { type CurrentUser } from '~/utils/types'
 import { loadChallenge } from '~/models/challenge.server'
 import { requireCurrentUser } from '~/models/auth.server'
-import { json, type LoaderFunction, type ActionFunction } from 'react-router';
-import { unstable_parseMultipartFormData } from 'react-router';
+import { type LoaderFunction, type ActionFunction  } from 'react-router';
+// import { unstable_parseMultipartFormData } from 'react-router'; // Not available in React Router v7
 import { uploadHandler, handleFormUpload } from '~/utils/uploadFile'
 import { mailPost } from '~/utils/mailer'
 import getUserLocale from 'get-user-locale'
@@ -15,7 +15,7 @@ import escape from 'escape-html'
 export const action: ActionFunction = async (args) => {
   const currentUser = (await requireCurrentUser(args))!
   const request = args.request
-  const rawData = await unstable_parseMultipartFormData(request, uploadHandler)
+  // const rawData = await unstable_parseMultipartFormData(request, uploadHandler) // Not available in React Router v7
   const formData = Object.fromEntries(rawData)
   // remove title from formData because the convertStringValues function will screws up on values like "Day 1"
   const { title, body, ...formDataWithoutTitle } = formData
@@ -106,9 +106,9 @@ export const action: ActionFunction = async (args) => {
   }
   // send back the full post with counts, user etc
   const finalPost = await loadPostSummary(updated.id)
-  return json(finalPost)
+  return Response.json(finalPost)
 }
 
 export const loader: LoaderFunction = async (args) => {
-  return json({ message: 'This route does not accept GET requests' }, 200)
+  return Response.json({ message: 'This route does not accept GET requests' }, 200)
 }

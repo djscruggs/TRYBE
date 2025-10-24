@@ -1,3 +1,4 @@
+import { Spinner } from '~/utils/material-tailwind';
 import { type MetaFunction, useRouteLoaderData } from 'react-router';
 import type { Challenge, CheckIn } from '~/utils/types'
 import CheckinsList from '~/components/checkinsList'
@@ -5,8 +6,6 @@ import { useContext, useEffect, useState } from 'react'
 import { CurrentUserContext } from '~/contexts/CurrentUserContext'
 import { useMemberContext } from '~/contexts/MemberContext'
 import axios from 'axios'
-import pkg from '@material-tailwind/react';
-const { Spinner } = pkg;
 import 'react-circular-progressbar/dist/styles.css'
 import { ProgressChart } from '~/components/progressChart'
 

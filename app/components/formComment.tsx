@@ -4,8 +4,7 @@ import axios from 'axios'
 import { FormField } from './formField'
 import type { Comment } from '~/utils/types'
 import { toast } from 'react-hot-toast'
-import pkg from '@material-tailwind/react';
-const { Button, Avatar } = pkg;
+import { Button, Avatar } from '~/utils/material-tailwind';
 import { CurrentUserContext } from '~/contexts/CurrentUserContext'
 import VideoRecorder from './videoRecorder'
 import VideoChooser from './videoChooser'

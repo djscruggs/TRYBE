@@ -1,15 +1,14 @@
+// import * as pkg from '~/utils/material-tailwind';
 import { useNavigate, useLocation, useRevalidator } from 'react-router';
 import { useState, useContext } from 'react'
 import { CurrentUserContext } from '~/contexts/CurrentUserContext'
 import { type Challenge, type ChallengeSummary } from '~/utils/types'
-import pkg from '@material-tailwind/react';
-const { Button, Menu, MenuHandler, MenuList, MenuItem } = pkg;
+import { Button, Menu, MenuHandler, MenuList, MenuItem } from '~/utils/material-tailwind';
 import DialogDelete from './dialogDelete'
 import { GiHamburgerMenu } from 'react-icons/gi'
 import axios from 'axios'
 import { toast } from 'react-hot-toast'
-import pkg from '@material-tailwind/react';
-const { type MenuProps } = pkg;
+// const { type MenuProps } = pkg;
 import { useMobileSize } from '~/hooks/useMobileSize'
 
 interface MenuChallengeProps {

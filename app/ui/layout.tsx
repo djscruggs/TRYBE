@@ -31,14 +31,10 @@ export default function Layout (): JSX.Element {
     }
   }, [location.pathname])
 
+  // Temporarily bypass loading to test
   return (
     <>
-      {!hasLoaded
-        ? <Loading />
-        : <>
-        {isMobile() ? <MobileLayout /> : <FullLayout />}
-        </>
-      }
+      {isMobile() ? <MobileLayout /> : <FullLayout />}
     </>
   )
 }

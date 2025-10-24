@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react'
-import { useParams, useLoaderData, json, type MetaFunction } from 'react-router';
+import { useParams, useLoaderData, type MetaFunction  } from 'react-router';
 import { CurrentUserContext } from '~/contexts/CurrentUserContext'
 import { type LoaderFunction } from 'react-router';
 import { fetchComments } from '~/models/comment.server'
@@ -23,9 +23,9 @@ export const loader: LoaderFunction = async (args) => {
   const comments = await fetchComments({ challengeId: Number(args.params.id) })
   if (!comments) {
     const error = { loadingError: 'Challenge not found' }
-    return json(error)
+    return Response.json(error)
   }
-  return json({ comments })
+  return Response.json({ comments })
 }
 export default function ViewChallengeComments (): JSX.Element {
   const revalidator = useRevalidator()

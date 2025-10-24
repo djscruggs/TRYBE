@@ -1,4 +1,4 @@
-import { useLoaderData, json, type MetaFunction } from 'react-router';
+import { useLoaderData, type MetaFunction  } from 'react-router';
 import { type LoaderFunction } from 'react-router';
 import { fetchChallengeMembers } from '~/models/challenge.server'
 import AvatarLoader from '~/components/avatarLoader'
@@ -15,16 +15,16 @@ export const meta: MetaFunction = () => {
 }
 export const loader: LoaderFunction = async ({ request, params }) => {
   if (!params.id) {
-    return json({ loadingError: 'Challenge id not included' })
+    return Response.json({ loadingError: 'Challenge id not included' })
   }
   const result = await fetchChallengeMembers(params.id, params.cohortId ? Number(params.cohortId) : undefined)
 
   if (!result) {
     const error = { loadingError: 'Challenge not found' }
-    return json(error)
+    return Response.json(error)
   }
   const data: Array<Record<string, any>> = result
-  return json(data)
+  return Response.json(data)
 }
 export default function ViewChallengeMembers (): JSX.Element {
   const members = useLoaderData<typeof loader>()

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router';
 import {
   Card,
   Button
-} from '@material-tailwind/react'
+} from '~/utils/material-tailwind'
 import { type Challenge, type MemberChallenge } from '~/utils/types'
 import { CurrentUserContext } from '~/contexts/CurrentUserContext'
 import { userLocale } from '~/utils/helpers'

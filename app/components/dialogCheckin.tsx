@@ -2,7 +2,7 @@ import {
   DialogHeader,
   Dialog,
   DialogBody
-} from '@material-tailwind/react'
+} from '~/utils/material-tailwind'
 import type { Challenge, CheckIn } from '~/utils/types'
 import { useState } from 'react'
 import { CheckInButton } from './checkinButton'

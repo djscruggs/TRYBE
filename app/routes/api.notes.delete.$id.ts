@@ -1,18 +1,18 @@
 import { deleteNote } from '~/models/note.server'
 import { requireCurrentUser } from '~/models/auth.server'
-import { json, type LoaderFunction, type ActionFunctionArgs } from 'react-router';
+import { type LoaderFunction, type ActionFunctionArgs  } from 'react-router';
 
 export async function action (args: ActionFunctionArgs) {
   const { params } = args
   const user = await requireCurrentUser(args)
   try {
     await deleteNote(Number(params?.id), Number(user?.id))
-    return json({ message: `Deleted note ${params?.id}` }, 204)
+    return Response.json({ message: `Deleted note ${params?.id}` }, 204)
   } catch (error) {
-    return json({ message: `Error deleting note ${params?.id}` }, 500)
+    return Response.json({ message: `Error deleting note ${params?.id}` }, 500)
   }
 }
 
 export const loader: LoaderFunction = async (args) => {
-  return json({ message: 'This route does not accept GET requests' }, 200)
+  return Response.json({ message: 'This route does not accept GET requests' }, 200)
 }

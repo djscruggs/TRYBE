@@ -1,12 +1,12 @@
 import { prisma } from '../models/prisma.server'
 import { type CheckinReminderMailerProps, mailChallengeContent, sendCheckinReminder } from '../utils/mailer'
 import type { LoaderFunction } from 'react-router';
-import { json } from 'react-router';
+import { } from 'react-router';
 import { generateUrl, textToHtml, convertYouTubeLinksToImages, pathToEmailUrl } from '~/utils/helpers'
 export const loader: LoaderFunction = async (args) => {
   const scheduledPosts = await sendScheduledPosts()
   const { dayNumberPosts, dayNotifications } = await sendDayNumberPosts()
-  return json({ scheduledPosts, dayNumberPosts, dayNotifications }, 200)
+  return Response.json({ scheduledPosts, dayNumberPosts, dayNotifications }, 200)
 }
 
 export const sendScheduledPosts = async (): Promise<number> => {
@@ -267,5 +267,5 @@ URL: https://img.youtube.com/vi/${videoId}/maxresdefault.jpg
 */
 
 // export const loader: LoaderFunction = async (args) => {
-//   return json({ message: 'This route does not accept GET requests' }, 200)
+//   return Response.json({ message: 'This route does not accept GET requests' }, 200)
 // }

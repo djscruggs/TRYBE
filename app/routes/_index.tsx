@@ -6,7 +6,7 @@ import {
   type ActionFunction,
   type ActionFunctionArgs,
 } from 'react-router';
-// import { getAuth } from '@clerk/remix/ssr.server' // TODO: Update for React Router v7
+import { getAuth } from '@clerk/react-router/server'
 import { useState, useEffect } from 'react'
 import { WelcomePage } from '~/components/welcomepage'
 import LandingPage from '~/components/landingPage'
@@ -42,17 +42,23 @@ export const meta: MetaFunction = () => [
 
 ]
 export default function Index (): JSX.Element {
-  const splashSeen = localStorage.getItem('splashSeen')
   const navigate = useNavigate()
   const [loading, setLoading] = useState(true)
+  
   useEffect(() => {
-    if (splashSeen) {
-      navigate('/home')
+    // Check if localStorage is available (client-side only)
+    if (typeof window !== 'undefined' && window.localStorage) {
+      const splashSeen = localStorage.getItem('splashSeen')
+      if (splashSeen) {
+        navigate('/home')
+      } else {
+        setLoading(false)
+        localStorage.setItem('splashSeen', 'true')
+      }
     } else {
       setLoading(false)
-      localStorage.setItem('splashSeen', 'true')
     }
-  }, [])
+  }, [navigate])
   return (
           <>
             {!loading &&

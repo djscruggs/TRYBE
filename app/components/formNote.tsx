@@ -1,3 +1,4 @@
+import { Button } from '~/utils/material-tailwind';
 import React, { useState, useRef, useMemo } from 'react'
 import { Form, useNavigate } from 'react-router';
 import axios from 'axios'
@@ -6,8 +7,6 @@ import { handleFileUpload } from '~/utils/helpers'
 import CardChallenge from './cardChallenge'
 import CardPost from './cardPost'
 import { type Note, type NoteSummary, type PostSummary, type Challenge, type Post, type ChallengeSummary } from '~/utils/types'
-import pkg from '@material-tailwind/react';
-const { Button } = pkg;
 import { MdOutlineAddPhotoAlternate } from 'react-icons/md'
 import { TiDeleteOutline } from 'react-icons/ti'
 import VideoRecorder from './videoRecorder'

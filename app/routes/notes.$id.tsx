@@ -4,7 +4,7 @@ import { Outlet, useLoaderData, useLocation } from 'react-router';
 import CardNote from '~/components/cardNote'
 import { requireCurrentUser } from '~/models/auth.server'
 import type { ObjectData, Note } from '~/utils/types'
-import { json, type LoaderFunction, type LoaderFunctionArgs } from 'react-router';
+import { type LoaderFunction, type LoaderFunctionArgs  } from 'react-router';
 import { prisma } from '~/models/prisma.server'
 
 interface NoteObjectData {
@@ -20,7 +20,7 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
   const note = await loadNoteSummary(params.id)
   if (!note) {
     const error = { loadingError: 'Note not found' }
-    return json(error)
+    return Response.json(error)
   }
   // load memberships current user if it exists
   const hasReposted = false
@@ -49,7 +49,7 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
     }
   })
   const data: NoteObjectData = { note, hasReposted, repostCount, replies }
-  return json(data)
+  return Response.json(data)
 }
 
 export default function ViewNote (): JSX.Element {

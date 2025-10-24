@@ -1,7 +1,7 @@
 import { requireCurrentUser } from '~/models/auth.server'
 import { type LoaderFunction } from 'react-router';
 import { loadPostSummary } from '~/models/post.server'
-import { json } from 'react-router';
+import { } from 'react-router';
 import { mailPost, contactHost, type HostMailerProps } from '~/utils/mailer'
 function textToHtml (text): string {
   return text.split('\n').map(line => `<p style="margin-bottom:.5em">${line}</p>`).join('')
@@ -23,7 +23,7 @@ export const loader: LoaderFunction = async (args) => {
     const result = await contactHost(msg)
     return result
   } catch (error) {
-    return json(error, { status: 500 })
+    return Response.json(error, { status: 500 })
   }
 }
 export const loaderPost: LoaderFunction = async (args) => {
@@ -32,7 +32,7 @@ export const loaderPost: LoaderFunction = async (args) => {
   const baseUrl = new URL(args.request.url).origin
   const post = await loadPostSummary(46)
   if (!post) {
-    return json({ error: 'Post not found' }, { status: 404 })
+    return Response.json({ error: 'Post not found' }, { status: 404 })
   }
   const msg = {
     to: 'me@derekscruggs.com',

@@ -1,7 +1,6 @@
+import { Spinner } from '~/utils/material-tailwind';
 import { useNavigate, useParams } from 'react-router';
 import { useEffect } from 'react'
-import pkg from '@material-tailwind/react';
-const { Spinner } = pkg;
 interface ShareProps {
   slug: string
 }

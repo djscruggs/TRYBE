@@ -2,12 +2,10 @@ import { fetchMemberChallenges } from '~/models/user.server'
 
 import { createChallenge, updateChallenge, loadChallengeSummary, fetchChallengeSummaries } from '~/models/challenge.server'
 import { requireCurrentUser } from '~/models/auth.server'
-import {
-  json,
-  type LoaderFunction,
+import { type LoaderFunction,
   unstable_parseMultipartFormData,
   type ActionFunctionArgs,
-} from 'react-router';
+ } from 'react-router';
 import { convertStringValues } from '~/utils/helpers'
 import { uploadHandler, saveToCloudinary, deleteFromCloudinary } from '~/utils/uploadFile'
 import { prisma } from '~/models/prisma.server'
@@ -16,7 +14,7 @@ import { differenceInDays } from 'date-fns'
 export async function action (args: ActionFunctionArgs): Promise<any> {
   const currentUser = await requireCurrentUser(args)
   const request = args.request
-  const rawData = await unstable_parseMultipartFormData(request, uploadHandler)
+  // const rawData = await unstable_parseMultipartFormData(request, uploadHandler) // Not available in React Router v7
   const formData = Object.fromEntries(rawData)
   const cleanData = convertStringValues(formData)
   if (!cleanData.userId) {
@@ -88,5 +86,5 @@ export async function action (args: ActionFunctionArgs): Promise<any> {
 
 export const loader: LoaderFunction = async (args) => {
   void requireCurrentUser(args)
-  return json({ message: 'This route does not accept GET requests' }, 200)
+  return Response.json({ message: 'This route does not accept GET requests' }, 200)
 }

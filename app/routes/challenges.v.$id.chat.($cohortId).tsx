@@ -2,14 +2,12 @@ import { useLoaderData, useRouteLoaderData } from 'react-router';
 import { useEffect, useRef, useState, useContext } from 'react'
 import { requireCurrentUser } from '~/models/auth.server'
 import type { Post, CheckIn, Challenge, Comment } from '~/utils/types'
-import {
-  json,
-  type MetaFunction,
+import { type MetaFunction,
   type LoaderFunction,
   type LoaderFunctionArgs,
   type SerializeFrom,
   redirect,
-} from 'react-router';
+ } from 'react-router';
 import { prisma } from '~/models/prisma.server'
 import { type MemberChallenge, Prisma } from '@prisma/client'
 import CheckinsList, { CheckinRow } from '~/components/checkinsList'
@@ -182,7 +180,7 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
     .sort(([dateA], [dateB]) => new Date(dateA).getTime() - new Date(dateB).getTime())
 
   const data: ChallengeChatData = { groupedData: Object.fromEntries(sortedGroupedData) }
-  return json(data)
+  return Response.json(data)
 }
 
 export default function ViewChallengeChat (): JSX.Element {

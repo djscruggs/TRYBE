@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import { json, type LoaderFunction, type ActionFunction } from 'react-router';
+import { type LoaderFunction, type ActionFunction  } from 'react-router';
 import { updateUser, createUser, deleteUser } from '~/models/user.server'
 import { Webhook } from 'svix'
 import { prisma } from '~/models/prisma.server'
@@ -52,7 +52,7 @@ export const action: ActionFunction = async ({ request }) => {
   //   console.log('Failed')
   //   // Console log and return error
   //   console.log('Webhook failed to verify. Error:', err.message)
-  //   return response.status(400).json({
+  //   return response.status(400).Response.json({
   //     success: false,
   //     message: err.message
   //   })
@@ -132,7 +132,7 @@ export const action: ActionFunction = async ({ request }) => {
     console.error('error in user operation', e)
   }
   // Console log the full payload to view
-  return json({ message: 'Webhook received' }, {
+  return Response.json({ message: 'Webhook received' }, {
     status: 200,
     statusText: 'OK',
     headers: {
@@ -142,5 +142,5 @@ export const action: ActionFunction = async ({ request }) => {
 }
 
 export const loader: LoaderFunction = async (args) => {
-  return json({ message: 'This route does not accept GET requests' }, 200)
+  return Response.json({ message: 'This route does not accept GET requests' }, 200)
 }

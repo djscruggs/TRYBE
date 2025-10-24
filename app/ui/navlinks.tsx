@@ -10,8 +10,7 @@ import {
 import { HiOutlineLogout, HiOutlineLogin } from 'react-icons/hi'
 import { CurrentUserContext } from '~/contexts/CurrentUserContext'
 import { useContext, useState } from 'react'
-import pkg from '@material-tailwind/react';
-const { Spinner } = pkg;
+import { Spinner } from '~/utils/material-tailwind';
 import { Link } from 'react-router';
 import { useClerk } from '@clerk/react-router'
 import useGatedNavigate from '~/hooks/useGatedNavigate'

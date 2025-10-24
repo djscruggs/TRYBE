@@ -6,7 +6,7 @@ import {
   DialogBody,
   DialogFooter,
   DialogHeader
-} from '@material-tailwind/react'
+} from '~/utils/material-tailwind'
 interface DialogShareProps {
   prompt: string
   link: string

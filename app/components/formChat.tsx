@@ -1,10 +1,9 @@
+import { Spinner } from '~/utils/material-tailwind';
 import React, { useState, useContext, useRef, useMemo, useCallback } from 'react'
 import { Form } from 'react-router';
 import axios from 'axios'
 import { FormField } from './formField'
 import type { Comment } from '~/utils/types'
-import pkg from '@material-tailwind/react';
-const { Spinner } = pkg;
 import { MdImage, MdSend } from 'react-icons/md'
 import VideoRecorder from './videoRecorder'
 import VideoChooser from './videoChooser'

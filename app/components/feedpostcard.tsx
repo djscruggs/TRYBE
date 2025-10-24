@@ -1,6 +1,6 @@
 import {
   Card
-} from '@material-tailwind/react'
+} from '~/utils/material-tailwind'
 import { SlShareAlt } from 'react-icons/sl'
 import { FaRegComment, FaRegHeart } from 'react-icons/fa'
 import RandomAvatar from './randomavatar'

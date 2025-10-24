@@ -1,6 +1,5 @@
+import { Spinner } from '~/utils/material-tailwind';
 import CardChallengeHome from '~/components/cardChallengeHome'
-import pkg from '@material-tailwind/react';
-const { Spinner } = pkg;
 import {
   type ChallengeSummary,
   type MemberChallenge

@@ -1,4 +1,4 @@
-import { json, type ActionFunction, type LoaderFunction } from 'react-router';
+import { type ActionFunction, type LoaderFunction  } from 'react-router';
 
 // based on https://docs.sentry.io/platforms/javascript/troubleshooting/#dealing-with-ad-blockers
 const SENTRY_HOST = 'o4506538845929472.ingest.us.sentry.io'
@@ -24,12 +24,12 @@ export const action: ActionFunction = async (args) => {
     const upstreamSentryUrl = `https://${SENTRY_HOST}/api/${projectId}/envelope/`
     await fetch(upstreamSentryUrl, { method: 'POST', body: envelope })
 
-    return json({}, { status: 200 })
+    return Response.json({}, { status: 200 })
   } catch (e) {
     console.error('error tunneling to sentry', e)
-    return json({ error: 'error tunneling to sentry' }, { status: 500 })
+    return Response.json({ error: 'error tunneling to sentry' }, { status: 500 })
   }
 }
 export const loader: LoaderFunction = async () => {
-  return json({ message: 'This route does not accept GET requests' }, 200)
+  return Response.json({ message: 'This route does not accept GET requests' }, 200)
 }

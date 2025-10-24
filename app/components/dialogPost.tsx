@@ -1,6 +1,5 @@
+import { Dialog } from '~/utils/material-tailwind';
 import { useState, useEffect } from 'react'
-import pkg from '@material-tailwind/react';
-const { Dialog } = pkg;
 import type { Post } from '~/utils/types'
 import CardPost, { PostContent } from './cardPost'
 import { MdOutlineClose } from 'react-icons/md'

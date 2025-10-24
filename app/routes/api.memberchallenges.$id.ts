@@ -1,10 +1,10 @@
 import { prisma } from '~/models/prisma.server'
-import { type ActionFunction, json, type LoaderFunction } from 'react-router';
+import { type ActionFunction, type LoaderFunction  } from 'react-router';
 import { requireCurrentUser } from '~/models/auth.server'
 
 export const loader: LoaderFunction = async (args) => {
   void requireCurrentUser(args)
-  return json({ message: 'This route does not accept GET requests' }, 200)
+  return Response.json({ message: 'This route does not accept GET requests' }, 200)
 }
 
 export const action: ActionFunction = async (args) => {
@@ -14,7 +14,7 @@ export const action: ActionFunction = async (args) => {
     where: { id: Number(params.id) }
   })
   if (!memberChallenge) {
-    return json({ message: 'Member challenge not found' }, 404)
+    return Response.json({ message: 'Member challenge not found' }, 404)
   }
   try {
     const formData = await request.formData()
@@ -33,8 +33,8 @@ export const action: ActionFunction = async (args) => {
       where: { id: Number(params.id) },
       data
     })
-    return json({ result }, 200)
+    return Response.json({ result }, 200)
   } catch (error) {
-    return json({ message: 'Error updating member challenge' }, 500)
+    return Response.json({ message: 'Error updating member challenge' }, 500)
   }
 }

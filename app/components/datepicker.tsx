@@ -4,8 +4,8 @@ import {
   PopoverHandler,
   PopoverContent,
   Button
-} from '@material-tailwind/react'
-import type { PopoverProps } from '@material-tailwind/react'
+} from '~/utils/material-tailwind'
+import type { PopoverProps } from '~/utils/material-tailwind'
 import 'react-day-picker/dist/style.css'
 import { ChevronRightIcon, ChevronLeftIcon } from '@heroicons/react/24/outline'
 import { FcCalendar } from 'react-icons/fc'

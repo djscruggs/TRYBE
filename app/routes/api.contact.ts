@@ -2,19 +2,19 @@
 import { loadChallengeWithHost } from '~/models/challenge.server'
 import { contactHost, type HostMailerProps } from '~/utils/mailer'
 import type { ActionFunction, LoaderFunction } from 'react-router';
-import { json } from 'react-router';
+import { } from 'react-router';
 import { requireCurrentUser } from '~/models/auth.server'
 import { type CurrentUser, type ChallengeWithHost } from '~/utils/types'
 export const action: ActionFunction = async (args) => {
   const currentUser: CurrentUser | null = await requireCurrentUser(args)
   if (!currentUser) {
-    return json({ message: 'You must be logged in to create a note or thread' }, 401)
+    return Response.json({ message: 'You must be logged in to create a note or thread' }, 401)
   }
-  const formData = await args.request.json()
+  const formData = await args.request.Response.json()
   const challengeId = Number(formData.challengeId)
   const challenge: ChallengeWithHost | null = await loadChallengeWithHost(challengeId)
   if (!challenge) {
-    return json({ message: 'Challenge not found' }, 404)
+    return Response.json({ message: 'Challenge not found' }, 404)
   }
   const subject = String(formData.subject)
   const body = String(formData.body)
@@ -36,10 +36,10 @@ export const action: ActionFunction = async (args) => {
     const result = await contactHost(msg)
     return result
   } catch (error) {
-    return json(error, { status: 500 })
+    return Response.json(error, { status: 500 })
   }
 }
 
 export const loader: LoaderFunction = async () => {
-  return json({ message: 'This route does not accept GET requests' }, 200)
+  return Response.json({ message: 'This route does not accept GET requests' }, 200)
 }

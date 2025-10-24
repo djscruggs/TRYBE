@@ -1,8 +1,7 @@
-import pkg from '@material-tailwind/react';
-const { Avatar } = pkg;
+import { Avatar } from '~/utils/material-tailwind';
 import { CurrentUserContext } from '~/contexts/CurrentUserContext'
 import React, { useContext } from 'react'
-import type { AvatarProps } from '@material-tailwind/react'
+import type { AvatarProps } from '~/utils/material-tailwind'
 import { userInitials } from '~/utils/helpers'
 
 const UserAvatar = ({ variant = 'circular', size = 'md', color = 'gray', className = '', withBorder = false }: AvatarProps) => {

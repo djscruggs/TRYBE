@@ -1,3 +1,4 @@
+import { Spinner } from '~/utils/material-tailwind';
 import { useState, useEffect, useContext } from 'react'
 import { type ChallengeSummary, type MemberChallenge, type CheckIn } from '~/utils/types'
 import { CurrentUserContext } from '~/contexts/CurrentUserContext'
@@ -10,8 +11,6 @@ import {
 } from '~/utils/helpers'
 import { hasStarted, getShortUrl } from '~/utils/helpers/challenge'
 import axios from 'axios'
-import pkg from '@material-tailwind/react';
-const { Spinner } = pkg;
 import DatePicker from 'react-datepicker'
 import { type DateTimeFormatOptions } from 'intl'
 import { LiaUserFriendsSolid } from 'react-icons/lia'

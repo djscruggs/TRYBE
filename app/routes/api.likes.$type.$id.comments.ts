@@ -1,5 +1,5 @@
 import { requireCurrentUser } from '~/models/auth.server'
-import { json, type LoaderFunction } from 'react-router';
+import { type LoaderFunction  } from 'react-router';
 import { prisma } from '~/models/prisma.server'
 
 export const loader: LoaderFunction = async (args) => {
@@ -42,5 +42,5 @@ export const loader: LoaderFunction = async (args) => {
   const likedCommentIds = comments
     .filter(comment => comment.likes.length > 0)
     .map(comment => comment.id)
-  return json(likedCommentIds)
+  return Response.json(likedCommentIds)
 }

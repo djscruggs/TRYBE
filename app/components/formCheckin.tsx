@@ -5,8 +5,7 @@ import axios from 'axios'
 import { FormField } from './formField'
 import { handleFileUpload } from '~/utils/helpers'
 import { type CheckIn } from '~/utils/types'
-import pkg from '@material-tailwind/react';
-const { Button } = pkg;
+import { Button } from '~/utils/material-tailwind';
 import { MdOutlineAddPhotoAlternate } from 'react-icons/md'
 import { TiDeleteOutline } from 'react-icons/ti'
 import VideoRecorder from './videoRecorder'

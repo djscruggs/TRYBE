@@ -1,5 +1,4 @@
-import pkg from '@material-tailwind/react';
-const { Spinner } = pkg;
+import { Spinner } from '~/utils/material-tailwind';
 import { useParams } from 'react-router';
 import { useEffect } from 'react'
 import useGatedNavigate from '~/hooks/useGatedNavigate'

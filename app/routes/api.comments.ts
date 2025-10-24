@@ -1,8 +1,8 @@
 import { createComment, updateComment, loadComment, deleteComment } from '~/models/comment.server'
 import { sendCommentReplyNotification } from '~/utils/mailer'
 import { requireCurrentUser } from '~/models/auth.server'
-import { json, type LoaderFunction, type ActionFunction } from 'react-router';
-import { unstable_parseMultipartFormData } from 'react-router';
+import { type LoaderFunction, type ActionFunction  } from 'react-router';
+// import { unstable_parseMultipartFormData } from 'react-router'; // Not available in React Router v7
 import { uploadHandler, handleFormUpload } from '~/utils/uploadFile'
 import { generateUrl } from '~/utils/helpers'
 import { loadCheckIn, loadChallengeSummary } from '~/models/challenge.server'
@@ -13,14 +13,14 @@ import { prisma } from '~/models/prisma.server'
 export const action: ActionFunction = async (args) => {
   const currentUser = await requireCurrentUser(args)
   const { request } = args
-  const rawData = await unstable_parseMultipartFormData(request, uploadHandler)
+  // const rawData = await unstable_parseMultipartFormData(request, uploadHandler) // Not available in React Router v7
   const formData = Object.fromEntries(rawData)
   // is this a delete request?
   const intent = formData.intent
   if (intent === 'delete') {
     const id = Number(formData.id)
     const result = await deleteComment(id)
-    return json(result)
+    return Response.json(result)
   }
   const data: prisma.commentCreateInput = {
     body: formData.body,
@@ -48,7 +48,7 @@ export const action: ActionFunction = async (args) => {
       data.cohort = { connect: { id: Number(formData.cohortId) } }
     }
     if (!data.challenge && !data.post && !data.thread && !data.checkIn) {
-      return json({ message: 'Post id or callenge id or thread id or checkin id is required' }, 400)
+      return Response.json({ message: 'Post id or callenge id or thread id or checkin id is required' }, 400)
     }
     // there might be a bug when a challenge id is submitted but cohort id is no, so do a quick search for the memberchallenge that might have it
     if (data.challenge && !data.cohort) {
@@ -129,9 +129,9 @@ export const action: ActionFunction = async (args) => {
 
   // refresh the comment to include user info attached
   const comment = await loadComment(updated.id as number, updated.userId as number)
-  return json(comment)
+  return Response.json(comment)
 }
 
 export const loader: LoaderFunction = async (args) => {
-  return json({ message: 'This route does not accept GET requests' }, 200)
+  return Response.json({ message: 'This route does not accept GET requests' }, 200)
 }

@@ -1,6 +1,5 @@
 import React, { useContext, useState, useEffect } from 'react'
-import pkg from '@material-tailwind/react';
-const { Spinner, Card } = pkg;
+import { Spinner, Card } from '~/utils/material-tailwind';
 import AvatarLoader from './avatarLoader'
 import type { ThreadSummary, Thread } from '~/utils/types'
 import { FaRegComment } from 'react-icons/fa'

@@ -1,12 +1,11 @@
+import { Button } from '~/utils/material-tailwind';
 import { useState, useEffect } from 'react'
-import { type ActionFunction, json, type LoaderFunction, type LoaderFunctionArgs } from 'react-router';
+import { type ActionFunction, type LoaderFunction, type LoaderFunctionArgs  } from 'react-router';
 import { Form, Link, useActionData, useNavigate } from 'react-router';
 import { register, requireCurrentUser } from '~/models/auth.server'
 import { validateEmail, validateName, validatePassword } from '~/models/validators.server'
 import * as React from 'react'
 import { FormField } from '~/components/formField'
-import pkg from '@material-tailwind/react';
-const { Button } = pkg;
 import { useDeviceContext } from '~/contexts/DeviceContext'
 
 export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
@@ -29,7 +28,7 @@ export const action: ActionFunction = async ({ request }) => {
     password: validatePassword(password, passwordMatch)
   }
   if (Object.values(errors).some(Boolean)) {
-    return json({ errors, fields: { email, password, passwordMatch, firstName, lastName }, form: action }, { status: 400 })
+    return Response.json({ errors, fields: { email, password, passwordMatch, firstName, lastName }, form: action }, { status: 400 })
   }
   return await register({ email, password, firstName, lastName })
 }

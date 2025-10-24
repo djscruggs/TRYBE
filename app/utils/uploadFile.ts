@@ -1,9 +1,10 @@
 import { promises as fs } from 'fs'
-import {
-  unstable_composeUploadHandlers,
-  unstable_createFileUploadHandler,
-  unstable_createMemoryUploadHandler,
-} from 'react-router';
+// Upload handlers not available in React Router v7
+// import {
+//   composeUploadHandlers,
+//   createFileUploadHandler,
+//   createMemoryUploadHandler,
+// } from 'react-router';
 import { v2 as cloudinary } from 'cloudinary'
 import type { UploadApiResponse } from 'cloudinary'
 import type { Note, Thread, Post, CheckIn, Challenge } from '@prisma/client'
@@ -65,14 +66,15 @@ function escapeRegExp (string: string): string {
   return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
 }
 
-export const uploadHandler = unstable_composeUploadHandlers(
-  unstable_createFileUploadHandler({
-    maxPartSize: 10_000_000,
-    file: ({ filename }) => filename
-  }),
-  // parse everything else into memory
-  unstable_createMemoryUploadHandler()
-)
+// Upload handler not available in React Router v7 - needs to be reimplemented
+// export const uploadHandler = composeUploadHandlers(
+//   createFileUploadHandler({
+//     maxPartSize: 10_000_000,
+//     file: ({ filename }) => filename
+//   }),
+//   // parse everything else into memory
+//   createMemoryUploadHandler()
+// )
 
 interface DataObj {
   id: number

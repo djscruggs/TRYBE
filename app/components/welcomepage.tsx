@@ -3,7 +3,7 @@ import {
   Card,
   Button,
   Spinner
-} from '@material-tailwind/react'
+} from '~/utils/material-tailwind'
 
 export const WelcomePage = (): JSX.Element => {
   const navigation = useNavigation()

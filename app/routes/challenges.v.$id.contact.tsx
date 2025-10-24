@@ -1,11 +1,10 @@
+import { Button } from '~/utils/material-tailwind';
 import { useState } from 'react'
 import { useNavigate } from 'react-router';
 import axios from 'axios'
 import { FormField } from '~/components/formField'
 import { type ChallengeWithHost } from '~/utils/types'
 import { toast } from 'react-hot-toast'
-import pkg from '@material-tailwind/react';
-const { Button } = pkg;
 import { loadChallengeWithHost } from '~/models/challenge.server'
 import { type MetaFunction, type LoaderFunction } from 'react-router';
 import { useLoaderData } from 'react-router';

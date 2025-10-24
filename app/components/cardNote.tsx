@@ -2,7 +2,7 @@ import React, { useContext, useState, useEffect } from 'react'
 import {
   Card,
   Spinner
-} from '@material-tailwind/react'
+} from '~/utils/material-tailwind'
 import CardChallenge from './cardChallenge'
 import AvatarLoader from './avatarLoader'
 import CardPost from './cardPost'

@@ -5,7 +5,7 @@ import {
   fetchUserChallengesAndMemberships
 } from '~/models/challenge.server'
 import { getCurrentUser } from '~/models/auth.server'
-import { json, type LoaderFunction } from 'react-router';
+import { type LoaderFunction  } from 'react-router';
 
 export const loader: LoaderFunction = async (args) => {
   const { range = 'active' } = args.params
@@ -13,8 +13,12 @@ export const loader: LoaderFunction = async (args) => {
   const type = url.searchParams.get('type') ?? 'all'
   const category = url.searchParams.get('category')
 
+  console.log('API route called with range:', range, 'type:', type, 'category:', category)
+  
   const currentUser = await getCurrentUser(args)
   const userId = currentUser?.id ? Number(currentUser.id) : null
+  
+  console.log('Current user:', currentUser ? 'authenticated' : 'not authenticated', 'userId:', userId)
   let challenges
   let error = null
   if (range === 'mine') {
@@ -34,9 +38,9 @@ export const loader: LoaderFunction = async (args) => {
   }
 
   if (!challenges || challenges.error) {
-    return json({ loadingError: 'Unable to load challenges' })
+    return Response.json({ loadingError: 'Unable to load challenges' })
   }
 
   const memberships = (await fetchMemberChallenges(userId)) || [] as number[]
-  return json({ challenges, memberships, error })
+  return Response.json({ challenges, memberships, error })
 }

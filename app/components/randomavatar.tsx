@@ -1,5 +1,4 @@
-import pkg from '@material-tailwind/react';
-const { Avatar } = pkg;
+import { Avatar } from '~/utils/material-tailwind';
 import { CurrentUserContext } from '~/contexts/CurrentUserContext'
 
 interface UserAvatarProps {

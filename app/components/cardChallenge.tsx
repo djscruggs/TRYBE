@@ -1,7 +1,7 @@
 import { useContext } from 'react'
 import {
   Card
-} from '@material-tailwind/react'
+} from '~/utils/material-tailwind'
 import { FaRegCalendarAlt, FaUserFriends } from 'react-icons/fa'
 import { type ChallengeSummary } from '~/utils/types'
 import { colorToClassName, resizeImageToFit, textToJSX } from '~/utils/helpers'

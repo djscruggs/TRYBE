@@ -8,7 +8,7 @@ import {
   DialogFooter,
   DialogHeader,
   Spinner
-} from '@material-tailwind/react'
+} from '~/utils/material-tailwind'
 import DatePicker from 'react-datepicker'
 import axios from 'axios'
 interface DeleteDialogProps {

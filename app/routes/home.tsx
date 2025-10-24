@@ -1,10 +1,15 @@
 import MyChallenges from '~/components/myChallenges'
+import ChallengeList from '~/components/challengeList'
 import { useNavigate } from 'react-router';
 import Logo from '~/components/logo'
 import { WhatsNew } from '~/components/whatsNew'
 import { copyToClipboard } from '~/utils/helpers'
+import { useContext } from 'react'
+import { CurrentUserContext } from '~/contexts/CurrentUserContext'
+
 export default function Home (): JSX.Element {
   const navigate = useNavigate()
+  const { currentUser } = useContext(CurrentUserContext)
   const openFeedback = (): void => {
     // Select the shadow host element
     const shadowHost = document.querySelector('#sentry-feedback')
@@ -45,7 +50,22 @@ export default function Home (): JSX.Element {
 
       <div className='text-center text-md md:text-lg  underline cursor-pointer italic text-blue' onClick={openFeedback}>Leave Us Your Feedback!</div>
       <div className='w-sm p-2 flex justify-center items-center mt-2'>
-        <MyChallenges range='active' scrollToBrowse={() => { navigate('/challenges') }} centered={true}/>
+        {currentUser ? (
+          <MyChallenges range='active' scrollToBrowse={() => { navigate('/challenges') }} centered={true}/>
+        ) : (
+          <div className='text-center'>
+            <div className='text-xl font-bold text-red mb-4'>Explore Challenges</div>
+            <ChallengeList challenges={[]} memberships={[]} isLoading={false}/>
+            <div className='mt-4'>
+              <button 
+                className='bg-blue text-white text-md rounded-full p-2 px-4 shadow-lg shadow-gray-400'
+                onClick={() => { navigate('/login') }}
+              >
+                Sign In to Join Challenges
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
 

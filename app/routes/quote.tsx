@@ -1,3 +1,4 @@
+import { Spinner } from '~/utils/material-tailwind';
 import { useContext, useEffect, useState } from 'react'
 import { useLoaderData, useNavigate } from 'react-router';
 import { CurrentUserContext } from '~/contexts/CurrentUserContext'
@@ -5,8 +6,6 @@ import getRandomQuote from '~/utils/quotes'
 import { type LoaderFunction, type LoaderFunctionArgs } from 'react-router';
 import { prisma } from '~/models/prisma.server'
 import { requireCurrentUser } from '~/models/auth.server'
-import pkg from '@material-tailwind/react';
-const { Spinner } = pkg;
 interface LoaderData {
   userChallengeCount: number
   userCount: number

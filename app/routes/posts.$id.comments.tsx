@@ -1,9 +1,8 @@
+import { Button } from '~/utils/material-tailwind';
 import React, { useState, useContext } from 'react'
-import { useParams, useLoaderData, json, useOutletContext } from 'react-router';
+import { useParams, useLoaderData, useOutletContext  } from 'react-router';
 import { type LoaderFunction } from 'react-router';
 import { useNavigate } from 'react-router';
-import pkg from '@material-tailwind/react';
-const { Button } = pkg;
 import type { Comment, CurrentUser } from '~/utils/types'
 import CommentsContainer from '~/components/commentsContainer'
 import FormComment from '~/components/formComment'
@@ -20,7 +19,7 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
 
   if (!result) {
     const error = { loadingError: '{pst} not found' }
-    return json(error)
+    return Response.json(error)
   }
   const comments: Comment[] = result
   const likes = currentUser?.id ? await likesByType({ userId: currentUser.id }) : { comment: [] }

@@ -6,6 +6,7 @@ declare module "react-router" {
   interface Register {
     pages: Pages
     routeFiles: RouteFiles
+    routeModules: RouteModules
   }
 }
 
@@ -13,11 +14,530 @@ type Pages = {
   "/": {
     params: {};
   };
+  "/home": {
+    params: {};
+  };
+  "/challenges/new": {
+    params: {};
+  };
+  "/challenges/all": {
+    params: {};
+  };
+  "/challenges/mine": {
+    params: {};
+  };
+  "/challenges/:range": {
+    params: {
+      "range": string;
+    };
+  };
+  "/challenges": {
+    params: {};
+  };
+  "/challenges/v/:id": {
+    params: {
+      "id": string;
+    };
+  };
+  "/challenges/v/:id/about": {
+    params: {
+      "id": string;
+    };
+  };
+  "/challenges/v/:id/chat": {
+    params: {
+      "id": string;
+    };
+  };
+  "/challenges/v/:id/checkins": {
+    params: {
+      "id": string;
+    };
+  };
+  "/challenges/v/:id/members": {
+    params: {
+      "id": string;
+    };
+  };
+  "/login": {
+    params: {};
+  };
+  "/logout": {
+    params: {};
+  };
+  "/profile": {
+    params: {};
+  };
+  "/landing": {
+    params: {};
+  };
+  "/feed": {
+    params: {};
+  };
+  "/posts": {
+    params: {};
+  };
+  "/posts/new": {
+    params: {};
+  };
+  "/posts/:id": {
+    params: {
+      "id": string;
+    };
+  };
+  "/community": {
+    params: {};
+  };
+  "/admin": {
+    params: {};
+  };
+  "/api/likes": {
+    params: {};
+  };
+  "/api/notes/delete/:id": {
+    params: {
+      "id": string;
+    };
+  };
+  "/api/likes/:type/:id/comments": {
+    params: {
+      "type": string;
+      "id": string;
+    };
+  };
+  "/api/comments": {
+    params: {};
+  };
+  "/api/cron": {
+    params: {};
+  };
+  "/api/clerk/:id": {
+    params: {
+      "id": string;
+    };
+  };
+  "/api/comments/:id/replies": {
+    params: {
+      "id": string;
+    };
+  };
+  "/api/comments/:type/:id": {
+    params: {
+      "type": string;
+      "id": string;
+    };
+  };
+  "/api/contact": {
+    params: {};
+  };
+  "/api/likes/:type/:id": {
+    params: {
+      "type": string;
+      "id": string;
+    };
+  };
+  "/api/memberchallenges/:challengeId/:userId": {
+    params: {
+      "challengeId": string;
+      "userId": string;
+    };
+  };
+  "/api/posts": {
+    params: {};
+  };
+  "/api/notes": {
+    params: {};
+  };
+  "/api/notes/:id/repost": {
+    params: {
+      "id": string;
+    };
+  };
+  "/api/posts/delete/:id": {
+    params: {
+      "id": string;
+    };
+  };
+  "/api/webhooks": {
+    params: {};
+  };
+  "/api/threads": {
+    params: {};
+  };
+  "/api/posts/v/:id": {
+    params: {
+      "id": string;
+    };
+  };
+  "/api/users/:id": {
+    params: {
+      "id": string;
+    };
+  };
+  "/api/users/:id/likes": {
+    params: {
+      "id": string;
+    };
+  };
+  "/api/memberchallenges/:id": {
+    params: {
+      "id": string;
+    };
+  };
+  "/api/challenges/:id/checkins/:cohortId": {
+    params: {
+      "id": string;
+      "cohortId": string;
+    };
+  };
+  "/api/categories": {
+    params: {};
+  };
+  "/api/challenges/:range": {
+    params: {
+      "range": string;
+    };
+  };
+  "/api/challenges/join-unjoin/:id": {
+    params: {
+      "id": string;
+    };
+  };
+  "/api/challenges": {
+    params: {};
+  };
+  "/api/challenges/v/:id/program": {
+    params: {
+      "id": string;
+    };
+  };
+  "/api/challenges/delete/:id": {
+    params: {
+      "id": string;
+    };
+  };
+  "/api/challenges/v/:id/:userId": {
+    params: {
+      "id": string;
+      "userId": string;
+    };
+  };
+  "/api/challenges/v/:id/membership": {
+    params: {
+      "id": string;
+    };
+  };
+  "/api/checkins/:challengeId/:userId/:cohortId": {
+    params: {
+      "challengeId": string;
+      "userId": string;
+      "cohortId": string;
+    };
+  };
+  "/api/checkins/delete/:id": {
+    params: {
+      "id": string;
+    };
+  };
+  "/api/challenges/v/:id": {
+    params: {
+      "id": string;
+    };
+  };
+  "/*": {
+    params: {
+      "*": string;
+    };
+  };
 };
 
 type RouteFiles = {
   "root.tsx": {
     id: "root";
+    page: "/" | "/home" | "/challenges/new" | "/challenges/all" | "/challenges/mine" | "/challenges/:range" | "/challenges" | "/challenges/v/:id" | "/challenges/v/:id/about" | "/challenges/v/:id/chat" | "/challenges/v/:id/checkins" | "/challenges/v/:id/members" | "/login" | "/logout" | "/profile" | "/landing" | "/feed" | "/posts" | "/posts/new" | "/posts/:id" | "/community" | "/admin" | "/api/likes" | "/api/notes/delete/:id" | "/api/likes/:type/:id/comments" | "/api/comments" | "/api/cron" | "/api/clerk/:id" | "/api/comments/:id/replies" | "/api/comments/:type/:id" | "/api/contact" | "/api/likes/:type/:id" | "/api/memberchallenges/:challengeId/:userId" | "/api/posts" | "/api/notes" | "/api/notes/:id/repost" | "/api/posts/delete/:id" | "/api/webhooks" | "/api/threads" | "/api/posts/v/:id" | "/api/users/:id" | "/api/users/:id/likes" | "/api/memberchallenges/:id" | "/api/challenges/:id/checkins/:cohortId" | "/api/categories" | "/api/challenges/:range" | "/api/challenges/join-unjoin/:id" | "/api/challenges" | "/api/challenges/v/:id/program" | "/api/challenges/delete/:id" | "/api/challenges/v/:id/:userId" | "/api/challenges/v/:id/membership" | "/api/checkins/:challengeId/:userId/:cohortId" | "/api/checkins/delete/:id" | "/api/challenges/v/:id" | "/*";
+  };
+  "routes/_index.tsx": {
+    id: "routes/_index";
     page: "/";
   };
+  "routes/home.tsx": {
+    id: "routes/home";
+    page: "/home";
+  };
+  "routes/challenges.new.tsx": {
+    id: "routes/challenges.new";
+    page: "/challenges/new";
+  };
+  "routes/challenges.all.tsx": {
+    id: "routes/challenges.all";
+    page: "/challenges/all";
+  };
+  "routes/challenges.mine.tsx": {
+    id: "routes/challenges.mine";
+    page: "/challenges/mine";
+  };
+  "routes/challenges.$range.tsx": {
+    id: "routes/challenges.$range";
+    page: "/challenges/:range";
+  };
+  "routes/challenges.tsx": {
+    id: "routes/challenges";
+    page: "/challenges";
+  };
+  "routes/challenges.v.$id.tsx": {
+    id: "routes/challenges.v.$id";
+    page: "/challenges/v/:id";
+  };
+  "routes/challenges.v.$id.about.($cohortId).tsx": {
+    id: "routes/challenges.v.$id.about.($cohortId)";
+    page: "/challenges/v/:id/about";
+  };
+  "routes/challenges.v.$id.chat.($cohortId).tsx": {
+    id: "routes/challenges.v.$id.chat.($cohortId)";
+    page: "/challenges/v/:id/chat";
+  };
+  "routes/challenges.v.$id.checkins.($cohortId).tsx": {
+    id: "routes/challenges.v.$id.checkins.($cohortId)";
+    page: "/challenges/v/:id/checkins";
+  };
+  "routes/challenges.v.$id.members.($cohortId).tsx": {
+    id: "routes/challenges.v.$id.members.($cohortId)";
+    page: "/challenges/v/:id/members";
+  };
+  "routes/login.$.tsx": {
+    id: "routes/login.$";
+    page: "/login";
+  };
+  "routes/logout.tsx": {
+    id: "routes/logout";
+    page: "/logout";
+  };
+  "routes/profile.tsx": {
+    id: "routes/profile";
+    page: "/profile";
+  };
+  "routes/landing.tsx": {
+    id: "routes/landing";
+    page: "/landing";
+  };
+  "routes/feed.tsx": {
+    id: "routes/feed";
+    page: "/feed";
+  };
+  "routes/posts.tsx": {
+    id: "routes/posts";
+    page: "/posts";
+  };
+  "routes/posts_.new.tsx": {
+    id: "routes/posts_.new";
+    page: "/posts/new";
+  };
+  "routes/posts.$id.tsx": {
+    id: "routes/posts.$id";
+    page: "/posts/:id";
+  };
+  "routes/community.tsx": {
+    id: "routes/community";
+    page: "/community";
+  };
+  "routes/admin.tsx": {
+    id: "routes/admin";
+    page: "/admin";
+  };
+  "routes/api.likes.ts": {
+    id: "routes/api.likes";
+    page: "/api/likes";
+  };
+  "routes/api.notes.delete.$id.ts": {
+    id: "routes/api.notes.delete.$id";
+    page: "/api/notes/delete/:id";
+  };
+  "routes/api.likes.$type.$id.comments.ts": {
+    id: "routes/api.likes.$type.$id.comments";
+    page: "/api/likes/:type/:id/comments";
+  };
+  "routes/api.comments.ts": {
+    id: "routes/api.comments";
+    page: "/api/comments";
+  };
+  "routes/api.cron.ts": {
+    id: "routes/api.cron";
+    page: "/api/cron";
+  };
+  "routes/api.clerk.$id.ts": {
+    id: "routes/api.clerk.$id";
+    page: "/api/clerk/:id";
+  };
+  "routes/api.comments.$id.replies.ts": {
+    id: "routes/api.comments.$id.replies";
+    page: "/api/comments/:id/replies";
+  };
+  "routes/api.comments.$type.$id.ts": {
+    id: "routes/api.comments.$type.$id";
+    page: "/api/comments/:type/:id";
+  };
+  "routes/api.contact.ts": {
+    id: "routes/api.contact";
+    page: "/api/contact";
+  };
+  "routes/api.likes.$type.$id.ts": {
+    id: "routes/api.likes.$type.$id";
+    page: "/api/likes/:type/:id";
+  };
+  "routes/api.memberchallenges.$challengeId.$userId.ts": {
+    id: "routes/api.memberchallenges.$challengeId.$userId";
+    page: "/api/memberchallenges/:challengeId/:userId";
+  };
+  "routes/api.posts.ts": {
+    id: "routes/api.posts";
+    page: "/api/posts";
+  };
+  "routes/api.notes.ts": {
+    id: "routes/api.notes";
+    page: "/api/notes";
+  };
+  "routes/api.notes.$id.repost.ts": {
+    id: "routes/api.notes.$id.repost";
+    page: "/api/notes/:id/repost";
+  };
+  "routes/api.posts.delete.$id.ts": {
+    id: "routes/api.posts.delete.$id";
+    page: "/api/posts/delete/:id";
+  };
+  "routes/api.webhooks.ts": {
+    id: "routes/api.webhooks";
+    page: "/api/webhooks";
+  };
+  "routes/api.threads.ts": {
+    id: "routes/api.threads";
+    page: "/api/threads";
+  };
+  "routes/api.posts.v.$id.ts": {
+    id: "routes/api.posts.v.$id";
+    page: "/api/posts/v/:id";
+  };
+  "routes/api.users.$id.ts": {
+    id: "routes/api.users.$id";
+    page: "/api/users/:id";
+  };
+  "routes/api.users.$id.likes.ts": {
+    id: "routes/api.users.$id.likes";
+    page: "/api/users/:id/likes";
+  };
+  "routes/api.memberchallenges.$id.ts": {
+    id: "routes/api.memberchallenges.$id";
+    page: "/api/memberchallenges/:id";
+  };
+  "routes/api.challenges.$id.checkins.($cohortId).ts": {
+    id: "routes/api.challenges.$id.checkins.($cohortId)";
+    page: "/api/challenges/:id/checkins/:cohortId";
+  };
+  "routes/api.categories.ts": {
+    id: "routes/api.categories";
+    page: "/api/categories";
+  };
+  "routes/api.challenges.$range.ts": {
+    id: "routes/api.challenges.$range";
+    page: "/api/challenges/:range";
+  };
+  "routes/api.challenges.join-unjoin.$id.ts": {
+    id: "routes/api.challenges.join-unjoin.$id";
+    page: "/api/challenges/join-unjoin/:id";
+  };
+  "routes/api.challenges.ts": {
+    id: "routes/api.challenges";
+    page: "/api/challenges";
+  };
+  "routes/api.challenges.v.$id.program.ts": {
+    id: "routes/api.challenges.v.$id.program";
+    page: "/api/challenges/v/:id/program";
+  };
+  "routes/api.challenges.delete.$id.ts": {
+    id: "routes/api.challenges.delete.$id";
+    page: "/api/challenges/delete/:id";
+  };
+  "routes/api.challenges.v.$id.$userId.ts": {
+    id: "routes/api.challenges.v.$id.$userId";
+    page: "/api/challenges/v/:id/:userId";
+  };
+  "routes/api.challenges.v.$id.membership.ts": {
+    id: "routes/api.challenges.v.$id.membership";
+    page: "/api/challenges/v/:id/membership";
+  };
+  "routes/api.checkins.$challengeId.($userId).($cohortId).ts": {
+    id: "routes/api.checkins.$challengeId.($userId).($cohortId)";
+    page: "/api/checkins/:challengeId/:userId/:cohortId";
+  };
+  "routes/api.checkins.delete.$id.ts": {
+    id: "routes/api.checkins.delete.$id";
+    page: "/api/checkins/delete/:id";
+  };
+  "routes/api.challenges.v.$id.ts": {
+    id: "routes/api.challenges.v.$id";
+    page: "/api/challenges/v/:id";
+  };
+  "routes/$.tsx": {
+    id: "routes/$";
+    page: "/*";
+  };
+};
+
+type RouteModules = {
+  "root": typeof import("./app/root.tsx");
+  "routes/_index": typeof import("./app/routes/_index.tsx");
+  "routes/home": typeof import("./app/routes/home.tsx");
+  "routes/challenges.new": typeof import("./app/routes/challenges.new.tsx");
+  "routes/challenges.all": typeof import("./app/routes/challenges.all.tsx");
+  "routes/challenges.mine": typeof import("./app/routes/challenges.mine.tsx");
+  "routes/challenges.$range": typeof import("./app/routes/challenges.$range.tsx");
+  "routes/challenges": typeof import("./app/routes/challenges.tsx");
+  "routes/challenges.v.$id": typeof import("./app/routes/challenges.v.$id.tsx");
+  "routes/challenges.v.$id.about.($cohortId)": typeof import("./app/routes/challenges.v.$id.about.($cohortId).tsx");
+  "routes/challenges.v.$id.chat.($cohortId)": typeof import("./app/routes/challenges.v.$id.chat.($cohortId).tsx");
+  "routes/challenges.v.$id.checkins.($cohortId)": typeof import("./app/routes/challenges.v.$id.checkins.($cohortId).tsx");
+  "routes/challenges.v.$id.members.($cohortId)": typeof import("./app/routes/challenges.v.$id.members.($cohortId).tsx");
+  "routes/login.$": typeof import("./app/routes/login.$.tsx");
+  "routes/logout": typeof import("./app/routes/logout.tsx");
+  "routes/profile": typeof import("./app/routes/profile.tsx");
+  "routes/landing": typeof import("./app/routes/landing.tsx");
+  "routes/feed": typeof import("./app/routes/feed.tsx");
+  "routes/posts": typeof import("./app/routes/posts.tsx");
+  "routes/posts_.new": typeof import("./app/routes/posts_.new.tsx");
+  "routes/posts.$id": typeof import("./app/routes/posts.$id.tsx");
+  "routes/community": typeof import("./app/routes/community.tsx");
+  "routes/admin": typeof import("./app/routes/admin.tsx");
+  "routes/api.likes": typeof import("./app/routes/api.likes.ts");
+  "routes/api.notes.delete.$id": typeof import("./app/routes/api.notes.delete.$id.ts");
+  "routes/api.likes.$type.$id.comments": typeof import("./app/routes/api.likes.$type.$id.comments.ts");
+  "routes/api.comments": typeof import("./app/routes/api.comments.ts");
+  "routes/api.cron": typeof import("./app/routes/api.cron.ts");
+  "routes/api.clerk.$id": typeof import("./app/routes/api.clerk.$id.ts");
+  "routes/api.comments.$id.replies": typeof import("./app/routes/api.comments.$id.replies.ts");
+  "routes/api.comments.$type.$id": typeof import("./app/routes/api.comments.$type.$id.ts");
+  "routes/api.contact": typeof import("./app/routes/api.contact.ts");
+  "routes/api.likes.$type.$id": typeof import("./app/routes/api.likes.$type.$id.ts");
+  "routes/api.memberchallenges.$challengeId.$userId": typeof import("./app/routes/api.memberchallenges.$challengeId.$userId.ts");
+  "routes/api.posts": typeof import("./app/routes/api.posts.ts");
+  "routes/api.notes": typeof import("./app/routes/api.notes.ts");
+  "routes/api.notes.$id.repost": typeof import("./app/routes/api.notes.$id.repost.ts");
+  "routes/api.posts.delete.$id": typeof import("./app/routes/api.posts.delete.$id.ts");
+  "routes/api.webhooks": typeof import("./app/routes/api.webhooks.ts");
+  "routes/api.threads": typeof import("./app/routes/api.threads.ts");
+  "routes/api.posts.v.$id": typeof import("./app/routes/api.posts.v.$id.ts");
+  "routes/api.users.$id": typeof import("./app/routes/api.users.$id.ts");
+  "routes/api.users.$id.likes": typeof import("./app/routes/api.users.$id.likes.ts");
+  "routes/api.memberchallenges.$id": typeof import("./app/routes/api.memberchallenges.$id.ts");
+  "routes/api.challenges.$id.checkins.($cohortId)": typeof import("./app/routes/api.challenges.$id.checkins.($cohortId).ts");
+  "routes/api.categories": typeof import("./app/routes/api.categories.ts");
+  "routes/api.challenges.$range": typeof import("./app/routes/api.challenges.$range.ts");
+  "routes/api.challenges.join-unjoin.$id": typeof import("./app/routes/api.challenges.join-unjoin.$id.ts");
+  "routes/api.challenges": typeof import("./app/routes/api.challenges.ts");
+  "routes/api.challenges.v.$id.program": typeof import("./app/routes/api.challenges.v.$id.program.ts");
+  "routes/api.challenges.delete.$id": typeof import("./app/routes/api.challenges.delete.$id.ts");
+  "routes/api.challenges.v.$id.$userId": typeof import("./app/routes/api.challenges.v.$id.$userId.ts");
+  "routes/api.challenges.v.$id.membership": typeof import("./app/routes/api.challenges.v.$id.membership.ts");
+  "routes/api.checkins.$challengeId.($userId).($cohortId)": typeof import("./app/routes/api.checkins.$challengeId.($userId).($cohortId).ts");
+  "routes/api.checkins.delete.$id": typeof import("./app/routes/api.checkins.delete.$id.ts");
+  "routes/api.challenges.v.$id": typeof import("./app/routes/api.challenges.v.$id.ts");
+  "routes/$": typeof import("./app/routes/$.tsx");
 };

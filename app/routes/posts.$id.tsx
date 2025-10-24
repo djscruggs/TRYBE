@@ -4,7 +4,7 @@ import CardPost from '~/components/cardPost'
 import ChallengeHeader from '~/components/challengeHeader'
 import { requireCurrentUser } from '~/models/auth.server'
 import type { ChallengeSummary, MemberChallenge, PostSummary } from '~/utils/types'
-import { json, type LoaderFunction, type LoaderFunctionArgs } from 'react-router';
+import { type LoaderFunction, type LoaderFunctionArgs  } from 'react-router';
 import MobileBackButton from '~/components/mobileBackButton'
 import ChallengeTabs from '~/components/challengeTabs'
 import { loadChallengeSummary, loadMemberChallenge } from '~/models/challenge.server'
@@ -27,11 +27,11 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
   // error if no post OR it's not a preview by the user who created it
   if (!post || (!post.published && post.userId !== currentUser?.id && currentUser?.role !== 'ADMIN')) {
     const error = { loadingError: 'Post not found' }
-    return json(error)
+    return Response.json(error)
   }
   const challenge = await loadChallengeSummary(post?.challengeId ?? 0) as ChallengeSummary | null
   const membership = await loadMemberChallenge(currentUser?.id ?? 0, post?.challengeId ?? 0)
-  return json({ post, challenge, membership })
+  return Response.json({ post, challenge, membership })
 }
 
 export default function ViewPost (): JSX.Element {

@@ -1,5 +1,5 @@
 import { fetchComments } from '~/models/comment.server'
-import { json, type LoaderFunction } from 'react-router';
+import { type LoaderFunction  } from 'react-router';
 
 export const loader: LoaderFunction = async (args) => {
   const { type, id } = args.params
@@ -25,5 +25,5 @@ export const loader: LoaderFunction = async (args) => {
       throw new Error('Invalid type parameter')
   }
   const comments = await fetchComments(query)
-  return json(comments)
+  return Response.json(comments)
 }

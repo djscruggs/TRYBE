@@ -22,11 +22,15 @@ export default function MyChallenges (props: MyChallengesProps): JSX.Element {
   const [memberships, setMemberships] = useState<MemberChallenge[]>([])
   const { currentUser } = useContext(CurrentUserContext)
   const gatedNavigate = useGatedNavigate()
+  
+  console.log('MyChallenges component rendered with range:', range, 'status:', status, 'currentUser:', currentUser?.id, 'loading:', loading)
   const loadData = async (): Promise<void> => {
     setLoading(true)
     try {
       const url = `/api/challenges/${status}`
+      console.log('Making API call to:', url, 'with status:', status)
       const response = await axios.get(url)
+      console.log('API response:', response.data)
 
       const allChallenges = response.data.challenges as ChallengeSummary[]
       const userMemberships = response.data.memberships as MemberChallenge[]
@@ -45,6 +49,7 @@ export default function MyChallenges (props: MyChallengesProps): JSX.Element {
     }
   }
   useEffect(() => {
+    console.log('useEffect fired with status:', status)
     void loadData()
   }, [status])
   return (

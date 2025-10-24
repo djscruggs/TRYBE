@@ -4,12 +4,11 @@ import { type RegisterForm, type LoginForm, type CurrentUser } from '~/utils/typ
 import {
   type LoaderFunctionArgs,
   redirect,
-  json,
   createCookieSessionStorage,
   type Session,
 } from 'react-router';
 import bcrypt from 'bcryptjs'
-import { getAuth } from '@clerk/remix/ssr.server'
+import { getAuth } from '@clerk/react-router/server'
 import { URL } from 'url'
 import { createClerkClient } from '@clerk/backend'
 
@@ -48,12 +47,12 @@ export async function getUserSession (request: Request): Promise<Session> {
 export async function register (user: RegisterForm): Promise<Response> {
   const exists = await prisma.user.count({ where: { email: user.email } })
   if (exists) {
-    return json({ error: 'User already exists with that email' }, { status: 400 })
+    return Response.Response.Response.json({ error: 'User already exists with that email' }, { status: 400 })
   }
 
   const newUser = await createUser(user)
   if (!newUser) {
-    return json(
+    return Response.Response.json(
       {
         error: 'Something went wrong trying to create a newcurrentUser.',
         fields: { email: user.email, password: user.password }
@@ -69,7 +68,7 @@ export async function login ({ email, password, request }: LoginForm): Promise<R
     where: { email }
   })
   if (!currentUser?.email) {
-    return json({ error: 'Incorrect login' }, { status: 400 })
+    return Response.Response.json({ error: 'Incorrect login' }, { status: 400 })
   }
   if (await bcrypt.compare(String(password), String(currentUser.password))) {
     const parsedUrl = new URL(request.url)
@@ -94,7 +93,7 @@ export async function login ({ email, password, request }: LoginForm): Promise<R
       }
     } catch (error: any) {
       if (currentUser.password) {
-        return json({ error: error.errors[0].shortMessage || 'Incorrect login' }, { status: 400 })
+        return Response.Response.json({ error: error.errors[0].shortMessage || 'Incorrect login' }, { status: 400 })
       }
     }
   }
@@ -120,7 +119,7 @@ export async function login ({ email, password, request }: LoginForm): Promise<R
     return redirect(`/mobile/oauth/password/${urlSafeHashedEmail}/${currentUser.id}`)
   }
 
-  return json({ error: 'Incorrect login' }, { status: 400 })
+  return Response.Response.json({ error: 'Incorrect login' }, { status: 400 })
 }
 
 export const updatePassword = async (userId: number, password: string): Promise<void> => {

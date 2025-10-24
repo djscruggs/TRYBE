@@ -4,7 +4,7 @@ import {
   Dialog,
   DialogBody,
   DialogFooter
-} from '@material-tailwind/react'
+} from '~/utils/material-tailwind'
 
 interface DeleteDialogProps {
   prompt: string

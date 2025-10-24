@@ -1,5 +1,5 @@
 import { loadUser } from '~/models/user.server'
-import { json, type LoaderFunction } from 'react-router';
+import { type LoaderFunction  } from 'react-router';
 import { type Like } from '~/utils/types'
 import { prisma } from '~/models/prisma.server'
 
@@ -43,5 +43,5 @@ export const loader: LoaderFunction = async (args) => {
     }
     return acc
   }, { post: [], comment: [], challenge: [], checkin: [], thread: [] })
-  return json(likesByType)
+  return Response.json(likesByType)
 }

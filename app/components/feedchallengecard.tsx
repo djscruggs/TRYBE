@@ -3,7 +3,7 @@ import {
   CardBody,
   CardFooter,
   Button
-} from '@material-tailwind/react'
+} from '~/utils/material-tailwind'
 import { GiShinyApple } from 'react-icons/gi'
 import { AiFillCaretDown } from 'react-icons/ai'
 import { SlShareAlt } from 'react-icons/sl'

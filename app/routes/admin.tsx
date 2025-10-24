@@ -1,5 +1,5 @@
 import { type LoaderFunctionArgs, redirect } from 'react-router';
-import { json } from 'react-router';
+import { } from 'react-router';
 import { prisma } from '~/models/prisma.server'
 import { getCurrentUser } from '~/models/auth.server'
 import { useLoaderData } from 'react-router';
@@ -27,7 +27,7 @@ export const loader = async (args: LoaderFunctionArgs) => {
       createdAt: 'desc'
     }
   })
-  return json({ users })
+  return Response.json({ users })
 }
 interface DateRow {
   createdAt: Date

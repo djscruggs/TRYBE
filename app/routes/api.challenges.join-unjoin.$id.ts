@@ -6,7 +6,7 @@ import {
 } from '~/models/challenge.server'
 import { requireCurrentUser } from '~/models/auth.server'
 import { loadUser } from '~/models/user.server'
-import { json, type LoaderFunction, type ActionFunctionArgs } from 'react-router';
+import { type LoaderFunction, type ActionFunctionArgs  } from 'react-router';
 import type { MemberChallenge } from '@prisma/client'
 import { type ChallengeWelcomeMailerProps, sendChallengeWelcome } from '~/utils/mailer'
 import { formatDate, textToHtml, pathToEmailUrl, generateUrl } from '~/utils/helpers'
@@ -21,7 +21,7 @@ export async function action (args: ActionFunctionArgs): Promise<Response> {
   try {
     if (memberChallenge) {
       const result = await unjoinChallenge(Number(user.id), Number(params.id))
-      return json({
+      return Response.json({
         result: 'unjoined',
         data: result
       }, { status: 200 }) // 200 OK
@@ -77,14 +77,14 @@ export async function action (args: ActionFunctionArgs): Promise<Response> {
         to: user.email,
         dynamic_template_data: tempData as ChallengeWelcomeMailerProps['dynamic_template_data']
       })
-      return json({
+      return Response.json({
         result: 'joined',
         data: result
       }, { status: 201 }) // 201 Created
     }
   } catch (error) {
     console.error('error in action', error instanceof Error ? error.message : error)
-    return json({
+    return Response.json({
       result: 'error',
       message: error instanceof Error ? error.message : 'An unknown error occurred'
     }, { status: 400 }) // 400 Bad Request
@@ -92,5 +92,5 @@ export async function action (args: ActionFunctionArgs): Promise<Response> {
 }
 export const loader: LoaderFunction = async (args) => {
   void requireCurrentUser(args)
-  return json({ message: 'This route does not accept GET requests' }, 200)
+  return Response.json({ message: 'This route does not accept GET requests' }, 200)
 }

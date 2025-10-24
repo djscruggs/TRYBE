@@ -24,8 +24,12 @@ import { Toaster } from 'react-hot-toast'
 import getUserLocale from 'get-user-locale'
 import { getUserByClerkId } from './models/user.server'
 import { ClerkProvider, useUser } from '@clerk/react-router'
-import { captureRemixErrorBoundaryError } from '@sentry/remix'
+import { rootAuthLoader, clerkMiddleware } from '@clerk/react-router/server'
+// import { captureRemixErrorBoundaryError } from '@sentry/remix'
 import { getUserSession, getUser } from './models/auth.server'
+
+export const middleware = [clerkMiddleware()]
+
 interface DocumentProps {
   children: React.ReactNode
   title?: string
@@ -50,20 +54,16 @@ export interface RootLoaderData {
 }
 
 export const loader: LoaderFunction = async args => {
-  const userLocale = getUserLocale()
-
-  const ENV = {
-    CLERK_PUBLISHABLE_KEY: process.env.CLERK_PUBLISHABLE_KEY,
-    NODE_ENV: process.env.NODE_ENV
-  }
-  const userAgent = args.request.headers.get('user-agent') ?? 'unknown'
-
-  // For now, we'll handle auth on the client side with Clerk
-  // TODO: Implement server-side auth with React Router v7
-  return { ENV, user: null, auth: null, userAgent }
+  return rootAuthLoader(args)
 }
 
 const Document = withEmotionCache(({ children, title }: DocumentProps, emotionCache) => {
+    // callback for when user profile is updated via clerk
+    const revalidator = useRevalidator()
+    const clerkUser = useUser()
+    useEffect(() => {
+      revalidator.revalidate()
+    }, [clerkUser.user])
   return (
     <html lang="en">
       <head>
@@ -97,26 +97,25 @@ const Document = withEmotionCache(({ children, title }: DocumentProps, emotionCa
 
 // https://remix.run/docs/en/main/route/component
 // https://remix.run/docs/en/main/file-conventions/routes
-function App (): JSX.Element {
-  const { user } = useLoaderData<{ user: CurrentUser }>()
-  const { userAgent } = useLoaderData<{ userAgent: string }>()
-  const clerkUser = useUser()
+function App ({ loaderData }: { loaderData: RootLoaderData }): JSX.Element {
+  const data = useLoaderData<RootLoaderData>()
+  const { user } = data || {}
+  const userAgent = typeof window !== 'undefined' ? navigator.userAgent : ''
   const revalidator = useRevalidator()
   const [currentUser, setCurrentUser] = useState<CurrentUser | null>(user as CurrentUser)
+  
+  console.log('App component - loaderData:', data, 'user:', user, 'currentUser:', currentUser)
 
   // Determine if the user agent is "gonative median" and if  iphone or android
-  const isMobileDevice = userAgent.includes('gonative median') || userAgent.includes('capacitor')
-  const isIphone = isMobileDevice && userAgent.toLowerCase().includes('iphone')
-  const isAndroid = isMobileDevice && userAgent.toLowerCase().includes('android')
+  const isMobileDevice = userAgent?.includes('gonative median') || userAgent?.includes('capacitor')
+  const isIphone = isMobileDevice && userAgent?.toLowerCase().includes('iphone')
+  const isAndroid = isMobileDevice && userAgent?.toLowerCase().includes('android')
 
   useEffect(() => {
     setCurrentUser(user as CurrentUser)
   }, [user])
 
-  // callback for when user profile is updated via clerk
-  useEffect(() => {
-    revalidator.revalidate()
-  }, [clerkUser.user])
+
 
   const searchParams = useSearchParams()
   if (!user && typeof window !== 'undefined') {
@@ -127,14 +126,16 @@ function App (): JSX.Element {
     }
   }
   return (
-    <DeviceContext.Provider value={{ isMobileDevice, isIphone, isAndroid, isMobile: () => isIphone || isAndroid }}>
-      <Document>
-        <Toaster position='top-center' />
-        <CurrentUserContext.Provider value={{ currentUser, setCurrentUser }}>
-          <Layout />
-        </CurrentUserContext.Provider>
-      </Document>
-    </DeviceContext.Provider>
+    <ClerkProvider loaderData={loaderData}>
+      <DeviceContext.Provider value={{ isMobileDevice, isIphone, isAndroid, isMobile: () => isIphone || isAndroid }}>
+        <Document>
+          <Toaster position='top-center' />
+          <CurrentUserContext.Provider value={{ currentUser, setCurrentUser }}>
+            <Layout />
+          </CurrentUserContext.Provider>
+        </Document>
+      </DeviceContext.Provider>
+    </ClerkProvider>
   )
 }
 
@@ -143,9 +144,10 @@ export default App
 // https://remix.run/docs/en/main/route/error-boundary
 export function ErrorBoundary (): JSX.Element {
   const error = useRouteError()
-  captureRemixErrorBoundaryError(error)
+  // captureRemixErrorBoundaryError(error)
   if (isRouteErrorResponse(error)) {
     let message
+    
     switch (error.status) {
       case 401:
         message = <p>Oops! Looks like you tried to visit a page that you do not have access to.</p>
@@ -160,29 +162,28 @@ export function ErrorBoundary (): JSX.Element {
 
     return (
 
-     <Document title={`${error.status} ${error.statusText}`}>
       <div className="flex flex-col justify-start items-start mr-8">
       <h1>
         {error.status}: {error.statusText}
       </h1>
       {message}
       </div>
-      </Document>
+
 
     )
   }
+  
 
   if (error instanceof Error) {
     console.error(error)
     return (
-      <Document title="Error!">
           <div style={{ margin: '100px', padding: '25%' }}>
             <h1 style={{ fontSize: '1rem', color: 'red' }}>There was an error</h1>
             <p style={{ fontSize: '2rem' }}>{error.message}</p>
 
           </div>
 
-      </Document>
+      
     )
   }
 
