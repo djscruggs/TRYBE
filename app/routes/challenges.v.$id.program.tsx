@@ -84,7 +84,7 @@ export default function Program (): JSX.Element {
         if (!response.ok) {
           throw new Error('Failed to fetch posts')
         }
-        const data = await response.Response.json()
+        const data = await response.json()
         setPosts(data.posts as Post[])
       } catch (error) {
         console.error('Error fetching posts:', error)

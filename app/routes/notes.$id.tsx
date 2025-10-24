@@ -20,7 +20,7 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
   const note = await loadNoteSummary(params.id)
   if (!note) {
     const error = { loadingError: 'Note not found' }
-    return Response.json(error)
+    return error
   }
   // load memberships current user if it exists
   const hasReposted = false
@@ -49,7 +49,7 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
     }
   })
   const data: NoteObjectData = { note, hasReposted, repostCount, replies }
-  return Response.json(data)
+  return data
 }
 
 export default function ViewNote (): JSX.Element {

@@ -24,12 +24,12 @@ export const action: ActionFunction = async (args) => {
     const upstreamSentryUrl = `https://${SENTRY_HOST}/api/${projectId}/envelope/`
     await fetch(upstreamSentryUrl, { method: 'POST', body: envelope })
 
-    return Response.json({}, { status: 200 })
+    return {}
   } catch (e) {
     console.error('error tunneling to sentry', e)
-    return Response.json({ error: 'error tunneling to sentry' }, { status: 500 })
+    return { error: 'error tunneling to sentry' }
   }
 }
 export const loader: LoaderFunction = async () => {
-  return Response.json({ message: 'This route does not accept GET requests' }, 200)
+  return { message: 'This route does not accept GET requests' }
 }

@@ -14,7 +14,7 @@ export const action: ActionFunction = async (args) => {
     if (repost) {
       await deleteNote(repost.id, currentUser?.id)
     }
-    return Response.json({ message: 'Repost deleted' }, 200)
+    return { message: 'Repost deleted' }
   }
   const image = rawData.get('image')
   if (!rawData.get('replyToId')) {
@@ -30,7 +30,7 @@ export const action: ActionFunction = async (args) => {
   // check to make sure the repost doesn't already exist
   const note = await loadRepost(data.replyToId, currentUser?.id, data.body)
   if (note) {
-    return Response.json(note)
+    return note
   }
   const result = await createNote(data)
   if (image) {
@@ -39,9 +39,9 @@ export const action: ActionFunction = async (args) => {
     result.image = webPath
   }
   const updated = await updateNote(result)
-  return Response.json(updated)
+  return updated
 }
 
 export const loader: LoaderFunction = async (args) => {
-  return Response.json({ message: 'This route does not accept GET requests' }, 200)
+  return { message: 'This route does not accept GET requests' }
 }

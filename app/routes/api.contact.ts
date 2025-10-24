@@ -8,13 +8,13 @@ import { type CurrentUser, type ChallengeWithHost } from '~/utils/types'
 export const action: ActionFunction = async (args) => {
   const currentUser: CurrentUser | null = await requireCurrentUser(args)
   if (!currentUser) {
-    return Response.json({ message: 'You must be logged in to create a note or thread' }, 401)
+    return { message: 'You must be logged in to create a note or thread' }
   }
-  const formData = await args.request.Response.json()
+  const formData = await args.request.json()
   const challengeId = Number(formData.challengeId)
   const challenge: ChallengeWithHost | null = await loadChallengeWithHost(challengeId)
   if (!challenge) {
-    return Response.json({ message: 'Challenge not found' }, 404)
+    return { message: 'Challenge not found' }
   }
   const subject = String(formData.subject)
   const body = String(formData.body)
@@ -36,10 +36,10 @@ export const action: ActionFunction = async (args) => {
     const result = await contactHost(msg)
     return result
   } catch (error) {
-    return Response.json(error, { status: 500 })
+    return error
   }
 }
 
 export const loader: LoaderFunction = async () => {
-  return Response.json({ message: 'This route does not accept GET requests' }, 200)
+  return { message: 'This route does not accept GET requests' }
 }

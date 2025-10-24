@@ -7,12 +7,12 @@ export async function action (args: ActionFunctionArgs) {
   const user = await requireCurrentUser(args)
   try {
     await deleteNote(Number(params?.id), Number(user?.id))
-    return Response.json({ message: `Deleted note ${params?.id}` }, 204)
+    return { message: `Deleted note ${params?.id}` }
   } catch (error) {
-    return Response.json({ message: `Error deleting note ${params?.id}` }, 500)
+    return { message: `Error deleting note ${params?.id}` }
   }
 }
 
 export const loader: LoaderFunction = async (args) => {
-  return Response.json({ message: 'This route does not accept GET requests' }, 200)
+  return { message: 'This route does not accept GET requests' }
 }

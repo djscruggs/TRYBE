@@ -180,7 +180,7 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
     .sort(([dateA], [dateB]) => new Date(dateA).getTime() - new Date(dateB).getTime())
 
   const data: ChallengeChatData = { groupedData: Object.fromEntries(sortedGroupedData) }
-  return Response.json(data)
+  return data
 }
 
 export default function ViewChallengeChat (): JSX.Element {

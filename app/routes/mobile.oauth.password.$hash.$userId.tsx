@@ -72,7 +72,7 @@ export const action: ActionFunction = async ({ request, params }) => {
     password: validatePassword(password, passwordMatch)
   }
   if (Object.values(errors).some(Boolean)) {
-    return Response.json({ errors, fields: { password, passwordMatch }, form: action }, { status: 400 })
+    return { errors, fields: { password, passwordMatch }, form: action }, { status: 400 }
   }
   // load the user, test password with clerk if necessary
   const user = await prisma.user.findUnique({
@@ -93,7 +93,7 @@ export const action: ActionFunction = async ({ request, params }) => {
       }
     } catch (error: any) {
       console.error(error.errors)
-      return Response.json({ error: error.errors[0].longMessage || 'Failed to update password' }, { status: 500 })
+      return { error: error.errors[0].longMessage || 'Failed to update password' }
     }
   }
 }

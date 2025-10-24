@@ -28,7 +28,7 @@ export const action: ActionFunction = async ({ request }) => {
     password: validatePassword(password, passwordMatch)
   }
   if (Object.values(errors).some(Boolean)) {
-    return Response.json({ errors, fields: { email, password, passwordMatch, firstName, lastName }, form: action }, { status: 400 })
+    return { errors, fields: { email, password, passwordMatch, firstName, lastName }, form: action }, { status: 400 }
   }
   return await register({ email, password, firstName, lastName })
 }

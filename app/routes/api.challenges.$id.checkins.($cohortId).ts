@@ -119,5 +119,5 @@ export async function action (args: ActionFunctionArgs): Promise<prisma.checkIn>
 }
 export const loader: LoaderFunction = async (args) => {
   void requireCurrentUser(args)
-  return Response.json({ message: 'This route does not accept GET requests' }, 200)
+  return { message: 'This route does not accept GET requests' }
 }

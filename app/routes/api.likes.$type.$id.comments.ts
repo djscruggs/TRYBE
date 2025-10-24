@@ -42,5 +42,5 @@ export const loader: LoaderFunction = async (args) => {
   const likedCommentIds = comments
     .filter(comment => comment.likes.length > 0)
     .map(comment => comment.id)
-  return Response.json(likedCommentIds)
+  return likedCommentIds
 }

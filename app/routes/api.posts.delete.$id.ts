@@ -7,12 +7,12 @@ export async function action (args: ActionFunctionArgs): Promise<typeof action> 
   const user = await requireCurrentUser(args)
   try {
     await deletePost(Number(params?.id), Number(user.id))
-    return Response.json({ message: `Deleted post ${params?.id}` }, 204)
+    return { message: `Deleted post ${params?.id}` }
   } catch (error) {
-    return Response.json({ message: `Error deleting post ${params?.id}` }, 500)
+    return { message: `Error deleting post ${params?.id}` }
   }
 }
 
 export const loader: LoaderFunction = async (args) => {
-  return Response.json({ message: 'This route does not accept GET requests' }, 200)
+  return { message: 'This route does not accept GET requests' }
 }

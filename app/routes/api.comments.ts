@@ -20,7 +20,7 @@ export const action: ActionFunction = async (args) => {
   if (intent === 'delete') {
     const id = Number(formData.id)
     const result = await deleteComment(id)
-    return Response.json(result)
+    return result
   }
   const data: prisma.commentCreateInput = {
     body: formData.body,
@@ -48,7 +48,7 @@ export const action: ActionFunction = async (args) => {
       data.cohort = { connect: { id: Number(formData.cohortId) } }
     }
     if (!data.challenge && !data.post && !data.thread && !data.checkIn) {
-      return Response.json({ message: 'Post id or callenge id or thread id or checkin id is required' }, 400)
+      return { message: 'Post id or callenge id or thread id or checkin id is required' }
     }
     // there might be a bug when a challenge id is submitted but cohort id is no, so do a quick search for the memberchallenge that might have it
     if (data.challenge && !data.cohort) {
@@ -129,9 +129,9 @@ export const action: ActionFunction = async (args) => {
 
   // refresh the comment to include user info attached
   const comment = await loadComment(updated.id as number, updated.userId as number)
-  return Response.json(comment)
+  return comment
 }
 
 export const loader: LoaderFunction = async (args) => {
-  return Response.json({ message: 'This route does not accept GET requests' }, 200)
+  return { message: 'This route does not accept GET requests' }
 }

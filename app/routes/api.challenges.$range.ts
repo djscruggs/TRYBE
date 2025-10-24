@@ -38,9 +38,9 @@ export const loader: LoaderFunction = async (args) => {
   }
 
   if (!challenges || challenges.error) {
-    return Response.json({ loadingError: 'Unable to load challenges' })
+    return { loadingError: 'Unable to load challenges' }
   }
 
   const memberships = (await fetchMemberChallenges(userId)) || [] as number[]
-  return Response.json({ challenges, memberships, error })
+  return { challenges, memberships, error }
 }

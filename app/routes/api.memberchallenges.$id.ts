@@ -4,7 +4,7 @@ import { requireCurrentUser } from '~/models/auth.server'
 
 export const loader: LoaderFunction = async (args) => {
   void requireCurrentUser(args)
-  return Response.json({ message: 'This route does not accept GET requests' }, 200)
+  return { message: 'This route does not accept GET requests' }
 }
 
 export const action: ActionFunction = async (args) => {
@@ -14,7 +14,7 @@ export const action: ActionFunction = async (args) => {
     where: { id: Number(params.id) }
   })
   if (!memberChallenge) {
-    return Response.json({ message: 'Member challenge not found' }, 404)
+    return { message: 'Member challenge not found' }
   }
   try {
     const formData = await request.formData()
@@ -33,8 +33,8 @@ export const action: ActionFunction = async (args) => {
       where: { id: Number(params.id) },
       data
     })
-    return Response.json({ result }, 200)
+    return { result }
   } catch (error) {
-    return Response.json({ message: 'Error updating member challenge' }, 500)
+    return { message: 'Error updating member challenge' }
   }
 }

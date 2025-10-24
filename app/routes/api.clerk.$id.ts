@@ -4,8 +4,8 @@ import { type LoaderFunction  } from 'react-router';
 export const loader: LoaderFunction = async (args) => {
   const user = await getUserByClerkId(args.params.id ?? '')
   if (user) {
-    return Response.json(user)
+    return user
   } else {
-    return Response.json({ message: 'Not found' }, 404)
+    return { message: 'Not found' }
   }
 }

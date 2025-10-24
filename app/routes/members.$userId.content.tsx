@@ -31,7 +31,7 @@ export const loader: LoaderFunction = async (args) => {
   const memberships = await fetchUserMemberships(userId) as { error?: string }
   const notes = await fetchUserNotes(userId) as { error?: string }
   const posts = await fetchUserPosts(userId, showPrivate) as { error?: string }
-  return Response.json({ challenges, notes, posts, memberships, userId })
+  return { challenges, notes, posts, memberships, userId }
 }
 export default function UserSpecificContent (): JSX.Element {
   const data: any = useLoaderData()

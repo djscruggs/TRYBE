@@ -14,5 +14,5 @@ export const loader: LoaderFunction = async (args) => {
       createdAt: 'desc'
     }
   })
-  return Response.json({ memberChallenge }, 200)
+  return { memberChallenge }
 }

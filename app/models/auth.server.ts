@@ -47,18 +47,12 @@ export async function getUserSession (request: Request): Promise<Session> {
 export async function register (user: RegisterForm): Promise<Response> {
   const exists = await prisma.user.count({ where: { email: user.email } })
   if (exists) {
-    return Response.Response.Response.json({ error: 'User already exists with that email' }, { status: 400 })
+    return { error: 'User already exists with that email' }
   }
 
   const newUser = await createUser(user)
   if (!newUser) {
-    return Response.Response.json(
-      {
-        error: 'Something went wrong trying to create a newcurrentUser.',
-        fields: { email: user.email, password: user.password }
-      },
-      { status: 400 }
-    )
+    return { error: 'Something went wrong trying to create a new currentUser.', fields: { email: user.email, password: user.password } }
   }
   return await createUserSession(newUser.id, '/challenges')
 }
@@ -68,7 +62,7 @@ export async function login ({ email, password, request }: LoginForm): Promise<R
     where: { email }
   })
   if (!currentUser?.email) {
-    return Response.Response.json({ error: 'Incorrect login' }, { status: 400 })
+    return { error: 'Incorrect login',status: 400 }
   }
   if (await bcrypt.compare(String(password), String(currentUser.password))) {
     const parsedUrl = new URL(request.url)
@@ -93,7 +87,7 @@ export async function login ({ email, password, request }: LoginForm): Promise<R
       }
     } catch (error: any) {
       if (currentUser.password) {
-        return Response.Response.json({ error: error.errors[0].shortMessage || 'Incorrect login' }, { status: 400 })
+        return { error: error.errors[0].shortMessage || 'Incorrect login' }
       }
     }
   }
@@ -119,7 +113,7 @@ export async function login ({ email, password, request }: LoginForm): Promise<R
     return redirect(`/mobile/oauth/password/${urlSafeHashedEmail}/${currentUser.id}`)
   }
 
-  return Response.Response.json({ error: 'Incorrect login' }, { status: 400 })
+  return { error: 'Incorrect login', status: 400 }
 }
 
 export const updatePassword = async (userId: number, password: string): Promise<void> => {

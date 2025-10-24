@@ -132,15 +132,9 @@ export const action: ActionFunction = async ({ request }) => {
     console.error('error in user operation', e)
   }
   // Console log the full payload to view
-  return Response.json({ message: 'Webhook received' }, {
-    status: 200,
-    statusText: 'OK',
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  })
+  return { message: 'Webhook received' }
 }
 
 export const loader: LoaderFunction = async (args) => {
-  return Response.json({ message: 'This route does not accept GET requests' }, 200)
+  return { message: 'This route does not accept GET requests' }
 }

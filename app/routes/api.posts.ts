@@ -106,9 +106,9 @@ export const action: ActionFunction = async (args) => {
   }
   // send back the full post with counts, user etc
   const finalPost = await loadPostSummary(updated.id)
-  return Response.json(finalPost)
+  return finalPost
 }
 
 export const loader: LoaderFunction = async (args) => {
-  return Response.json({ message: 'This route does not accept GET requests' }, 200)
+  return { message: 'This route does not accept GET requests' }
 }

@@ -6,5 +6,5 @@ import { type LoaderFunction, type ActionFunction  } from 'react-router';
 export const loader: LoaderFunction = async (args) => {
   const currentUser = await requireCurrentUser(args)
   const replies = await fetchReplies(args.params.id)
-  return Response.json(replies, 200)
+  return replies
 }

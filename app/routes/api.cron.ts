@@ -6,7 +6,7 @@ import { generateUrl, textToHtml, convertYouTubeLinksToImages, pathToEmailUrl } 
 export const loader: LoaderFunction = async (args) => {
   const scheduledPosts = await sendScheduledPosts()
   const { dayNumberPosts, dayNotifications } = await sendDayNumberPosts()
-  return Response.json({ scheduledPosts, dayNumberPosts, dayNotifications }, 200)
+  return { scheduledPosts, dayNumberPosts, dayNotifications }, 200
 }
 
 export const sendScheduledPosts = async (): Promise<number> => {
@@ -267,5 +267,5 @@ URL: https://img.youtube.com/vi/${videoId}/maxresdefault.jpg
 */
 
 // export const loader: LoaderFunction = async (args) => {
-//   return Response.json({ message: 'This route does not accept GET requests' }, 200)
+//   return { message: 'This route does not accept GET requests' }
 // }

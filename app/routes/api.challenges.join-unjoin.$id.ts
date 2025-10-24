@@ -21,10 +21,10 @@ export async function action (args: ActionFunctionArgs): Promise<Response> {
   try {
     if (memberChallenge) {
       const result = await unjoinChallenge(Number(user.id), Number(params.id))
-      return Response.json({
+      return {
         result: 'unjoined',
         data: result
-      }, { status: 200 }) // 200 OK
+      } // 200 OK
     } else {
       // load the challenge
       const challenge = await loadChallenge(Number(params.id))
@@ -77,20 +77,20 @@ export async function action (args: ActionFunctionArgs): Promise<Response> {
         to: user.email,
         dynamic_template_data: tempData as ChallengeWelcomeMailerProps['dynamic_template_data']
       })
-      return Response.json({
+      return {
         result: 'joined',
         data: result
-      }, { status: 201 }) // 201 Created
+      } // 201 Created
     }
   } catch (error) {
     console.error('error in action', error instanceof Error ? error.message : error)
-    return Response.json({
+    return {
       result: 'error',
       message: error instanceof Error ? error.message : 'An unknown error occurred'
-    }, { status: 400 }) // 400 Bad Request
+    } // 400 Bad Request
   }
 }
 export const loader: LoaderFunction = async (args) => {
   void requireCurrentUser(args)
-  return Response.json({ message: 'This route does not accept GET requests' }, 200)
+  return { message: 'This route does not accept GET requests' }
 }

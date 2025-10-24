@@ -43,5 +43,5 @@ export const loader: LoaderFunction = async (args) => {
     }
     return acc
   }, { post: [], comment: [], challenge: [], checkin: [], thread: [] })
-  return Response.json(likesByType)
+  return likesByType
 }

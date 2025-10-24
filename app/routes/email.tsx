@@ -23,7 +23,7 @@ export const loader: LoaderFunction = async (args) => {
     const result = await contactHost(msg)
     return result
   } catch (error) {
-    return Response.json(error, { status: 500 })
+    return error
   }
 }
 export const loaderPost: LoaderFunction = async (args) => {
@@ -32,7 +32,7 @@ export const loaderPost: LoaderFunction = async (args) => {
   const baseUrl = new URL(args.request.url).origin
   const post = await loadPostSummary(46)
   if (!post) {
-    return Response.json({ error: 'Post not found' }, { status: 404 })
+    return { error: 'Post not found' }
   }
   const msg = {
     to: 'me@derekscruggs.com',

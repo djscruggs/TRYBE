@@ -16,7 +16,7 @@ interface NoteData extends Note {
 export const action: ActionFunction = async (args) => {
   const currentUser: CurrentUser | null = await requireCurrentUser(args)
   if (!currentUser) {
-    return Response.json({ message: 'You must be logged in to create a note or thread' }, 401)
+    return { message: 'You must be logged in to create a note or thread' }
   }
   const request = args.request
   // const rawData = await unstable_parseMultipartFormData(request, uploadHandler) // Not available in React Router v7
@@ -55,5 +55,5 @@ export const action: ActionFunction = async (args) => {
 }
 
 export const loader: LoaderFunction = async (args) => {
-  return Response.json({ message: 'This route does not accept GET requests' }, 200)
+  return { message: 'This route does not accept GET requests' }
 }

@@ -27,7 +27,7 @@ export const loader = async (args: LoaderFunctionArgs) => {
       createdAt: 'desc'
     }
   })
-  return Response.json({ users })
+  return { users }
 }
 interface DateRow {
   createdAt: Date

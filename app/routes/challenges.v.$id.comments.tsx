@@ -23,9 +23,9 @@ export const loader: LoaderFunction = async (args) => {
   const comments = await fetchComments({ challengeId: Number(args.params.id) })
   if (!comments) {
     const error = { loadingError: 'Challenge not found' }
-    return Response.json(error)
+    return error
   }
-  return Response.json({ comments })
+  return { comments }
 }
 export default function ViewChallengeComments (): JSX.Element {
   const revalidator = useRevalidator()

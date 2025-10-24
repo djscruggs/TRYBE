@@ -19,7 +19,7 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
 
   if (!result) {
     const error = { loadingError: '{pst} not found' }
-    return Response.json(error)
+    return error
   }
   const comments: Comment[] = result
   const likes = currentUser?.id ? await likesByType({ userId: currentUser.id }) : { comment: [] }

@@ -30,5 +30,5 @@ export const loader: LoaderFunction = async (args) => {
       id: true
     }
   })
-  return Response.json(likedIds.map(like => like.id))
+  return likedIds.map(like => like.id)
 }

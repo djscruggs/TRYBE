@@ -15,16 +15,16 @@ export const meta: MetaFunction = () => {
 }
 export const loader: LoaderFunction = async ({ request, params }) => {
   if (!params.id) {
-    return Response.json({ loadingError: 'Challenge id not included' })
+    return { loadingError: 'Challenge id not included' }
   }
   const result = await fetchChallengeMembers(params.id, params.cohortId ? Number(params.cohortId) : undefined)
 
   if (!result) {
     const error = { loadingError: 'Challenge not found' }
-    return Response.json(error)
+    return error
   }
   const data: Array<Record<string, any>> = result
-  return Response.json(data)
+  return data
 }
 export default function ViewChallengeMembers (): JSX.Element {
   const members = useLoaderData<typeof loader>()
