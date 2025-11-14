@@ -19,13 +19,15 @@ export const meta: MetaFunction = () => {
   ];
 };
 
-export async function loader({ request }: LoaderFunctionArgs) {
-  const currentUser = await getCurrentUser({ request });
+export async function loader(args: LoaderFunctionArgs) {
+  const currentUser = await getCurrentUser(args);
 
   if (currentUser?.role !== "ADMIN") {
     return redirect("/");
   }
-  const response = await fetch(new URL("/api/challenges/all", request.url));
+  const response = await fetch(
+    new URL("/api/challenges/all", args.request.url)
+  );
   const data = await response.json();
   return {
     challenges: data.challenges as ChallengeSummary[],

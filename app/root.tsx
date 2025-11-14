@@ -10,6 +10,7 @@ import {
   useSearchParams,
   useRevalidator,
 } from "react-router";
+import type { Route } from "../.react-router/types/app/+types/root";
 import { useEffect, useState } from "react";
 import { CurrentUserContext } from "./contexts/CurrentUserContext";
 import DeviceContext from "./contexts/DeviceContext";
@@ -47,19 +48,16 @@ export const loader: LoaderFunction = async (args) => {
   return rootAuthLoader(args, ({ request }) => {
     return {
       ENV: {
-        CLERK_PUBLISHABLE_KEY: process.env.CLERK_PUBLISHABLE_KEY || '',
-        NODE_ENV: process.env.NODE_ENV || 'development'
-      }
+        CLERK_PUBLISHABLE_KEY: process.env.CLERK_PUBLISHABLE_KEY || "",
+        NODE_ENV: process.env.NODE_ENV || "development",
+      },
     };
   });
 };
 
 // React Router v7 Layout component - handles both SSR and client-side hydration
 export function Layout({ children }: { children: React.ReactNode }) {
-  console.log("🎯 LAYOUT EXPORT RENDERING - has children:", !!children);
-
   const data = useLoaderData<RootLoaderData>();
-  const clerkPublishableKey = data?.ENV?.CLERK_PUBLISHABLE_KEY || process.env.CLERK_PUBLISHABLE_KEY || '';
 
   return (
     <html lang="en">
@@ -84,10 +82,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
         />
       </head>
       <body>
-        <script dangerouslySetInnerHTML={{ __html: `console.log('🔥 INLINE SCRIPT - HTML IS LOADING')` }} />
-        <ClerkProvider publishableKey={clerkPublishableKey}>
-          {children}
-        </ClerkProvider>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `console.log('🔥 INLINE SCRIPT - HTML IS LOADING')`,
+          }}
+        />
+        <ClerkProvider loaderData={data}>{children}</ClerkProvider>
         <ScrollRestoration />
         <Scripts />
       </body>
@@ -106,11 +106,8 @@ function ClerkRevalidator() {
   return null;
 }
 
-export default function App(): JSX.Element {
-  console.log("🚀 ROOT APP COMPONENT RENDERING");
-
+export default function App(): Route.ComponentProps {
   const data = useLoaderData<RootLoaderData>();
-  console.log("🚀 Loader data:", data);
 
   const { user } = data || {};
   const userAgent = typeof window !== "undefined" ? navigator.userAgent : "";
@@ -127,7 +124,6 @@ export default function App(): JSX.Element {
     isMobileDevice && userAgent?.toLowerCase().includes("android");
 
   useEffect(() => {
-    console.log("🚀 ROOT APP COMPONENT - useEffect running on CLIENT");
     setCurrentUser(user as CurrentUser);
   }, [user]);
 

@@ -35,12 +35,7 @@ export default function Layout(): JSX.Element {
   const [isClient, setIsClient] = useState(false);
   const [showMobile, setShowMobile] = useState(false);
 
-  console.log(
-    "🎨 LAYOUT RENDERING - isClient:",
-    isClient,
-    "showMobile:",
-    showMobile
-  );
+  console.log(isClient, "showMobile:", showMobile);
 
   useEffect(() => {
     console.log("🎨 LAYOUT useEffect #1 running!");
@@ -57,12 +52,10 @@ export default function Layout(): JSX.Element {
 
   // During SSR, always render FullLayout to avoid hydration mismatch
   if (!isClient) {
-    console.log("🎨 Returning FullLayout (server mode)");
     return <FullLayout />;
   }
 
   // After hydration, show the correct layout
-  console.log("🎨 Returning conditional layout (client mode)");
   return <>{showMobile ? <MobileLayout /> : <FullLayout />}</>;
 }
 
@@ -182,7 +175,6 @@ export const FullLayout = (): JSX.Element => {
             </div>
           ) : isClient ? (
             <>
-              hello
               <div
                 className={`grow border-2 border-red-500 items-center justify-start pt-4 ${showNav ? "ml-20" : "ml-0"}`}
               >
