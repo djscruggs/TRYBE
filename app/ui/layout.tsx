@@ -35,8 +35,6 @@ export default function Layout(): JSX.Element {
   const [isClient, setIsClient] = useState(false);
   const [showMobile, setShowMobile] = useState(false);
 
-  console.log(isClient, "showMobile:", showMobile);
-
   useEffect(() => {
     console.log("🎨 LAYOUT useEffect #1 running!");
     setIsClient(true);

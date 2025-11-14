@@ -12,26 +12,10 @@ export const loader: LoaderFunction = async (args) => {
   const url = new URL(args.request.url);
   const type = url.searchParams.get("type") ?? "all";
   const category = url.searchParams.get("category");
-  console.log("here");
-
-  console.log(
-    "API route called with range:",
-    range,
-    "type:",
-    type,
-    "category:",
-    category
-  );
 
   const currentUser = await getCurrentUser(args);
   const userId = currentUser?.id ? Number(currentUser.id) : null;
 
-  console.log(
-    "Current user:",
-    currentUser ? "authenticated" : "not authenticated",
-    "userId:",
-    userId
-  );
   let challenges;
   let error = null;
   if (range === "mine") {
