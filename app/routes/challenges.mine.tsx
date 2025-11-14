@@ -1,10 +1,8 @@
-import { Spinner } from '~/utils/material-tailwind';
-import axios from 'axios'
-import { useEffect, useContext, useState } from 'react'
-import { CurrentUserContext } from '~/contexts/CurrentUserContext'
 import ChallengeList from '~/components/challengeList'
-import { type MetaFunction, Navigate } from 'react-router';
+import { type MetaFunction, type LoaderFunctionArgs, useLoaderData, redirect } from 'react-router';
 import type { ChallengeSummary } from '~/utils/types'
+import { getCurrentUser } from '~/models/auth.server'
+
 export const meta: MetaFunction = () => {
   return [
     { title: 'My Challenges' },
@@ -14,23 +12,34 @@ export const meta: MetaFunction = () => {
     }
   ]
 }
-export default function ChallengeMine (): JSX.Element {
-  const { currentUser } = useContext(CurrentUserContext)
+
+export async function loader({ request }: LoaderFunctionArgs) {
+  console.log("=== challenges.mine.tsx loader ===");
+
+  const currentUser = await getCurrentUser({ request });
+
   if (currentUser?.role !== 'ADMIN') {
-    return <Navigate to="/" />
+    return redirect('/');
   }
-  const [loading, setLoading] = useState(true)
-  const [myChallenges, setMyChallenges] = useState<ChallengeSummary[]>([])
-  const loadData = async (): Promise<void> => {
-    setLoading(true)
-    const url = '/api/challenges/mine'
-    const response = await axios.get(url)
-    setMyChallenges(response.data.challenges as ChallengeSummary[])
-    setLoading(false)
-  }
-  useEffect(() => {
-    void loadData()
-  }, [])
+
+  const response = await fetch(new URL("/api/challenges/mine", request.url));
+  const data = await response.json();
+
+  console.log("Loaded my challenges:", data);
+
+  return {
+    challenges: data.challenges as ChallengeSummary[],
+    memberships: data.memberships || []
+  };
+}
+
+type LoaderData = {
+  challenges: ChallengeSummary[];
+  memberships: any[];
+};
+
+export default function ChallengeMine (): JSX.Element {
+  const { challenges, memberships } = useLoaderData<LoaderData>();
 
   return (
     <>
@@ -39,14 +48,12 @@ export default function ChallengeMine (): JSX.Element {
             <h1 className="text-3xl font-bold mb-4 w-full ml-2 md:ml-0">
                 My Challenges
             </h1>
-            {loading && <Spinner />}
-            {!loading && myChallenges.length > 0 &&
-              <ChallengeList challenges={myChallenges} memberships={[]} isLoading={loading} />
-            }
-            {/* <p className='ml-2 md:ml-0 text-gray-500'>View your current challenges, browse upcoming challenges, or start your own!</p>
-            {currentUser && <Button placeholder='Create a Challenge' size="sm" onClick={() => { navigate('./new') }} className="bg-red mb-4 mt-4">Create a Challenge</Button>}
-            <Outlet /> */}
-
+            {challenges.length > 0 && (
+              <ChallengeList challenges={challenges} memberships={memberships} isLoading={false} />
+            )}
+            {challenges.length === 0 && (
+              <p className="text-gray-500 mt-4">No challenges found.</p>
+            )}
           </div>
         </div>
     </>

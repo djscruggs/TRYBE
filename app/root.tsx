@@ -1,7 +1,7 @@
-import * as React from 'react'
 import {
   Links,
   Meta,
+  Outlet,
   Scripts,
   ScrollRestoration,
   useRouteError,
@@ -9,71 +9,71 @@ import {
   useLoaderData,
   useSearchParams,
   useRevalidator,
-} from 'react-router';
-import { withEmotionCache } from '@emotion/react'
-import { useEffect, useState } from 'react'
-import { CurrentUserContext } from './contexts/CurrentUserContext'
-import DeviceContext from './contexts/DeviceContext'
-import Layout from './ui/layout'
-import './output.css'
-import 'react-datepicker/dist/react-datepicker.css'
-import 'react-circular-progressbar/dist/styles.css'
-import type { LinksFunction, LoaderFunction, MetaFunction } from 'react-router';
-import { type CurrentUser } from './utils/types'
-import { Toaster } from 'react-hot-toast'
-import getUserLocale from 'get-user-locale'
-import { getUserByClerkId } from './models/user.server'
-import { ClerkProvider, useUser } from '@clerk/react-router'
-import { rootAuthLoader, clerkMiddleware } from '@clerk/react-router/server'
-// import { captureRemixErrorBoundaryError } from '@sentry/remix'
-import { getUserSession, getUser } from './models/auth.server'
+} from "react-router";
+import { useEffect, useState } from "react";
+import { CurrentUserContext } from "./contexts/CurrentUserContext";
+import DeviceContext from "./contexts/DeviceContext";
+import LayoutComponent from "./ui/layout";
+import "./tailwind.css";
+import "react-datepicker/dist/react-datepicker.css";
+import "react-circular-progressbar/dist/styles.css";
+import type { LinksFunction, LoaderFunction, MetaFunction } from "react-router";
+import { type CurrentUser } from "./utils/types";
+import { Toaster } from "react-hot-toast";
+import { ClerkProvider, useUser } from "@clerk/react-router";
+import { rootAuthLoader, clerkMiddleware } from "@clerk/react-router/server";
 
-export const middleware = [clerkMiddleware()]
+export const middleware = [clerkMiddleware()];
 
-interface DocumentProps {
-  children: React.ReactNode
-  title?: string
-}
-
-export const links: LinksFunction = () => []
+export const links: LinksFunction = () => [];
 
 export const meta: MetaFunction = () => {
   return [
-    { title: 'Trybe' },
-    { viewport: 'width=device-width,initial-scale=1' }
-  ]
-}
+    { title: "Trybe" },
+    { viewport: "width=device-width,initial-scale=1" },
+  ];
+};
 
 export interface RootLoaderData {
   ENV: {
-    CLERK_PUBLISHABLE_KEY: string
-    NODE_ENV: string
-  }
-  user: CurrentUser | null
-  auth: typeof rootAuthLoader
+    CLERK_PUBLISHABLE_KEY: string;
+    NODE_ENV: string;
+  };
+  user: CurrentUser | null;
+  auth: typeof rootAuthLoader;
 }
 
-export const loader: LoaderFunction = async args => {
-  return rootAuthLoader(args)
-}
+export const loader: LoaderFunction = async (args) => {
+  return rootAuthLoader(args, ({ request }) => {
+    return {
+      ENV: {
+        CLERK_PUBLISHABLE_KEY: process.env.CLERK_PUBLISHABLE_KEY || '',
+        NODE_ENV: process.env.NODE_ENV || 'development'
+      }
+    };
+  });
+};
 
-const Document = withEmotionCache(({ children, title }: DocumentProps, emotionCache) => {
-    // callback for when user profile is updated via clerk
-    const revalidator = useRevalidator()
-    const clerkUser = useUser()
-    useEffect(() => {
-      revalidator.revalidate()
-    }, [clerkUser.user])
+// React Router v7 Layout component - handles both SSR and client-side hydration
+export function Layout({ children }: { children: React.ReactNode }) {
+  console.log("🎯 LAYOUT EXPORT RENDERING - has children:", !!children);
+
+  const data = useLoaderData<RootLoaderData>();
+  const clerkPublishableKey = data?.ENV?.CLERK_PUBLISHABLE_KEY || process.env.CLERK_PUBLISHABLE_KEY || '';
+
   return (
     <html lang="en">
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width,initial-scale=1" />
-        {title ? <title>{title}</title> : null}
         <Meta />
         <Links />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin=""
+        />
         <link
           rel="stylesheet"
           href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;500;600;700&display=swap"
@@ -82,109 +82,131 @@ const Document = withEmotionCache(({ children, title }: DocumentProps, emotionCa
           rel="stylesheet"
           href="https://fonts.googleapis.com/css2?family=Taprom&family=Waiting+for+the+Sunrise&display=swap"
         />
-        <meta name="emotion-insertion-point" content="emotion-insertion-point" />
       </head>
       <body>
-        {children}
+        <script dangerouslySetInnerHTML={{ __html: `console.log('🔥 INLINE SCRIPT - HTML IS LOADING')` }} />
+        <ClerkProvider publishableKey={clerkPublishableKey}>
+          {children}
+        </ClerkProvider>
         <ScrollRestoration />
         <Scripts />
       </body>
     </html>
-  )
-})
-
-// Create a context for device information
-
-// https://remix.run/docs/en/main/route/component
-// https://remix.run/docs/en/main/file-conventions/routes
-function App ({ loaderData }: { loaderData: RootLoaderData }): JSX.Element {
-  const data = useLoaderData<RootLoaderData>()
-  const { user } = data || {}
-  const userAgent = typeof window !== 'undefined' ? navigator.userAgent : ''
-  const revalidator = useRevalidator()
-  const [currentUser, setCurrentUser] = useState<CurrentUser | null>(user as CurrentUser)
-  
-  
-  // Determine if the user agent is "gonative median" and if  iphone or android
-  const isMobileDevice = userAgent?.includes('gonative median') || userAgent?.includes('capacitor')
-  const isIphone = isMobileDevice && userAgent?.toLowerCase().includes('iphone')
-  const isAndroid = isMobileDevice && userAgent?.toLowerCase().includes('android')
-
-  useEffect(() => {
-    setCurrentUser(user as CurrentUser)
-  }, [user])
-
-
-
-  const searchParams = useSearchParams()
-  if (!user && typeof window !== 'undefined') {
-    const redirectTo = searchParams[0].get('redirectTo')
-
-    if (redirectTo && !localStorage.getItem('redirectTo')) {
-      localStorage.setItem('redirectTo', redirectTo)
-    }
-  }
-  return (
-    <ClerkProvider loaderData={loaderData}>
-      <DeviceContext.Provider value={{ isMobileDevice, isIphone, isAndroid, isMobile: () => isIphone || isAndroid }}>
-        <Document>
-          <Toaster position='top-center' />
-          <CurrentUserContext.Provider value={{ currentUser, setCurrentUser }}>
-            <Layout />
-          </CurrentUserContext.Provider>
-        </Document>
-      </DeviceContext.Provider>
-    </ClerkProvider>
-  )
+  );
 }
 
-export default App
+function ClerkRevalidator() {
+  const revalidator = useRevalidator();
+  const clerkUser = useUser();
+
+  useEffect(() => {
+    revalidator.revalidate();
+  }, [clerkUser.user, revalidator]);
+
+  return null;
+}
+
+export default function App(): JSX.Element {
+  console.log("🚀 ROOT APP COMPONENT RENDERING");
+
+  const data = useLoaderData<RootLoaderData>();
+  console.log("🚀 Loader data:", data);
+
+  const { user } = data || {};
+  const userAgent = typeof window !== "undefined" ? navigator.userAgent : "";
+  const [currentUser, setCurrentUser] = useState<CurrentUser | null>(
+    user as CurrentUser
+  );
+
+  // Determine if the user agent is "gonative median" and if iphone or android
+  const isMobileDevice =
+    userAgent?.includes("gonative median") || userAgent?.includes("capacitor");
+  const isIphone =
+    isMobileDevice && userAgent?.toLowerCase().includes("iphone");
+  const isAndroid =
+    isMobileDevice && userAgent?.toLowerCase().includes("android");
+
+  useEffect(() => {
+    console.log("🚀 ROOT APP COMPONENT - useEffect running on CLIENT");
+    setCurrentUser(user as CurrentUser);
+  }, [user]);
+
+  const searchParams = useSearchParams();
+  if (!user && typeof window !== "undefined") {
+    const redirectTo = searchParams[0].get("redirectTo");
+
+    if (redirectTo && !localStorage.getItem("redirectTo")) {
+      localStorage.setItem("redirectTo", redirectTo);
+    }
+  }
+
+  return (
+    <>
+      <ClerkRevalidator />
+      <DeviceContext.Provider
+        value={{
+          isMobileDevice,
+          isIphone,
+          isAndroid,
+          isMobile: () => isIphone || isAndroid,
+        }}
+      >
+        <Toaster position="top-center" />
+        <CurrentUserContext.Provider value={{ currentUser, setCurrentUser }}>
+          <LayoutComponent />
+        </CurrentUserContext.Provider>
+      </DeviceContext.Provider>
+    </>
+  );
+}
 
 // https://remix.run/docs/en/main/route/error-boundary
-export function ErrorBoundary (): JSX.Element {
-  const error = useRouteError()
+export function ErrorBoundary(): JSX.Element {
+  const error = useRouteError();
   // captureRemixErrorBoundaryError(error)
   if (isRouteErrorResponse(error)) {
-    let message
-    
+    let message;
+
     switch (error.status) {
       case 401:
-        message = <p>Oops! Looks like you tried to visit a page that you do not have access to.</p>
-        break
+        message = (
+          <p>
+            Oops! Looks like you tried to visit a page that you do not have
+            access to.
+          </p>
+        );
+        break;
       case 404:
-        message = <p>Oops! Looks like you tried to visit a page that does not exist.</p>
-        break
+        message = (
+          <p>Oops! Looks like you tried to visit a page that does not exist.</p>
+        );
+        break;
 
       default:
-        throw new Error(`Unhandled error.status: ${error.status}: ${error.data || error.statusText}`)
+        throw new Error(
+          `Unhandled error.status: ${error.status}: ${error.data || error.statusText}`
+        );
     }
 
     return (
-
       <div className="flex flex-col justify-start items-start mr-8">
-      <h1>
-        {error.status}: {error.statusText}
-      </h1>
-      {message}
+        <h1>
+          {error.status}: {error.statusText}
+        </h1>
+        {message}
       </div>
-
-
-    )
+    );
   }
-  
 
   if (error instanceof Error) {
-    console.error(error)
+    console.error(error);
     return (
-          <div style={{ margin: '100px', padding: '25%' }}>
-            <h1 style={{ fontSize: '1rem', color: 'red' }}>There was an error</h1>
-            <p style={{ fontSize: '2rem' }}>{error.message}</p>
-
-          </div>
-
-      
-    )
+      <div style={{ margin: "100px", padding: "25%" }}>
+        <h1 style={{ fontSize: "1rem", color: "red" }}>There was an error</h1>
+        <p style={{ fontSize: "2rem" }}>{error.message}</p>
+      </div>
+    );
   }
 
-  return <h1>Unknown Error</h1>
+  return <h1>Unknown Error</h1>;
 }

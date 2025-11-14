@@ -17,6 +17,9 @@ type Pages = {
   "/home": {
     params: {};
   };
+  "/challenges": {
+    params: {};
+  };
   "/challenges/new": {
     params: {};
   };
@@ -30,9 +33,6 @@ type Pages = {
     params: {
       "range": string;
     };
-  };
-  "/challenges": {
-    params: {};
   };
   "/challenges/v/:id": {
     params: {
@@ -254,7 +254,7 @@ type Pages = {
 type RouteFiles = {
   "root.tsx": {
     id: "root";
-    page: "/" | "/home" | "/challenges/new" | "/challenges/all" | "/challenges/mine" | "/challenges/:range" | "/challenges" | "/challenges/v/:id" | "/challenges/v/:id/about" | "/challenges/v/:id/chat" | "/challenges/v/:id/checkins" | "/challenges/v/:id/members" | "/login" | "/logout" | "/profile" | "/landing" | "/feed" | "/posts" | "/posts/new" | "/posts/:id" | "/community" | "/admin" | "/api/likes" | "/api/notes/delete/:id" | "/api/likes/:type/:id/comments" | "/api/comments" | "/api/cron" | "/api/clerk/:id" | "/api/comments/:id/replies" | "/api/comments/:type/:id" | "/api/contact" | "/api/likes/:type/:id" | "/api/memberchallenges/:challengeId/:userId" | "/api/posts" | "/api/notes" | "/api/notes/:id/repost" | "/api/posts/delete/:id" | "/api/webhooks" | "/api/threads" | "/api/posts/v/:id" | "/api/users/:id" | "/api/users/:id/likes" | "/api/memberchallenges/:id" | "/api/challenges/join-unjoin/:id" | "/api/challenges/:id/checkins/:cohortId" | "/api/categories" | "/api/challenges/:range" | "/api/challenges" | "/api/challenges/v/:id/program" | "/api/challenges/delete/:id" | "/api/challenges/v/:id/:userId" | "/api/challenges/v/:id/membership" | "/api/checkins/:challengeId/:userId/:cohortId" | "/api/checkins/delete/:id" | "/api/challenges/v/:id" | "/*";
+    page: "/" | "/home" | "/challenges" | "/challenges/new" | "/challenges/all" | "/challenges/mine" | "/challenges/:range" | "/challenges/v/:id" | "/challenges/v/:id/about" | "/challenges/v/:id/chat" | "/challenges/v/:id/checkins" | "/challenges/v/:id/members" | "/login" | "/logout" | "/profile" | "/landing" | "/feed" | "/posts" | "/posts/new" | "/posts/:id" | "/community" | "/admin" | "/api/likes" | "/api/notes/delete/:id" | "/api/likes/:type/:id/comments" | "/api/comments" | "/api/cron" | "/api/clerk/:id" | "/api/comments/:id/replies" | "/api/comments/:type/:id" | "/api/contact" | "/api/likes/:type/:id" | "/api/memberchallenges/:challengeId/:userId" | "/api/posts" | "/api/notes" | "/api/notes/:id/repost" | "/api/posts/delete/:id" | "/api/webhooks" | "/api/threads" | "/api/posts/v/:id" | "/api/users/:id" | "/api/users/:id/likes" | "/api/memberchallenges/:id" | "/api/challenges/join-unjoin/:id" | "/api/challenges/:id/checkins/:cohortId" | "/api/categories" | "/api/challenges/:range" | "/api/challenges" | "/api/challenges/v/:id/program" | "/api/challenges/delete/:id" | "/api/challenges/v/:id/:userId" | "/api/challenges/v/:id/membership" | "/api/checkins/:challengeId/:userId/:cohortId" | "/api/checkins/delete/:id" | "/api/challenges/v/:id" | "/*";
   };
   "routes/_index.tsx": {
     id: "routes/_index";
@@ -263,6 +263,10 @@ type RouteFiles = {
   "routes/home.tsx": {
     id: "routes/home";
     page: "/home";
+  };
+  "routes/challenges.tsx": {
+    id: "routes/challenges";
+    page: "/challenges" | "/challenges/new" | "/challenges/all" | "/challenges/mine" | "/challenges/:range" | "/challenges/v/:id";
   };
   "routes/challenges.new.tsx": {
     id: "routes/challenges.new";
@@ -279,10 +283,6 @@ type RouteFiles = {
   "routes/challenges.$range.tsx": {
     id: "routes/challenges.$range";
     page: "/challenges/:range";
-  };
-  "routes/challenges.tsx": {
-    id: "routes/challenges";
-    page: "/challenges";
   };
   "routes/challenges.v.$id.tsx": {
     id: "routes/challenges.v.$id";
@@ -486,11 +486,11 @@ type RouteModules = {
   "root": typeof import("./app/root.tsx");
   "routes/_index": typeof import("./app/routes/_index.tsx");
   "routes/home": typeof import("./app/routes/home.tsx");
+  "routes/challenges": typeof import("./app/routes/challenges.tsx");
   "routes/challenges.new": typeof import("./app/routes/challenges.new.tsx");
   "routes/challenges.all": typeof import("./app/routes/challenges.all.tsx");
   "routes/challenges.mine": typeof import("./app/routes/challenges.mine.tsx");
   "routes/challenges.$range": typeof import("./app/routes/challenges.$range.tsx");
-  "routes/challenges": typeof import("./app/routes/challenges.tsx");
   "routes/challenges.v.$id": typeof import("./app/routes/challenges.v.$id.tsx");
   "routes/challenges.v.$id.about.($cohortId)": typeof import("./app/routes/challenges.v.$id.about.($cohortId).tsx");
   "routes/challenges.v.$id.chat.($cohortId)": typeof import("./app/routes/challenges.v.$id.chat.($cohortId).tsx");

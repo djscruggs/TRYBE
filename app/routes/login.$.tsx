@@ -1,40 +1,26 @@
-import {
-  SignIn
-} from '@clerk/react-router'
-import { useDeviceContext } from '~/contexts/DeviceContext'
-import { type LoaderFunctionArgs, type LoaderFunction } from 'react-router';
-import { useLoaderData, useNavigate } from 'react-router';
-import { useEffect } from 'react'
+import { SignIn } from "@clerk/react-router";
+import { type LoaderFunctionArgs } from "react-router";
+import { ClientOnly } from "~/components/ClientOnly";
+import { rootAuthLoader } from "@clerk/react-router/server";
 
-export const loader: LoaderFunction = async ({ params }: LoaderFunctionArgs) => {
-  return { params }
+export async function loader(args: LoaderFunctionArgs) {
+  return rootAuthLoader(args);
 }
-export default function SignInPage (): JSX.Element {
-  const { params } = useLoaderData<typeof loader>()
 
-  const redirectTo = localStorage.getItem('redirectTo') ?? '/quote'
-  const { isMobile } = useDeviceContext()
-  const navigate = useNavigate()
-  useEffect(() => {
-    if (isMobile()) {
-      navigate('/mobile/login')
-    }
-  }, [])
-
+export default function SignInPage(): JSX.Element {
   return (
-    <div className="w-sm justify-center items-center mt-10">
-      {!isMobile() && (
+    <div className="w-full flex flex-col justify-center items-start mt-10 border-2 border-red-500">
+      foo
+      <ClientOnly fallback={<div>Loading...</div>}>
         <SignIn
-          fallbackRedirectUrl={redirectTo}
-        appearance={{
-          elements: {
-            formButtonPrimary:
-              'bg-red hover:bg-yellow text-sm normal-case'
-          }
-        }}
+          fallbackRedirectUrl="/home"
+          appearance={{
+            elements: {
+              formButtonPrimary: "bg-red hover:bg-yellow text-sm normal-case",
+            },
+          }}
         />
-      )}
-
+      </ClientOnly>
     </div>
-  )
+  );
 }

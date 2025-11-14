@@ -1,57 +1,53 @@
-import { useParams } from 'react-router';
-import { useEffect, useState, useContext, useRef } from 'react'
+import { useParams, type LoaderFunctionArgs, useLoaderData } from 'react-router';
+import { useEffect, useState, useRef } from 'react'
 import type { ChallengeSummary, MemberChallenge } from '~/utils/types'
 import ChallengeList from '~/components/challengeList'
-import axios from 'axios'
-import { CurrentUserContext } from '~/contexts/CurrentUserContext'
 import MyChallenges from '~/components/myChallenges'
 import { CardChallengeHomeSkeleton } from '~/components/cardChallengeHome'
+
+export async function loader({ request, params }: LoaderFunctionArgs) {
+  console.log("=== challenges.$range.tsx loader ===");
+
+  const range = params.range ?? 'active';
+  let url = `/api/challenges/${range}`;
+
+  console.log("Loading challenges for range:", range);
+
+  const response = await fetch(new URL(url, request.url));
+  const data = await response.json();
+
+  console.log("Loaded challenges:", data);
+
+  return {
+    challenges: data.challenges as ChallengeSummary[],
+    memberships: data.memberships || []
+  };
+}
+
+type LoaderData = {
+  challenges: ChallengeSummary[];
+  memberships: MemberChallenge[];
+};
+
 export default function ChallengesIndex (): JSX.Element {
+  const { challenges: initialChallenges, memberships } = useLoaderData<LoaderData>();
   const browseRef = useRef<HTMLDivElement | null>(null)
   const [isExtended, setIsExtended] = useState(false) // this is used to extend the screen that the scroll into view is applied to
   const [categoryFilter, setCategoryFilter] = useState<string[]>([])
-  const [upcomingChallenges, setUpcomingChallenges] = useState<ChallengeSummary[]>([])
+  const [upcomingChallenges, setUpcomingChallenges] = useState<ChallengeSummary[]>(initialChallenges)
   const params = useParams()
   const status = params.range ?? 'active'
-  const [loadingUpcoming, setLoadingUpcoming] = useState(true)
-  const [memberships, setMemberships] = useState<MemberChallenge[]>([])
-  // variable name matches the way it's used in the db
   // eslint-disable-next-line @typescript-eslint/naming-convention
   const [selfGuided, setSelfGuided] = useState(false)
-  const { currentUser } = useContext(CurrentUserContext)
   const handleCategoryChange = (newCategory: string): void => {
     setCategoryFilter(prev => prev.includes(newCategory) ? prev.filter(cat => cat !== newCategory) : [...prev, newCategory])
   }
 
-  const loadUpcomingChallenges = async (): Promise<void> => {
-    setLoadingUpcoming(true)
-    try {
-      let url = '/api/challenges/upcoming,active'
-      if (status === 'all') {
-        url = '/api/challenges/all'
-      }
-      // const params: AxiosRequestConfig['params'] = { }
-      // if (categoryFilter.length > 0) {
-      //   params.category = categoryFilter.join(',')
-      // }
-      // if (selfGuided) {
-      //   params.type = 'SELF_LED'
-      // }
-      const response = await axios.get(url, { params })
-      const allUpcomingChallenges = response.data.challenges as ChallengeSummary[]
-      setMemberships(response.data.memberships as MemberChallenge[])
-      const filteredUpcomingChallenges = allUpcomingChallenges.filter(challenge =>
-        !memberships.some(membership => membership.challengeId === challenge.id) &&
-        challenge.userId !== currentUser?.id
-      )
-      setUpcomingChallenges(filteredUpcomingChallenges)
-      setFilteredChallenges(filteredUpcomingChallenges)
-    } catch (error) {
-      console.error(error)
-    } finally {
-      setLoadingUpcoming(false)
-    }
-  }
+  // Update challenges when loader data changes (route param changes)
+  useEffect(() => {
+    setUpcomingChallenges(initialChallenges);
+    setFilteredChallenges(initialChallenges);
+  }, [initialChallenges]);
   const [triggerRender, setTriggerRender] = useState(1)
   const scrollToBrowse = (): void => {
     setIsExtended(true)
@@ -63,10 +59,9 @@ export default function ChallengesIndex (): JSX.Element {
     }
   }, [triggerRender])
 
-  useEffect(() => {
-    void loadUpcomingChallenges()
-  }, [status])
-  const [filteredChallenges, setFilteredChallenges] = useState<ChallengeSummary[]>([])
+  const [filteredChallenges, setFilteredChallenges] = useState<ChallengeSummary[]>(initialChallenges)
+
+  // Client-side filtering when category or selfGuided changes
   useEffect(() => {
     let _filtered: ChallengeSummary[] = []
     if (categoryFilter.length > 0 || selfGuided) {
@@ -112,30 +107,14 @@ export default function ChallengesIndex (): JSX.Element {
                 </div>
               </div>
             </div>
-            {loadingUpcoming &&
-              <div className='flex justify-center items-start h-screen mt-0'>
-                <div className='flex flex-col w-full'>
-                  <CardChallengeHomeSkeleton />
-                  <CardChallengeHomeSkeleton />
-                  <CardChallengeHomeSkeleton />
-                  <CardChallengeHomeSkeleton />
-                  <CardChallengeHomeSkeleton />
-                </div>
-              </div>
-            }
-          {!loadingUpcoming &&
-            <>
-              {filteredChallenges.length === 0 &&
-                <p className='text-left text-gray-500 pt-2'>No {selfGuided ? 'self-guided' : 'scheduled'} challenges in this category.</p>
-              }
+            {filteredChallenges.length === 0 && (
+              <p className='text-left text-gray-500 pt-2'>No {selfGuided ? 'self-guided' : 'scheduled'} challenges in this category.</p>
+            )}
+            {filteredChallenges.length > 0 && (
               <div className="flex flex-col items-center max-w-lg w-full mt-4">
-                <ChallengeList challenges={filteredChallenges} memberships={memberships} isLoading={loadingUpcoming} />
+                <ChallengeList challenges={filteredChallenges} memberships={memberships} isLoading={false} />
               </div>
-              {/* {isExtended &&
-                <div className='h-[50px]'></div>
-              } */}
-            </>
-          }
+            )}
         </div>
   )
 }
