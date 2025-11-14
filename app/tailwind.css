@@ -11,6 +11,21 @@
   }
 }
 
+@theme {
+  --font-sans: "Source Sans 3", Roboto, Helvetica, Arial, sans-serif;
+  --font-cursive: ReklameScript-Regular;
+  --font-taprom: Taprom, Roboto, Helvetica, Aria, sans-serif;
+  --color-lessblack: #696262;
+  --color-red: #ec5f5c;
+  --color-darkgrey: #5f5f5f;
+  --color-lightgrey: #f7f6f6;
+  --color-yellow: #f5c44e;
+  --color-blue: #3295b7;
+  --color-grey: #c4c4c4;
+  --color-salmon: #eeaa94;
+  --color-teal: #1a525c;
+}
+
 /* bug reporting widget see https://docs.sentry.io/platforms/javascript/user-feedback/configuration/ */
 #sentry-feedback {
   --bottom: 0.6rem !important;
