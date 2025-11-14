@@ -1,3 +1,4 @@
+import { JSX } from 'react'
 import { TiDeleteOutline } from 'react-icons/ti'
 
 interface VideoPreviewProps {

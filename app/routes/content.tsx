@@ -4,7 +4,7 @@ import { useLoaderData, Link, useParams, useNavigate, Outlet } from 'react-route
 import { fetchUserChallenges, fetchUserMemberships } from '~/models/challenge.server'
 import { fetchUserNotes } from '~/models/note.server'
 import { fetchUserPosts } from '~/models/post.server'
-import React, { useState, useContext } from 'react'
+import React, { useState, useContext, JSX } from 'react'
 // import { bo } from '~/public/icons/icons8-box'
 import {
   Tabs,

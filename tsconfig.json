@@ -1,5 +1,12 @@
 {
-  "include": ["remix.env.d.ts","vitest.config.js", "**/*.ts", "**/*.tsx"],
+  "include": [
+    "remix.env.d.ts",
+    "vitest.config.js",
+    "**/*.ts",
+    "**/*.js",
+    "**/*.tsx",
+    ".eslintrc.js"
+  ],
   "compilerOptions": {
     "lib": ["DOM", "DOM.Iterable", "ES2022"],
     "isolatedModules": true,
@@ -12,13 +19,11 @@
     "allowJs": true,
     "forceConsistentCasingInFileNames": true,
     "baseUrl": ".",
-    "types": ["vitest/globals"], 
+    "types": ["vitest/globals"],
     "paths": {
       "~/*": ["./app/*"]
     },
     "module": "ES2022",
-    
-    
 
     // Remix takes care of building everything in `remix build`.
     "noEmit": true

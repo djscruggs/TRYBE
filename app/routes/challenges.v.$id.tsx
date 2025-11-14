@@ -8,7 +8,7 @@ import {
   type MetaFunction,
   useSearchParams,
 } from 'react-router';
-import { useEffect, useState } from 'react'
+import { useEffect, useState, JSX } from 'react'
 import { requireAdminOrValidCohortMembership } from '~/models/auth.server'
 import type { MemberChallenge, Challenge, ChallengeSummary } from '~/utils/types'
 import { type LoaderFunction, type LoaderFunctionArgs } from 'react-router';

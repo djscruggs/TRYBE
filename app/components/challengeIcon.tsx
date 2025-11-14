@@ -1,3 +1,4 @@
+import { JSX } from 'react'
 import { HiOutlineQuestionMarkCircle } from 'react-icons/hi'
 export const iconFiles: Record<string, number> = {
   'People-05.png': 150,

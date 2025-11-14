@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, JSX } from 'react'
 import { MdVideoCameraFront, MdVideocamOff } from 'react-icons/md'
 interface VideoChooserProps {
   recorderShowing: boolean // if the video recorder is not showing, it shows the chooser and plus icon, otherwise it shows the cancel icon

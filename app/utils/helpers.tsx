@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { JSX } from 'react'
 // icons
 import { GiShinyApple, GiMeditation } from 'react-icons/gi'
 import { FaRegLightbulb } from 'react-icons/fa6'

@@ -1,6 +1,6 @@
 import ChatItem from './chatItem'
 import type { Comment } from '~/utils/types'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, JSX } from 'react'
 
 interface ChatContainerProps {
   allowReplies?: boolean

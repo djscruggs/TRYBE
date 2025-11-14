@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState, JSX } from "react";
 import { useAuth, UserButton } from "@clerk/react-router";
 import { ClientOnly } from "~/components/ClientOnly";
 import useHasLoaded from "~/hooks/useHasLoaded";
@@ -31,27 +31,14 @@ ReactGA.initialize(TRACKING_ID);
 export default function Layout(): JSX.Element {
   const hasLoaded = useHasLoaded();
   const location = useLocation();
-  const { isMobile } = useDeviceContext();
   const [isClient, setIsClient] = useState(false);
   const [showMobile, setShowMobile] = useState(false);
 
   useEffect(() => {
-    console.log("🎨 LAYOUT useEffect #1 running!");
-    setIsClient(true);
-    setShowMobile(isMobile());
-  }, [isMobile]);
-
-  useEffect(() => {
-    console.log("🎨 LAYOUT useEffect #2 running!");
     if (hasLoaded) {
       ReactGA.pageview(location.pathname + location.search);
     }
   }, [location.pathname]);
-
-  // During SSR, always render FullLayout to avoid hydration mismatch
-  if (!isClient) {
-    return <FullLayout />;
-  }
 
   // After hydration, show the correct layout
   return <>{showMobile ? <MobileLayout /> : <FullLayout />}</>;
@@ -174,7 +161,7 @@ export const FullLayout = (): JSX.Element => {
           ) : isClient ? (
             <>
               <div
-                className={`grow border-2 border-red-500 items-center justify-start pt-4 ${showNav ? "ml-20" : "ml-0"}`}
+                className={`grow items-center justify-start pt-4 ${showNav ? "ml-20" : "ml-0"}`}
               >
                 <div
                   className={`w-lg ${showNav ? "items-start" : "items-center"} justify-start h-full`}

@@ -1,5 +1,5 @@
 import { Outlet, useLoaderData } from 'react-router';
-import React from 'react'
+import React, { JSX } from 'react'
 import { requireCurrentUser } from '~/models/auth.server'
 import type { Post } from '~/utils/types'
 import { type MetaFunction, type LoaderFunction, type LoaderFunctionArgs } from 'react-router';

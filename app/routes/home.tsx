@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router';
 import Logo from '~/components/logo'
 import { WhatsNew } from '~/components/whatsNew'
 import { copyToClipboard } from '~/utils/helpers'
-import { useContext } from 'react'
+import { useContext, JSX } from 'react'
 import { CurrentUserContext } from '~/contexts/CurrentUserContext'
 
 export default function Home (): JSX.Element {

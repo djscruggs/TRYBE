@@ -1,6 +1,6 @@
 import CommentItem from './commentItem'
 import type { Comment } from '~/utils/types'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, JSX } from 'react'
 
 interface CommentsProps {
   comments: Comment[]

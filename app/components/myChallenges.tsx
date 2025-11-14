@@ -1,8 +1,7 @@
 import ChallengeList from "~/components/challengeList";
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext, JSX } from "react";
 import axios from "axios";
 import { type ChallengeSummary, type MemberChallenge } from "~/utils/types";
-import { useNavigate } from "react-router";
 import { CurrentUserContext } from "~/contexts/CurrentUserContext";
 import useGatedNavigate from "~/hooks/useGatedNavigate";
 import { CardChallengeHomeSkeleton } from "./cardChallengeHome";
@@ -27,9 +26,7 @@ export default function MyChallenges(props: MyChallengesProps): JSX.Element {
     setLoading(true);
     try {
       const url = `/api/challenges/${status}`;
-      console.log("Making API call to:", url, "with status:", status);
       const response = await axios.get(url);
-      console.log("API response:", response.data);
 
       const allChallenges = response.data.challenges as ChallengeSummary[];
       const userMemberships = response.data.memberships as MemberChallenge[];
@@ -50,7 +47,6 @@ export default function MyChallenges(props: MyChallengesProps): JSX.Element {
     }
   };
   useEffect(() => {
-    console.log("useEffect fired with status:", status);
     void loadData();
   }, [status]);
   return (
@@ -83,7 +79,7 @@ export default function MyChallenges(props: MyChallengesProps): JSX.Element {
               className={`flex items-center ${centered ? "justify-center" : "justify-start"} space-x-2 mt-4`}
             >
               <button
-                className="text-white bg-red p-2 text-xs rounded-full underline italic px-4"
+                className="text-white bg-red p-2 text-xs rounded-full underline italic px-4 cursor-pointer"
                 onClick={() => {
                   scrollToBrowse
                     ? scrollToBrowse()
@@ -93,7 +89,7 @@ export default function MyChallenges(props: MyChallengesProps): JSX.Element {
                 BROWSE CHALLENGES
               </button>
               <button
-                className="text-red bg-white border border-red p-2 text-xs rounded-full underline italic px-4"
+                className="text-red bg-white border border-red p-2 text-xs rounded-full underline italic px-4 cursor-pointer"
                 onClick={() => {
                   gatedNavigate("/challenges/new", true);
                 }}

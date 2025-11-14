@@ -1,3 +1,4 @@
+import { JSX } from 'react'
 import type { Comment, CheckIn, Post, Challenge } from '~/utils/types'
 import { FaRegComment } from 'react-icons/fa'
 interface Props {

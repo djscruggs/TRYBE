@@ -1,3 +1,4 @@
+import { JSX } from 'react'
 import FormNote from '~/components/formNote'
 import { useNavigate, useRouteLoaderData } from 'react-router';
 

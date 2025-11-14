@@ -1,4 +1,4 @@
-import { useContext } from 'react'
+import { useContext, JSX } from 'react'
 import { FaRegCalendarAlt, FaUserFriends } from 'react-icons/fa'
 import { type MemberChallenge, type Challenge, type ChallengeSummary } from '~/utils/types'
 import { colorToClassName } from '~/utils/helpers'

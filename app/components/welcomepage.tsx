@@ -1,3 +1,4 @@
+import { JSX } from 'react'
 import { useNavigate, useNavigation } from 'react-router';
 import {
   Card,

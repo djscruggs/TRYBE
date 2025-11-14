@@ -1,3 +1,4 @@
+import { JSX } from 'react'
 import ChallengeList from '~/components/challengeList'
 import { type MetaFunction, type LoaderFunctionArgs, useLoaderData, redirect } from 'react-router';
 import type { ChallengeSummary } from '~/utils/types'

@@ -1,3 +1,4 @@
+import React, { JSX } from 'react'
 import { useRouteLoaderData, useNavigate } from 'react-router';
 import FormNote from '~/components/formNote'
 import CardNote from '~/components/cardNote'

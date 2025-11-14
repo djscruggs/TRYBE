@@ -1,7 +1,7 @@
 import { CurrentUserContext } from '~/contexts/CurrentUserContext'
 import { getCurrentUser } from '~/models/auth.server'
 import { likesByType } from '~/models/like.server'
-import { useContext, useState, useEffect } from 'react'
+import { useContext, useState, useEffect, JSX } from 'react'
 import UserAvatar from '~/components/useravatar'
 import FormNote from '~/components/formNote'
 import { useLoaderData, type MetaFunction } from 'react-router';

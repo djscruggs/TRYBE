@@ -1,3 +1,4 @@
+import { JSX } from 'react'
 import { Outlet, useLocation, redirect } from "react-router";
 import type { MetaFunction, LoaderFunctionArgs } from "react-router";
 

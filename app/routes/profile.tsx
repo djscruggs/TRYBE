@@ -1,3 +1,4 @@
+import { JSX } from 'react'
 import { type LoaderFunction, type LoaderFunctionArgs, redirect } from 'react-router';
 // import { getAuth } from '@clerk/remix/ssr.server' // TODO: Update for React Router v7
 import { SignedIn, SignedOut, SignIn, UserProfile, useClerk } from '@clerk/react-router'

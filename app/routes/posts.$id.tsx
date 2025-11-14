@@ -8,7 +8,7 @@ import { type LoaderFunction, type LoaderFunctionArgs  } from 'react-router';
 import MobileBackButton from '~/components/mobileBackButton'
 import ChallengeTabs from '~/components/challengeTabs'
 import { loadChallengeSummary, loadMemberChallenge } from '~/models/challenge.server'
-import { useContext } from 'react'
+import { useContext, JSX } from 'react'
 import { CurrentUserContext } from '~/contexts/CurrentUserContext'
 export interface PostData {
   post: PostSummary | null

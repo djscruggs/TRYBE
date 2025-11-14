@@ -1,4 +1,4 @@
-import { useContext } from 'react'
+import { useContext, JSX } from 'react'
 import ChallengeForm from '~/components/formChallenge'
 import { getCurrentUser, requireCurrentUser } from '~/models/auth.server'
 import { type LoaderFunction } from 'react-router';

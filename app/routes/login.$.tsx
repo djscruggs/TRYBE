@@ -1,3 +1,4 @@
+import { JSX } from 'react'
 import { SignIn } from "@clerk/react-router";
 import { type LoaderFunctionArgs } from "react-router";
 import { ClientOnly } from "~/components/ClientOnly";

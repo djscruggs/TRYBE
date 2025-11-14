@@ -1,3 +1,4 @@
+import { JSX } from 'react'
 import LandingPage from '~/components/landingPage'
 import { type MetaFunction } from 'react-router';
 export const meta: MetaFunction = () => [

@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, JSX } from 'react'
 import { handleFileUpload, isMobileDevice } from '~/utils/helpers'
 import { TiDeleteOutline } from 'react-icons/ti'
 

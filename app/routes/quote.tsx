@@ -1,5 +1,5 @@
 import { Spinner } from '~/utils/material-tailwind';
-import { useContext, useEffect, useState } from 'react'
+import { useContext, useEffect, useState, JSX } from 'react'
 import { useLoaderData, useNavigate } from 'react-router';
 import { CurrentUserContext } from '~/contexts/CurrentUserContext'
 import getRandomQuote from '~/utils/quotes'

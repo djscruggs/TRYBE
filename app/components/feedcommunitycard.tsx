@@ -1,3 +1,4 @@
+import { JSX } from 'react'
 import { Card } from '~/utils/material-tailwind';
 import { FcLike } from 'react-icons/fc'
 import { SlShareAlt } from 'react-icons/sl'

@@ -4,7 +4,7 @@ import {
   DialogBody
 } from '~/utils/material-tailwind'
 import type { Challenge, CheckIn } from '~/utils/types'
-import { useState } from 'react'
+import { useState, JSX } from 'react'
 import { CheckInButton } from './checkinButton'
 interface DialogCheckinProps {
   challenge: Challenge

@@ -1,3 +1,4 @@
+import { JSX } from 'react'
 import { loadNoteSummary, loadRepost } from '~/models/note.server'
 import { Outlet, useLoaderData, useLocation } from 'react-router';
 

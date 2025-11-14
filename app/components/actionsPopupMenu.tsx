@@ -2,7 +2,7 @@ import { Spinner } from '~/utils/material-tailwind';
 import { HiDotsHorizontal } from 'react-icons/hi'
 import { toast } from 'react-hot-toast'
 import { CurrentUserContext } from '~/contexts/CurrentUserContext'
-import { useContext, useState, useRef, useEffect } from 'react'
+import { useContext, useState, useRef, useEffect, JSX } from 'react'
 import DialogDelete from './dialogDelete'
 import axios from 'axios'
 import type { Comment, CheckIn, Post } from '~/utils/types'

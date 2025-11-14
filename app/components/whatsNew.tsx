@@ -1,3 +1,4 @@
+import { JSX } from 'react'
 import Logo from './logo'
 import { useNavigate } from 'react-router';
 export function WhatsNew (): JSX.Element {

@@ -1,5 +1,5 @@
 import { useLoaderData, useRouteLoaderData } from 'react-router';
-import { useEffect, useRef, useState, useContext } from 'react'
+import { useEffect, useRef, useState, useContext, JSX } from 'react'
 import { requireCurrentUser } from '~/models/auth.server'
 import type { Post, CheckIn, Challenge, Comment } from '~/utils/types'
 import { type MetaFunction,

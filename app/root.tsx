@@ -11,7 +11,7 @@ import {
   useRevalidator,
 } from "react-router";
 import type { Route } from "../.react-router/types/app/+types/root";
-import { useEffect, useState } from "react";
+import { useEffect, useState, JSX } from "react";
 import { CurrentUserContext } from "./contexts/CurrentUserContext";
 import DeviceContext from "./contexts/DeviceContext";
 import LayoutComponent from "./ui/layout";

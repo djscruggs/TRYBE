@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from 'react'
+import React, { useContext, useState, useEffect, JSX } from 'react'
 import { Spinner, Card } from '~/utils/material-tailwind';
 import AvatarLoader from './avatarLoader'
 import type { ThreadSummary, Thread } from '~/utils/types'

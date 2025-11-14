@@ -1,6 +1,6 @@
 import { Tooltip } from '~/utils/material-tailwind';
 import { userLocale, textToJSX, pluralize } from '~/utils/helpers'
-import { useContext, useState, useEffect } from 'react'
+import { useContext, useState, useEffect, JSX } from 'react'
 import { CurrentUserContext } from '~/contexts/CurrentUserContext'
 import { Lightbox } from 'react-modal-image'
 import AvatarLoader from './avatarLoader'

@@ -1,3 +1,4 @@
+import { JSX } from 'react'
 import FormNote from '~/components/formNote'
 import { type MetaFunction, useNavigate, useRouteLoaderData } from 'react-router';
 import type { ChallengeSummary } from '~/utils/types'

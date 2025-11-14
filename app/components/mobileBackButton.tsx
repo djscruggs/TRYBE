@@ -1,3 +1,4 @@
+import { JSX } from 'react'
 import { FaChevronCircleLeft } from 'react-icons/fa'
 import { useNavigate } from 'react-router';
 export default function MobileBackButton ({ to }: { to?: string }): JSX.Element {

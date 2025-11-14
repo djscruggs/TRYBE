@@ -3,6 +3,7 @@ import React, {
   useState,
   useContext,
   useRef,
+  JSX,
   useEffect,
   type ChangeEvent
 } from 'react'

@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useState, JSX } from 'react'
 import { useParams, useLoaderData, type MetaFunction  } from 'react-router';
 import { CurrentUserContext } from '~/contexts/CurrentUserContext'
 import { type LoaderFunction } from 'react-router';

@@ -1,5 +1,6 @@
 // NavLinks.tsx
 
+import { JSX } from 'react'
 import { useLocation, useNavigate, useNavigation } from 'react-router';
 import {
   PlusCircleIcon,

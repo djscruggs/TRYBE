@@ -1,5 +1,5 @@
 import { Avatar } from '~/utils/material-tailwind';
-import { useState, useEffect } from 'react'
+import { useState, useEffect, JSX } from 'react'
 import axios from 'axios'
 import { Link } from 'react-router';
 import { userInitials } from '~/utils/helpers'

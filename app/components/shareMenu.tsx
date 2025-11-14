@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, JSX } from 'react'
 import { useNavigate } from 'react-router';
 import { SlShareAlt } from 'react-icons/sl'
 import { copyToClipboard } from '~/utils/helpers'

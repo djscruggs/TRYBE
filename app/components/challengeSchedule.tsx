@@ -13,7 +13,7 @@ import type { Challenge, CurrentUser, MemberChallenge, Post } from '~/utils/type
 import { userLocale, pluralize } from '~/utils/helpers'
 import { CurrentUserContext } from '~/contexts/CurrentUserContext'
 import { BsExclamationCircleFill } from 'react-icons/bs'
-import { useContext } from 'react'
+import { useContext, JSX } from 'react'
 import { hasStarted } from '~/utils/helpers/challenge'
 
 interface ChallengeScheduleProps {

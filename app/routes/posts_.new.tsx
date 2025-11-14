@@ -1,3 +1,4 @@
+import { JSX } from 'react'
 import { requireCurrentUser } from '~/models/auth.server'
 import { useLoaderData, type MetaFunction, useLocation } from 'react-router';
 import type { ChallengeSummary, Post, PostSummary } from '~/utils/types'

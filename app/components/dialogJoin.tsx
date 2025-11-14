@@ -1,4 +1,4 @@
-import { useState, useContext, useEffect } from 'react'
+import { useState, useContext, useEffect, JSX } from 'react'
 import type { Challenge, MemberChallenge } from '~/utils/types'
 import { CurrentUserContext } from '~/contexts/CurrentUserContext'
 import {

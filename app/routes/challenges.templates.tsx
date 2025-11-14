@@ -1,5 +1,5 @@
 import { Navigate } from 'react-router';
-import { useEffect, useContext } from 'react'
+import { useEffect, useContext, JSX } from 'react'
 import { CurrentUserContext } from '~/contexts/CurrentUserContext'
 import type { MetaFunction } from 'react-router';
 export const meta: MetaFunction = () => {

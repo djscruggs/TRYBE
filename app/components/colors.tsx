@@ -1,3 +1,4 @@
+import { JSX } from 'react'
 // DO NOT USE THIS FUNCTION
 // IT'S JUST A HACK TO MAKE SURE TAILWIND GENERATES THE COLORS
 export function Colors (): JSX.Element {

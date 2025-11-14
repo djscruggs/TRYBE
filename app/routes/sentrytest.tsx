@@ -1,3 +1,4 @@
+import { JSX } from 'react'
 import { type LoaderFunction, type LoaderFunctionArgs } from 'react-router';
 import * as Sentry from '@sentry/remix'
 

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, JSX } from 'react'
 import FormChat from './formChat'
 import { textToJSX } from '~/utils/helpers'
 import type { Comment } from '~/utils/types'

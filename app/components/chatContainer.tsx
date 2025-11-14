@@ -1,3 +1,4 @@
+import { JSX } from 'react'
 import ChatItem from './chatItem'
 import type { Comment } from '~/utils/types'
 import { useChatContext } from '~/contexts/ChatContext'

@@ -1,3 +1,4 @@
+import { JSX } from 'react'
 import { useRouteLoaderData, useNavigate } from 'react-router';
 import type { PostSummary } from '~/utils/types'
 import FormPost from '~/components/formPost'

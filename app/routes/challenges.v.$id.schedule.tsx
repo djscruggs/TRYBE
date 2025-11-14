@@ -1,3 +1,4 @@
+import { JSX } from 'react'
 import { useLoaderData, useRouteLoaderData } from 'react-router';
 import { requireCurrentUser } from '~/models/auth.server'
 import { type Post } from '@prisma/client'

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, JSX } from 'react'
 import type { Challenge, MemberChallenge, CheckIn } from '~/utils/types'
 import FormCheckIn from './formCheckin'
 import { hasStarted, isExpired } from '~/utils/helpers/challenge'

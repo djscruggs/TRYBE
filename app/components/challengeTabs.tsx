@@ -1,7 +1,7 @@
 import { type ChallengeSummary, type MemberChallenge } from '~/utils/types'
 import useGatedNavigate from '~/hooks/useGatedNavigate'
 import { CheckInButton } from './checkinButton'
-import { useState, useEffect, useContext } from 'react'
+import { useState, useEffect, useContext, JSX } from 'react'
 import { toast } from 'react-hot-toast'
 import { getShortUrl } from '~/utils/helpers/challenge'
 import DialogShare from './dialogShare'

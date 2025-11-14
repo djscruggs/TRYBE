@@ -1,5 +1,5 @@
 import ChallengeForm from '~/components/formChallenge'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, JSX } from 'react'
 import axios from 'axios'
 import { type ChallengeSummary } from '~/utils/types'
 import { type MetaFunction, useParams } from 'react-router';

@@ -1,3 +1,4 @@
+import { JSX } from 'react'
 import { resizeImageToFit } from '~/utils/helpers'
 import { type Challenge, type ChallengeSummary } from '~/utils/types'
 import { Link } from 'react-router';

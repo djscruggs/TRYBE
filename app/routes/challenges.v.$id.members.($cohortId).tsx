@@ -1,3 +1,4 @@
+import { JSX } from 'react'
 import { useLoaderData, type MetaFunction  } from 'react-router';
 import { type LoaderFunction } from 'react-router';
 import { fetchChallengeMembers } from '~/models/challenge.server'

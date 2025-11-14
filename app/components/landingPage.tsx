@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, JSX } from 'react'
 import { FaArrowCircleRight } from 'react-icons/fa'
 import { useSearchParams, useNavigate } from 'react-router';
 import { FaLessThan } from 'react-icons/fa6'

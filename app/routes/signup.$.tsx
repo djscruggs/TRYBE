@@ -1,7 +1,7 @@
 import { type LoaderFunction, type LoaderFunctionArgs } from 'react-router';
 import { SignUp } from '@clerk/react-router'
 import Logo from '~/components/logo'
-import { useState } from 'react'
+import { useState, JSX } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router';
 import { useDeviceContext } from '~/contexts/DeviceContext'
 import { isMobile } from 'react-device-detect'

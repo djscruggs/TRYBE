@@ -7,7 +7,7 @@ import {
   type ActionFunctionArgs,
 } from "react-router";
 import { getAuth } from "@clerk/react-router/server";
-import { useState, useEffect } from "react";
+import { useState, useEffect, JSX } from "react";
 import { WelcomePage } from "~/components/welcomepage";
 import LandingPage from "~/components/landingPage";
 import { useNavigate } from "react-router";

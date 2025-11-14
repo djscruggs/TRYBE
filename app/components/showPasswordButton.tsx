@@ -1,3 +1,4 @@
+import React, { JSX } from 'react'
 interface ShowPasswordButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   passwordVisible: boolean
   clickHandler: React.MouseEventHandler<HTMLButtonElement>

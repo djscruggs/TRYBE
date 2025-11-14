@@ -1,3 +1,4 @@
+import { JSX } from 'react'
 import { Spinner } from "~/utils/material-tailwind";
 import ChallengeList from "~/components/challengeList";
 import {

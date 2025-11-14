@@ -1,3 +1,4 @@
+import { JSX } from 'react'
 /* this hides the sentry feedback button that shows up globally */
 export default function HideFeedbackButton (): JSX.Element {
   return (

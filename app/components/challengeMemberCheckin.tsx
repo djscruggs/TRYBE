@@ -1,3 +1,4 @@
+import { JSX } from 'react'
 import { formatDistanceToNowStrict, format, differenceInDays, differenceInHours, isPast } from 'date-fns'
 import type { Challenge, MemberChallenge, CheckIn } from '~/utils/types'
 import { Link, useLocation } from 'react-router';

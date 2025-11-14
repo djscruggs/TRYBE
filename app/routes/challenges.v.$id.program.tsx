@@ -1,5 +1,5 @@
 import { useLoaderData, useRouteLoaderData, Link } from 'react-router';
-import { useContext, useState, useEffect } from 'react'
+import { useContext, useState, useEffect, JSX } from 'react'
 import { loadChallenge } from '~/models/challenge.server'
 import { CurrentUserContext } from '~/contexts/CurrentUserContext'
 import { type MetaFunction, type LoaderFunction, type LoaderFunctionArgs } from 'react-router';

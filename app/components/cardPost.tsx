@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useState, JSX } from 'react'
 import {
   Card
 } from '~/utils/material-tailwind'

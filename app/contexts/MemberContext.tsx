@@ -1,4 +1,4 @@
-import { createContext, type ReactNode, useContext, useState } from 'react'
+import { createContext, type ReactNode, useContext, useState, JSX } from 'react'
 import { type MemberChallenge, type CheckIn, type Challenge } from '~/utils/types'
 import { useCurrentUser } from '~/contexts/CurrentUserContext'
 import axios from 'axios'

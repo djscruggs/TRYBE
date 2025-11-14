@@ -1,6 +1,6 @@
 // import * as pkg from '~/utils/material-tailwind';
 import { useNavigate, useLocation, useRevalidator } from 'react-router';
-import { useState, useContext } from 'react'
+import { useState, useContext, JSX } from 'react'
 import { CurrentUserContext } from '~/contexts/CurrentUserContext'
 import { type Challenge, type ChallengeSummary } from '~/utils/types'
 import { Button, Menu, MenuHandler, MenuList, MenuItem } from '~/utils/material-tailwind';

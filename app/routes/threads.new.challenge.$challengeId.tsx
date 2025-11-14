@@ -1,3 +1,4 @@
+import { JSX } from 'react'
 import { requireCurrentUser } from '~/models/auth.server'
 import { useLoaderData } from 'react-router';
 import type { ChallengeSummary } from '~/utils/types'

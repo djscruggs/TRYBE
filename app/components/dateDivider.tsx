@@ -1,3 +1,4 @@
+import { JSX } from 'react'
 export default function DateDivider ({ date }: { date: string }): JSX.Element {
   return (
     <div className='border-t border-teal flex items-center justify-center'>

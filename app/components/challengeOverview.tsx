@@ -1,5 +1,5 @@
 import { Spinner } from '~/utils/material-tailwind';
-import { useState, useEffect, useContext } from 'react'
+import { useState, useEffect, useContext, JSX } from 'react'
 import { type ChallengeSummary, type MemberChallenge, type CheckIn } from '~/utils/types'
 import { CurrentUserContext } from '~/contexts/CurrentUserContext'
 import { useMemberContext } from '~/contexts/MemberContext'

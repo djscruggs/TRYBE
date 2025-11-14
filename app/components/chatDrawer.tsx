@@ -1,5 +1,5 @@
 import { Drawer } from '~/utils/material-tailwind';
-import React, { useState, useEffect, useRef, useCallback, useContext } from 'react'
+import React, { useState, useEffect, useRef, useCallback, useContext, JSX } from 'react'
 import ChatContainer from './chatContainer'
 import type { Comment } from '~/utils/types'
 import { ChatRowSkeleton } from './skeletons'

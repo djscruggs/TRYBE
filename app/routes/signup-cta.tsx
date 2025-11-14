@@ -1,3 +1,4 @@
+import { JSX } from 'react'
 import { type LoaderFunction, type LoaderFunctionArgs } from 'react-router';
 import Logo from '~/components/logo'
 import { Link, useNavigate, useSearchParams } from 'react-router';
