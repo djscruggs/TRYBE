@@ -9,14 +9,14 @@ import {
 import { requireCurrentUser } from "~/models/auth.server";
 import {
   type LoaderFunction,
-  unstable_parseMultipartFormData,
   type ActionFunctionArgs,
 } from "react-router";
+import { parseFormData } from '@remix-run/form-data-parser';
 import { convertStringValues } from "~/utils/helpers";
 import {
-  uploadHandler,
-  saveToCloudinary,
+  saveBufferToCloudinary,
   deleteFromCloudinary,
+  memoryUploadHandler
 } from "~/utils/uploadFile";
 import { prisma } from "~/models/prisma.server";
 import { differenceInDays } from "date-fns";
@@ -24,9 +24,12 @@ import { differenceInDays } from "date-fns";
 export async function action(args: ActionFunctionArgs): Promise<any> {
   const currentUser = await requireCurrentUser(args);
   const request = args.request;
-  // const rawData = await unstable_parseMultipartFormData(request, uploadHandler) // Not available in React Router v7
-  const formData = Object.fromEntries(rawData);
-  const cleanData = convertStringValues(formData);
+
+  const formData = await parseFormData(request, memoryUploadHandler);
+  const rawData = formData;
+
+  const textData = Object.fromEntries(formData);
+  const cleanData = convertStringValues(textData);
   if (!cleanData.userId) {
     cleanData.userId = currentUser?.id;
   }
@@ -83,7 +86,8 @@ export async function action(args: ActionFunctionArgs): Promise<any> {
     }
     if (newCoverPhoto) {
       const nameNoExt = `challenge-${data.id}-cover`;
-      const coverPhotoMeta = await saveToCloudinary(newCoverPhoto, nameNoExt);
+      const buffer = await newCoverPhoto.arrayBuffer();
+      const coverPhotoMeta = await saveBufferToCloudinary(Buffer.from(buffer), nameNoExt);
       data.coverPhotoMeta = coverPhotoMeta;
     }
     const updatedData = await updateChallenge(data);

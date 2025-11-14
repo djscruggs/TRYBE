@@ -1,14 +1,17 @@
 import { createNote, updateNote, loadRepost, deleteNote } from '~/models/note.server'
 import { requireCurrentUser } from '~/models/auth.server'
 import { type LoaderFunction, type ActionFunction  } from 'react-router';
-// import { unstable_parseMultipartFormData } from 'react-router'; // Not available in React Router v7
-import { uploadHandler, writeFile } from '~/utils/uploadFile'
+import { parseFormData } from '@remix-run/form-data-parser';
+import { writeFile, memoryUploadHandler } from '~/utils/uploadFile'
 
 export const action: ActionFunction = async (args) => {
   const currentUser = await requireCurrentUser(args)
 
   const request = args.request
-  // const rawData = await unstable_parseMultipartFormData(request, uploadHandler) // Not available in React Router v7
+
+  const formData = await parseFormData(request, memoryUploadHandler);
+  const rawData = formData
+
   if (rawData.get('unrepost')) {
     const repost = await loadRepost(rawData.get('replyToId'), currentUser?.id, null)
     if (repost) {
@@ -16,7 +19,7 @@ export const action: ActionFunction = async (args) => {
     }
     return { message: 'Repost deleted' }
   }
-  const image = rawData.get('image')
+  const image = rawData.get('image') as File
   if (!rawData.get('replyToId')) {
     throw new Error('replyToId is required')
   }
@@ -34,7 +37,6 @@ export const action: ActionFunction = async (args) => {
   }
   const result = await createNote(data)
   if (image) {
-    // const nameNoExt = image.name.split('.')[0]
     const webPath = await writeFile(image)
     result.image = webPath
   }

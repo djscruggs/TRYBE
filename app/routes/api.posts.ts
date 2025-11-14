@@ -4,8 +4,8 @@ import { type CurrentUser } from '~/utils/types'
 import { loadChallenge } from '~/models/challenge.server'
 import { requireCurrentUser } from '~/models/auth.server'
 import { type LoaderFunction, type ActionFunction  } from 'react-router';
-// import { unstable_parseMultipartFormData } from 'react-router'; // Not available in React Router v7
-import { uploadHandler, handleFormUpload } from '~/utils/uploadFile'
+import { parseFormData } from '@remix-run/form-data-parser';
+import { handleFormUpload, memoryUploadHandler } from '~/utils/uploadFile' from '~/utils/uploadFile'
 import { mailPost } from '~/utils/mailer'
 import getUserLocale from 'get-user-locale'
 import { format, isPast, isEqual } from 'date-fns'
@@ -15,10 +15,13 @@ import escape from 'escape-html'
 export const action: ActionFunction = async (args) => {
   const currentUser = (await requireCurrentUser(args))!
   const request = args.request
-  // const rawData = await unstable_parseMultipartFormData(request, uploadHandler) // Not available in React Router v7
-  const formData = Object.fromEntries(rawData)
+
+  const formData = await parseFormData(request, memoryUploadHandler);
+  const rawData = formData
+
+  const textData = Object.fromEntries(formData)
   // remove title from formData because the convertStringValues function will screws up on values like "Day 1"
-  const { title, body, ...formDataWithoutTitle } = formData
+  const { title, body, ...formDataWithoutTitle } = textData
   const cleanData = convertStringValues(formDataWithoutTitle)
 
   cleanData.title = title

@@ -2,8 +2,8 @@ import { prisma } from '~/models/prisma.server'
 import { requireCurrentUser } from '~/models/auth.server'
 import { joinChallenge, loadChallenge, calculateNextCheckin, updateCheckin } from '~/models/challenge.server'
 import { type LoaderFunction, type ActionFunctionArgs  } from 'react-router';
-// import { unstable_parseMultipartFormData } from 'react-router'; // Not available in React Router v7
-import { uploadHandler, handleFormUpload } from '~/utils/uploadFile'
+import { parseFormData } from '@remix-run/form-data-parser';
+import { handleFormUpload, memoryUploadHandler } from '~/utils/uploadFile'
 
 export async function action (args: ActionFunctionArgs): Promise<prisma.checkIn> {
   const currentUser = await requireCurrentUser(args)
@@ -13,7 +13,9 @@ export async function action (args: ActionFunctionArgs): Promise<prisma.checkIn>
     }
   }
   const request = args.request
-  // const rawData = await unstable_parseMultipartFormData(request, uploadHandler) // Not available in React Router v7
+
+  const formData = await parseFormData(request, memoryUploadHandler);
+  const rawData = formData
 
   const { params } = args
   const challenge = await loadChallenge(Number(params.id))

@@ -1,61 +1,56 @@
-import { promises as fs } from 'fs'
-// Upload handlers not available in React Router v7
-// import {
-//   composeUploadHandlers,
-//   createFileUploadHandler,
-//   createMemoryUploadHandler,
-// } from 'react-router';
 import { v2 as cloudinary } from 'cloudinary'
 import type { UploadApiResponse } from 'cloudinary'
-import type { Note, Thread, Post, CheckIn, Challenge } from '@prisma/client'
 import { Prisma } from '@prisma/client'
-export async function writeFile (file: any, nameWithoutExtension: string): Promise<string> {
-  const directory = `${process.cwd()}/public/uploads`
-  const fullName = _newFileName(file, nameWithoutExtension)
-  const dest = `${directory}/${fullName}`
-  const src = String(file.filepath)
+import { promises as fs } from 'fs';
+import { type FileUpload } from '@remix-run/form-data-parser';
 
-  const deleteExistingFiles = async (directory: string, fullName: string): Promise<void> => {
-    const files = await fs.readdir(directory)
-    for (const file of files) {
-      const match = file.match(new RegExp(escapeRegExp(fullName) + '.*'))
-      if (match !== null) {
-        await fs.unlink(`${directory}/${match[0]}`)
+export async function writeFile(file: File): Promise<string> {
+  const directory = `${process.cwd()}/public/uploads`;
+  await fs.mkdir(directory, { recursive: true });
+
+  const buffer = await file.arrayBuffer();
+  const ext = file.name.split('.').pop();
+  const newName = `${Date.now()}.${ext}`;
+  const dest = `${directory}/${newName}`;
+
+  await fs.writeFile(dest, Buffer.from(buffer));
+
+  return `/uploads/${newName}`;
+}
+
+export const memoryUploadHandler = async (file: FileUpload) => {
+  const chunks = [];
+  for await (const chunk of file.data) {
+    chunks.push(chunk);
+  }
+  const buffer = Buffer.concat(chunks);
+  return new File([buffer], file.name, { type: file.type });
+};
+
+export const saveBufferToCloudinary = (
+  buffer: Buffer,
+  nameWithoutExtension: string
+): Promise<UploadApiResponse> => {
+  return new Promise((resolve, reject) => {
+    const uploadStream = cloudinary.uploader.upload_stream(
+      {
+        use_filename: false,
+        unique_filename: false,
+        public_id: nameWithoutExtension,
+        overwrite: true,
+        resource_type: 'auto',
+      },
+      (error, result) => {
+        if (error) {
+          reject(error);
+          return;
+        }
+        resolve(result);
       }
-    }
-  }
-
-  await deleteExistingFiles(directory, fullName)
-  await fs.copyFile(src, dest, fs.constants.COPYFILE_FICLONE)
-
-  return `/uploads/${fullName}`
-}
-
-const _newFileName = (file: any, nameWithoutExtension: string): string => {
-  let ext = file.type.split('/').at(-1)
-  // check if it's a webm file - video file types have extra encoding stuff at the end so you can't use just the last element
-  if (ext.includes('webm')) {
-    ext = 'webm'
-  }
-  return `${nameWithoutExtension}.${ext}`
-}
-
-export const saveToCloudinary = async (file: any, nameWithoutExtension: string): Promise<UploadApiResponse> => {
-  // first write file to the uploads directory
-  // const uploadedName = await writeFile(file, nameWithoutExtension)
-  // const filePath = `${directory}${uploadedName}`
-  // const fileName = _newFileName(file, nameWithoutExtension)
-  const filePath = String(file.filepath)
-  const options = {
-    use_filename: false,
-    unique_filename: false,
-    public_id: nameWithoutExtension,
-    overwrite: true,
-    resource_type: 'auto'
-  }
-  const result = await cloudinary.uploader.upload(filePath, options)
-  return result
-}
+    );
+    uploadStream.end(buffer);
+  });
+};
 
 type ResourceType = 'image' | 'video'
 export const deleteFromCloudinary = async (publicId: string, type: ResourceType): Promise<void> => {
@@ -63,18 +58,8 @@ export const deleteFromCloudinary = async (publicId: string, type: ResourceType)
 }
 
 function escapeRegExp (string: string): string {
-  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
+  return string.replace(/[.*+?^${}()|[\\]/g, '\\$&'); // $& means the whole matched string
 }
-
-// Upload handler not available in React Router v7 - needs to be reimplemented
-// export const uploadHandler = composeUploadHandlers(
-//   createFileUploadHandler({
-//     maxPartSize: 10_000_000,
-//     file: ({ filename }) => filename
-//   }),
-//   // parse everything else into memory
-//   createMemoryUploadHandler()
-// )
 
 interface DataObj {
   id: number
@@ -104,7 +89,8 @@ export const handleFormUpload = async ({ formData, dataObj, nameSpace, onUpdate 
       }
       if (image) {
         const imgNoExt = `${nameSpace}-${dataObj.id}-image`
-        const imgMeta = await saveToCloudinary(image, imgNoExt)
+        const buffer = await image.arrayBuffer()
+        const imgMeta = await saveBufferToCloudinary(Buffer.from(buffer), imgNoExt)
         dataObj.imageMeta = imgMeta
       } else {
         dataObj.imageMeta = Prisma.DbNull
@@ -125,7 +111,8 @@ export const handleFormUpload = async ({ formData, dataObj, nameSpace, onUpdate 
       }
       if (video) {
         const vidNoExt = `${nameSpace}-${dataObj.id}-video`
-        const videoMeta = await saveToCloudinary(video, vidNoExt)
+        const buffer = await video.arrayBuffer()
+        const videoMeta = await saveBufferToCloudinary(Buffer.from(buffer), vidNoExt)
         dataObj.videoMeta = videoMeta
       } else {
         dataObj.videoMeta = Prisma.DbNull

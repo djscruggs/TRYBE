@@ -2,8 +2,8 @@ import { createComment, updateComment, loadComment, deleteComment } from '~/mode
 import { sendCommentReplyNotification } from '~/utils/mailer'
 import { requireCurrentUser } from '~/models/auth.server'
 import { type LoaderFunction, type ActionFunction  } from 'react-router';
-// import { unstable_parseMultipartFormData } from 'react-router'; // Not available in React Router v7
-import { uploadHandler, handleFormUpload } from '~/utils/uploadFile'
+import { parseFormData } from '@remix-run/form-data-parser';
+import { handleFormUpload, memoryUploadHandler } from '~/utils/uploadFile'
 import { generateUrl } from '~/utils/helpers'
 import { loadCheckIn, loadChallengeSummary } from '~/models/challenge.server'
 import { loadPost } from '~/models/post.server'
@@ -13,39 +13,42 @@ import { prisma } from '~/models/prisma.server'
 export const action: ActionFunction = async (args) => {
   const currentUser = await requireCurrentUser(args)
   const { request } = args
-  // const rawData = await unstable_parseMultipartFormData(request, uploadHandler) // Not available in React Router v7
-  const formData = Object.fromEntries(rawData)
+
+  const formData = await parseFormData(request, memoryUploadHandler);
+  const rawData = formData
+
+  const textData = Object.fromEntries(formData)
   // is this a delete request?
-  const intent = formData.intent
+  const intent = textData.intent
   if (intent === 'delete') {
-    const id = Number(formData.id)
+    const id = Number(textData.id)
     const result = await deleteComment(id)
     return result
   }
   const data: prisma.commentCreateInput = {
-    body: formData.body,
+    body: textData.body,
     user: { connect: { id: currentUser?.id } }
   }
-  if (formData.id) {
-    data.id = Number(formData.id)
+  if (textData.id) {
+    data.id = Number(textData.id)
   }
   // if this is a reply, the other relations will come from the parent
-  const replyToId = formData.replyToId
+  const replyToId = textData.replyToId
   if (!replyToId && !data.id) {
-    if (formData.postId) {
-      data.post = { connect: { id: Number(formData.postId) } }
+    if (textData.postId) {
+      data.post = { connect: { id: Number(textData.postId) } }
     }
-    if (formData.challengeId) {
-      data.challenge = { connect: { id: Number(formData.challengeId) } }
+    if (textData.challengeId) {
+      data.challenge = { connect: { id: Number(textData.challengeId) } }
     }
-    if (formData.threadId) {
-      data.thread = { connect: { id: Number(formData.threadId) } }
+    if (textData.threadId) {
+      data.thread = { connect: { id: Number(textData.threadId) } }
     }
-    if (formData.checkInId) {
-      data.checkIn = { connect: { id: Number(formData.checkInId) } }
+    if (textData.checkInId) {
+      data.checkIn = { connect: { id: Number(textData.checkInId) } }
     }
-    if (typeof formData.cohortId === 'string') {
-      data.cohort = { connect: { id: Number(formData.cohortId) } }
+    if (typeof textData.cohortId === 'string') {
+      data.cohort = { connect: { id: Number(textData.cohortId) } }
     }
     if (!data.challenge && !data.post && !data.thread && !data.checkIn) {
       return { message: 'Post id or callenge id or thread id or checkin id is required' }
