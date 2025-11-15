@@ -7,11 +7,8 @@ import { useEffect, useState, useRef, JSX } from "react";
 import type { ChallengeSummary, MemberChallenge } from "~/utils/types";
 import ChallengeList from "~/components/challengeList";
 import MyChallenges from "~/components/myChallenges";
-import { CardChallengeHomeSkeleton } from "~/components/cardChallengeHome";
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
-  console.log("=== challenges.$range.tsx loader ===");
-  console.log(params);
 
   const range = params.range ?? "active";
   let url = `/api/challenges/${range}`;
