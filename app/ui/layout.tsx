@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState, JSX } from "react";
-import { useAuth, UserButton } from "@clerk/react-router";
+import { useAuth, UserButton, useUser } from "@clerk/react-router";
 import { ClientOnly } from '~/components/ClientOnly'
 import useHasLoaded from "~/hooks/useHasLoaded";
 import {
@@ -59,7 +59,8 @@ function Loading(): JSX.Element {
 }
 
 export const FullLayout = (): JSX.Element => {
-  const { currentUser } = useContext(CurrentUserContext);
+  const { user: currentUser } = useUser();
+  console.log(currentUser)
   const location = useLocation();
   const navigate = useNavigate();
   const [isClient, setIsClient] = useState(false);

@@ -18,6 +18,7 @@ import useGatedNavigate from '~/hooks/useGatedNavigate'
 import { useDeviceContext } from '~/contexts/DeviceContext'
 const NavLinks = (): JSX.Element => {
   const { currentUser } = useContext(CurrentUserContext)
+  console.log(currentUser)
   const location = useLocation()
   const { signOut: ClerkSignOut } = useClerk()
   const navigate = useNavigate()

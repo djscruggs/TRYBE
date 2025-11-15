@@ -1,7 +1,6 @@
 import {
   Links,
   Meta,
-  Outlet,
   Scripts,
   ScrollRestoration,
   useRouteError,
@@ -18,6 +17,7 @@ import LayoutComponent from "./ui/layout";
 import "./tailwind.css";
 import "react-datepicker/dist/react-datepicker.css";
 import "react-circular-progressbar/dist/styles.css";
+import { getCurrentUser } from '~/models/auth.server'
 import type { LinksFunction, LoaderFunction, MetaFunction } from "react-router";
 import { type CurrentUser } from "./utils/types";
 import { Toaster } from "react-hot-toast";
@@ -45,12 +45,15 @@ export interface RootLoaderData {
 }
 
 export const loader: LoaderFunction = async (args) => {
-  return rootAuthLoader(args, ({ request }) => {
+  console.log(args)
+  const user = await getCurrentUser(args)
+  return rootAuthLoader(args, () => {
     return {
       ENV: {
         CLERK_PUBLISHABLE_KEY: process.env.CLERK_PUBLISHABLE_KEY || "",
         NODE_ENV: process.env.NODE_ENV || "development",
       },
+      user
     };
   });
 };
@@ -58,7 +61,7 @@ export const loader: LoaderFunction = async (args) => {
 // React Router v7 Layout component - handles both SSR and client-side hydration
 export function Layout({ children }: { children: React.ReactNode }) {
   const data = useLoaderData<RootLoaderData>();
-
+  console.log(data)
   return (
     <html lang="en">
       <head>
@@ -82,11 +85,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         />
       </head>
       <body>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `console.log('🔥 INLINE SCRIPT - HTML IS LOADING')`,
-          }}
-        />
+        
         <ClerkProvider afterSignOutUrl="/logout" loaderData={data}>
           {children}
         </ClerkProvider>

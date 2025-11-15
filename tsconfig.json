@@ -1,6 +1,6 @@
 {
   "include": [
-    "remix.env.d.ts",
+    "env.d.ts",
     "vitest.config.js",
     "**/*.ts",
     "**/*.js",
