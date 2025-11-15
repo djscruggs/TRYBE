@@ -37,7 +37,7 @@ export function CheckInButton ({ challenge, membership, afterCheckIn, size, labe
       <div>
         <button
             onClick={() => { setShowForm(true) } }
-            className={className ?? `w-fit ${minWidth} bg-red hover:bg-green-500 text-white ${size === 'xs' ? 'text-xs p-1' : 'p-2'} rounded-full justify-center text-sm disabled:bg-gray-400 ${expired ? 'opacity-50 cursor-not-allowed px-2' : ''}`}
+            className={className ?? `w-fit cursor-pointer ${minWidth} bg-red hover:bg-green-500 text-white ${size === 'xs' ? 'text-xs p-1' : 'p-2'} rounded-full justify-center text-sm disabled:bg-gray-400 ${expired ? 'opacity-50 cursor-not-allowed px-2' : ''}`}
             disabled={expired || !started || isDraft || disabled}
           >
             {expired ? 'Challenge Ended' : started ? label : 'Not Started'}

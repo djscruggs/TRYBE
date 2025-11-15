@@ -167,7 +167,7 @@ export default function CardChallengeHome ({ challenge, isMember, isPreview, mem
                 {isMember && !checkInButtonDisabled &&
                   <div className='w-1/3'>
                       <div onClick={(event) => { event.stopPropagation() }} className='flex items-center justify-center w-full h-full'>
-                        <CheckInButton challenge={challenge} className={`shadow-lg shadow-darkgrey  bg-red hover:bg-green-500 text-white rounded-md p-2 justify-center text-xs italic disabled:bg-gray-400 ${checkInButtonDisabled ? 'opacity-50 cursor-not-allowed' : ''}`} />
+                        <CheckInButton challenge={challenge} className={`cursor-pointer shadow-lg shadow-darkgrey  bg-red hover:bg-green-500 text-white rounded-md p-2 justify-center text-xs italic disabled:bg-gray-400 ${checkInButtonDisabled ? 'opacity-50 cursor-not-allowed' : ''}`} />
                       </div>
                   </div>
                 }

@@ -14,7 +14,7 @@ interface MyChallengesProps {
 
 export default function MyChallenges(props: MyChallengesProps): JSX.Element {
   const { range, scrollToBrowse, centered } = props;
-  const [status, setStatus] = useState(range ?? "active");
+  const status = range ?? "active";
   const [loading, setLoading] = useState(true);
   const [loadingError, setLoadingError] = useState<string | null>(null);
   const [myChallenges, setMyChallenges] = useState<ChallengeSummary[]>([]);
