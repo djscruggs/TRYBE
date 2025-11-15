@@ -14,16 +14,16 @@ export const meta: MetaFunction = () => {
   ]
 }
 
-export async function loader({ request }: LoaderFunctionArgs) {
+export async function loader( args: LoaderFunctionArgs) {
   console.log("=== challenges.mine.tsx loader ===");
 
-  const currentUser = await getCurrentUser({ request });
+  const currentUser = await getCurrentUser(args);
 
   if (currentUser?.role !== 'ADMIN') {
     return redirect('/');
   }
 
-  const response = await fetch(new URL("/api/challenges/mine", request.url));
+  const response = await fetch(new URL("/api/challenges/mine", args.request.url));
   const data = await response.json();
 
   console.log("Loaded my challenges:", data);

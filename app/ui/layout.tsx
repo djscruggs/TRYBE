@@ -60,7 +60,6 @@ function Loading(): JSX.Element {
 
 export const FullLayout = (): JSX.Element => {
   const { user: currentUser } = useUser();
-  console.log(currentUser)
   const location = useLocation();
   const navigate = useNavigate();
   const [isClient, setIsClient] = useState(false);

@@ -17,12 +17,13 @@ import LayoutComponent from "./ui/layout";
 import "./tailwind.css";
 import "react-datepicker/dist/react-datepicker.css";
 import "react-circular-progressbar/dist/styles.css";
-import { getCurrentUser } from '~/models/auth.server'
 import type { LinksFunction, LoaderFunction, MetaFunction } from "react-router";
 import { type CurrentUser } from "./utils/types";
 import { Toaster } from "react-hot-toast";
 import { ClerkProvider, useUser } from "@clerk/react-router";
 import { rootAuthLoader, clerkMiddleware } from "@clerk/react-router/server";
+import getUserLocale from 'get-user-locale'
+import { getCurrentUser } from '~/models/auth.server'
 
 export const middleware = [clerkMiddleware()];
 
@@ -44,15 +45,20 @@ export interface RootLoaderData {
   auth: typeof rootAuthLoader;
 }
 
+
+
 export const loader: LoaderFunction = async (args) => {
-  console.log(args)
-  const user = await getCurrentUser(args)
-  return rootAuthLoader(args, () => {
-    return {
-      ENV: {
+  const ENV = {
         CLERK_PUBLISHABLE_KEY: process.env.CLERK_PUBLISHABLE_KEY || "",
         NODE_ENV: process.env.NODE_ENV || "development",
-      },
+      }
+  const user = await getCurrentUser(args)
+  if(user){
+    user.locale = getUserLocale()
+  }
+  return rootAuthLoader(args, () => {
+    return {
+      ENV,
       user
     };
   });
@@ -61,7 +67,6 @@ export const loader: LoaderFunction = async (args) => {
 // React Router v7 Layout component - handles both SSR and client-side hydration
 export function Layout({ children }: { children: React.ReactNode }) {
   const data = useLoaderData<RootLoaderData>();
-  console.log(data)
   return (
     <html lang="en">
       <head>
