@@ -1,22 +1,26 @@
 import { createPost, updatePost, loadPostSummary } from '~/models/post.server'
 import type { Post, Challenge } from '@prisma/client'
-import { type CurrentUser } from '~/utils/types'
 import { loadChallenge } from '~/models/challenge.server'
 import { requireCurrentUser } from '~/models/auth.server'
-import { type LoaderFunction, type ActionFunction  } from 'react-router';
-import { parseFormData } from '@remix-run/form-data-parser';
-import { handleFormUpload, memoryUploadHandler } from '~/utils/uploadFile' from '~/utils/uploadFile'
+import { type LoaderFunction, type ActionFunction } from 'react-router'
+import { parseFormData } from '@remix-run/form-data-parser'
+import { handleFormUpload, memoryUploadHandler } from '~/utils/uploadFile'
 import { mailPost } from '~/utils/mailer'
 import getUserLocale from 'get-user-locale'
-import { format, isPast, isEqual } from 'date-fns'
-import { textToHtml, convertStringValues, generateUrl, pathToEmailUrl } from '~/utils/helpers'
+import { format } from 'date-fns'
+import {
+  textToHtml,
+  convertStringValues,
+  generateUrl,
+  pathToEmailUrl
+} from '~/utils/helpers'
 import escape from 'escape-html'
 
 export const action: ActionFunction = async (args) => {
   const currentUser = (await requireCurrentUser(args))!
   const request = args.request
 
-  const formData = await parseFormData(request, memoryUploadHandler);
+  const formData = await parseFormData(request, memoryUploadHandler)
   const rawData = formData
 
   const textData = Object.fromEntries(formData)
@@ -27,10 +31,12 @@ export const action: ActionFunction = async (args) => {
   cleanData.title = title
   cleanData.body = body
   // if this is for a challenge, load it and check whether it's public
-  const challengeId = rawData.get('challengeId') ? Number(rawData.get('challengeId')) : null
+  const challengeId = rawData.get('challengeId')
+    ? Number(rawData.get('challengeId'))
+    : null
   let challenge: Challenge | null = null
   if (challengeId) {
-    challenge = await loadChallenge(challengeId) as Challenge | null
+    challenge = (await loadChallenge(challengeId)) as Challenge | null
   }
   const data: Partial<Post> = {
     body: cleanData.body ?? null,
@@ -67,7 +73,12 @@ export const action: ActionFunction = async (args) => {
     console.error('error creating post', error)
   }
   // check if there is a video/image OR if it should be deleted
-  await handleFormUpload({ formData: rawData, dataObj: result, nameSpace: 'post', onUpdate: updatePost })
+  await handleFormUpload({
+    formData: rawData,
+    dataObj: result,
+    nameSpace: 'post',
+    onUpdate: updatePost
+  })
   let updated = {}
   try {
     updated = await updatePost(result)

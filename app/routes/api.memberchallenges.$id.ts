@@ -1,5 +1,5 @@
 import { prisma } from '~/models/prisma.server'
-import { type ActionFunction, type LoaderFunction  } from 'react-router';
+import { type ActionFunction, type LoaderFunction } from 'react-router'
 import { requireCurrentUser } from '~/models/auth.server'
 
 export const loader: LoaderFunction = async (args) => {
@@ -22,11 +22,19 @@ export const action: ActionFunction = async (args) => {
     const notificationMinute = formData.get('notificationMinute') as string
     const startAt = formData.get('startAt') as string
     const startAtDate = startAt ? new Date(startAt.toString()) : undefined
-    const notificationHourNumber = notificationHour != null ? Number(notificationHour.toString()) : undefined
-    const notificationMinuteNumber = notificationMinute != null ? Number(notificationMinute.toString()) : undefined
+    const notificationHourNumber =
+      notificationHour != null ? Number(notificationHour.toString()) : undefined
+    const notificationMinuteNumber =
+      notificationMinute != null
+        ? Number(notificationMinute.toString())
+        : undefined
     const data = {
-      ...(notificationHourNumber !== undefined && { notificationHour: notificationHourNumber }),
-      ...(notificationMinuteNumber !== undefined && { notificationMinute: notificationMinuteNumber }),
+      ...(notificationHourNumber !== undefined && {
+        notificationHour: notificationHourNumber
+      }),
+      ...(notificationMinuteNumber !== undefined && {
+        notificationMinute: notificationMinuteNumber
+      }),
       ...(startAtDate !== undefined && { startAt: startAtDate })
     }
     const result = await prisma.memberChallenge.update({

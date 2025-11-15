@@ -1,8 +1,11 @@
-import { useNavigate } from 'react-router';
+import { useNavigate } from 'react-router'
 import { useContext } from 'react'
 import { CurrentUserContext } from '~/contexts/CurrentUserContext'
 
-export default function useGatedNavigate (): (path: string, gated?: boolean) => void {
+export default function useGatedNavigate(): (
+  path: string,
+  gated?: boolean
+) => void {
   const { currentUser } = useContext(CurrentUserContext)
   const _navigate = useNavigate()
   const navigate = (path: string, gated = false): void => {

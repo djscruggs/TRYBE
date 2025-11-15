@@ -1,7 +1,6 @@
 import { JSX } from 'react'
 import { SignIn } from "@clerk/react-router";
 import { type LoaderFunctionArgs } from "react-router";
-import { ClientOnly } from "~/components/ClientOnly";
 import { rootAuthLoader } from "@clerk/react-router/server";
 
 export async function loader(args: LoaderFunctionArgs) {
@@ -10,9 +9,7 @@ export async function loader(args: LoaderFunctionArgs) {
 
 export default function SignInPage(): JSX.Element {
   return (
-    <div className="w-full flex flex-col justify-center items-start mt-10 border-2 border-red-500">
-      foo
-      <ClientOnly fallback={<div>Loading...</div>}>
+    <div className="w-full flex flex-col justify-center items-start mt-10">
         <SignIn
           fallbackRedirectUrl="/home"
           appearance={{
@@ -21,7 +18,7 @@ export default function SignInPage(): JSX.Element {
             },
           }}
         />
-      </ClientOnly>
+      
     </div>
   );
 }

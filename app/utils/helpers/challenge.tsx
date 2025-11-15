@@ -1,7 +1,14 @@
-import type { Challenge, MemberChallenge, ChallengeSummary } from '~/utils/types'
+import type {
+  Challenge,
+  MemberChallenge,
+  ChallengeSummary
+} from '~/utils/types'
 import { isPast, addDays } from 'date-fns'
 
-export function hasStarted (challenge: Challenge | ChallengeSummary, memberChallenge?: MemberChallenge | null): boolean {
+export function hasStarted(
+  challenge: Challenge | ChallengeSummary,
+  memberChallenge?: MemberChallenge | null
+): boolean {
   if (challenge.type === 'SCHEDULED') {
     if (challenge.startAt) {
       return isPast(challenge.startAt)
@@ -14,7 +21,10 @@ export function hasStarted (challenge: Challenge | ChallengeSummary, memberChall
   }
   return true
 }
-export function isExpired (challenge: Challenge | ChallengeSummary, memberChallenge?: MemberChallenge | null): boolean {
+export function isExpired(
+  challenge: Challenge | ChallengeSummary,
+  memberChallenge?: MemberChallenge | null
+): boolean {
   if (challenge.type === 'SCHEDULED') {
     if (challenge.endAt) {
       return isPast(challenge.endAt)
@@ -30,7 +40,11 @@ export function isExpired (challenge: Challenge | ChallengeSummary, memberChalle
   return false
 }
 
-export function getShortUrl (challenge: Challenge | ChallengeSummary, membership?: MemberChallenge | null, cohortId?: number): string {
+export function getShortUrl(
+  challenge: Challenge | ChallengeSummary,
+  membership?: MemberChallenge | null,
+  cohortId?: number
+): string {
   const url = `${window.location.origin}/s/c${challenge.id}`
   if (membership?.cohortId) {
     return `${url}-${membership.cohortId}`

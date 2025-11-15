@@ -9,7 +9,7 @@ interface HasLikedParams {
   challengeId?: number
   checkinId?: number
 }
-export async function userHasLiked (params: HasLikedParams): Promise<number> {
+export async function userHasLiked(params: HasLikedParams): Promise<number> {
   const { userId, postId, commentId, threadId, challengeId, checkinId } = params
   const result = await prisma.like.aggregate({
     _count: { id: true },
@@ -30,7 +30,9 @@ interface CommentsLikedByUserParams {
   commentIds: number[]
   userId: number
 }
-export async function commentsLikedByUser (params: CommentsLikedByUserParams): Promise<Array<Partial<prisma.Like>>> {
+export async function commentsLikedByUser(
+  params: CommentsLikedByUserParams
+): Promise<Array<Partial<prisma.Like>>> {
   const { commentIds } = params
   const totalCommentsLiked = await prisma.like.findMany({
     select: {
@@ -47,7 +49,9 @@ export async function commentsLikedByUser (params: CommentsLikedByUserParams): P
 interface LikesByTypeParams {
   userId: number
 }
-export async function likesByType (params: LikesByTypeParams): Promise<GroupedLikes> {
+export async function likesByType(
+  params: LikesByTypeParams
+): Promise<GroupedLikes> {
   const { userId } = params
 
   const likes = await prisma.like.findMany({
@@ -70,7 +74,7 @@ export async function likesByType (params: LikesByTypeParams): Promise<GroupedLi
     challenge: [],
     checkin: []
   }
-  likes.forEach(like => {
+  likes.forEach((like) => {
     if (like.postId) groupedLikes.post.push(like.postId)
     if (like.commentId) groupedLikes.comment.push(like.commentId)
     if (like.threadId) groupedLikes.thread.push(like.threadId)

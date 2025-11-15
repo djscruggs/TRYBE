@@ -1,10 +1,13 @@
 import { requireCurrentUser } from '~/models/auth.server'
-import { type LoaderFunction } from 'react-router';
+import { type LoaderFunction } from 'react-router'
 import { loadPostSummary } from '~/models/post.server'
-import { } from 'react-router';
+import {} from 'react-router'
 import { mailPost, contactHost, type HostMailerProps } from '~/utils/mailer'
-function textToHtml (text): string {
-  return text.split('\n').map(line => `<p style="margin-bottom:.5em">${line}</p>`).join('')
+function textToHtml(text): string {
+  return text
+    .split('\n')
+    .map((line) => `<p style="margin-bottom:.5em">${line}</p>`)
+    .join('')
 }
 
 export const loader: LoaderFunction = async (args) => {
@@ -40,7 +43,8 @@ export const loaderPost: LoaderFunction = async (args) => {
     dynamic_template_data: {
       name: 'Tameem Rahal', // ${profile.firstName} ${profile.lastName}
       post_url: `${baseUrl}/posts/46`,
-      avatar: '<a href="https://trybe-icy-smoke-8833.fly.dev/members/11/content"><img src="https://trybe-icy-smoke-8833.fly.dev/avatars/trybe-bot.png" width="36" height="36"></a>',
+      avatar:
+        '<a href="https://trybe-icy-smoke-8833.fly.dev/members/11/content"><img src="https://trybe-icy-smoke-8833.fly.dev/avatars/trybe-bot.png" width="36" height="36"></a>',
       date: '27 April', // format based on user's country
       subject: 'New post from Trybe',
       title: 'A post with a Medium Sized Title', // post.title

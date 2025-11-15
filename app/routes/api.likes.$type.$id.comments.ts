@@ -1,5 +1,5 @@
 import { requireCurrentUser } from '~/models/auth.server'
-import { type LoaderFunction  } from 'react-router';
+import { type LoaderFunction } from 'react-router'
 import { prisma } from '~/models/prisma.server'
 
 export const loader: LoaderFunction = async (args) => {
@@ -40,7 +40,7 @@ export const loader: LoaderFunction = async (args) => {
   })
   // return just the ids of the comments that have been liked
   const likedCommentIds = comments
-    .filter(comment => comment.likes.length > 0)
-    .map(comment => comment.id)
+    .filter((comment) => comment.likes.length > 0)
+    .map((comment) => comment.id)
   return likedCommentIds
 }

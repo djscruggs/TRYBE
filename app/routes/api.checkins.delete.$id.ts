@@ -1,8 +1,8 @@
 import { deleteCheckIn } from '~/models/challenge.server'
 import { requireCurrentUser } from '~/models/auth.server'
-import { type LoaderFunction, type ActionFunctionArgs  } from 'react-router';
+import { type LoaderFunction, type ActionFunctionArgs } from 'react-router'
 
-export async function action (args: ActionFunctionArgs): Promise<Response> {
+export async function action(args: ActionFunctionArgs): Promise<Response> {
   const { params } = args
   await requireCurrentUser(args)
   try {

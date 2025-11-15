@@ -1,6 +1,6 @@
 import { isMobile } from 'react-device-detect'
 import { useState, useEffect } from 'react'
-export function useMobileSize (): boolean | null {
+export function useMobileSize(): boolean | null {
   const isBrowser = (): boolean => typeof window !== 'undefined'
   const [windowSize, setWindowSize] = useState({
     width: isBrowser() ? window.innerWidth : null,
@@ -19,7 +19,9 @@ export function useMobileSize (): boolean | null {
   useEffect(() => {
     if (isBrowser()) {
       window.addEventListener('resize', updateSize)
-      return () => { window.removeEventListener('resize', updateSize) }
+      return () => {
+        window.removeEventListener('resize', updateSize)
+      }
     }
   }, [])
 

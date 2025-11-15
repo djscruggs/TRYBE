@@ -13,12 +13,24 @@ export default [
     route('all', 'routes/challenges.all.tsx'),
     route('mine', 'routes/challenges.mine.tsx'),
     route(':range', 'routes/challenges.$range.tsx'),
-    route('v/:id', 'routes/challenges.v.$id.tsx'),
+    route('v/:id', 'routes/challenges.v.$id.tsx')
   ]),
-  route('challenges/v/:id/about', 'routes/challenges.v.$id.about.($cohortId).tsx'),
-  route('challenges/v/:id/chat', 'routes/challenges.v.$id.chat.($cohortId).tsx'),
-  route('challenges/v/:id/checkins', 'routes/challenges.v.$id.checkins.($cohortId).tsx'),
-  route('challenges/v/:id/members', 'routes/challenges.v.$id.members.($cohortId).tsx'),
+  route(
+    'challenges/v/:id/about',
+    'routes/challenges.v.$id.about.($cohortId).tsx'
+  ),
+  route(
+    'challenges/v/:id/chat',
+    'routes/challenges.v.$id.chat.($cohortId).tsx'
+  ),
+  route(
+    'challenges/v/:id/checkins',
+    'routes/challenges.v.$id.checkins.($cohortId).tsx'
+  ),
+  route(
+    'challenges/v/:id/members',
+    'routes/challenges.v.$id.members.($cohortId).tsx'
+  ),
   route('login', 'routes/login.$.tsx'),
   route('logout', 'routes/logout.tsx'),
   route('profile', 'routes/profile.tsx'),
@@ -31,7 +43,10 @@ export default [
   route('admin', 'routes/admin.tsx'),
   route('api/likes', 'routes/api.likes.ts'),
   route('api/notes/delete/:id', 'routes/api.notes.delete.$id.ts'),
-  route('api/likes/:type/:id/comments', 'routes/api.likes.$type.$id.comments.ts'),
+  route(
+    'api/likes/:type/:id/comments',
+    'routes/api.likes.$type.$id.comments.ts'
+  ),
   route('api/comments', 'routes/api.comments.ts'),
   route('api/cron', 'routes/api.cron.ts'),
   route('api/clerk/:id', 'routes/api.clerk.$id.ts'),
@@ -39,7 +54,10 @@ export default [
   route('api/comments/:type/:id', 'routes/api.comments.$type.$id.ts'),
   route('api/contact', 'routes/api.contact.ts'),
   route('api/likes/:type/:id', 'routes/api.likes.$type.$id.ts'),
-  route('api/memberchallenges/:challengeId/:userId', 'routes/api.memberchallenges.$challengeId.$userId.ts'),
+  route(
+    'api/memberchallenges/:challengeId/:userId',
+    'routes/api.memberchallenges.$challengeId.$userId.ts'
+  ),
   route('api/posts', 'routes/api.posts.ts'),
   route('api/notes', 'routes/api.notes.ts'),
   route('api/notes/:id/repost', 'routes/api.notes.$id.repost.ts'),
@@ -50,16 +68,34 @@ export default [
   route('api/users/:id', 'routes/api.users.$id.ts'),
   route('api/users/:id/likes', 'routes/api.users.$id.likes.ts'),
   route('api/memberchallenges/:id', 'routes/api.memberchallenges.$id.ts'),
-  route('api/challenges/join-unjoin/:id', 'routes/api.challenges.join-unjoin.$id.ts'),
-  route('api/challenges/:id/checkins/:cohortId', 'routes/api.challenges.$id.checkins.($cohortId).ts'),
+  route(
+    'api/challenges/join-unjoin/:id',
+    'routes/api.challenges.join-unjoin.$id.ts'
+  ),
+  route(
+    'api/challenges/:id/checkins/:cohortId',
+    'routes/api.challenges.$id.checkins.($cohortId).ts'
+  ),
   route('api/categories', 'routes/api.categories.ts'),
   route('api/challenges/:range', 'routes/api.challenges.$range.ts'),
   route('api/challenges', 'routes/api.challenges.ts'),
-  route('api/challenges/v/:id/program', 'routes/api.challenges.v.$id.program.ts'),
+  route(
+    'api/challenges/v/:id/program',
+    'routes/api.challenges.v.$id.program.ts'
+  ),
   route('api/challenges/delete/:id', 'routes/api.challenges.delete.$id.ts'),
-  route('api/challenges/v/:id/:userId', 'routes/api.challenges.v.$id.$userId.ts'),
-  route('api/challenges/v/:id/membership', 'routes/api.challenges.v.$id.membership.ts'),
-  route('api/checkins/:challengeId/:userId/:cohortId', 'routes/api.checkins.$challengeId.($userId).($cohortId).ts'),
+  route(
+    'api/challenges/v/:id/:userId',
+    'routes/api.challenges.v.$id.$userId.ts'
+  ),
+  route(
+    'api/challenges/v/:id/membership',
+    'routes/api.challenges.v.$id.membership.ts'
+  ),
+  route(
+    'api/checkins/:challengeId/:userId/:cohortId',
+    'routes/api.checkins.$challengeId.($userId).($cohortId).ts'
+  ),
   route('api/checkins/delete/:id', 'routes/api.checkins.delete.$id.ts'),
   route('api/challenges/v/:id', 'routes/api.challenges.v.$id.ts'),
   // Catch-all route for unmatched paths (returns 404)

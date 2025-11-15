@@ -1,17 +1,34 @@
 import { requireCurrentUser } from '~/models/auth.server'
-import { data, type LoaderFunction, type ActionFunction, type ActionFunctionArgs } from 'react-router'
+import {
+  data,
+  type LoaderFunction,
+  type ActionFunction,
+  type ActionFunctionArgs
+} from 'react-router'
 import { prisma, prisma } from '~/models/prisma.server'
 import { type Like } from '@prisma/client'
 
 export const action: ActionFunction = async (args: ActionFunctionArgs) => {
   const currentUser = await requireCurrentUser(args)
   const formData = await args.request.formData()
-  const challengeId: number | null = formData.get('challengeId') ? Number(formData.get('challengeId')) : null
-  const commentId: number | null = formData.get('commentId') ? Number(formData.get('commentId')) : null
-  const postId: number | null = formData.get('postId') ? Number(formData.get('postId')) : null
-  const noteId: number | null = formData.get('noteId') ? Number(formData.get('noteId')) : null
-  const threadId: number | null = formData.get('threadId') ? Number(formData.get('threadId')) : null
-  const checkinId: number | null = formData.get('checkinId') ? Number(formData.get('checkinId')) : null
+  const challengeId: number | null = formData.get('challengeId')
+    ? Number(formData.get('challengeId'))
+    : null
+  const commentId: number | null = formData.get('commentId')
+    ? Number(formData.get('commentId'))
+    : null
+  const postId: number | null = formData.get('postId')
+    ? Number(formData.get('postId'))
+    : null
+  const noteId: number | null = formData.get('noteId')
+    ? Number(formData.get('noteId'))
+    : null
+  const threadId: number | null = formData.get('threadId')
+    ? Number(formData.get('threadId'))
+    : null
+  const checkinId: number | null = formData.get('checkinId')
+    ? Number(formData.get('checkinId'))
+    : null
   let where: prisma.likeWhere = {}
   let totalLikes = 0
   if (formData.get('unlike')) {
@@ -82,7 +99,10 @@ export const loader: LoaderFunction = async (args) => {
   return data({ message: 'This route does not accept GET requests' }, 200)
 }
 
-const getLikeCount = async (itemId: number, fieldName: string): Promise<number> => {
+const getLikeCount = async (
+  itemId: number,
+  fieldName: string
+): Promise<number> => {
   const count = await prisma.like.count({ where: { [fieldName]: itemId } })
   return count
 }

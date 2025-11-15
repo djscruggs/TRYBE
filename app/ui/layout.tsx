@@ -142,14 +142,14 @@ export const FullLayout = (): JSX.Element => {
           )}
           {isClient && currentUser ? (
             <div
-              className={`flex-grow ${!isLanding && location.pathname !== "/" ? "pt-4 ml-20" : "ml-0"}`}
+              className={`grow ${!isLanding && location.pathname !== "/" ? "pt-4 ml-20" : "ml-0"}`}
             >
               {!isLanding && (
                 <div className="absolute right-0 mr-4 z-20">
                   <ClientOnly>
                     <UserButton
                       showName={true}
-                      afterSignOutUrl="/logout"
+                      
                       userProfileUrl="/profile"
                       userProfileMode="navigation"
                     />

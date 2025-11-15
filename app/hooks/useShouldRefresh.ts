@@ -7,5 +7,7 @@ interface ShouldRefreshType {
 
 export const useShouldRefresh = create<ShouldRefreshType>((set) => ({
   shouldRefresh: true,
-  setShouldRefresh: (shouldRefresh) => { set({ shouldRefresh }) }
+  setShouldRefresh: (shouldRefresh) => {
+    set({ shouldRefresh })
+  }
 }))

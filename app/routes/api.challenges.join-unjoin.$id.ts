@@ -6,18 +6,28 @@ import {
 } from '~/models/challenge.server'
 import { requireCurrentUser } from '~/models/auth.server'
 import { loadUser } from '~/models/user.server'
-import { type LoaderFunction, type ActionFunctionArgs  } from 'react-router';
+import { type LoaderFunction, type ActionFunctionArgs } from 'react-router'
 import type { MemberChallenge } from '@prisma/client'
-import { type ChallengeWelcomeMailerProps, sendChallengeWelcome } from '~/utils/mailer'
-import { formatDate, textToHtml, pathToEmailUrl, generateUrl } from '~/utils/helpers'
+import {
+  type ChallengeWelcomeMailerProps,
+  sendChallengeWelcome
+} from '~/utils/mailer'
+import {
+  formatDate,
+  textToHtml,
+  pathToEmailUrl,
+  generateUrl
+} from '~/utils/helpers'
 import getUserLocale from 'get-user-locale'
 import { differenceInCalendarDays } from 'date-fns'
 
-export async function action (args: ActionFunctionArgs): Promise<Response> {
+export async function action(args: ActionFunctionArgs): Promise<Response> {
   const currentUser = await requireCurrentUser(args)
   const { params } = args
   const user = await loadUser(currentUser?.id)
-  const memberChallenge = user.memberChallenges.find((c: MemberChallenge) => c.challengeId === Number(params.id))
+  const memberChallenge = user.memberChallenges.find(
+    (c: MemberChallenge) => c.challengeId === Number(params.id)
+  )
   try {
     if (memberChallenge) {
       const result = await unjoinChallenge(Number(user.id), Number(params.id))
@@ -33,14 +43,20 @@ export async function action (args: ActionFunctionArgs): Promise<Response> {
       }
       let result: MemberChallenge
       const invitePath = pathToEmailUrl(`/challenges/v/${params.id}/about?i=1`)
-      const tempData: Partial<ChallengeWelcomeMailerProps['dynamic_template_data']> = {
+      const tempData: Partial<
+        ChallengeWelcomeMailerProps['dynamic_template_data']
+      > = {
         challengeName: challenge.name ?? '',
         inviteLink: generateUrl(invitePath),
         description: textToHtml(challenge.description ?? '')
       }
       if (challenge?.type === 'SELF_LED') {
         const formData = await args.request.formData()
-        if (!formData.get('notificationHour') || !formData.get('notificationMinute') || !formData.get('startAt')) {
+        if (
+          !formData.get('notificationHour') ||
+          !formData.get('notificationMinute') ||
+          !formData.get('startAt')
+        ) {
           throw new Error('Missing required fields')
         }
         const notificationHour = formData.get('notificationHour') as string
@@ -49,8 +65,14 @@ export async function action (args: ActionFunctionArgs): Promise<Response> {
         console.log('startAt', startAt)
         const startAtDate = startAt ? new Date(startAt.toString()) : undefined
         console.log('startAtDate', startAtDate)
-        const notificationHourNumber = notificationHour != null ? Number(notificationHour.toString()) : undefined
-        const notificationMinuteNumber = notificationMinute != null ? Number(notificationMinute.toString()) : undefined
+        const notificationHourNumber =
+          notificationHour != null
+            ? Number(notificationHour.toString())
+            : undefined
+        const notificationMinuteNumber =
+          notificationMinute != null
+            ? Number(notificationMinute.toString())
+            : undefined
         let cohortId = Number(formData.get('cohortId') as string)
         if (!cohortId) {
           // create a cohort first
@@ -65,17 +87,33 @@ export async function action (args: ActionFunctionArgs): Promise<Response> {
           notificationMinute: notificationMinuteNumber,
           cohortId
         })
-        tempData.startDate = formatDate(startAtDate?.toISOString() ?? '', getUserLocale())
-        tempData.duration = challenge.numDays?.toString() ? `${challenge.numDays} days` : 'none'
+        tempData.startDate = formatDate(
+          startAtDate?.toISOString() ?? '',
+          getUserLocale()
+        )
+        tempData.duration = challenge.numDays?.toString()
+          ? `${challenge.numDays} days`
+          : 'none'
       } else {
-        result = await joinChallenge({ userId: Number(user.id), challengeId: Number(params.id) })
-        tempData.startDate = formatDate(challenge.startAt?.toISOString() ?? '', getUserLocale())
-        tempData.duration = differenceInCalendarDays(challenge.endAt ?? new Date(), challenge.startAt ?? new Date()).toString() + ' days'
+        result = await joinChallenge({
+          userId: Number(user.id),
+          challengeId: Number(params.id)
+        })
+        tempData.startDate = formatDate(
+          challenge.startAt?.toISOString() ?? '',
+          getUserLocale()
+        )
+        tempData.duration =
+          differenceInCalendarDays(
+            challenge.endAt ?? new Date(),
+            challenge.startAt ?? new Date()
+          ).toString() + ' days'
       }
       console.log(result)
       await sendChallengeWelcome({
         to: user.email,
-        dynamic_template_data: tempData as ChallengeWelcomeMailerProps['dynamic_template_data']
+        dynamic_template_data:
+          tempData as ChallengeWelcomeMailerProps['dynamic_template_data']
       })
       return {
         result: 'joined',
@@ -83,10 +121,14 @@ export async function action (args: ActionFunctionArgs): Promise<Response> {
       } // 201 Created
     }
   } catch (error) {
-    console.error('error in action', error instanceof Error ? error.message : error)
+    console.error(
+      'error in action',
+      error instanceof Error ? error.message : error
+    )
     return {
       result: 'error',
-      message: error instanceof Error ? error.message : 'An unknown error occurred'
+      message:
+        error instanceof Error ? error.message : 'An unknown error occurred'
     } // 400 Bad Request
   }
 }

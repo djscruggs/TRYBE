@@ -9,9 +9,15 @@ interface UserLikes {
   checkin?: number[]
 }
 
-type LikeableType = 'post' | 'comment' | 'note' | 'challenge' | 'thread' | 'checkin'
+type LikeableType =
+  | 'post'
+  | 'comment'
+  | 'note'
+  | 'challenge'
+  | 'thread'
+  | 'checkin'
 
-export function useUserLikes (): {
+export function useUserLikes(): {
   hasLiked: (type: LikeableType, id: number) => boolean
   like: (type: LikeableType, id: number) => Promise<void>
   unlike: (type: LikeableType, id: number) => Promise<void>
@@ -62,7 +68,11 @@ export function useUserLikes (): {
     await postLike(type, id, true)
   }
 
-  const postLike = async (type: LikeableType, id: number, unlike: boolean = false): Promise<void> => {
+  const postLike = async (
+    type: LikeableType,
+    id: number,
+    unlike: boolean = false
+  ): Promise<void> => {
     const updatedLikes: Record<LikeableType, number[]> = { ...likes }
 
     if (!updatedLikes[type]) {

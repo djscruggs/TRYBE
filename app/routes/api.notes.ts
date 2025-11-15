@@ -1,7 +1,7 @@
 import { createNote, updateNote, loadNoteSummary } from '~/models/note.server'
 import { requireCurrentUser } from '~/models/auth.server'
-import { type LoaderFunction, type ActionFunction  } from 'react-router';
-import { parseFormData } from '@remix-run/form-data-parser';
+import { type LoaderFunction, type ActionFunction } from 'react-router'
+import { parseFormData } from '@remix-run/form-data-parser'
 import { handleFormUpload, memoryUploadHandler } from '~/utils/uploadFile'
 import { type CurrentUser } from '~/utils/types'
 import { type Note } from '@prisma/client'
@@ -20,11 +20,11 @@ export const action: ActionFunction = async (args) => {
   }
   const request = args.request
 
-  const formData = await parseFormData(request, memoryUploadHandler);
+  const formData = await parseFormData(request, memoryUploadHandler)
   const rawData = formData
 
   const data: Partial<NoteData> = {
-    body: rawData.get('body') as string ?? '',
+    body: (rawData.get('body') as string) ?? '',
     user: { connect: { id: currentUser.id } }
   }
   if (rawData.get('id')) {
@@ -51,7 +51,12 @@ export const action: ActionFunction = async (args) => {
   } else {
     result = await createNote(data)
   }
-  await handleFormUpload({ formData: rawData, dataObj: result, nameSpace: 'note', onUpdate: updateNote })
+  await handleFormUpload({
+    formData: rawData,
+    dataObj: result,
+    nameSpace: 'note',
+    onUpdate: updateNote
+  })
   // send back a full note that includes profile, user etc
   const newNote = await loadNoteSummary(result.id)
   return newNote

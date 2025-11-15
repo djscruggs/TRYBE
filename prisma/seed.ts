@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
-async function main (): Promise<void> {
+async function main(): Promise<void> {
   try {
     await prisma.category.createMany({
       data: [

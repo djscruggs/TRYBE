@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import { type LoaderFunction, type ActionFunction  } from 'react-router';
+import { type LoaderFunction, type ActionFunction } from 'react-router'
 import { updateUser, createUser, deleteUser } from '~/models/user.server'
 import { Webhook } from 'svix'
 import { prisma } from '~/models/prisma.server'
@@ -16,7 +16,9 @@ import { sendWelcomeEmail } from '~/utils/mailer'
 const WEBHOOK_SECRET = process.env.WEBHOOK_SECRET
 
 if (!WEBHOOK_SECRET) {
-  throw new Error('Please add WEBHOOK_SECRET from Clerk Dashboard to .env or .env.local')
+  throw new Error(
+    'Please add WEBHOOK_SECRET from Clerk Dashboard to .env or .env.local'
+  )
 }
 
 export const action: ActionFunction = async ({ request }) => {
@@ -63,7 +65,9 @@ export const action: ActionFunction = async ({ request }) => {
     if (bodyJson.type === 'user.created') {
       // email_addresses is an array, but one is primary
       // set it by finding the one that matches the primary_email_address_id
-      const primaryEmailAddress = bodyJson.data.email_addresses.find((address: any) => address.id === bodyJson.data.primary_email_address_id).email_address
+      const primaryEmailAddress = bodyJson.data.email_addresses.find(
+        (address: any) => address.id === bodyJson.data.primary_email_address_id
+      ).email_address
       const data = {
         email: primaryEmailAddress,
         firstName: bodyJson.data.first_name,
@@ -90,7 +94,9 @@ export const action: ActionFunction = async ({ request }) => {
         }
       })
       // update email address
-      const primaryEmailAddress = bodyJson.data.email_addresses.find((address: any) => address.id === bodyJson.data.primary_email_address_id).email_address
+      const primaryEmailAddress = bodyJson.data.email_addresses.find(
+        (address: any) => address.id === bodyJson.data.primary_email_address_id
+      ).email_address
       await prisma.user.update({
         where: {
           id: user?.id
@@ -118,12 +124,10 @@ export const action: ActionFunction = async ({ request }) => {
         clerkId: bodyJson.data.user_id,
         lastLogin: new Date()
       }
-      await updateUser(
-        {
-          clerkId: bodyJson.data.user_id,
-          lastLogin: new Date()
-        }
-      )
+      await updateUser({
+        clerkId: bodyJson.data.user_id,
+        lastLogin: new Date()
+      })
     }
     if (bodyJson.type === 'user.deleted') {
       await deleteUser({ clerkId: bodyJson.data.id })

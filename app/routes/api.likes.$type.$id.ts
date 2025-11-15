@@ -1,5 +1,5 @@
 import { requireCurrentUser } from '~/models/auth.server'
-import { type LoaderFunction  } from 'react-router';
+import { type LoaderFunction } from 'react-router'
 import { prisma } from '~/models/prisma.server'
 
 export const loader: LoaderFunction = async (args) => {
@@ -30,5 +30,5 @@ export const loader: LoaderFunction = async (args) => {
       id: true
     }
   })
-  return likedIds.map(like => like.id)
+  return likedIds.map((like) => like.id)
 }

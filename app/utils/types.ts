@@ -1,14 +1,14 @@
 // JSON types for db
 export type JSONValue =
-    | string
-    | number
-    | boolean
-    | Date
-    | JSONObject
-    | JSONArray
+  | string
+  | number
+  | boolean
+  | Date
+  | JSONObject
+  | JSONArray
 
-export interface JSONObject extends Record<string, JSONValue> { }
-export interface JSONArray extends Array<JSONValue> { }
+export interface JSONObject extends Record<string, JSONValue> {}
+export interface JSONArray extends Array<JSONValue> {}
 
 export interface User {
   id?: number | string
@@ -130,7 +130,7 @@ export interface Challenge {
   reminders: boolean
   syncCalendar: boolean
   publishAt: Date | null
-  published: boolean
+  published?: boolean
   public: boolean
   userId: number
   likeCount: number
@@ -300,7 +300,18 @@ export interface ErrorObject extends Record<string, { _errors: string[] }> {}
 // generic interface that handles responses from server loading a single object
 export interface ObjectData {
   errors?: ErrorObject
-  formData?: Record<string, number | boolean | Date | null | undefined> | undefined
-  object?: Record<string, number | boolean | Date | null | undefined> | undefined
-  [key: string]: null | number | boolean | Date | ErrorObject | Record<string, number | boolean | Date | null | undefined> | undefined
+  formData?:
+    | Record<string, number | boolean | Date | null | undefined>
+    | undefined
+  object?:
+    | Record<string, number | boolean | Date | null | undefined>
+    | undefined
+  [key: string]:
+    | null
+    | number
+    | boolean
+    | Date
+    | ErrorObject
+    | Record<string, number | boolean | Date | null | undefined>
+    | undefined
 }

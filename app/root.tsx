@@ -87,7 +87,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
             __html: `console.log('🔥 INLINE SCRIPT - HTML IS LOADING')`,
           }}
         />
-        <ClerkProvider loaderData={data}>{children}</ClerkProvider>
+        <ClerkProvider afterSignOutUrl="/logout" loaderData={data}>
+          {children}
+        </ClerkProvider>
         <ScrollRestoration />
         <Scripts />
       </body>

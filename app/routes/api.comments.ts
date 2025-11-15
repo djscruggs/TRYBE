@@ -1,8 +1,13 @@
-import { createComment, updateComment, loadComment, deleteComment } from '~/models/comment.server'
+import {
+  createComment,
+  updateComment,
+  loadComment,
+  deleteComment
+} from '~/models/comment.server'
 import { sendCommentReplyNotification } from '~/utils/mailer'
 import { requireCurrentUser } from '~/models/auth.server'
-import { type LoaderFunction, type ActionFunction  } from 'react-router';
-import { parseFormData } from '@remix-run/form-data-parser';
+import { type LoaderFunction, type ActionFunction } from 'react-router'
+import { parseFormData } from '@remix-run/form-data-parser'
 import { handleFormUpload, memoryUploadHandler } from '~/utils/uploadFile'
 import { generateUrl } from '~/utils/helpers'
 import { loadCheckIn, loadChallengeSummary } from '~/models/challenge.server'
@@ -14,7 +19,7 @@ export const action: ActionFunction = async (args) => {
   const currentUser = await requireCurrentUser(args)
   const { request } = args
 
-  const formData = await parseFormData(request, memoryUploadHandler);
+  const formData = await parseFormData(request, memoryUploadHandler)
   const rawData = formData
 
   const textData = Object.fromEntries(formData)
@@ -51,7 +56,9 @@ export const action: ActionFunction = async (args) => {
       data.cohort = { connect: { id: Number(textData.cohortId) } }
     }
     if (!data.challenge && !data.post && !data.thread && !data.checkIn) {
-      return { message: 'Post id or callenge id or thread id or checkin id is required' }
+      return {
+        message: 'Post id or callenge id or thread id or checkin id is required'
+      }
     }
     // there might be a bug when a challenge id is submitted but cohort id is no, so do a quick search for the memberchallenge that might have it
     if (data.challenge && !data.cohort) {
@@ -78,14 +85,26 @@ export const action: ActionFunction = async (args) => {
     if (challengeId) {
       data.challenge = { connect: { id: challengeId } }
     }
-    data.threadDepth = parentComment.threadDepth >= 5 ? 5 : parentComment.threadDepth + 1
+    data.threadDepth =
+      parentComment.threadDepth >= 5 ? 5 : parentComment.threadDepth + 1
   }
 
   const result = data.id ? await updateComment(data) : await createComment(data)
-  await handleFormUpload({ formData: rawData, dataObj: result, nameSpace: 'comment', onUpdate: updateComment })
+  await handleFormUpload({
+    formData: rawData,
+    dataObj: result,
+    nameSpace: 'comment',
+    onUpdate: updateComment
+  })
 
   const updated = await updateComment(result)
-  if (updated.replyToId || updated.checkInId || updated.postId || updated.challengeId || updated.threadId) {
+  if (
+    updated.replyToId ||
+    updated.checkInId ||
+    updated.postId ||
+    updated.challengeId ||
+    updated.threadId
+  ) {
     let parent
     let type = ''
     let sendNotification = false
@@ -107,7 +126,14 @@ export const action: ActionFunction = async (args) => {
     }
     const challengeId = parent?.challengeId
     // only send notification if they are replying to a comment, post checkin or thread
-    if (parent && challengeId && (updated.postId || updated.replyToId || updated.threadId || updated.checkInId)) {
+    if (
+      parent &&
+      challengeId &&
+      (updated.postId ||
+        updated.replyToId ||
+        updated.threadId ||
+        updated.checkInId)
+    ) {
       sendNotification = true
     }
     // don't send a reply to yourself
@@ -115,7 +141,9 @@ export const action: ActionFunction = async (args) => {
       sendNotification = false
     }
     if (sendNotification) {
-      const commentUrl = generateUrl(`/challenges/v/${challengeId}/chat#${type}-${parent.id}`)
+      const commentUrl = generateUrl(
+        `/challenges/v/${challengeId}/chat#${type}-${parent.id}`
+      )
       void sendCommentReplyNotification({
         to: parent?.user?.email,
         dynamic_template_data: {
@@ -124,14 +152,19 @@ export const action: ActionFunction = async (args) => {
           body: result.body as string,
           challenge_name: parent?.name,
           comment_url: commentUrl,
-          subject: updated.replyToId ? 'Reply to your comment' : 'New comment on your challenge'
+          subject: updated.replyToId
+            ? 'Reply to your comment'
+            : 'New comment on your challenge'
         }
       })
     }
   }
 
   // refresh the comment to include user info attached
-  const comment = await loadComment(updated.id as number, updated.userId as number)
+  const comment = await loadComment(
+    updated.id as number,
+    updated.userId as number
+  )
   return comment
 }
 

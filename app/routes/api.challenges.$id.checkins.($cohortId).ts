@@ -1,11 +1,18 @@
 import { prisma } from '~/models/prisma.server'
 import { requireCurrentUser } from '~/models/auth.server'
-import { joinChallenge, loadChallenge, calculateNextCheckin, updateCheckin } from '~/models/challenge.server'
-import { type LoaderFunction, type ActionFunctionArgs  } from 'react-router';
-import { parseFormData } from '@remix-run/form-data-parser';
+import {
+  joinChallenge,
+  loadChallenge,
+  calculateNextCheckin,
+  updateCheckin
+} from '~/models/challenge.server'
+import { type LoaderFunction, type ActionFunctionArgs } from 'react-router'
+import { parseFormData } from '@remix-run/form-data-parser'
 import { handleFormUpload, memoryUploadHandler } from '~/utils/uploadFile'
 
-export async function action (args: ActionFunctionArgs): Promise<prisma.checkIn> {
+export async function action(
+  args: ActionFunctionArgs
+): Promise<prisma.checkIn> {
   const currentUser = await requireCurrentUser(args)
   if (!currentUser) {
     return {
@@ -14,7 +21,7 @@ export async function action (args: ActionFunctionArgs): Promise<prisma.checkIn>
   }
   const request = args.request
 
-  const formData = await parseFormData(request, memoryUploadHandler);
+  const formData = await parseFormData(request, memoryUploadHandler)
   const rawData = formData
 
   const { params } = args
@@ -27,7 +34,7 @@ export async function action (args: ActionFunctionArgs): Promise<prisma.checkIn>
     })
   }
   // allow user who created the challenge to check in even if not a member
-  const body = rawData.get('body') as string ?? ''
+  const body = (rawData.get('body') as string) ?? ''
   let membership = await prisma.memberChallenge.findFirst({
     where: {
       userId: Number(currentUser.id),
@@ -41,7 +48,10 @@ export async function action (args: ActionFunctionArgs): Promise<prisma.checkIn>
   })
   if (challenge.userId === currentUser.id && !membership) {
     // if it's the creator of the challenge, create a membership on the fly
-    membership = await joinChallenge({ userId: currentUser.id, challengeId: Number(challenge.id) })
+    membership = await joinChallenge({
+      userId: currentUser.id,
+      challengeId: Number(challenge.id)
+    })
   }
 
   if (membership) {
@@ -79,7 +89,12 @@ export async function action (args: ActionFunctionArgs): Promise<prisma.checkIn>
         nextCheckIn: calculateNextCheckin(challenge)
       }
     })
-    await handleFormUpload({ formData: rawData, dataObj: result, nameSpace: 'checkin', onUpdate: updateCheckin })
+    await handleFormUpload({
+      formData: rawData,
+      dataObj: result,
+      nameSpace: 'checkin',
+      onUpdate: updateCheckin
+    })
     // reload membership and checkin
     const reloadedMemberChallenge = await prisma.memberChallenge.findFirst({
       where: {
@@ -110,7 +125,10 @@ export async function action (args: ActionFunctionArgs): Promise<prisma.checkIn>
         }
       }
     })
-    return { checkIn: reloadedCheckin, memberChallenge: reloadedMemberChallenge }
+    return {
+      checkIn: reloadedCheckin,
+      memberChallenge: reloadedMemberChallenge
+    }
   } else {
     // eslint-disable-next-line @typescript-eslint/no-throw-literal
     throw new Response(null, {

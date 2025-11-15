@@ -14,6 +14,7 @@ const DeviceContext = createContext<DeviceContextType>({
   isMobile: (): boolean => false
 })
 
-export const useDeviceContext = (): DeviceContextType => useContext(DeviceContext)
+export const useDeviceContext = (): DeviceContextType =>
+  useContext(DeviceContext)
 
 export default DeviceContext

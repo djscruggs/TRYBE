@@ -2,7 +2,10 @@ import { type Note } from '@prisma/client'
 import { prisma } from './prisma.server'
 import { deleteFromCloudinary } from '~/utils/uploadFile'
 export const createNote = async (
-  note: Pick<Note, 'body' | 'userId' | 'replyToId' | 'challengeId' | 'commentId'>
+  note: Pick<
+    Note,
+    'body' | 'userId' | 'replyToId' | 'challengeId' | 'commentId'
+  >
 ): Promise<Note> => {
   const newNote = await prisma.note.create({
     data: note
@@ -10,7 +13,9 @@ export const createNote = async (
   void updateCounts(newNote)
   return newNote
 }
-export const updateNote = async (note: prisma.noteCreateInput): Promise<Note> => {
+export const updateNote = async (
+  note: prisma.noteCreateInput
+): Promise<Note> => {
   const { id, ...data } = note
   const result = await prisma.note.update({
     where: { id },
@@ -29,7 +34,9 @@ export const updateCounts = async (note: prisma.note): Promise<void> => {
     data: { replyCount: count }
   })
 }
-export const loadNote = async (noteId: string | number): Promise<Note | null> => {
+export const loadNote = async (
+  noteId: string | number
+): Promise<Note | null> => {
   const id = Number(noteId)
   return await prisma.note.findUnique({
     where: {
@@ -43,7 +50,10 @@ export const loadNote = async (noteId: string | number): Promise<Note | null> =>
   })
 }
 
-export const deleteNote = async (noteId: string | number, userId: string | number): Promise<Note> => {
+export const deleteNote = async (
+  noteId: string | number,
+  userId: string | number
+): Promise<Note> => {
   const id = Number(noteId)
   // check if there is video or image
   const note = await loadNote(id)
@@ -66,7 +76,11 @@ export const deleteNote = async (noteId: string | number, userId: string | numbe
   void updateCounts(deleted)
   return deleted
 }
-export const loadRepost = async (replyToId: string | number, userId: string | number, body: string | null): Promise<Note | null> => {
+export const loadRepost = async (
+  replyToId: string | number,
+  userId: string | number,
+  body: string | null
+): Promise<Note | null> => {
   const id = Number(replyToId)
   return await prisma.note.findFirst({
     where: {
@@ -76,7 +90,9 @@ export const loadRepost = async (replyToId: string | number, userId: string | nu
     }
   })
 }
-export const loadNoteSummary = async (noteId: string | number): Promise<Record<string, any> | null> => {
+export const loadNoteSummary = async (
+  noteId: string | number
+): Promise<Record<string, any> | null> => {
   const id = Number(noteId)
   const note = await prisma.note.findUnique({
     where: {
@@ -98,7 +114,9 @@ export const loadNoteSummary = async (noteId: string | number): Promise<Record<s
   })
   return note
 }
-export const loadUserNotes = async (userId: string | number): Promise<Note[]> => {
+export const loadUserNotes = async (
+  userId: string | number
+): Promise<Note[]> => {
   const uid = Number(userId)
   return await prisma.note.findMany({
     where: {

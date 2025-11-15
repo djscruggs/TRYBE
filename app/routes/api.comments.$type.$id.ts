@@ -1,5 +1,5 @@
 import { fetchComments } from '~/models/comment.server'
-import { type LoaderFunction  } from 'react-router';
+import { type LoaderFunction } from 'react-router'
 
 export const loader: LoaderFunction = async (args) => {
   const { type, id } = args.params

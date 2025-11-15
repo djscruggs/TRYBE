@@ -3,7 +3,10 @@ import { prisma } from './prisma.server'
 import { deleteFromCloudinary } from '~/utils/uploadFile'
 
 export const createThread = async (
-  thread: Pick<Thread, 'body' | 'userId' | 'replyToId' | 'challengeId' | 'commentId'>
+  thread: Pick<
+    Thread,
+    'body' | 'userId' | 'replyToId' | 'challengeId' | 'commentId'
+  >
 ): Promise<Thread> => {
   const newThread = await prisma.thread.create({
     data: thread
@@ -11,7 +14,9 @@ export const createThread = async (
   void updateCounts(newThread)
   return newThread
 }
-export const updateThread = async (thread: prisma.threadCreateInput): Promise<Thread> => {
+export const updateThread = async (
+  thread: prisma.threadCreateInput
+): Promise<Thread> => {
   const { id, ...data } = thread
   const result = await prisma.thread.update({
     where: { id },
@@ -32,7 +37,9 @@ export const updateCounts = async (thread: prisma.thread): Promise<void> => {
     data: { commentCount, likeCount }
   })
 }
-export const loadThread = async (threadId: string | number): Promise<Thread | null> => {
+export const loadThread = async (
+  threadId: string | number
+): Promise<Thread | null> => {
   const id = Number(threadId)
   return await prisma.thread.findUnique({
     where: {
@@ -51,7 +58,10 @@ export const loadThread = async (threadId: string | number): Promise<Thread | nu
   })
 }
 
-export const deleteThread = async (threadId: string | number, userId: string | number): Promise<Thread> => {
+export const deleteThread = async (
+  threadId: string | number,
+  userId: string | number
+): Promise<Thread> => {
   const id = Number(threadId)
   const uid = Number(userId)
   const thread = await loadThread(id)
@@ -70,7 +80,9 @@ export const deleteThread = async (threadId: string | number, userId: string | n
   void updateCounts(deleted)
   return deleted
 }
-export const loadThreadSummary = async (threadId: string | number): Promise<Thread | null> => {
+export const loadThreadSummary = async (
+  threadId: string | number
+): Promise<Thread | null> => {
   const id = Number(threadId)
   const thread = await prisma.thread.findUnique({
     where: {
@@ -87,7 +99,9 @@ export const loadThreadSummary = async (threadId: string | number): Promise<Thre
   })
   return thread
 }
-export const loadUserThreads = async (userId: string | number): Promise<Thread[]> => {
+export const loadUserThreads = async (
+  userId: string | number
+): Promise<Thread[]> => {
   const uid = Number(userId)
   return await prisma.thread.findMany({
     where: {

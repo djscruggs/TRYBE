@@ -1,7 +1,11 @@
-import { createThread, updateThread, loadThreadSummary } from '~/models/thread.server'
+import {
+  createThread,
+  updateThread,
+  loadThreadSummary
+} from '~/models/thread.server'
 import { requireCurrentUser } from '~/models/auth.server'
-import { type LoaderFunction, type ActionFunction  } from 'react-router';
-import { parseFormData } from '@remix-run/form-data-parser';
+import { type LoaderFunction, type ActionFunction } from 'react-router'
+import { parseFormData } from '@remix-run/form-data-parser'
 import { handleFormUpload, memoryUploadHandler } from '~/utils/uploadFile'
 import { type CurrentUser } from '~/utils/types'
 import { type Thread } from '@prisma/client'
@@ -17,12 +21,12 @@ export const action: ActionFunction = async (args) => {
   }
   const request = args.request
 
-  const formData = await parseFormData(request, memoryUploadHandler);
+  const formData = await parseFormData(request, memoryUploadHandler)
   const rawData = formData
 
   const data: Partial<ThreadData> = {
-    title: rawData.get('title') as string ?? '',
-    body: rawData.get('body') as string ?? '',
+    title: (rawData.get('title') as string) ?? '',
+    body: (rawData.get('body') as string) ?? '',
     user: { connect: { id: currentUser.id } }
   }
   if (rawData.get('id')) {
@@ -37,7 +41,12 @@ export const action: ActionFunction = async (args) => {
   } else {
     result = await createThread(data)
   }
-  await handleFormUpload({ formData: rawData, dataObj: result, nameSpace: 'thread', onUpdate: updateThread })
+  await handleFormUpload({
+    formData: rawData,
+    dataObj: result,
+    nameSpace: 'thread',
+    onUpdate: updateThread
+  })
   // send back a full thread that includes profile, user etc
   const newThread = await loadThreadSummary(result.id)
   return newThread

@@ -1,6 +1,6 @@
 import { prisma } from './prisma.server'
 import { deleteFromCloudinary } from '~/utils/uploadFile'
-function generateIncludeObject (levels: number): any {
+function generateIncludeObject(levels: number): any {
   if (levels <= 0) {
     return true
   }
@@ -14,13 +14,15 @@ function generateIncludeObject (levels: number): any {
   }
 }
 
-export const fetchChallengeCheckinComments = async (challengeId: number): Promise<prisma.comment[]> => {
+export const fetchChallengeCheckinComments = async (
+  challengeId: number
+): Promise<prisma.comment[]> => {
   // first get checkins for challenge
   const checkIns = await prisma.checkIn.findMany({
     select: { id: true },
     where: { challengeId }
   })
-  const checkInIds = checkIns.map(checkIn => checkIn.id)
+  const checkInIds = checkIns.map((checkIn) => checkIn.id)
   const includes = generateIncludeObject(5)
   const comments = await prisma.comment.findMany({
     where: { checkInId: { in: checkInIds } },
@@ -31,7 +33,7 @@ export const fetchChallengeCheckinComments = async (challengeId: number): Promis
   })
   // Reformat comments as a hash keyed off checkInId
   const commentsByCheckInId: Record<number, prisma.comment[]> = {}
-  comments.forEach(comment => {
+  comments.forEach((comment) => {
     const checkInId = comment.checkInId!
     if (!commentsByCheckInId[checkInId]) {
       commentsByCheckInId[checkInId] = []
@@ -49,10 +51,14 @@ interface FetchCommentsParams {
   replyToId?: number
 }
 
-export const fetchComments = async (params: FetchCommentsParams): Promise<prisma.comment[]> => {
+export const fetchComments = async (
+  params: FetchCommentsParams
+): Promise<prisma.comment[]> => {
   const { challengeId, postId, threadId, checkInId, replyToId } = params
   if (!challengeId && !postId && !threadId && !checkInId && !replyToId) {
-    throw new Error('challengeId or postId or threadId or checkInId or replyToId must be provided')
+    throw new Error(
+      'challengeId or postId or threadId or checkInId or replyToId must be provided'
+    )
   }
   const orClause = {
     challengeId: challengeId ? Number(challengeId) : undefined,
@@ -83,7 +89,9 @@ export const fetchComments = async (params: FetchCommentsParams): Promise<prisma
 
   return comments
 }
-export const fetchReplies = async (commentId: string | number): Promise<prisma.comment[]> => {
+export const fetchReplies = async (
+  commentId: string | number
+): Promise<prisma.comment[]> => {
   const id = Number(commentId)
   const includes = generateIncludeObject(5)
   return await prisma.comment.findUnique({
@@ -95,18 +103,24 @@ export const fetchReplies = async (commentId: string | number): Promise<prisma.c
   })
 }
 
-export function recursivelyCollectCommentIds (comments: prisma.comment[]): number[] {
+export function recursivelyCollectCommentIds(
+  comments: prisma.comment[]
+): number[] {
   const ids: number[] = []
-  comments.forEach(comment => {
+  comments.forEach((comment) => {
     ids.push(comment.id as number)
     if (comment.replies && comment.replies.length > 0) {
-      ids.push(...recursivelyCollectCommentIds(comment.replies as prisma.comment[]))
+      ids.push(
+        ...recursivelyCollectCommentIds(comment.replies as prisma.comment[])
+      )
     }
   })
   return ids
 }
 
-export const createComment = async (comment: prisma.commentCreateInput): Promise<prisma.comment> => {
+export const createComment = async (
+  comment: prisma.commentCreateInput
+): Promise<prisma.comment> => {
   try {
     const newComment = await prisma.comment.create({
       data: comment
@@ -118,7 +132,9 @@ export const createComment = async (comment: prisma.commentCreateInput): Promise
     return error
   }
 }
-export const updateComment = async (comment: prisma.commentCreateInput): Promise<prisma.comment> => {
+export const updateComment = async (
+  comment: prisma.commentCreateInput
+): Promise<prisma.comment> => {
   const { id, ...data } = comment
   try {
     const newComment = await prisma.comment.update({
@@ -133,7 +149,10 @@ export const updateComment = async (comment: prisma.commentCreateInput): Promise
     return error
   }
 }
-export const loadComment = async (commentId: string | number, userId?: string | number | undefined): Promise<prisma.Comment> => {
+export const loadComment = async (
+  commentId: string | number,
+  userId?: string | number | undefined
+): Promise<prisma.Comment> => {
   const id = Number(commentId)
   const where: prisma.commentWhereUniqueInput = { id }
   if (userId) {
@@ -154,7 +173,9 @@ export const loadComment = async (commentId: string | number, userId?: string | 
   })
 }
 
-export const deleteComment = async (commentId: string | number): Promise<prisma.comment> => {
+export const deleteComment = async (
+  commentId: string | number
+): Promise<prisma.comment> => {
   const id = Number(commentId)
   const comment = await loadComment(id)
   if (comment?.imageMeta?.public_id) {

@@ -1,5 +1,5 @@
 import { requireCurrentUser } from '~/models/auth.server'
-import { type LoaderFunction } from 'react-router';
+import { type LoaderFunction } from 'react-router'
 import { fetchCheckIns } from '~/models/challenge.server'
 import { type CheckIn } from '~/utils/types'
 interface LoaderData {

@@ -1,24 +1,26 @@
-import {
-  Card
-} from '~/utils/material-tailwind'
-import { SlShareAlt } from 'react-icons/sl'
-import { FaRegComment, FaRegHeart } from 'react-icons/fa'
-import RandomAvatar from './randomavatar'
-import { useMobileSize } from '~/hooks/useMobileSize'
-export default function FeedPostCard () {
-  const isMobile = useMobileSize()
+import { Card } from "~/utils/material-tailwind";
+import { SlShareAlt } from "react-icons/sl";
+import { FaRegComment, FaRegHeart } from "react-icons/fa";
+import RandomAvatar from "./randomavatar";
+import { useMobileSize } from "~/hooks/useMobileSize";
+export default function FeedPostCard() {
+  const isMobile = useMobileSize();
   return (
     <div className="mt-2 w-md border-0 drop-shadow-none mr-2">
       <div className="drop-shadow-none">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="md:col-span-2 flex items-center">
-          <RandomAvatar size={isMobile ? 'md' : 'xl'} className="mr-4" />
-            <div className={`mb-2 text-${isMobile ? 'sm' : 'base'}`}>
-              Stir fried some colorfull bell peppers and garnished with nuts, seeds, and basil. Getting better at food photography too!
+            <RandomAvatar size={isMobile ? "md" : "xl"} className="mr-4" />
+            <div className={`mb-2 text-${isMobile ? "sm" : "base"}`}>
+              Stir fried some colorfull bell peppers and garnished with nuts,
+              seeds, and basil. Getting better at food photography too!
             </div>
           </div>
-          <Card className="md:col-span-2 p-0 border-1 drop-shadow-lg border-gray rounded-lg">
-            <img src="/images/stirfry.jpeg" className="rounded-lg cursor-pointer"/>
+          <Card className="md:col-span-2 p-0 border drop-shadow-lg border-gray rounded-lg">
+            <img
+              src="/images/stirfry.jpeg"
+              className="rounded-lg cursor-pointer"
+            />
           </Card>
         </div>
         <span className="text-xs text-gray-500">Yesterday</span>
@@ -39,5 +41,5 @@ export default function FeedPostCard () {
         </div>
       </div>
     </div>
-  )
+  );
 }

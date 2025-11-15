@@ -1,7 +1,12 @@
-import { createNote, updateNote, loadRepost, deleteNote } from '~/models/note.server'
+import {
+  createNote,
+  updateNote,
+  loadRepost,
+  deleteNote
+} from '~/models/note.server'
 import { requireCurrentUser } from '~/models/auth.server'
-import { type LoaderFunction, type ActionFunction  } from 'react-router';
-import { parseFormData } from '@remix-run/form-data-parser';
+import { type LoaderFunction, type ActionFunction } from 'react-router'
+import { parseFormData } from '@remix-run/form-data-parser'
 import { writeFile, memoryUploadHandler } from '~/utils/uploadFile'
 
 export const action: ActionFunction = async (args) => {
@@ -9,11 +14,15 @@ export const action: ActionFunction = async (args) => {
 
   const request = args.request
 
-  const formData = await parseFormData(request, memoryUploadHandler);
+  const formData = await parseFormData(request, memoryUploadHandler)
   const rawData = formData
 
   if (rawData.get('unrepost')) {
-    const repost = await loadRepost(rawData.get('replyToId'), currentUser?.id, null)
+    const repost = await loadRepost(
+      rawData.get('replyToId'),
+      currentUser?.id,
+      null
+    )
     if (repost) {
       await deleteNote(repost.id, currentUser?.id)
     }

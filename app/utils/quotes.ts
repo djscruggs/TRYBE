@@ -1,65 +1,247 @@
 const quotes = [
-  { quote: 'Growth begins at the end of your comfort zone.', author: 'Roy T. Bennett' },
-  { quote: 'The journey of a thousand miles begins with one step.', author: 'Lao Tzu' },
-  { quote: 'Small deeds done are better than great deeds planned.', author: 'Peter Marshall' },
-  { quote: 'Success is the sum of small efforts, repeated day in and day out.', author: 'Robert Collier' },
-  { quote: 'The only journey is the one within.', author: 'Rainer Maria Rilke' },
-  { quote: 'Alone we can do so little; together we can do so much.', author: 'Helen Keller' },
-  { quote: 'Strength does not come from physical capacity. It comes from an indomitable will.', author: 'Mahatma Gandhi' },
-  { quote: 'Challenges are what make life interesting; overcoming them is what makes life meaningful.', author: 'Joshua J. Marine' },
-  { quote: 'Every day is a new beginning. Take a deep breath and start again.', author: 'Unknown' },
-  { quote: 'Believe you can and you’re halfway there.', author: 'Theodore Roosevelt' },
-  { quote: 'The only place where success comes before work is in the dictionary.', author: 'Vidal Sassoon' },
-  { quote: 'What lies behind us and what lies before us are tiny matters compared to what lies within us.', author: 'Ralph Waldo Emerson' },
-  { quote: 'Believe in yourself and all that you are. Know that there is something inside you that is greater than any obstacle.', author: 'Christian D. Larson' },
+  {
+    quote: 'Growth begins at the end of your comfort zone.',
+    author: 'Roy T. Bennett'
+  },
+  {
+    quote: 'The journey of a thousand miles begins with one step.',
+    author: 'Lao Tzu'
+  },
+  {
+    quote: 'Small deeds done are better than great deeds planned.',
+    author: 'Peter Marshall'
+  },
+  {
+    quote: 'Success is the sum of small efforts, repeated day in and day out.',
+    author: 'Robert Collier'
+  },
+  {
+    quote: 'The only journey is the one within.',
+    author: 'Rainer Maria Rilke'
+  },
+  {
+    quote: 'Alone we can do so little; together we can do so much.',
+    author: 'Helen Keller'
+  },
+  {
+    quote:
+      'Strength does not come from physical capacity. It comes from an indomitable will.',
+    author: 'Mahatma Gandhi'
+  },
+  {
+    quote:
+      'Challenges are what make life interesting; overcoming them is what makes life meaningful.',
+    author: 'Joshua J. Marine'
+  },
+  {
+    quote: 'Every day is a new beginning. Take a deep breath and start again.',
+    author: 'Unknown'
+  },
+  {
+    quote: 'Believe you can and you’re halfway there.',
+    author: 'Theodore Roosevelt'
+  },
+  {
+    quote:
+      'The only place where success comes before work is in the dictionary.',
+    author: 'Vidal Sassoon'
+  },
+  {
+    quote:
+      'What lies behind us and what lies before us are tiny matters compared to what lies within us.',
+    author: 'Ralph Waldo Emerson'
+  },
+  {
+    quote:
+      'Believe in yourself and all that you are. Know that there is something inside you that is greater than any obstacle.',
+    author: 'Christian D. Larson'
+  },
   { quote: 'Stay positive, work hard, make it happen.', author: 'Unknown' },
-  { quote: 'Be the change that you wish to see in the world.', author: 'Mahatma Gandhi' },
+  {
+    quote: 'Be the change that you wish to see in the world.',
+    author: 'Mahatma Gandhi'
+  },
   { quote: 'Every moment is a fresh beginning.', author: 'T.S. Eliot' },
   { quote: 'We rise by lifting others.', author: 'Robert Ingersoll' },
-  { quote: 'The future depends on what you do today.', author: 'Mahatma Gandhi' },
-  { quote: 'The only limit to our realization of tomorrow is our doubts of today.', author: 'Franklin D. Roosevelt' },
-  { quote: 'In the midst of difficulty lies opportunity.', author: 'Albert Einstein' },
-  { quote: 'Do one thing every day that scares you.', author: 'Eleanor Roosevelt' },
-  { quote: 'Purpose is the reason you journey. Passion is the fire that lights your way.', author: 'Unknown' },
-  { quote: 'Growth is the only evidence of life.', author: 'John Henry Newman' },
+  {
+    quote: 'The future depends on what you do today.',
+    author: 'Mahatma Gandhi'
+  },
+  {
+    quote:
+      'The only limit to our realization of tomorrow is our doubts of today.',
+    author: 'Franklin D. Roosevelt'
+  },
+  {
+    quote: 'In the midst of difficulty lies opportunity.',
+    author: 'Albert Einstein'
+  },
+  {
+    quote: 'Do one thing every day that scares you.',
+    author: 'Eleanor Roosevelt'
+  },
+  {
+    quote:
+      'Purpose is the reason you journey. Passion is the fire that lights your way.',
+    author: 'Unknown'
+  },
+  {
+    quote: 'Growth is the only evidence of life.',
+    author: 'John Henry Newman'
+  },
   { quote: 'The journey is the reward.', author: 'Chinese Proverb' },
-  { quote: 'Strength does not come from winning. Your struggles develop your strengths.', author: 'Arnold Schwarzenegger' },
-  { quote: 'Transformation is a process, and as life happens there are tons of ups and downs. It’s a journey of discovery.', author: 'Rick Warren' },
-  { quote: 'Alone we are smart. Together we are brilliant.', author: 'Steven Anderson' },
-  { quote: 'Our potential is one thing. What we do with it is quite another.', author: 'Angela Duckworth' },
-  { quote: 'Unity is strength. . . when there is teamwork and collaboration, wonderful things can be achieved.', author: 'Mattie Stepanek' },
+  {
+    quote:
+      'Strength does not come from winning. Your struggles develop your strengths.',
+    author: 'Arnold Schwarzenegger'
+  },
+  {
+    quote:
+      'Transformation is a process, and as life happens there are tons of ups and downs. It’s a journey of discovery.',
+    author: 'Rick Warren'
+  },
+  {
+    quote: 'Alone we are smart. Together we are brilliant.',
+    author: 'Steven Anderson'
+  },
+  {
+    quote: 'Our potential is one thing. What we do with it is quite another.',
+    author: 'Angela Duckworth'
+  },
+  {
+    quote:
+      'Unity is strength. . . when there is teamwork and collaboration, wonderful things can be achieved.',
+    author: 'Mattie Stepanek'
+  },
   { quote: 'Focus on progress, not perfection.', author: 'Bill Phillips' },
-  { quote: 'Challenges are gifts that force us to search for a new center of gravity. Don’t fight them. Just find a different way to stand.', author: 'Oprah Winfrey' },
-  { quote: 'Push yourself, because no one else is going to do it for you.', author: 'Unknown' },
-  { quote: 'What lies behind us and what lies before us are tiny matters compared to what lies within us.', author: 'Ralph Waldo Emerson' },
-  { quote: 'Perseverance is not a long race; it is many short races one after the other.', author: 'Walter Elliot' },
-  { quote: 'Commitment is what transforms a promise into reality.', author: 'Abraham Lincoln' },
-  { quote: 'The best way to predict the future is to create it.', author: 'Peter Drucker' },
-  { quote: 'Difficulties strengthen the mind, as labor does the body.', author: 'Seneca' },
-  { quote: 'There is no growth without change, and there is no change without loss.', author: 'Rick Warren' },
-  { quote: 'Strength grows in the moments when you think you can’t go on but you keep going anyway.', author: 'Unknown' },
+  {
+    quote:
+      'Challenges are gifts that force us to search for a new center of gravity. Don’t fight them. Just find a different way to stand.',
+    author: 'Oprah Winfrey'
+  },
+  {
+    quote: 'Push yourself, because no one else is going to do it for you.',
+    author: 'Unknown'
+  },
+  {
+    quote:
+      'What lies behind us and what lies before us are tiny matters compared to what lies within us.',
+    author: 'Ralph Waldo Emerson'
+  },
+  {
+    quote:
+      'Perseverance is not a long race; it is many short races one after the other.',
+    author: 'Walter Elliot'
+  },
+  {
+    quote: 'Commitment is what transforms a promise into reality.',
+    author: 'Abraham Lincoln'
+  },
+  {
+    quote: 'The best way to predict the future is to create it.',
+    author: 'Peter Drucker'
+  },
+  {
+    quote: 'Difficulties strengthen the mind, as labor does the body.',
+    author: 'Seneca'
+  },
+  {
+    quote:
+      'There is no growth without change, and there is no change without loss.',
+    author: 'Rick Warren'
+  },
+  {
+    quote:
+      'Strength grows in the moments when you think you can’t go on but you keep going anyway.',
+    author: 'Unknown'
+  },
   { quote: 'Every moment is a fresh beginning.', author: 'T.S. Eliot' },
-  { quote: 'Unity is strength. . . when there is teamwork and collaboration, wonderful things can be achieved.', author: 'Mattie Stepanek' },
-  { quote: 'Reflect upon your present blessings, of which every man has plenty; not on your past misfortunes, of which all men have some.', author: 'Charles Dickens' },
-  { quote: 'It does not matter how slowly you go as long as you do not stop.', author: 'Confucius' },
+  {
+    quote:
+      'Unity is strength. . . when there is teamwork and collaboration, wonderful things can be achieved.',
+    author: 'Mattie Stepanek'
+  },
+  {
+    quote:
+      'Reflect upon your present blessings, of which every man has plenty; not on your past misfortunes, of which all men have some.',
+    author: 'Charles Dickens'
+  },
+  {
+    quote: 'It does not matter how slowly you go as long as you do not stop.',
+    author: 'Confucius'
+  },
   { quote: 'Success is a journey, not a destination.', author: 'Arthur Ashe' },
-  { quote: 'Mindset is what separates the best from the rest.', author: 'Unknown' },
-  { quote: 'In the middle of every difficulty lies opportunity.', author: 'Albert Einstein' },
-  { quote: 'A journey of a thousand miles begins with a single step.', author: 'Lao Tzu' },
-  { quote: 'Your actions today create the reality you experience tomorrow.', author: 'Unknown' },
-  { quote: 'Growth is never by mere chance; it is the result of forces working together.', author: 'James Cash Penney' },
-  { quote: 'The only way to achieve the impossible is to believe it is possible.', author: 'Charles Kingsleigh (from Alice in Wonderland)' },
-  { quote: 'Personal growth is about progress, not perfection.', author: 'Hal Elrod' },
-  { quote: 'Change is hard at first, messy in the middle, and gorgeous at the end.', author: 'Robin Sharma' },
-  { quote: 'Challenges make you discover things about yourself that you never really knew.', author: 'Cicely Tyson' },
-  { quote: 'You are the only one who can limit your greatness.', author: 'Unknown' },
-  { quote: 'Perseverance is not a long race; it is many short races one after the other.', author: 'Walter Elliot' },
-  { quote: 'The only way to do great work is to love what you do.', author: 'Steve Jobs' },
-  { quote: 'Believe in your infinite potential. Your only limitations are those you set upon yourself.', author: 'Roy T. Bennett' },
-  { quote: 'Change your thoughts and you change your world.', author: 'Norman Vincent Peale' },
-  { quote: 'Don’t watch the clock; do what it does. Keep going.', author: 'Sam Levenson' },
-  { quote: 'Success is the sum of small efforts, repeated day in and day out.', author: 'Robert Collier' }
+  {
+    quote: 'Mindset is what separates the best from the rest.',
+    author: 'Unknown'
+  },
+  {
+    quote: 'In the middle of every difficulty lies opportunity.',
+    author: 'Albert Einstein'
+  },
+  {
+    quote: 'A journey of a thousand miles begins with a single step.',
+    author: 'Lao Tzu'
+  },
+  {
+    quote: 'Your actions today create the reality you experience tomorrow.',
+    author: 'Unknown'
+  },
+  {
+    quote:
+      'Growth is never by mere chance; it is the result of forces working together.',
+    author: 'James Cash Penney'
+  },
+  {
+    quote:
+      'The only way to achieve the impossible is to believe it is possible.',
+    author: 'Charles Kingsleigh (from Alice in Wonderland)'
+  },
+  {
+    quote: 'Personal growth is about progress, not perfection.',
+    author: 'Hal Elrod'
+  },
+  {
+    quote:
+      'Change is hard at first, messy in the middle, and gorgeous at the end.',
+    author: 'Robin Sharma'
+  },
+  {
+    quote:
+      'Challenges make you discover things about yourself that you never really knew.',
+    author: 'Cicely Tyson'
+  },
+  {
+    quote: 'You are the only one who can limit your greatness.',
+    author: 'Unknown'
+  },
+  {
+    quote:
+      'Perseverance is not a long race; it is many short races one after the other.',
+    author: 'Walter Elliot'
+  },
+  {
+    quote: 'The only way to do great work is to love what you do.',
+    author: 'Steve Jobs'
+  },
+  {
+    quote:
+      'Believe in your infinite potential. Your only limitations are those you set upon yourself.',
+    author: 'Roy T. Bennett'
+  },
+  {
+    quote: 'Change your thoughts and you change your world.',
+    author: 'Norman Vincent Peale'
+  },
+  {
+    quote: 'Don’t watch the clock; do what it does. Keep going.',
+    author: 'Sam Levenson'
+  },
+  {
+    quote: 'Success is the sum of small efforts, repeated day in and day out.',
+    author: 'Robert Collier'
+  }
 ]
-export default function getRandomQuote (): { quote: string, author: string } {
+export default function getRandomQuote(): { quote: string; author: string } {
   return quotes[Math.floor(Math.random() * quotes.length)]
 }

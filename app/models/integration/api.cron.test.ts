@@ -48,8 +48,14 @@ describe('testing api/cron', async () => {
     members: {
       create: {
         userId: 2,
-        notificationHour: currentMinuteGMT + 2 >= 60 ? (currentHourGMT + 1) % 24 : currentHourGMT,
-        notificationMinute: currentMinuteGMT + 2 >= 60 ? (currentMinuteGMT + 2 - 60) : currentMinuteGMT + 2,
+        notificationHour:
+          currentMinuteGMT + 2 >= 60
+            ? (currentHourGMT + 1) % 24
+            : currentHourGMT,
+        notificationMinute:
+          currentMinuteGMT + 2 >= 60
+            ? currentMinuteGMT + 2 - 60
+            : currentMinuteGMT + 2,
         dayNumber: 1
       }
     },
@@ -76,7 +82,9 @@ describe('testing api/cron', async () => {
       }
     }
   })
-  it('expects scheduled and day number posts to be sent', async ({ integration }) => {
+  it('expects scheduled and day number posts to be sent', async ({
+    integration
+  }) => {
     // first run should send the scheduled post and the first day number post
     const response: Response = await loader({
       request: new Request('http://localhost/api/cron'),
@@ -84,7 +92,13 @@ describe('testing api/cron', async () => {
       params: {}
     })
 
-    const { scheduledPosts, dayNumberPosts, dayNotifications } = response ? await response.json() : { scheduledPosts: undefined, dayNumberPosts: undefined, dayNotifications: undefined }
+    const { scheduledPosts, dayNumberPosts, dayNotifications } = response
+      ? await response.json()
+      : {
+          scheduledPosts: undefined,
+          dayNumberPosts: undefined,
+          dayNotifications: undefined
+        }
     expect(scheduledPosts).toEqual(1)
     expect(dayNumberPosts).toBeDefined()
     expect(dayNumberPosts).toEqual(1)
@@ -98,7 +112,13 @@ describe('testing api/cron', async () => {
       params: {}
     })
 
-    const { scheduledPosts, dayNumberPosts, dayNotifications } = response ? await response.json() : { scheduledPosts: undefined, dayNumberPosts: undefined, dayNotifications: undefined }
+    const { scheduledPosts, dayNumberPosts, dayNotifications } = response
+      ? await response.json()
+      : {
+          scheduledPosts: undefined,
+          dayNumberPosts: undefined,
+          dayNotifications: undefined
+        }
     expect(scheduledPosts).toEqual(0)
     expect(dayNumberPosts).toEqual(1)
     expect(dayNotifications).toEqual(0)
@@ -111,7 +131,13 @@ describe('testing api/cron', async () => {
       params: {}
     })
 
-    const { scheduledPosts, dayNumberPosts, dayNotifications } = response ? await response.json() : { scheduledPosts: undefined, dayNumberPosts: undefined, dayNotifications: undefined }
+    const { scheduledPosts, dayNumberPosts, dayNotifications } = response
+      ? await response.json()
+      : {
+          scheduledPosts: undefined,
+          dayNumberPosts: undefined,
+          dayNotifications: undefined
+        }
     expect(scheduledPosts).toEqual(0)
     expect(dayNumberPosts).toEqual(0)
     expect(dayNotifications).toEqual(1)

@@ -1,8 +1,8 @@
 import { deleteNote } from '~/models/note.server'
 import { requireCurrentUser } from '~/models/auth.server'
-import { type LoaderFunction, type ActionFunctionArgs  } from 'react-router';
+import { type LoaderFunction, type ActionFunctionArgs } from 'react-router'
 
-export async function action (args: ActionFunctionArgs) {
+export async function action(args: ActionFunctionArgs) {
   const { params } = args
   const user = await requireCurrentUser(args)
   try {
