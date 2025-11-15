@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState, JSX } from "react";
 import { useAuth, UserButton } from "@clerk/react-router";
-import { ClientOnly } from "~/components/ClientOnly";
+import { ClientOnly } from '~/components/ClientOnly'
 import useHasLoaded from "~/hooks/useHasLoaded";
 import {
   useLocation,
@@ -13,7 +13,6 @@ import useGatedNavigate from "~/hooks/useGatedNavigate";
 import { HiOutlineLogin } from "react-icons/hi";
 import NavLinks from "./navlinks";
 import { CurrentUserContext } from "~/contexts/CurrentUserContext";
-import { useDeviceContext } from "~/contexts/DeviceContext";
 import {
   HomeIcon,
   PlusCircleIcon,
