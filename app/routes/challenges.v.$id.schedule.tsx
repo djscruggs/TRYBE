@@ -1,10 +1,9 @@
 import { JSX } from 'react'
-import { useLoaderData, useRouteLoaderData } from 'react-router';
+import { useLoaderData } from 'react-router';
 import { requireCurrentUser } from '~/models/auth.server'
 import { type Post } from '@prisma/client'
 import { type MetaFunction, type LoaderFunction, type LoaderFunctionArgs } from 'react-router';
 import { prisma } from '~/models/prisma.server'
-import { type Challenge } from '~/utils/types'
 import ChallengeSchedule from '~/components/challengeSchedule'
 import { useMemberContext } from '~/contexts/MemberContext'
 
