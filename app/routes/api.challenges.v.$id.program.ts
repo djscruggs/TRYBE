@@ -1,7 +1,6 @@
 import { loadChallenge } from '~/models/challenge.server'
-import type { MemberChallenge, Challenge, Post } from '~/utils/types'
+import type { Challenge, Post } from '~/utils/types'
 import { type LoaderFunction, type LoaderFunctionArgs } from 'react-router'
-import { getCurrentUser } from '~/models/auth.server'
 import { prisma } from '~/models/prisma.server'
 import type { Prisma } from '@prisma/client'
 
@@ -24,7 +23,7 @@ export const loader: LoaderFunction = async (
 
   const posts = (await prisma.post.findMany({
     where: {
-      // challengeId: Number(params.id),
+      challengeId: Number(params.id),
       publishOnDayNumber: { gt: 0 }
     },
     orderBy: [...orderBy, { createdAt: 'asc' }]
@@ -36,5 +35,6 @@ export const loader: LoaderFunction = async (
       publishAt: post.publishAt ? new Date(post.publishAt) : null
     }))
   }
+
   return data
 }

@@ -49,10 +49,10 @@ export default function ChallengeOverview (props: ChallengeOverviewProps): JSX.E
   const [editingNotificationTime, setEditingNotificationTime] = useState(false)
   const [editingStartAt, setEditingStartAt] = useState(false)
 
-  useEffect(() => {
-    setMembership(membership)
-    setStarted(hasStarted(challenge, membership))
-  }, [membership, challenge])
+  // useEffect(() => {
+  //   setMembership(membership)
+  //   setStarted(hasStarted(challenge, membership))
+  // }, [membership, challenge])
   const [checkIns, setCheckIns] = useState<CheckIn[]>([])
   const fetchCheckIns = async (): Promise<void> => {
     try {

@@ -1,5 +1,5 @@
 import { Spinner } from '~/utils/material-tailwind';
-import { type MetaFunction, useRouteLoaderData } from 'react-router';
+import { type MetaFunction } from 'react-router';
 import type { Challenge, CheckIn } from '~/utils/types'
 import CheckinsList from '~/components/checkinsList'
 import { useContext, useEffect, useState, JSX } from 'react'
@@ -31,26 +31,26 @@ function groupCheckInsByDate (checkIns: CheckIn[]): Record<string, CheckIn[]> {
 }
 
 export default function MyCheckIns (): JSX.Element {
-  const { challenge } = useRouteLoaderData<typeof useRouteLoaderData>('routes/challenges.v.$id') as { challenge: Challenge }
   const { currentUser } = useContext(CurrentUserContext)
-  const { membership } = useMemberContext()
+  const { membership, challenge } = useMemberContext()
   const [checkIns, setCheckIns] = useState<CheckIn[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [groupedCheckIns, setGroupedCheckIns] = useState<Record<string, CheckIn[]>>({})
 
-  if (!membership && challenge.userId !== currentUser?.id) {
+  if (!membership && challenge?.userId !== currentUser?.id) {
     return <></>
   }
   const fetchCheckIns = async (): Promise<void> => {
-    if (!currentUser && !membership?.userId && challenge.userId !== currentUser?.id) {
+    if (!currentUser && !membership?.userId && challenge?.userId !== currentUser?.id) {
       setCheckIns([])
       setIsLoading(false)
       return
     }
     const uid = membership?.userId ?? currentUser?.id
     setIsLoading(true)
-    let url = `/api/checkins/${challenge.id}/${uid}`
-    if (challenge.type === 'SELF_LED' && membership?.cohortId) {
+    let url = `/api/checkins/${challenge?.id}/${uid}`
+    console.log({url})
+    if (challenge?.type === 'SELF_LED' && membership?.cohortId) {
       url += `/${membership.cohortId}`
     }
     const response = await axios.get(url)
@@ -60,7 +60,7 @@ export default function MyCheckIns (): JSX.Element {
 
   useEffect(() => {
     void fetchCheckIns()
-  }, [challenge.id, currentUser?.id])
+  }, [challenge?.id, currentUser?.id])
 
   useEffect(() => {
     setGroupedCheckIns(groupCheckInsByDate(checkIns))

@@ -1,7 +1,7 @@
 import ChallengeOverview from '~/components/challengeOverview'
-import { type MetaFunction, useRouteLoaderData, useRevalidator, useSearchParams } from 'react-router';
-import { type Challenge, type ChallengeSummary } from '~/utils/types'
-import { useContext, useEffect, useState, JSX } from 'react'
+import { type MetaFunction, useRevalidator, useSearchParams } from 'react-router';
+import { type Challenge, type ChallengeSummary, type MemberChallenge } from '~/utils/types'
+import { useContext, useEffect, useState, useRef, JSX } from 'react'
 import { CurrentUserContext } from '~/contexts/CurrentUserContext'
 import { useMemberContext } from '~/contexts/MemberContext'
 import useCohortId from '~/hooks/useCohortId'
@@ -12,6 +12,7 @@ import axios from 'axios'
 import { Spinner } from '~/utils/material-tailwind'
 import { getShortUrl } from '~/utils/helpers/challenge'
 import useGatedNavigate from '~/hooks/useGatedNavigate'
+
 export const meta: MetaFunction = () => {
   return [
     { title: 'About this Challenge' },
@@ -21,26 +22,29 @@ export const meta: MetaFunction = () => {
     }
   ]
 }
+
 export default function ChallengeAbout (): JSX.Element {
-  const data = useRouteLoaderData<{ challenge: ChallengeSummary, loadingError: string }>('routes/challenges.v.$id') as unknown as { challenge: ChallengeSummary, loadingError: string }
-  const { membership, setMembership } = useMemberContext()
-  const { challenge } = data
-  const { loadingError } = data
+  console.log('ABOUT COMPONENT RENDERING')
+  
+  const { membership, setMembership, challenge: contextChallenge } = useMemberContext()
+  const challenge = contextChallenge as ChallengeSummary
+  const loadingError = undefined
   const { currentUser } = useContext(CurrentUserContext)
   const navigate = useGatedNavigate()
   const revalidator = useRevalidator()
   const [loading, setLoading] = useState<boolean>(false)
   const [showConfirm, setShowConfirm] = useState<boolean>(false)
   const [showJoin, setShowJoin] = useState<boolean>(false)
-  const [isMember, setIsMember] = useState<boolean>(Boolean(membership?.id ?? (challenge?.type === 'SCHEDULED' && challenge?.userId === currentUser?.id)))
+  const isMember = () => {return Boolean(membership?.id ?? (challenge?.type === 'SCHEDULED' && challenge?.userId === currentUser?.id))}
   const [searchParams] = useSearchParams()
   const cohortId = useCohortId()
   const [invite, setInvite] = useState<string | null>(searchParams.get('i'))
   useEffect(() => {
-    if (challenge.name) {
+    console.log('About title effect running, challenge:', challenge?.name)
+    if (challenge?.name) {
       document.title = challenge.name
     }
-  }, [])
+  }, [challenge])
 
   const confirmJoinUnjoin = async (): Promise<void> => {
     if (!currentUser) {
@@ -48,11 +52,11 @@ export default function ChallengeAbout (): JSX.Element {
       navigate(location.pathname, true)
       return
     }
-    if (challenge.type === 'SELF_LED' && !isMember) {
+    if (challenge?.type === 'SELF_LED' && !isMember) {
       setShowJoin(true)
       return
     }
-    if (isMember) {
+    if (isMember()) {
       setShowConfirm(true)
     } else {
       await toggleJoin()
@@ -68,11 +72,7 @@ export default function ChallengeAbout (): JSX.Element {
       const url = `/api/challenges/join-unjoin/${challenge.id as string | number}`
       const response = await axios.post(url)
       if (response.data.result === 'joined') {
-        setIsMember(true)
-        setMembership(response.data.result as MemberChallenge)
       } else {
-        setIsMember(false)
-        setMembership(null)
         if (cohortId) {
           const url = `/challenges/v/${challenge.id}/about`
           navigate(url, true)
@@ -86,11 +86,9 @@ export default function ChallengeAbout (): JSX.Element {
       setShowConfirm(false)
     }
   }
-  const afterJoin = (isMember: boolean, membership?: MemberChallenge): void => {
-    setIsMember(isMember)
-    setMembership(membership ?? null)
+  const afterJoin = (): void => {
     setShowJoin(false)
-    if (cohortId) {
+    if (cohortId && challenge?.id) {
       navigate(`/challenges/v/${challenge.id}/about/${cohortId}`, true)
     }
     revalidator.revalidate()
@@ -123,7 +121,7 @@ export default function ChallengeAbout (): JSX.Element {
         <button
             onClick={confirmJoinUnjoin}
             className='mt-4  bg-red hover:bg-green-500 text-white rounded-full p-1 px-2 cursor-pointer text-xs'>
-              { isMember ? 'Leave Challenge' : 'Join this Challenge' }
+              { isMember() ? 'Leave Challenge' : 'Join this Challenge' }
               { loading && <Spinner className='w-4 h-4 inline ml-2' /> }
           </button>
 
@@ -146,7 +144,7 @@ export default function ChallengeAbout (): JSX.Element {
             onCancel={() => { setShowJoin(false) }}
             afterJoin={afterJoin}
           />
-        {currentUser && challenge.type === 'SCHEDULED' && currentUser.id !== challenge.userId && <div className='mt-4 cursor-pointer text-red text-center text-xs underline' onClick={() => { navigate(`/challenges/v/${challenge.id}/contact`, true) }}>Contact Host</div>}
+          {currentUser && challenge.type === 'SCHEDULED' && currentUser.id !== challenge.userId && <div className='mt-4 cursor-pointer text-red text-center text-xs underline' onClick={() => { navigate(`/challenges/v/${challenge.id}/contact`, true) }}>Contact Host</div>}
         </>
 
       </div>

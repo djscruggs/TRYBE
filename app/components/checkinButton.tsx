@@ -31,7 +31,6 @@ export function CheckInButton ({ challenge, membership, afterCheckIn, size, labe
     }
   }
   const minWidth = size === 'xs' ? 'min-w-20' : size === 'sm' ? 'min-w-32' : size === 'md' ? 'min-w-32' : 'min-w-40'
-
   return (
     <>
       <div>

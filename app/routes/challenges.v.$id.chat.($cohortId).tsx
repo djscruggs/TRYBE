@@ -1,12 +1,10 @@
-import { useLoaderData, useRouteLoaderData } from 'react-router';
+import { useLoaderData } from 'react-router';
 import { useEffect, useRef, useState, useContext, JSX } from 'react'
 import { requireCurrentUser } from '~/models/auth.server'
-import type { Post, CheckIn, Challenge, Comment } from '~/utils/types'
+import type { Post, CheckIn,  Comment } from '~/utils/types'
 import { type MetaFunction,
   type LoaderFunction,
-  type LoaderFunctionArgs,
-  type SerializeFrom,
-  redirect,
+  type LoaderFunctionArgs
  } from 'react-router';
 import { prisma } from '~/models/prisma.server'
 import { type MemberChallenge, Prisma } from '@prisma/client'
@@ -185,11 +183,10 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
 
 export default function ViewChallengeChat (): JSX.Element {
   const { currentUser } = useContext(CurrentUserContext)
-  const { membership, updated: checkInsUpdated, refreshUserCheckIns } = useMemberContext()
+  const { challenge, membership, updated: checkInsUpdated, refreshUserCheckIns } = useMemberContext()
   const loaderData = useLoaderData<ChallengeChatData>()
   const [groupedData, setGroupedData] = useState<GroupedDataEntry>(loaderData.groupedData)
   const bottomRef = useRef<HTMLDivElement>(null)
-  const { challenge } = useRouteLoaderData<{ challenge: Challenge }>('routes/challenges.v.$id') as unknown as { challenge: Challenge }
   if (!groupedData) {
     return <p>No data.</p>
   }

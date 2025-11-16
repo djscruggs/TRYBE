@@ -43,9 +43,11 @@ export function isExpired(
 export function getShortUrl(
   challenge: Challenge | ChallengeSummary,
   membership?: MemberChallenge | null,
-  cohortId?: number
+  cohortId?: number,
+  origin?: string
 ): string {
-  const url = `${window.location.origin}/s/c${challenge.id}`
+  const baseOrigin = origin || (typeof window !== 'undefined' ? window.location.origin : '')
+  const url = `${baseOrigin}/s/c${challenge.id}`
   if (membership?.cohortId) {
     return `${url}-${membership.cohortId}`
   }

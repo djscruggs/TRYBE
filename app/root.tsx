@@ -107,12 +107,12 @@ function ClerkRevalidator() {
 
   useEffect(() => {
     revalidator.revalidate();
-  }, [clerkUser.user, revalidator]);
+  }, [clerkUser.user]);
 
   return null;
 }
 
-export default function App(): Route.ComponentProps {
+export default function App(): JSX.Element {
   const data = useLoaderData<RootLoaderData>();
 
   const { user } = data || {};

@@ -29,7 +29,8 @@ export default function DialogCheckin (props: DialogCheckinProps): JSX.Element {
     throw new Error('Challenge object with id is required')
   }
   return (
-    <Dialog open={isOpen} handler={handleOpen} size='xs'>
+    <Dialog open={isOpen}  size='xs'>
+      <Dialog.Trigger as={handleOpen} />
       <DialogHeader>
         You have not checked in today. Check in now?
       </DialogHeader>

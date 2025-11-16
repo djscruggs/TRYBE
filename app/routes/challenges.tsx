@@ -29,7 +29,6 @@ export default function ChallengesIndex(): JSX.Element {
   const isRouteException = routeExceptions.some((fragment) =>
     location.pathname.includes(fragment)
   );
-
   return (
     <>
       {isRouteException ? (

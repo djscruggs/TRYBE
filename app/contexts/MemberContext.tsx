@@ -1,4 +1,4 @@
-import { createContext, type ReactNode, useContext, useState, JSX } from 'react'
+import { createContext, type ReactNode, useContext, useState, useMemo, useCallback, JSX } from 'react'
 import { type MemberChallenge, type CheckIn, type Challenge } from '~/utils/types'
 import { useCurrentUser } from '~/contexts/CurrentUserContext'
 import axios from 'axios'
@@ -47,7 +47,7 @@ export const MemberContextProvider = ({
   const [loading, setLoading] = useState(false)
   const [updated, setUpdated] = useState(false)
 
-  const refreshUserCheckIns = async (): Promise<CheckIn[]> => {
+  const refreshUserCheckIns = useCallback(async (): Promise<CheckIn[]> => {
     if (!membership?.user && !membership?.userId && membership?.challenge.userId !== currentUser?.id) {
       setCheckIns([])
       return []
@@ -68,14 +68,25 @@ export const MemberContextProvider = ({
       setLoading(false)
     }
     return checkIns
-  }
+  }, [membership, currentUser?.id, checkIns])
 
-  const getUserCheckIns = (): CheckIn[] => {
+  const getUserCheckIns = useCallback((): CheckIn[] => {
     return checkIns
-  }
+  }, [checkIns])
+
+  const value = useMemo(() => ({
+    membership,
+    setMembership,
+    refreshUserCheckIns,
+    getUserCheckIns,
+    loading,
+    updated,
+    challenge,
+    setChallenge
+  }), [membership, refreshUserCheckIns, getUserCheckIns, loading, updated, challenge])
 
   return (
-    <MemberContext.Provider value={{ membership, setMembership, refreshUserCheckIns, getUserCheckIns, loading, updated, challenge, setChallenge }}>
+    <MemberContext.Provider value={value}>
       {children}
     </MemberContext.Provider>
   )

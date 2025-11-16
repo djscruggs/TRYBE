@@ -13,13 +13,22 @@ export default [
     route('all', 'routes/challenges.all.tsx'),
     route('mine', 'routes/challenges.mine.tsx'),
     route(':range', 'routes/challenges.$range.tsx'),
-    route('v/:id', 'routes/challenges.v.$id.tsx')
-  ]),
-  ...prefix('challenges/v/:id', [
-    route('about', 'routes/challenges.v.$id.about.($cohortId).tsx'),
-    route('chat', 'routes/challenges.v.$id.chat.($cohortId).tsx'),
-    route('checkins', 'routes/challenges.v.$id.checkins.($cohortId).tsx'),
-    route('members', 'routes/challenges.v.$id.members.($cohortId).tsx')
+    route('v/:id', 'routes/challenges.v.$id.tsx', [
+      route(
+        'about/:cohortId?',
+        'routes/challenges.v.$id.about.($cohortId).tsx'
+      ),
+      route('chat/:cohortId?', 'routes/challenges.v.$id.chat.($cohortId).tsx'),
+      route(
+        'checkins/:cohortId?',
+        'routes/challenges.v.$id.checkins.($cohortId).tsx'
+      ),
+      route(
+        'members/:cohortId?',
+        'routes/challenges.v.$id.members.($cohortId).tsx'
+      ),
+      route('program', 'routes/challenges.v.$id.program.tsx')
+    ])
   ]),
   route('login', 'routes/login.$.tsx'),
   route('logout', 'routes/logout.tsx'),
@@ -62,20 +71,24 @@ export default [
       index('routes/api.users.$id.ts'),
       route('likes', 'routes/api.users.$id.likes.ts')
     ]),
-    ...prefix('clerk', [
-      route(':id', 'routes/api.clerk.$id.ts')
-    ]),
+    ...prefix('clerk', [route(':id', 'routes/api.clerk.$id.ts')]),
     route('categories', 'routes/api.categories.ts'),
     ...prefix('memberchallenges', [
       route(':id', 'routes/api.memberchallenges.$id.ts'),
-      route(':challengeId/:userId', 'routes/api.memberchallenges.$challengeId.$userId.ts')
+      route(
+        ':challengeId/:userId',
+        'routes/api.memberchallenges.$challengeId.$userId.ts'
+      )
     ]),
     ...prefix('challenges', [
       index('routes/api.challenges.ts'),
       route(':range', 'routes/api.challenges.$range.ts'),
       route('delete/:id', 'routes/api.challenges.delete.$id.ts'),
       route('join-unjoin/:id', 'routes/api.challenges.join-unjoin.$id.ts'),
-      route(':id/checkins/:cohortId', 'routes/api.challenges.$id.checkins.($cohortId).ts'),
+      route(
+        ':id/checkins/:cohortId',
+        'routes/api.challenges.$id.checkins.($cohortId).ts'
+      ),
       ...prefix('v/:id', [
         index('routes/api.challenges.v.$id.ts'),
         route('program', 'routes/api.challenges.v.$id.program.ts'),
@@ -84,7 +97,10 @@ export default [
       ])
     ]),
     ...prefix('checkins', [
-      route(':challengeId/:userId/:cohortId', 'routes/api.checkins.$challengeId.($userId).($cohortId).ts'),
+      route(
+        ':challengeId/:userId/:cohortId?',
+        'routes/api.checkins.$challengeId.($userId).($cohortId).ts'
+      ),
       route('delete/:id', 'routes/api.checkins.delete.$id.ts')
     ])
   ]),
