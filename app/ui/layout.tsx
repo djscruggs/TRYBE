@@ -77,7 +77,7 @@ export const FullLayout = (): JSX.Element => {
   const [showSpacer, setShowSpacer] = useState(true);
   const [searchParams] = useSearchParams();
   useEffect(() => {
-    if (currentUser) {
+    if (currentUser && localStorage) {
       const redirectTo = localStorage.getItem("redirectTo") ?? "";
       if (redirectTo) {
         localStorage.removeItem("redirectTo");
@@ -145,14 +145,13 @@ export const FullLayout = (): JSX.Element => {
             >
               {!isLanding && (
                 <div className="absolute right-0 mr-4 z-20">
-                  <ClientOnly>
                     <UserButton
                       showName={true}
                       
                       userProfileUrl="/profile"
                       userProfileMode="navigation"
                     />
-                  </ClientOnly>
+                  
                 </div>
               )}
               <Outlet />
@@ -261,7 +260,6 @@ const MobileLayout = (): JSX.Element => {
   const isWelcome = location.pathname.includes("/challenges/");
   useEffect(() => {
     window.addEventListener("message", handleMessage);
-    console.log("mobile layout mounted");
     return () => {
       window.removeEventListener("message", handleMessage);
     };

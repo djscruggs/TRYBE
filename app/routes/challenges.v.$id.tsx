@@ -33,7 +33,6 @@ interface ChallengeSummaryWithCounts extends ChallengeSummary {
 }
 
 export const loader: LoaderFunction = async (args: LoaderFunctionArgs): Promise<ViewChallengeData | null | Response | { loadingError: string }> => {
-  console.log('Parent loader called')
   const currentUser = await requireAdminOrValidCohortMembership(args)
   // Check if currentUser is a redirect response
   if (currentUser instanceof Response) {
@@ -66,10 +65,9 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs): Promise<
         }
       }) as MemberChallenge | null
     }
-    console.log('bottom')
     return { challenge, membership: membership ?? null, cohortId }
   } catch (error) {
-    console.log('error')
+    console.error('error loading challenge')
     return { loadingError: 'Error loading challenge' }
   }
 }

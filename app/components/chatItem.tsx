@@ -55,7 +55,6 @@ export default function ChatItem(props: CommentsProps): JSX.Element {
         <div className="w-full border-l-2  pl-4 mb-4 pr-2">
           <FormChat
             afterSave={afterSave}
-            onPending={afterSave}
             type="comment"
             onCancel={() => {
               setShowForm(false);
@@ -97,7 +96,7 @@ export default function ChatItem(props: CommentsProps): JSX.Element {
                       }}
                       comments={comment.replies}
                       size={500}
-                      id={comment.id}
+                      id={comment.id as number}
                       type="comment"
                       commentCount={comment.replyCount}
                     >
@@ -114,7 +113,7 @@ export default function ChatItem(props: CommentsProps): JSX.Element {
                   </>
                 )}
                 <Liker
-                  itemId={comment.id}
+                  itemId={comment.id as number}
                   itemType="comment"
                   count={comment.likeCount}
                 />

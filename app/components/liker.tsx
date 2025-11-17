@@ -1,7 +1,7 @@
 import { TbHeartFilled } from 'react-icons/tb'
 import { useState, JSX } from 'react'
 import { toast } from 'react-hot-toast'
-import { useUserLikes } from '~/hooks/useUserLikes'
+import useUserLikes  from '~/hooks/useUserLikes'
 interface LikerProps {
   itemId: number
   itemType: 'comment' | 'post' | 'note' | 'challenge' | 'thread' | 'checkin'

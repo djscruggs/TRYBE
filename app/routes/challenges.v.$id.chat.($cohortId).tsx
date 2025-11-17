@@ -1,11 +1,12 @@
-import { useLoaderData } from 'react-router';
-import { useEffect, useRef, useState, useContext, JSX } from 'react'
-import { requireCurrentUser } from '~/models/auth.server'
-import type { Post, CheckIn,  Comment } from '~/utils/types'
+import { useLoaderData, useLocation } from 'react-router';
 import { type MetaFunction,
   type LoaderFunction,
   type LoaderFunctionArgs
  } from 'react-router';
+import { useEffect, useRef, useState, useContext, JSX } from 'react'
+import { requireCurrentUser } from '~/models/auth.server'
+import type { Post, CheckIn,  Comment, Challenge } from '~/utils/types'
+
 import { prisma } from '~/models/prisma.server'
 import { type MemberChallenge, Prisma } from '@prisma/client'
 import CheckinsList, { CheckinRow } from '~/components/checkinsList'
@@ -194,10 +195,11 @@ export default function ViewChallengeChat (): JSX.Element {
   const postRefs = useRef<Record<string, HTMLDivElement | null>>({})
   const chatFormRef = useRef<HTMLDivElement>(null)
   // find highlighted post in hash
-  const [featuredPostId, setfeaturedPostId] = useState(Number(window.location.hash.replace('#featured-id-', '')))
-  const highlightedCommentId = Number(window.location.hash.replace('#comment-', ''))
-  const highlightedPostId = Number(window.location.hash.replace('#post-', ''))
-  const highlightedCheckInId = Number(window.location.hash.replace('#checkIn-', ''))
+  const location = useLocation()
+  const [featuredPostId, setfeaturedPostId] = useState(Number(location.hash.replace('#featured-id-', '')))
+  const highlightedCommentId = Number(location.hash.replace('#comment-', ''))
+  const highlightedPostId = Number(location.hash.replace('#post-', ''))
+  const highlightedCheckInId = Number(location.hash.replace('#checkIn-', ''))
   const highlightedObject = highlightedPostId
     ? 'post'
     : highlightedCheckInId
@@ -232,12 +234,12 @@ export default function ViewChallengeChat (): JSX.Element {
     if (!todayGroup) {
       return false
     }
-    const hasNonEmptyCheckIn = todayGroup.checkIns.nonEmpty.some(checkIn => checkIn.userId === currentUser?.id)
-    const hasEmptyCheckIn = todayGroup.checkIns.empty.some(checkIn => checkIn.userId === currentUser?.id)
+    const hasNonEmptyCheckIn = todayGroup.checkIns.nonEmpty.some((checkIn: CheckIn)  => checkIn.userId === currentUser?.id)
+    const hasEmptyCheckIn = todayGroup.checkIns.empty.some((checkIn: CheckIn)  => checkIn.userId === currentUser?.id)
     return hasNonEmptyCheckIn || hasEmptyCheckIn
   }
   // used to maintain the number of days we show after a fetch
-  const expired = isExpired(challenge, membership)
+  const expired = isExpired(challenge as Challenge, membership)
   const [hasCheckedInToday, setHasCheckedInToday] = useState(checkedInToday())
   // only show the checkin popup if the user is logged in and they haven't checked in today, the challenge isn't expired, and there's no featured post
   const [showCheckinPopup, setShowCheckinPopup] = useState(started && membership && currentUser && !hasCheckedInToday && !expired && !featuredPost && challenge.status !== 'DRAFT')
@@ -300,7 +302,8 @@ export default function ViewChallengeChat (): JSX.Element {
     setShowfeaturedPost(false)
     setfeaturedPostId(0)
     setShowfeaturedPost(false)
-    window.history.replaceState(null, '', window.location.pathname)
+    if(window)
+      window.history.replaceState(null, '', window.location.pathname)
     scrollToBottom()
   }
   const [hasEarlierDays, setHasEarlierDays] = useState(false)

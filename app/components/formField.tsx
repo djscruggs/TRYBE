@@ -89,9 +89,7 @@ export function FormField ({
             maxLength={65535}
             ref={inputRef as React.RefObject<HTMLTextAreaElement>}
             disabled={disabled}
-          >
-          {value}
-        </textarea>
+          />
           )
         : (
       <input

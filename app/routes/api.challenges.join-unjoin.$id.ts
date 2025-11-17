@@ -62,9 +62,7 @@ export async function action(args: ActionFunctionArgs): Promise<Response> {
         const notificationHour = formData.get('notificationHour') as string
         const notificationMinute = formData.get('notificationMinute') as string
         const startAt = formData.get('startAt') as string
-        console.log('startAt', startAt)
         const startAtDate = startAt ? new Date(startAt.toString()) : undefined
-        console.log('startAtDate', startAtDate)
         const notificationHourNumber =
           notificationHour != null
             ? Number(notificationHour.toString())
@@ -109,7 +107,6 @@ export async function action(args: ActionFunctionArgs): Promise<Response> {
             challenge.startAt ?? new Date()
           ).toString() + ' days'
       }
-      console.log(result)
       await sendChallengeWelcome({
         to: user.email,
         dynamic_template_data:

@@ -43,11 +43,18 @@ export default function AvatarLoader({
     );
   }
   const avatarImg = profile?.profileImage ? profile.profileImage : "";
+  if(size == 'md'){
+    marginClass += ' max-w-[60px]'
+  }
   if (avatarImg) {
     if (clickable) {
       return (
         <Link to={`/members/${object.userId}/content`}>
-          <Avatar src={avatarImg} size={size} className={`${marginClass}`} />
+          <Avatar 
+            src={avatarImg} 
+            size={size} 
+            alt="avatar" 
+            className={`${marginClass}`} />
         </Link>
       );
     } else {
@@ -55,6 +62,7 @@ export default function AvatarLoader({
         <Avatar
           src={avatarImg}
           size={size}
+          alt="avatar"
           className={`${marginClass} ${shape === "circle" ? "rounded-full" : "rounded-lg"}`}
         />
       );

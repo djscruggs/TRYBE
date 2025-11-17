@@ -55,7 +55,7 @@ export default function Index(): JSX.Element {
 
   useEffect(() => {
     // Check if localStorage is available (client-side only)
-    if (typeof window !== "undefined" && window.localStorage) {
+    if (localStorage) {
       const splashSeen = localStorage.getItem("splashSeen");
       if (splashSeen) {
         navigate("/home");

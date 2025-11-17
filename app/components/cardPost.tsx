@@ -272,7 +272,7 @@ export const PostContent = (props: {
 
   return (
     <div className="flex items-start w-full">
-      <AvatarLoader object={post} marginClass="mr-2" />
+      <AvatarLoader object={post} marginClass="mr-2" size="md"/>
       <div className="flex flex-col w-full h-full">
         <div className="font-bold my-2">{post.title}</div>
         <div>

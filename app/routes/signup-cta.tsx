@@ -16,7 +16,7 @@ export default function SignupCta (): JSX.Element {
   const [searchParams] = useSearchParams()
   const redirectTo = searchParams.get('redirectTo')
 
-  if (redirectTo) {
+  if (redirectTo && localStorage) {
     localStorage.setItem('redirectTo', redirectTo)
   }
   const navigate = useNavigate()

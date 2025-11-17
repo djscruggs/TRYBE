@@ -24,7 +24,6 @@ export const meta: MetaFunction = () => {
 }
 
 export default function ChallengeAbout (): JSX.Element {
-  console.log('ABOUT COMPONENT RENDERING')
   
   const { membership, setMembership, challenge: contextChallenge } = useMemberContext()
   const challenge = contextChallenge as ChallengeSummary
@@ -40,7 +39,6 @@ export default function ChallengeAbout (): JSX.Element {
   const cohortId = useCohortId()
   const [invite, setInvite] = useState<string | null>(searchParams.get('i'))
   useEffect(() => {
-    console.log('About title effect running, challenge:', challenge?.name)
     if (challenge?.name) {
       document.title = challenge.name
     }

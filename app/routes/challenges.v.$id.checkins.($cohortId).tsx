@@ -49,7 +49,6 @@ export default function MyCheckIns (): JSX.Element {
     const uid = membership?.userId ?? currentUser?.id
     setIsLoading(true)
     let url = `/api/checkins/${challenge?.id}/${uid}`
-    console.log({url})
     if (challenge?.type === 'SELF_LED' && membership?.cohortId) {
       url += `/${membership.cohortId}`
     }

@@ -1,4 +1,4 @@
-import { useEffect, useState, useContext, useRef } from 'react'
+import { useEffect, useState, useContext } from 'react'
 import axios from 'axios'
 import { CurrentUserContext } from '~/contexts/CurrentUserContext'
 import { toast } from 'react-hot-toast'
@@ -7,6 +7,9 @@ interface UserLikes {
   comment?: number[]
   thread?: number[]
   checkin?: number[]
+  note?: number[]
+  message?: number[]
+  challenge?: number[]
 }
 
 type LikeableType =
@@ -16,12 +19,14 @@ type LikeableType =
   | 'challenge'
   | 'thread'
   | 'checkin'
+  | 'note'
+  | 'message'
 
-export function useUserLikes(): {
+const useUserLikes = (): {
   hasLiked: (type: LikeableType, id: number) => boolean
   like: (type: LikeableType, id: number) => Promise<void>
   unlike: (type: LikeableType, id: number) => Promise<void>
-} {
+} => {
   const { currentUser } = useContext(CurrentUserContext)
   const userId = currentUser?.id
 
@@ -33,26 +38,26 @@ export function useUserLikes(): {
     }
   }
 
-  const [likes, setLikes] = useState<UserLikes>(() => {
-    // Initialize state from local storage
-    const storedLikes = localStorage.getItem('userLikes')
-    return storedLikes ? JSON.parse(storedLikes) : {}
-  })
+  const [likes, setLikes] = useState<UserLikes>({})
 
-  const fetchLikes = async () => {
+  const fetchLikes = async (): Promise<void> => {
     try {
       const { data } = await axios.get<UserLikes>(`/api/users/${userId}/likes`)
       setLikes(data)
-      localStorage.setItem('userLikes', JSON.stringify(data)) // Update local storage
+      if (localStorage) {
+        localStorage.setItem('userLikes', JSON.stringify(data)) // Update local storage
+      }
     } catch (error) {
       console.error('Failed to fetch user likes:', error)
     }
   }
 
   useEffect(() => {
-    const storedLikes = localStorage.getItem('userLikes')
-    if (!storedLikes) {
-      void fetchLikes()
+    if (localStorage) {
+      const storedLikes = localStorage.getItem('userLikes')
+      if (!storedLikes) {
+        void fetchLikes()
+      }
     }
   }, [userId])
 
@@ -88,7 +93,9 @@ export function useUserLikes(): {
     }
 
     setLikes(updatedLikes)
-    localStorage.setItem('userLikes', JSON.stringify(updatedLikes)) // Update local storage
+    if (localStorage) {
+      localStorage.setItem('userLikes', JSON.stringify(updatedLikes))
+    } // Update local storage
 
     const formData = new FormData()
     const _type = type.toLowerCase()
@@ -122,8 +129,12 @@ export function useUserLikes(): {
   }
 
   useEffect(() => {
-    localStorage.setItem('userLikes', JSON.stringify(likes)) // Sync likes to local storage on change
+    if (localStorage) {
+      localStorage.setItem('userLikes', JSON.stringify(likes))
+    } // Sync likes to local storage on change
   }, [likes])
 
   return { hasLiked, like, unlike }
 }
+
+export default useUserLikes

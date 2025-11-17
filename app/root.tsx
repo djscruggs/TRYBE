@@ -136,9 +136,10 @@ export default function App(): JSX.Element {
   const searchParams = useSearchParams();
   if (!user && typeof window !== "undefined") {
     const redirectTo = searchParams[0].get("redirectTo");
-
-    if (redirectTo && !localStorage.getItem("redirectTo")) {
-      localStorage.setItem("redirectTo", redirectTo);
+    if(localStorage) {
+      if (redirectTo && !localStorage.getItem("redirectTo")) {
+        localStorage.setItem("redirectTo", redirectTo);
+      }
     }
   }
 
