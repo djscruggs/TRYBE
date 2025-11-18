@@ -3,7 +3,8 @@ import { useNavigate, useLocation, useRevalidator } from 'react-router';
 import { useState, useContext, JSX } from 'react'
 import { CurrentUserContext } from '~/contexts/CurrentUserContext'
 import { type Challenge, type ChallengeSummary } from '~/utils/types'
-import { Button, Menu, MenuHandler, MenuList, MenuItem } from '~/utils/material-tailwind';
+import { Button } from '~/components/ui/button'
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '~/components/ui/dropdown-menu';
 import DialogDelete from './dialogDelete'
 import { GiHamburgerMenu } from 'react-icons/gi'
 import axios from 'axios'
@@ -50,26 +51,26 @@ export default function MenuChallenge (props: MenuChallengeProps): JSX.Element {
     <>
     {challenge?.userId === currentUser?.id && (
       <>
-        <Menu placement={placement}>
-          <MenuHandler>
+        <DropdownMenu placement={placement}>
+          <DropdownMenuTrigger>
             <Button className='bg-red p-1 rounded-md focus-visible:outline-none'>
               <GiHamburgerMenu className='h-5 w-5'/>
             </Button>
-          </MenuHandler>
-          <MenuList>
-            <MenuItem onClick={() => { navigate(`/posts/new/challenge/${challenge.id}`) }}>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuItem onClick={() => { navigate(`/posts/new/challenge/${challenge.id}`) }}>
               Post an Update
-            </MenuItem>
-            {/* <MenuItem onClick={() => { navigate(`/threads/new/challenge/${challenge.id}`) }} >
+            </DropdownMenuItem>
+            {/* <DropdownMenuItem onClick={() => { navigate(`/threads/new/challenge/${challenge.id}`) }} >
               Start a Discussion
-            </MenuItem> */}
-            <MenuItem onClick={() => { navigate(`/challenges/v/${challenge.id}/edit`) }}>Edit Challenge</MenuItem>
-            <MenuItem onClick={() => { navigate(`/challenges/v/${challenge.id}/schedule`) }}>Edit Schedule</MenuItem>
-            <MenuItem onClick={handleDeleteDialog}>
+            </DropdownMenuItem> */}
+            <DropdownMenuItem onClick={() => { navigate(`/challenges/v/${challenge.id}/edit`) }}>Edit Challenge</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => { navigate(`/challenges/v/${challenge.id}/schedule`) }}>Edit Schedule</DropdownMenuItem>
+            <DropdownMenuItem onClick={handleDeleteDialog}>
               Delete
-            </MenuItem>
-          </MenuList>
-        </Menu>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       {deleteDialog && <DialogDelete prompt='Are you sure you want to delete this challenge?' isOpen={deleteDialog} deleteCallback={handleDelete} onCancel={cancelDialog}/>}
       </>
     )}

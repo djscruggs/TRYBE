@@ -1,12 +1,7 @@
 import { useState, useEffect, JSX } from 'react'
 import { HiOutlineClipboardCopy } from 'react-icons/hi'
-import {
-  Button,
-  Dialog,
-  DialogBody,
-  DialogFooter,
-  DialogHeader
-} from '~/utils/material-tailwind'
+import { Button } from '~/components/ui/button'
+import { Dialog, DialogDescription, DialogFooter, DialogHeader } from '~/components/ui/dialog'
 interface DialogShareProps {
   prompt: string
   link: string
@@ -32,11 +27,11 @@ export default function DialogShare (props: DialogShareProps): JSX.Element {
     setSuccess(true)
   }
   return (
-    <Dialog open={open} handler={handleOpen} size='xs'>
+    <Dialog open={open} onOpenChange={handleOpen} size='xs'>
       <DialogHeader>
         <h3>{title ?? 'Share'}</h3>
       </DialogHeader>
-      <DialogBody>
+      <div>
         <div className='font-bold mb-4'>{prompt}</div>
         <div className='flex items-center'>
           <div className='text-lessblack text-sm md:text-md  border p-2 rounded-md text-left max-w-[250px]'>{link}</div>
@@ -45,7 +40,7 @@ export default function DialogShare (props: DialogShareProps): JSX.Element {
 
         </div>
         {success && <div className='text-green-500 ml-2'>Link copied!</div>}
-      </DialogBody>
+      </div>
       <DialogFooter>
         <Button className="bg-red" onClick={handleOpen}>
           <span>Close</span>

@@ -1,4 +1,4 @@
-import { Dialog } from '~/utils/material-tailwind';
+import { Dialog } from '~/components/ui/dialog';
 import { useState, useEffect, JSX } from 'react'
 import type { Post } from '~/utils/types'
 import CardPost, { PostContent } from './cardPost'
@@ -25,7 +25,7 @@ export default function DialogPost (props: DialogPostProps): JSX.Element {
   }, [])
   const [showCard, setShowCard] = useState(false)
   return (
-    <Dialog open={isOpen} handler={handleOpen} className='p-2 pt-3 w-full bg-gray-100 relative'>
+    <Dialog open={isOpen} onOpenChange={handleOpen} className='p-2 pt-3 w-full bg-gray-100 relative'>
       <MdOutlineClose className='absolute top-1 right-2 text-gray-600 hover:text-gray-800 cursor-pointer' onClick={handleOpen} />
       {showCard &&
       <>

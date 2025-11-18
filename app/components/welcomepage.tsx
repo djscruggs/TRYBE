@@ -1,10 +1,8 @@
 import { JSX } from 'react'
 import { useNavigate, useNavigation } from 'react-router';
-import {
-  Card,
-  Button,
-  Spinner
-} from '~/utils/material-tailwind'
+import { Spinner } from '~/components/ui/spinner'
+import { Button } from '~/components/ui/button'
+import { Card } from '~/components/ui/card'
 
 export const WelcomePage = (): JSX.Element => {
   const navigation = useNavigation()
@@ -38,7 +36,7 @@ export const WelcomePage = (): JSX.Element => {
               <div className='hidden md:block bg-red min-h-[50px] w-full justify-center fixed bottom-0'>
                 <div className='text-white text-md text-center w-full'>
                   <div className='flex w-screen flex-row justify-center items-center pt-1 pb-2 text-xs md:text-sm'>
-                    <a href='https://www.notion.so/jointhetrybe/About-TRYBE-ed415205d1a5411f96807cf9e04ee0f6?pvs=4' className='mx-2 text-white underline' >About Us</a>
+                    <a href='https://www.notion.so/jointhetrybe/About-TRYBE-ed415205d1a5411f96807cf9e04ee0f6?pvs=4' className='mx-2 text-white underline cursor-pointer' >About Us</a>
                     <a href='https://www.jointhetrybe.com/trybepartnerships' className='mx-2 text-white underline' >Sponsors & Partnerships</a>
                     {navigation.state === 'loading'
                       ? <Spinner />

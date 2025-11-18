@@ -1,4 +1,4 @@
-import { Tooltip } from '~/utils/material-tailwind';
+import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from '~/components/ui/tooltip';
 import { userLocale, textToJSX, pluralize } from '~/utils/helpers'
 import { useContext, useState, useEffect, JSX } from 'react'
 import { CurrentUserContext } from '~/contexts/CurrentUserContext'
@@ -272,23 +272,30 @@ const StackedAvaters = ({ profiles }: { profiles: Profile[] }): JSX.Element => {
     navigate(`/members/${profile.userId}/content`)
   }
   return (
-    <div className="flex items-center -space-x-4 h-12">
-      {profiles.slice(0, maxProfiles).map((profile) => (
-        profile?.profileImage && (
-          <div key={profile.id}>
-            <Tooltip content={profile.fullName} className='text-xs'>
-              <img
-                key={profile.id}
-                alt={profile.fullName ?? ''}
-                src={profile.profileImage}
-                className="relative inline-block h-8 w-8 !rounded-full border-2 border-white object-cover object-center hover:z-10 hover:h-10 hover:w-10 hover:cursor-pointer focus:z-10"
-                onClick={() => { handleProfileClick(profile) }}
-              />
-            </Tooltip>
-          </div>
+    <TooltipProvider>
+      <div className="flex items-center -space-x-4 h-12">
+        {profiles.slice(0, maxProfiles).map((profile) => (
+          profile?.profileImage && (
+            <div key={profile.id}>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <img
+                    key={profile.id}
+                    alt={profile.fullName ?? ''}
+                    src={profile.profileImage}
+                    className="relative inline-block h-8 w-8 !rounded-full border-2 border-white object-cover object-center hover:z-10 hover:h-10 hover:w-10 hover:cursor-pointer focus:z-10"
+                    onClick={() => { handleProfileClick(profile) }}
+                  />
+                </TooltipTrigger>
+                <TooltipContent className='text-xs'>
+                  <p>{profile.fullName}</p>
+                </TooltipContent>
+              </Tooltip>
+            </div>
 
         )
       ))}
-    </div>
+      </div>
+    </TooltipProvider>
   )
 }

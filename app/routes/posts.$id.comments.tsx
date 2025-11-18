@@ -1,4 +1,4 @@
-import { Button } from '~/utils/material-tailwind';
+import { Button } from '~/components/ui/button';
 import React, { useState, useContext, JSX } from 'react'
 import { useParams, useLoaderData, useOutletContext  } from 'react-router';
 import { type LoaderFunction } from 'react-router';

@@ -1,4 +1,4 @@
-import { Spinner } from '~/utils/material-tailwind';
+import { Spinner } from '~/components/ui/spinner';
 import { useState, useEffect, useContext, JSX } from 'react'
 import { type ChallengeSummary, type MemberChallenge, type CheckIn } from '~/utils/types'
 import { CurrentUserContext } from '~/contexts/CurrentUserContext'

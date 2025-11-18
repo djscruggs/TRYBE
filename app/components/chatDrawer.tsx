@@ -1,4 +1,4 @@
-import { Drawer } from '~/utils/material-tailwind';
+import { Sheet, SheetContent, SheetTrigger } from '~/components/ui/sheet';
 import React, { useState, useEffect, useRef, useCallback, useContext, JSX } from 'react'
 import ChatContainer from './chatContainer'
 import type { Comment } from '~/utils/types'
@@ -79,7 +79,7 @@ export default function ChatDrawer (props: ChatDrawerProps): JSX.Element {
   }, [])
 
   return (
-    <Drawer open={open} placement={placement} onMouseEnter={mouseEnter} onMouseLeave={mouseLeave} onClose={closeDrawer} className="p-0 resize-x shadow-lg overflow-y-scroll" size={size} overlay={false} >
+    <Sheet open={open} onOpenChange={closeDrawer} className="p-0 resize-x shadow-lg overflow-y-scroll" >
       <div className="absolute top-2 right-2 cursor-pointer" onClick={closeDrawer}>
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -110,6 +110,6 @@ export default function ChatDrawer (props: ChatDrawerProps): JSX.Element {
           </div>
         }
       </div>
-    </Drawer>
+    </Sheet>
   )
 }

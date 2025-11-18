@@ -1,11 +1,11 @@
-import { Button,Radio,Checkbox } from '~/utils/material-tailwind';
+import { Button } from '~/components/ui/button'
+import { Checkbox } from '~/components/ui/checkbox';
 import React, { useMemo, useState, useRef, useContext, JSX } from 'react'
 import { Form, useNavigate } from 'react-router';
 import axios from 'axios'
 import { FormField } from './formField'
 import { handleFileUpload } from '~/utils/helpers'
 import { type PostSummary, type ChallengeSummary, type Challenge } from '~/utils/types'
-import { Button, Radio, Checkbox } from '~/utils/material-tailwind';
 import { MdOutlineAddPhotoAlternate } from 'react-icons/md'
 import { TiDeleteOutline } from 'react-icons/ti'
 import VideoRecorder from './videoRecorder'

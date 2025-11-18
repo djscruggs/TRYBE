@@ -4,7 +4,8 @@ import axios from 'axios'
 import { FormField } from './formField'
 import type { Comment } from '~/utils/types'
 import { toast } from 'react-hot-toast'
-import { Button, Avatar } from '~/utils/material-tailwind';
+import { Button } from '~/components/ui/button'
+import { Avatar, AvatarImage, AvatarFallback } from '~/components/ui/avatar';
 import { CurrentUserContext } from '~/contexts/CurrentUserContext'
 import VideoRecorder from './videoRecorder'
 import VideoChooser from './videoChooser'

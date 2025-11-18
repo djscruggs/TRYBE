@@ -1,17 +1,11 @@
 import { DayPicker } from 'react-day-picker'
-import {
-  Popover,
-  PopoverHandler,
-  PopoverContent,
-  Button
-} from '~/utils/material-tailwind'
-import type { PopoverProps } from '~/utils/material-tailwind'
+import { Button } from '~/components/ui/button'
+import { Popover, PopoverTrigger, PopoverContent } from '~/components/ui/popover'
 import 'react-day-picker/dist/style.css'
 import { ChevronRightIcon, ChevronLeftIcon } from '@heroicons/react/24/outline'
 import { FcCalendar } from 'react-icons/fc'
 import { useState } from 'react'
 import { format } from 'date-fns'
-import { ClassNames } from '@emotion/react'
 
 export interface DatePickerProps {
   id?: string // dom id of input
@@ -30,11 +24,11 @@ export default function DatePicker (props: DatePickerProps) {
   }
   return (
           <>
-          <Popover placement="bottom">
-            <PopoverHandler>
+          <Popover>
+            <PopoverTrigger asChild>
               <div className="inline p-0 bg-transparent"><FcCalendar /></div>
               {/* <FcCalendar /> */}
-            </PopoverHandler>
+            </PopoverTrigger>
             <PopoverContent>
               <DayPicker
 
@@ -67,12 +61,10 @@ export default function DatePicker (props: DatePickerProps) {
                   day_hidden: 'invisible'
                 }}
                 components={{
-                  IconLeft: ({ ...props }) => (
-                    <ChevronLeftIcon {...props} className="h-4 w-4 stroke-2" />
-                  ),
-                  IconRight: ({ ...props }) => (
-                    <ChevronRightIcon {...props} className="h-4 w-4 stroke-2" />
-                  )
+                  Chevron: ({ orientation, ...props }) => {
+                    const Icon = orientation === 'left' ? ChevronLeftIcon : ChevronRightIcon
+                    return <Icon {...props} className="h-4 w-4 stroke-2" />
+                  }
                 }}
               />
             </PopoverContent>

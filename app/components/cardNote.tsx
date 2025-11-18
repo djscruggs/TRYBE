@@ -1,5 +1,5 @@
 import React, { useContext, useState, JSX } from "react";
-import { Card } from "~/utils/material-tailwind";
+import { Card } from '~/components/ui/card';
 import CardChallenge from "./cardChallenge";
 import AvatarLoader from "./avatarLoader";
 import CardPost from "./cardPost";

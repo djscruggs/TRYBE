@@ -1,10 +1,6 @@
 import React, { useState, useEffect, JSX } from 'react'
-import {
-  Button,
-  Dialog,
-  DialogBody,
-  DialogFooter
-} from '~/utils/material-tailwind'
+import { Button } from '~/components/ui/button'
+import { Dialog, DialogDescription, DialogFooter } from '~/components/ui/dialog'
 
 interface DeleteDialogProps {
   prompt: string
@@ -26,10 +22,10 @@ export default function DialogConfirm (props: DeleteDialogProps): JSX.Element {
     if (onCancel) onCancel(event)
   }
   return (
-    <Dialog open={open} handler={handleOpen} size='xs'>
-        <DialogBody>
+    <Dialog open={open} onOpenChange={handleOpen} size='xs'>
+        <div>
           {prompt}
-        </DialogBody>
+        </div>
         <DialogFooter>
           <Button
             variant="text"

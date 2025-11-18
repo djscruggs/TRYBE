@@ -1,5 +1,6 @@
 import React, { useContext, useState, useEffect, JSX } from "react";
-import { Spinner, Card } from "~/utils/material-tailwind";
+import { Spinner } from '~/components/ui/spinner'
+import { Card } from '~/components/ui/card';
 import AvatarLoader from "./avatarLoader";
 import type { ThreadSummary, Thread } from "~/utils/types";
 import { FaRegComment } from "react-icons/fa";

@@ -1,14 +1,9 @@
 import { useState, useContext, useEffect, JSX } from 'react'
 import type { Challenge, MemberChallenge } from '~/utils/types'
 import { CurrentUserContext } from '~/contexts/CurrentUserContext'
-import {
-  Button,
-  Dialog,
-  DialogBody,
-  DialogFooter,
-  DialogHeader,
-  Spinner
-} from '~/utils/material-tailwind'
+import { Spinner } from '~/components/ui/spinner'
+import { Button } from '~/components/ui/button'
+import { Dialog, DialogDescription, DialogFooter, DialogHeader } from '~/components/ui/dialog'
 import DatePicker from 'react-datepicker'
 import axios from 'axios'
 interface DeleteDialogProps {
@@ -107,9 +102,9 @@ export default function DialogJoin (props: DeleteDialogProps): JSX.Element {
     setOpen(false)
   }
   return (
-    <Dialog open={open} handler={handleOpen} size='xs'>
+    <Dialog open={open} onOpenChange={handleOpen} size='xs'>
       <DialogHeader>Join Challenge</DialogHeader>
-        <DialogBody>
+        <div>
           <div className='flex flex-col items-start'>
             <p>This challenge runs for {challenge.numDays} days. You will be reminded to check in every day according to your notification time.</p>
             {!cohortId &&
@@ -141,7 +136,7 @@ export default function DialogJoin (props: DeleteDialogProps): JSX.Element {
           />
 
             </div>
-        </DialogBody>
+        </div>
         <DialogFooter>
           <Button
             variant="text"

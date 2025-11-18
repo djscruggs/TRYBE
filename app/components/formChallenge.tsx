@@ -1,4 +1,7 @@
-import { Button,Select,Option,Radio,Menu,MenuHandler,MenuItem,MenuList,Checkbox } from '~/utils/material-tailwind';
+import { Button } from '~/components/ui/button'
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuItem, DropdownMenuContent } from '~/components/ui/dropdown-menu'
+import { Select, SelectItem } from '~/components/ui/select'
+import { Checkbox } from '~/components/ui/checkbox';
 import React, {
   useState,
   useContext,
@@ -10,7 +13,6 @@ import React, {
 import { Form, useNavigate } from 'react-router';
 import axios from 'axios'
 import type { Category, Challenge, ChallengeType, ChallengeStatus, ChallengeInputs } from '~/utils/types'
-import { Button, Select, Option, Radio, Menu, MenuHandler, MenuItem, MenuList, Checkbox } from '~/utils/material-tailwind';
 import { FormField } from '~/components/formField'
 import DatePicker from 'react-datepicker'
 import { addDays, endOfMonth, isFirstDayOfMonth } from 'date-fns'
@@ -328,7 +330,7 @@ export default function FormChallenge ({ challenge }: { challenge: ChallengeInpu
                     onChange={handleSelect}
                     >
                     {frequencies.map((frequency: Challenge['frequency'], index: number) => (
-                        <Option key={index} value={frequency}>{frequency.charAt(0).toUpperCase() + frequency.slice(1).toLowerCase()}</Option>
+                        <SelectItem key={index} value={frequency}>{frequency.charAt(0).toUpperCase() + frequency.slice(1).toLowerCase()}</SelectItem>
                     ))
                     }
                   </Select>
@@ -511,8 +513,8 @@ export default function FormChallenge ({ challenge }: { challenge: ChallengeInpu
                         {errors?.icon}
                       </div>
                   )}
-                  <Menu>
-                    <MenuHandler className="flex justify-center items-center">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger className="flex justify-center items-center">
                       <div className="flex items-center justify-center gap-2 cursor-pointer">
                         <>
                           <div className="flex flex-col items-center justify-center">
@@ -521,15 +523,15 @@ export default function FormChallenge ({ challenge }: { challenge: ChallengeInpu
                           </div>
                         </>
                       </div>
-                    </MenuHandler>
-                    <MenuList className="justify-start items-start grid grid-cols-3">
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="justify-start items-start grid grid-cols-3">
                     {Object.entries(iconFiles).map(([img, width]) => (
-                      <MenuItem key={img}>
+                      <DropdownMenuItem key={img}>
                         <img src={`/images/icons/${img}`} width={Math.round(width * 0.6)} onClick={() => { handleIconChange(img) }} className={`cursor-pointer ${formData.icon === img ? ' outline outline-2  outline-darkgrey rounded-md' : ''}`} />
-                      </MenuItem>
+                      </DropdownMenuItem>
                     ))}
-                  </MenuList>
-                </Menu>
+                  </DropdownMenuContent>
+                </DropdownMenu>
                 </div>
               </div>
             </div>

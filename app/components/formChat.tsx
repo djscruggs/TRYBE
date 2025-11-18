@@ -1,4 +1,4 @@
-import { Spinner } from '~/utils/material-tailwind';
+import { Spinner } from '~/components/ui/spinner';
 import React, { useState, useContext, useRef, useMemo, useCallback, JSX } from 'react'
 import { Form } from 'react-router';
 import axios from 'axios'

@@ -9,7 +9,7 @@ import DialogConfirm from '~/components/dialogConfirm'
 import DialogJoin from '~/components/dialogJoin'
 import DialogShare from '~/components/dialogShare'
 import axios from 'axios'
-import { Spinner } from '~/utils/material-tailwind'
+import { Spinner } from '~/components/ui/spinner'
 import { getShortUrl } from '~/utils/helpers/challenge'
 import useGatedNavigate from '~/hooks/useGatedNavigate'
 

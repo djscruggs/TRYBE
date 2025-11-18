@@ -1,5 +1,5 @@
 import { JSX } from 'react'
-import { Spinner } from "~/utils/material-tailwind";
+import { Spinner } from "~/components/ui/spinner";
 import ChallengeList from "~/components/challengeList";
 import {
   type MetaFunction,

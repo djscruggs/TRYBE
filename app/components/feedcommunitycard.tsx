@@ -1,5 +1,5 @@
 import { JSX } from "react";
-import { Card } from "~/utils/material-tailwind";
+import { Card } from '~/components/ui/card';
 import { FcLike } from "react-icons/fc";
 import { SlShareAlt } from "react-icons/sl";
 import { FaRegComment } from "react-icons/fa";

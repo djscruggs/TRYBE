@@ -37,7 +37,7 @@ export default function Home (): JSX.Element {
       <div className='text-xl text-right w-full mb-0 md:mb-2 pr-40 text-red font-light'>(BETA)</div>
       <div className='flex flex-col justify-center items-center w-full'>
           <Logo size='36px' backgroundColor='white' />
-          <button className='bg-blue text-white text-md rounded-full p-1 px-2 mt-2 w-28 shadow-lg shadow-gray-400' onClick={() => { navigate('/landing') }}>About Us</button>
+          <button className='bg-blue text-white text-md rounded-full p-1 px-2 mt-2 w-28 shadow-lg shadow-gray-400 cursor-pointer' onClick={() => { navigate('/landing') }}>About Us</button>
           <div className='underline text-red cursor-pointer mt-4 mb-0' onClick={handleRefer}>Refer a Friend</div>
       </div>
       <WhatsNew />

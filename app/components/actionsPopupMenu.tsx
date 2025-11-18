@@ -1,4 +1,4 @@
-import { Spinner } from '~/utils/material-tailwind';
+import { Spinner } from '~/components/ui/spinner';
 import { HiDotsHorizontal } from 'react-icons/hi'
 import { toast } from 'react-hot-toast'
 import { CurrentUserContext } from '~/contexts/CurrentUserContext'

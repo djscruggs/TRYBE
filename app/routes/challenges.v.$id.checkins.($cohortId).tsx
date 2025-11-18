@@ -1,4 +1,4 @@
-import { Spinner } from '~/utils/material-tailwind';
+import { Spinner } from '~/components/ui/spinner';
 import { type MetaFunction } from 'react-router';
 import type { Challenge, CheckIn } from '~/utils/types'
 import CheckinsList from '~/components/checkinsList'

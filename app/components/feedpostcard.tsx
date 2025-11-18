@@ -1,4 +1,4 @@
-import { Card } from "~/utils/material-tailwind";
+import { Card } from '~/components/ui/card';
 import { SlShareAlt } from "react-icons/sl";
 import { FaRegComment, FaRegHeart } from "react-icons/fa";
 import RandomAvatar from "./randomavatar";

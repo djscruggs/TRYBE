@@ -6,13 +6,7 @@ import { fetchUserNotes } from '~/models/note.server'
 import { fetchUserPosts } from '~/models/post.server'
 import React, { useState, JSX } from 'react'
 // import { bo } from '~/public/icons/icons8-box'
-import {
-  Tabs,
-  TabsHeader,
-  TabsBody,
-  Tab,
-  TabPanel
-} from '~/utils/material-tailwind'
+
 import CardChallenge from '~/components/cardChallenge'
 import CardChallengeMembership from '~/components/cardChallengeMembership'
 import CardPost from '~/components/cardPost'

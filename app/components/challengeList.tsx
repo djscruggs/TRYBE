@@ -1,4 +1,4 @@
-import { Spinner } from '~/utils/material-tailwind';
+import { Spinner } from '~/components/ui/spinner';
 import CardChallengeHome from '~/components/cardChallengeHome'
 import {
   type ChallengeSummary,

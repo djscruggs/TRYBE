@@ -1,4 +1,4 @@
-import { Avatar } from '~/utils/material-tailwind';
+import { Avatar, AvatarImage, AvatarFallback } from '~/components/ui/avatar';
 import { CurrentUserContext } from '~/contexts/CurrentUserContext'
 
 interface UserAvatarProps {

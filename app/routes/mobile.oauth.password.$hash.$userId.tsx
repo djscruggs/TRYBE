@@ -1,4 +1,4 @@
-import { Button } from '~/utils/material-tailwind';
+import { Button } from '~/components/ui/button';
 import { useState, useEffect, JSX } from 'react'
 import { type ActionFunction,
   type LoaderFunction,

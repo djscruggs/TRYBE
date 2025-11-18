@@ -1,4 +1,4 @@
-import { Avatar } from "~/utils/material-tailwind";
+import { Avatar, AvatarImage, AvatarFallback } from '~/components/ui/avatar';
 import { useState, useEffect, JSX } from "react";
 import axios from "axios";
 import { Link } from "react-router";
@@ -43,28 +43,38 @@ export default function AvatarLoader({
     );
   }
   const avatarImg = profile?.profileImage ? profile.profileImage : "";
+
+  const sizeClasses = {
+    xs: "h-6 w-6",
+    sm: "h-8 w-8",
+    md: "h-12 w-12",
+    lg: "h-14 w-14",
+    xl: "h-16 w-16",
+    xxl: "h-20 w-20"
+  };
+
   if(size == 'md'){
     marginClass += ' max-w-[60px]'
   }
+
+  const shapeClass = shape === "circle" ? "rounded-full" : "rounded-lg";
+
   if (avatarImg) {
     if (clickable) {
       return (
         <Link to={`/members/${object.userId}/content`}>
-          <Avatar 
-            src={avatarImg} 
-            size={size} 
-            alt="avatar" 
-            className={`${marginClass}`} />
+          <Avatar className={`${sizeClasses[size]} ${shapeClass} ${marginClass}`}>
+            <AvatarImage src={avatarImg} alt="avatar" />
+            <AvatarFallback>{initials}</AvatarFallback>
+          </Avatar>
         </Link>
       );
     } else {
       return (
-        <Avatar
-          src={avatarImg}
-          size={size}
-          alt="avatar"
-          className={`${marginClass} ${shape === "circle" ? "rounded-full" : "rounded-lg"}`}
-        />
+        <Avatar className={`${sizeClasses[size]} ${shapeClass} ${marginClass}`}>
+          <AvatarImage src={avatarImg} alt="avatar" />
+          <AvatarFallback>{initials}</AvatarFallback>
+        </Avatar>
       );
     }
   }

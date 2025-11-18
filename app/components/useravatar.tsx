@@ -1,7 +1,7 @@
-import { Avatar } from '~/utils/material-tailwind';
+import { Avatar, AvatarImage, AvatarFallback } from '~/components/ui/avatar';
 import { CurrentUserContext } from '~/contexts/CurrentUserContext'
 import React, { useContext } from 'react'
-import type { AvatarProps } from '~/utils/material-tailwind'
+// AvatarProps removed - use standard React.ComponentProps<typeof Avatar>
 import { userInitials } from '~/utils/helpers'
 
 const UserAvatar = ({ variant = 'circular', size = 'md', color = 'gray', className = '', withBorder = false }: AvatarProps) => {

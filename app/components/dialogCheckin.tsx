@@ -1,8 +1,4 @@
-import {
-  DialogHeader,
-  Dialog,
-  DialogBody
-} from '~/utils/material-tailwind'
+import { DialogHeader, Dialog, DialogDescription } from '~/components/ui/dialog'
 import type { Challenge, CheckIn } from '~/utils/types'
 import { useState, JSX } from 'react'
 import { CheckInButton } from './checkinButton'
@@ -34,10 +30,10 @@ export default function DialogCheckin (props: DialogCheckinProps): JSX.Element {
       <DialogHeader>
         You have not checked in today. Check in now?
       </DialogHeader>
-      <DialogBody className='flex justify-center'>
+      <div className='flex justify-center'>
 
         <CheckInButton challenge={challenge} label='Check In Now' afterCheckIn={handleAfterCheckIn} size='sm' />
-      </DialogBody>
+      </div>
     </Dialog>
   )
 }

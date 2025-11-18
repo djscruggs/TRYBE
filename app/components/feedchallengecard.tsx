@@ -1,4 +1,5 @@
-import { Card, CardBody, CardFooter, Button } from "~/utils/material-tailwind";
+import { Button } from '~/components/ui/button'
+import { Card, CardContent, CardFooter } from '~/components/ui/card';
 import { GiShinyApple } from "react-icons/gi";
 import { AiFillCaretDown } from "react-icons/ai";
 import { SlShareAlt } from "react-icons/sl";

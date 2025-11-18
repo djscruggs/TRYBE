@@ -2,10 +2,7 @@ import { useState, JSX } from 'react'
 import type { Challenge, MemberChallenge, CheckIn } from '~/utils/types'
 import FormCheckIn from './formCheckin'
 import { hasStarted, isExpired } from '~/utils/helpers/challenge'
-import {
-  Dialog,
-  DialogBody
-} from '~/utils/material-tailwind'
+import { Dialog, DialogDescription } from '~/components/ui/dialog'
 interface ChallengeMemberCheckinProps {
   challenge: Challenge
   label?: string
@@ -62,10 +59,10 @@ function DialogCheckIn ({ challengeId, onCancel, afterCheckIn, isOpen, cohortId 
     setOpen(true)
   }
   return (
-    <Dialog open={open} handler={handleOpen} size='xs'>
-      <DialogBody>
+    <Dialog open={open} onOpenChange={handleOpen} size='xs'>
+      <div>
         <FormCheckIn challengeId={challengeId} cohortId={cohortId} onCancel={onCancel} afterCheckIn={afterCheckIn} />
-      </DialogBody>
+      </div>
     </Dialog>
   )
 }

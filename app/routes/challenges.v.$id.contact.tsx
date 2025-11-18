@@ -1,4 +1,4 @@
-import { Button } from '~/utils/material-tailwind';
+import { Button } from '~/components/ui/button';
 import { useState, JSX } from 'react'
 import { useNavigate } from 'react-router';
 import axios from 'axios'

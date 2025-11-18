@@ -1,6 +1,7 @@
 import React, { useState, useContext, useEffect, JSX } from "react";
 import FormComment from "./formComment";
-import { Avatar, Spinner } from "~/utils/material-tailwind";
+import { Spinner } from '~/components/ui/spinner'
+import { Avatar, AvatarImage, AvatarFallback } from '~/components/ui/avatar';
 import { CurrentUserContext } from "~/contexts/CurrentUserContext";
 import { textToJSX } from "~/utils/helpers";
 import { toast } from "react-hot-toast";
@@ -135,13 +136,17 @@ export default function CommentItem(props: CommentsProps): JSX.Element {
               )}
               <div className="flex">
                 <div className="shrink-0">
-                  <Avatar
-                    src={
-                      comment.user?.profile?.profileImage as string | undefined
-                    }
-                    className="mr-2"
-                    size="sm"
-                  />
+                  <Avatar className="h-8 w-8 mr-2">
+                    <AvatarImage
+                      src={
+                        comment.user?.profile?.profileImage as string | undefined
+                      }
+                    />
+                    <AvatarFallback>
+                      {comment.user?.profile?.firstName?.charAt(0) ?? '?'}
+                      {comment.user?.profile?.lastName?.charAt(0) ?? ''}
+                    </AvatarFallback>
+                  </Avatar>
                 </div>
                 <div className="grow">
                   <div className="text-xs mb-2">

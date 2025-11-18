@@ -1,5 +1,5 @@
 import React, { useContext, useState, JSX } from "react";
-import { Card } from "~/utils/material-tailwind";
+import { Card } from '~/components/ui/card';
 import type { PostSummary } from "~/utils/types";
 // import { AiOutlineRetweet } from 'react-icons/ai'
 // import { GoComment } from 'react-icons/go'

@@ -29,18 +29,18 @@ function WhatsNew1 (): JSX.Element {
         <h1 className='text-lg'>Upcoming Group Challenge</h1>
         <div className='flex items-center'>
           <div className='w-5/8'>
-            <h1 className='font-bold text-lg'>2025, But Make It Iconic</h1>
+            <h1 className='font-bold text-lg'>2026, But Make It Iconic</h1>
             <p>
               This challenge is your space to move forward with purpose,
               clarity, and bold intentions.
-              Let&apos;s take the lessons from 2024 and
+              Let&apos;s take the lessons from 2025 and
               create a roadmap for your best year yet.
             </p>
 
           </div>
           <div className='w-3/8 justify-center flex flex-col items-center'>
             <Logo size='50px'/>
-            <button className='bg-blue rounded-full text-white px-2 py-1 mt-2 text-xs shadow-md shadow-gray-400 w-20' onClick={goto}>Sign Up</button>
+            <button className='cursor-pointer bg-blue rounded-full text-white px-2 py-1 mt-2 text-xs shadow-md shadow-gray-400 w-20' onClick={goto}>Sign Up</button>
           </div>
         </div>
         <p className='font-bold italic mt-2'>Starts Jan 20th | 12 Days | Writing</p>

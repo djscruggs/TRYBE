@@ -1,4 +1,4 @@
-import { Spinner } from '~/utils/material-tailwind';
+import { Spinner } from '~/components/ui/spinner';
 import { useNavigate, useParams } from 'react-router';
 import { useEffect, JSX } from 'react'
 interface ShareProps {

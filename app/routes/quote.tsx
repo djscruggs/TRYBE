@@ -1,4 +1,4 @@
-import { Spinner } from '~/utils/material-tailwind';
+import { Spinner } from '~/components/ui/spinner';
 import { useContext, useEffect, useState, JSX } from 'react'
 import { useLoaderData, useNavigate } from 'react-router';
 import { CurrentUserContext } from '~/contexts/CurrentUserContext'
