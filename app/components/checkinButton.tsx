@@ -55,12 +55,13 @@ interface CheckinProps {
 }
 function DialogCheckIn ({ challengeId, onCancel, afterCheckIn, isOpen, cohortId }: CheckinProps): JSX.Element {
   const [open, setOpen] = useState<boolean>(isOpen)
-  const handleOpen = (): void => {
-    setOpen(true)
+  const handleOpen = (event:any): void => {
+    console.log(event)
+    onCancel()
   }
   return (
-    <Dialog open={isOpen} onOpenChange={handleOpen} >
-      <DialogContent className="sm:max-w-md bg-white">
+    <Dialog open={isOpen} onOpenChange={handleOpen} onClose >
+      <DialogContent className="sm:max-w-md bg-white [&>button:last-child]:cursor-pointer">
         <DialogHeader>
           <DialogTitle>Check In</DialogTitle>
         </DialogHeader>

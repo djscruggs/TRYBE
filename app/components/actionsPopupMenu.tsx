@@ -87,9 +87,9 @@ const ActionsPopupMenu = ({ object, type, editCallback, afterDelete, className }
 
   return (
     <div className={`text-xs text-gray-500 w-sm ${className}`}>
-      <div className="relative -mt-1">
+      <div className="relative -mt-1 w-20">
         <button onClick={toggleMenu} className="p-1 rounded-full hover:bg-gray-200">
-          <HiDotsHorizontal className='h-4 w-4' />
+          <HiDotsHorizontal className='h-4 w-4 cursor-pointer' />
         </button>
         {menuOpen && (
           <div ref={menuRef} className="absolute right-0 bottom-full mt-2 w-20 bg-white border border-gray-200 rounded shadow-lg">

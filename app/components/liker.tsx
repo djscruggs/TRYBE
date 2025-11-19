@@ -41,7 +41,7 @@ export default function Liker (props: LikerProps): JSX.Element {
   }
 
   return (
-    <div className='text-xs'>
+    <div className='text-xs w-14'>
       <TbHeartFilled className={`h-4 w-4 mr-1 cursor-pointer text-sm inline ${isLiked ? 'text-red' : 'text-grey'} ${className}`} onClick={handleLike}/>
         {count}
     </div>
