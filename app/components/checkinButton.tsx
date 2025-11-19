@@ -2,7 +2,7 @@ import { useState, JSX } from 'react'
 import type { Challenge, MemberChallenge, CheckIn } from '~/utils/types'
 import FormCheckIn from './formCheckin'
 import { hasStarted, isExpired } from '~/utils/helpers/challenge'
-import { Dialog, DialogDescription } from '~/components/ui/dialog'
+import { Dialog, DialogContent, DialogTitle,DialogHeader } from '~/components/ui/dialog'
 interface ChallengeMemberCheckinProps {
   challenge: Challenge
   label?: string
@@ -39,9 +39,9 @@ export function CheckInButton ({ challenge, membership, afterCheckIn, size, labe
             {expired ? 'Challenge Ended' : started ? label : 'Not Started'}
         </button>
       </div>
-      {showForm &&
-        <DialogCheckIn challengeId={challenge.id} cohortId={cohortId} onCancel={() => { setShowForm(false) }} afterCheckIn={handleAfterCheckIn} isOpen={showForm} />
-      }
+      
+       <DialogCheckIn challengeId={challenge.id} open={showForm} cohortId={cohortId} onCancel={() => { setShowForm(false) }} afterCheckIn={handleAfterCheckIn} isOpen={showForm} />
+      
     </>
   )
 }
@@ -59,10 +59,14 @@ function DialogCheckIn ({ challengeId, onCancel, afterCheckIn, isOpen, cohortId 
     setOpen(true)
   }
   return (
-    <Dialog open={open} onOpenChange={handleOpen} size='xs'>
-      <div>
+    <Dialog open={isOpen} onOpenChange={handleOpen} >
+      <DialogContent className="sm:max-w-md bg-white">
+        <DialogHeader>
+          <DialogTitle>Check In</DialogTitle>
+        </DialogHeader>
         <FormCheckIn challengeId={challengeId} cohortId={cohortId} onCancel={onCancel} afterCheckIn={afterCheckIn} />
-      </div>
+      </DialogContent>
     </Dialog>
+    
   )
 }

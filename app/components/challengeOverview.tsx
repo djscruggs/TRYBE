@@ -108,7 +108,7 @@ export default function ChallengeOverview (props: ChallengeOverviewProps): JSX.E
               : <>
               {formatDate(String(membership.startAt))}
               {!editingNotificationTime &&
-                <button onClick={() => { setEditingStartAt(true) }} className='ml-2 text-xs text-red underline'>edit</button>
+                <button onClick={() => { setEditingStartAt(true) }} className='ml-2 text-xs text-red underline cursor-pointer'>edit</button>
               }
             </>
               }
@@ -127,7 +127,7 @@ export default function ChallengeOverview (props: ChallengeOverviewProps): JSX.E
                   <>
                   <div className="capitalize inline">{challenge?.frequency.toLowerCase()}</div> at {formatTime(membership?.notificationHour ?? 0, membership?.notificationMinute ?? 0)}
                   {!editingStartAt &&
-                    <button onClick={() => { setEditingNotificationTime(true) } } className='ml-2 text-xs text-red underline'>edit</button>
+                    <button onClick={() => { setEditingNotificationTime(true) } } className='ml-2 text-xs text-red underline cursor-pointer'>edit</button>
                   }
                   </>
                   )}

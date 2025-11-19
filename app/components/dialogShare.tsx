@@ -1,7 +1,7 @@
 import { useState, useEffect, JSX } from 'react'
 import { HiOutlineClipboardCopy } from 'react-icons/hi'
 import { Button } from '~/components/ui/button'
-import { Dialog, DialogDescription, DialogFooter, DialogHeader } from '~/components/ui/dialog'
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '~/components/ui/dialog'
 interface DialogShareProps {
   prompt: string
   link: string
@@ -17,9 +17,9 @@ export default function DialogShare (props: DialogShareProps): JSX.Element {
   useEffect(() => {
     setOpen(isOpen)
   }, [isOpen])
-  const handleOpen = (event: any): void => {
-    setOpen(!open)
-    if (onClose) onClose(event)
+  const handleOpen = (value: boolean): void => {
+    setOpen(value)
+    if (!value && onClose) onClose(value)
   }
   const [success, setSuccess] = useState<boolean>(false)
   const copyLink = async (): Promise<void> => {
@@ -27,25 +27,27 @@ export default function DialogShare (props: DialogShareProps): JSX.Element {
     setSuccess(true)
   }
   return (
-    <Dialog open={open} onOpenChange={handleOpen} size='xs'>
-      <DialogHeader>
-        <h3>{title ?? 'Share'}</h3>
-      </DialogHeader>
-      <div>
-        <div className='font-bold mb-4'>{prompt}</div>
-        <div className='flex items-center'>
-          <div className='text-lessblack text-sm md:text-md  border p-2 rounded-md text-left max-w-[250px]'>{link}</div>
-            <HiOutlineClipboardCopy onClick={copyLink} className='h-6 w-6 cursor-pointer ml-1' />
-            <div onClick={copyLink} className='ml-1 text-blue underline cursor-pointer text-xs md:text-sm'>copy</div>
+    <Dialog open={open} onOpenChange={handleOpen}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>{title ?? 'Share'}</DialogTitle>
+        </DialogHeader>
+        <div>
+          <div className='font-bold mb-4'>{prompt}</div>
+          <div className='flex items-center'>
+            <div className='text-lessblack text-sm md:text-md  border p-2 rounded-md text-left max-w-[250px]'>{link}</div>
+              <HiOutlineClipboardCopy onClick={copyLink} className='h-6 w-6 cursor-pointer ml-1' />
+              <div onClick={copyLink} className='ml-1 text-blue underline cursor-pointer text-xs md:text-sm'>copy</div>
 
+          </div>
+          {success && <div className='text-green-500 ml-2'>Link copied!</div>}
         </div>
-        {success && <div className='text-green-500 ml-2'>Link copied!</div>}
-      </div>
-      <DialogFooter>
-        <Button className="bg-red" onClick={handleOpen}>
-          <span>Close</span>
-        </Button>
-      </DialogFooter>
+        <DialogFooter>
+          <Button className="bg-red" onClick={() => handleOpen(false)}>
+            <span>Close</span>
+          </Button>
+        </DialogFooter>
+      </DialogContent>
     </Dialog>
   )
 }

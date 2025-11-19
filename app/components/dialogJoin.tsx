@@ -3,7 +3,7 @@ import type { Challenge, MemberChallenge } from '~/utils/types'
 import { CurrentUserContext } from '~/contexts/CurrentUserContext'
 import { Spinner } from '~/components/ui/spinner'
 import { Button } from '~/components/ui/button'
-import { Dialog, DialogDescription, DialogFooter, DialogHeader } from '~/components/ui/dialog'
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '~/components/ui/dialog'
 import DatePicker from 'react-datepicker'
 import axios from 'axios'
 interface DeleteDialogProps {
@@ -36,11 +36,11 @@ export default function DialogJoin (props: DeleteDialogProps): JSX.Element {
   const selectNotificationTime = (time: Date): void => {
     setFormData({ ...formData, notificationTime: time })
   }
-  const handleOpen = (event: any): void => {
-    event.preventDefault()
-    event.stopPropagation()
-    setOpen(!open)
-    if (onCancel) onCancel(event)
+  const handleOpen = (value: boolean): void => {
+    setOpen(value)
+    if (!value && onCancel) {
+      onCancel(value)
+    }
   }
   useEffect(() => {
     setOpen(isOpen)
@@ -102,8 +102,11 @@ export default function DialogJoin (props: DeleteDialogProps): JSX.Element {
     setOpen(false)
   }
   return (
-    <Dialog open={open} onOpenChange={handleOpen} size='xs'>
-      <DialogHeader>Join Challenge</DialogHeader>
+    <Dialog open={open} onOpenChange={handleOpen}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>Join Challenge</DialogTitle>
+        </DialogHeader>
         <div>
           <div className='flex flex-col items-start'>
             <p>This challenge runs for {challenge.numDays} days. You will be reminded to check in every day according to your notification time.</p>
@@ -140,7 +143,6 @@ export default function DialogJoin (props: DeleteDialogProps): JSX.Element {
         <DialogFooter>
           <Button
             variant="text"
-            color="red"
             onClick={onCancel}
             className="mr-1"
           >
@@ -151,6 +153,7 @@ export default function DialogJoin (props: DeleteDialogProps): JSX.Element {
             {loading && <Spinner className='w-4 h-4 inline ml-2' />}
           </Button>
         </DialogFooter>
-      </Dialog>
+      </DialogContent>
+    </Dialog>
   )
 }

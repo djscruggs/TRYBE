@@ -1,6 +1,6 @@
 import React, { useState, useEffect, JSX } from 'react'
 import { Button } from '~/components/ui/button'
-import { Dialog, DialogDescription, DialogFooter } from '~/components/ui/dialog'
+import { Dialog, DialogContent, DialogDescription, DialogFooter } from '~/components/ui/dialog'
 
 interface DeleteDialogProps {
   prompt: string
@@ -15,30 +15,31 @@ export default function DialogConfirm (props: DeleteDialogProps): JSX.Element {
   useEffect(() => {
     setOpen(isOpen)
   }, [isOpen])
-  const handleOpen = (event: any): void => {
-    event.preventDefault()
-    event.stopPropagation()
-    setOpen(!open)
-    if (onCancel) onCancel(event)
+  const handleOpen = (value: boolean): void => {
+    setOpen(value)
+    if (!value && onCancel) {
+      onCancel(value)
+    }
   }
   return (
-    <Dialog open={open} onOpenChange={handleOpen} size='xs'>
+    <Dialog open={open} onOpenChange={handleOpen}>
+      <DialogContent className="sm:max-w-md bg-white">
         <div>
           {prompt}
         </div>
         <DialogFooter>
           <Button
             variant="text"
-            color="red"
             onClick={onCancel}
-            className="mr-1"
+            className="mr-1 cursor-pointer"
           >
             <span>Cancel</span>
           </Button>
-          <Button className="bg-red" onClick={onConfirm}>
+          <Button className="bg-red text-white cursor-pointer" onClick={onConfirm}>
             <span>Confirm</span>
           </Button>
         </DialogFooter>
-      </Dialog>
+      </DialogContent>
+    </Dialog>
   )
 }

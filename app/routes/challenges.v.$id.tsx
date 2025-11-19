@@ -4,9 +4,7 @@ import {
   useLoaderData,
   useNavigate,
   useLocation,
-  useMatches,
-  type MetaFunction,
-  useSearchParams,
+  type MetaFunction
 } from 'react-router';
 import { useEffect, useState, JSX, useCallback } from 'react'
 import { requireAdminOrValidCohortMembership } from '~/models/auth.server'
