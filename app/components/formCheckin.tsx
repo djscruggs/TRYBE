@@ -194,7 +194,7 @@ export default function FormCheckIn (props: FormCheckinProps): JSX.Element {
             <VideoRecorder uploadOnly={videoUploadOnly} onStart={() => { setVideoRecording(true) }} onStop={() => { setVideoRecording(false) }} onSave={setVideo} onFinish={() => { setShowVideoRecorder(false) }} />
           </div>
         }
-        <button type="submit" placeholder='Save' className="bg-red disabled:gray-400 text-white font-bold py-2 px-4 rounded" disabled={btnDisabled || (showVideoRecorder && !video)}>
+        <button type="submit"  className="cursor-pointer bg-red disabled:gray-400 text-white font-bold py-2 px-4 rounded" disabled={btnDisabled || (showVideoRecorder && !video)}>
           {btnDisabled
             ? 'Saving...'
             : videoRecording
@@ -204,7 +204,7 @@ export default function FormCheckIn (props: FormCheckinProps): JSX.Element {
           }
 
         </button>
-        <button onClick={handleCancel} className="mt-2 text-sm underline ml-2 hover:text-red">cancel</button>
+        <button onClick={handleCancel} className="cursor-pointer mt-2 text-sm underline ml-2 hover:text-red">cancel</button>
       </Form>
     </div>
   )

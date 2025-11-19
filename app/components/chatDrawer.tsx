@@ -1,4 +1,4 @@
-import { Sheet, SheetContent, SheetTrigger } from '~/components/ui/sheet';
+import { Sheet, SheetContent, SheetHeader } from '~/components/ui/sheet';
 import React, { useState, useEffect, useRef, useCallback, useContext, JSX } from 'react'
 import ChatContainer from './chatContainer'
 import type { Comment } from '~/utils/types'
@@ -79,26 +79,14 @@ export default function ChatDrawer (props: ChatDrawerProps): JSX.Element {
   }, [])
 
   return (
-    <Sheet open={open} onOpenChange={closeDrawer} className="p-0 resize-x shadow-lg overflow-y-scroll" >
-      <div className="absolute top-2 right-2 cursor-pointer" onClick={closeDrawer}>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          strokeWidth={2}
-          stroke="currentColor"
-          className="h-5 w-5"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M6 18L18 6M6 6l12 12"
-          />
-        </svg>
-      </div>
+    <Sheet open={open} onOpenChange={closeDrawer}  >
+      <SheetContent className='bg-white'>
+        <SheetHeader>
+      
       <div className="pt-4 pb-2 flex items-center justify-between bg-gray-100">
         {children}
       </div>
+      </SheetHeader>
       <div className='overflow-y-auto'>
         {isLoading
           ? <ChatRowSkeleton count={skeletonRows} />
@@ -110,6 +98,7 @@ export default function ChatDrawer (props: ChatDrawerProps): JSX.Element {
           </div>
         }
       </div>
+      </SheetContent>
     </Sheet>
   )
 }
