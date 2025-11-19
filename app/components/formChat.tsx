@@ -24,7 +24,7 @@ interface FormChatProps {
   prompt?: string
   autoFocus?: boolean
   cohortId?: number | null
-  inputRef?: React.RefObject<HTMLTextAreaElement | HTMLInputElement | HTMLDivElement>
+  inputRef?: React.RefObject<HTMLTextAreaElement | HTMLInputElement | HTMLDivElement> | null
 }
 
 function getTypeAndId (comment: Comment): { type: string, id: number } {

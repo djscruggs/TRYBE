@@ -1,4 +1,5 @@
-import { Sheet, SheetContent, SheetHeader } from '~/components/ui/sheet';
+import { Sheet, SheetContent, SheetHeader, SheetClose } from '~/components/ui/sheet';
+import { Button } from './ui/button';
 import React, { useState, useEffect, useRef, useCallback, useContext, JSX } from 'react'
 import ChatContainer from './chatContainer'
 import type { Comment } from '~/utils/types'
@@ -80,12 +81,19 @@ export default function ChatDrawer (props: ChatDrawerProps): JSX.Element {
 
   return (
     <Sheet open={open} onOpenChange={closeDrawer}  >
-      <SheetContent className='bg-white'>
-        <SheetHeader>
       
-      <div className="pt-4 pb-2 flex items-center justify-between bg-gray-100">
-        {children}
-      </div>
+      <SheetContent className='bg-white p-0 border-2 [&>button:last-child]:hidden'>
+        <SheetClose asChild>
+            <span className='absolute right-2 p-1 top-1 cursor-pointer hover:bg-grey hover:text-white rounded-md'>
+
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-x size-4 p-0" aria-hidden="true"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
+            </span>
+          </SheetClose>
+        <SheetHeader className='p-0'>
+      
+        <div className="p-2 pb-2 flex items-center justify-between bg-gray-100">
+          {children}
+        </div>
       </SheetHeader>
       <div className='overflow-y-auto'>
         {isLoading

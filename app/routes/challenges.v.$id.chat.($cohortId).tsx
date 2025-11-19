@@ -36,7 +36,7 @@ interface ChallengeChatData {
   groupedData: Record<string, { posts: Post[], checkIns: { empty: CheckIn[], nonEmpty: CheckIn[] }, comments: Comment[] }>
 }
 
-type GroupedDataEntry = SerializeFrom<ChallengeChatData['groupedData']>
+type GroupedDataEntry = ChallengeChatData['groupedData']
 
 export const loader: LoaderFunction = async (args: LoaderFunctionArgs) => {
   const currentUser = await requireCurrentUser(args)
