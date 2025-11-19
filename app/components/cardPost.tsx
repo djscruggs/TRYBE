@@ -126,7 +126,7 @@ export default function CardPost(props: CardPostProps): JSX.Element {
           >
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Card
-                className={`md:col-span-2 p-2  relative ${isChat ? "shadow-none" : "border drop-shadow-lg border-gray rounded-md"}`}
+                className={`md:col-span-2 p-2  relative ${isChat ? "shadow-none bg-yellow" : "border drop-shadow-lg border-gray rounded-md"}`}
               >
                 {post.challenge?.type === "SELF_LED" ? (
                   <>

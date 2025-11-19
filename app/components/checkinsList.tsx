@@ -56,7 +56,7 @@ export default function CheckinsList (props: CheckinsListProps): JSX.Element {
               )
             })}
             {posts.map((post: Post) => (
-              <div key={`post-${post.id}`} className='max-w-sm md:max-w-xl mb-6 bg-yellow bg-opacity-20 rounded-lg p-2 px-4' id={`post-${post.id}`}>
+              <div key={`post-${post.id}`} className='max-w-sm md:max-w-xl mb-6  bg-opacity-20 rounded-lg p-2 px-4' id={`post-${post.id}`}>
                 <CardPost post={post} hideMeta={false} fullPost={false} isChat={true} highlightedObject={highlightedObject} highlightedId={highlightedId} />
               </div>
             ))}
