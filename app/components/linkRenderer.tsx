@@ -37,22 +37,22 @@ const LinkRenderer: React.FC<LinkRendererProps> = ({ text }) => {
     const thumbnailUrl = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`
     return (
       <>
-      <div className="aspect-w-16 aspect-h-9 bg-gray-200 relative mt-4">
+      <div className="aspect-video bg-gray-200 relative mt-4 w-full">
         {!isIframeVisible
           ? (
             <div
-              className="w-full h-full bg-cover bg-center cursor-pointer"
+              className="absolute inset-0 bg-cover bg-center cursor-pointer"
               style={{ backgroundImage: `url(${thumbnailUrl})` }}
               onClick={() => { setIframeVisible(true) }}
             >
-              <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50">
-                <button className="text-white text-5xl">▶</button>
+              <div className="absolute inset-0 flex items-center justify-center ">
+                <button className="text-white text-5xl cursor-pointer">▶</button>
               </div>
             </div>
             )
           : (
             <iframe
-              className="w-full h-full"
+              className="absolute inset-0 w-full h-full"
               src={`https://www.youtube.com/embed/${videoId}?autoplay=1&${transformedParams}`}
               title="YouTube video player"
               width="560"
