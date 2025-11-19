@@ -109,7 +109,7 @@ export default function ViewChallenge (): JSX.Element {
       { !data?.loadingError && data?.challenge && (
         <div className={`w-full ${isEdit ? '' : ' relative'}`}>
           {/* make wider on chat tab */}
-          <div className={`fixed top-0 z-10 bg-white w-full max-w-lg ${currentTab === 'chat' ? 'md:max-w-2xl' : ''} bg-opacity-80 rounded-br-lg`}>
+          <div className={`fixed top-0 z-10 bg-white w-full max-w-xl ${currentTab === 'chat' ? 'md:max-w-2xl' : ''} bg-opacity-80 rounded-br-lg`}>
             <ChallengeHeader challenge={data.challenge!} size='small' />
             {!isEdit &&
               <ChallengeTabs challenge={data.challenge as ChallengeSummary} />

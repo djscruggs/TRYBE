@@ -23,7 +23,7 @@ export default function DialogConfirm (props: DeleteDialogProps): JSX.Element {
   }
   return (
     <Dialog open={open} onOpenChange={handleOpen}>
-      <DialogContent className="sm:max-w-md bg-white">
+      <DialogContent className="sm:max-w-md bg-white [&>button:last-child]:cursor-pointer">
         <div>
           {prompt}
         </div>
