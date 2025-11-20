@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useContext, useEffect, useState, useMemo } from 'react'
 import type { Comment } from '~/utils/types'
 import type { ReactNode } from 'react'
 export interface ChatContextType {
@@ -37,13 +37,9 @@ export const ChatContextProvider = (props: ChatContextProviderProps) => {
   const { children, challengeId, cohortId } = props
   const [pendingComments, setPendingComments] = useState<Comment[]>([])
   const [commentsByDate, setCommentsByDate] = useState<Record<string, Comment[]>>(props.commentsByDate)
-  useEffect(() => {
-    if (pendingComments.length > 0) {
-      props.onChange?.(getCommentsByDate())
-    }
-  }, [pendingComments])
 
-  const getCommentsByDate = (): Record<string, Comment[]> => {
+  // Memoize the merged comments so components re-render when dependencies change
+  const mergedCommentsByDate = useMemo(() => {
     // deep copy commentsByDate to avoid mutating the original state
     const mergedComments = JSON.parse(JSON.stringify(commentsByDate))
     const key = new Date().toLocaleDateString('en-CA')
@@ -58,6 +54,16 @@ export const ChatContextProvider = (props: ChatContextProviderProps) => {
       }
     })
     return mergedComments
+  }, [commentsByDate, pendingComments])
+
+  useEffect(() => {
+    if (pendingComments.length > 0) {
+      props.onChange?.(mergedCommentsByDate)
+    }
+  }, [pendingComments, mergedCommentsByDate])
+
+  const getCommentsByDate = (): Record<string, Comment[]> => {
+    return mergedCommentsByDate
   }
 
   const addComment = (comment: Comment): void => {
@@ -90,11 +96,15 @@ export const ChatContextProvider = (props: ChatContextProviderProps) => {
 
   const deleteComment = (comment: Comment): void => {
     const key = new Date(comment.createdAt as unknown as string).toLocaleDateString('en-CA')
-    commentsByDate[key] = commentsByDate[key].filter(c => c.id !== comment.id)
+    const newCommentsByDate = { ...commentsByDate }
+    if (newCommentsByDate[key]) {
+      newCommentsByDate[key] = newCommentsByDate[key].filter(c => c.id !== comment.id)
+    }
+    setCommentsByDate(newCommentsByDate)
   }
 
   return (
-    <ChatContext.Provider value={{ commentsByDate, getCommentsByDate, newComments: [], pendingComments, challengeId, cohortId, addComment, deleteComment }}>
+    <ChatContext.Provider value={{ commentsByDate: mergedCommentsByDate, getCommentsByDate, newComments: [], pendingComments, challengeId, cohortId, addComment, deleteComment }}>
       {children}
     </ChatContext.Provider>
   )
