@@ -327,6 +327,7 @@ export default function FormPost (props: FormPostProps): JSX.Element {
                 selected={formData.publishAt ? new Date(formData.publishAt) : null}
                 onChange={(date: Date) => { setPublishAt(date) }}
                 className={`p-1 border rounded-md pl-2 w-full ${errors.publishAt ? 'border-red' : 'border-slate-gray-500'}`}
+                preventOpenOnFocus={true}
               />
             </div>
             }

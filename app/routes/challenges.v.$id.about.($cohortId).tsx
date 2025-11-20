@@ -46,11 +46,12 @@ export default function ChallengeAbout (): JSX.Element {
 
   const confirmJoinUnjoin = async (): Promise<void> => {
     if (!currentUser) {
+      console.log('no user', currentUser)
       // gateed navigate automatically handles the redirect
       navigate(location.pathname, true)
       return
     }
-    if (challenge?.type === 'SELF_LED' && !isMember) {
+    if (challenge?.type === 'SELF_LED' && !isMember()) {
       setShowJoin(true)
       return
     }
@@ -70,6 +71,8 @@ export default function ChallengeAbout (): JSX.Element {
       const url = `/api/challenges/join-unjoin/${challenge.id as string | number}`
       const response = await axios.post(url)
       if (response.data.result === 'joined') {
+        console.log(response.data)
+        setMembership(response.data.MemberChallenge)
       } else {
         if (cohortId) {
           const url = `/challenges/v/${challenge.id}/about`

@@ -1,7 +1,8 @@
-import { DialogHeader, Dialog, DialogContent, DialogTitle } from '~/components/ui/dialog'
+import { DialogHeader, Dialog, DialogContent, DialogTitle, DialogDescription } from '~/components/ui/dialog'
 import type { Challenge, CheckIn } from '~/utils/types'
 import { useState, useEffect, JSX } from 'react'
 import { CheckInButton } from './checkinButton'
+import * as VisuallyHidden from '@radix-ui/react-visually-hidden'
 interface DialogCheckinProps {
   challenge: Challenge
   open?: boolean
@@ -36,13 +37,13 @@ export default function DialogCheckin (props: DialogCheckinProps): JSX.Element {
 
   return (
     <Dialog open={isOpen} onOpenChange={handleOpen}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md bg-white">
         <DialogHeader>
           <DialogTitle>Check In</DialogTitle>
+          <DialogDescription>
+            You have not checked in today. Check in now?
+          </DialogDescription>
         </DialogHeader>
-        <div className='text-center mb-4'>
-          You have not checked in today. Check in now?
-        </div>
         <div className='flex justify-center'>
           <CheckInButton challenge={challenge} label='Check In Now' afterCheckIn={handleAfterCheckIn} size='sm' />
         </div>

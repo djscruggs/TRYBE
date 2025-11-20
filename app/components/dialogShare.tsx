@@ -28,12 +28,14 @@ export default function DialogShare (props: DialogShareProps): JSX.Element {
   }
   return (
     <Dialog open={open} onOpenChange={handleOpen}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md bg-white">
         <DialogHeader>
           <DialogTitle>{title ?? 'Share'}</DialogTitle>
+          <DialogDescription>
+            {prompt}
+          </DialogDescription>
         </DialogHeader>
         <div>
-          <div className='font-bold mb-4'>{prompt}</div>
           <div className='flex items-center'>
             <div className='text-lessblack text-sm md:text-md  border p-2 rounded-md text-left max-w-[250px]'>{link}</div>
               <HiOutlineClipboardCopy onClick={copyLink} className='h-6 w-6 cursor-pointer ml-1' />

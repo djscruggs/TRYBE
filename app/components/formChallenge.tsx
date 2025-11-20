@@ -412,6 +412,7 @@ export default function FormChallenge ({ challenge }: { challenge: ChallengeInpu
                           selected={formData.startAt ? new Date(formData.startAt) : null}
                           onChange={(date: Date) => { selectDate('startAt', date) }}
                           className={`p-1 border rounded-md pl-2 ${errors?.startAt ? 'border-red' : 'border-slate-gray-500'}`}
+                          preventOpenOnFocus={true}
                           />
                         {errors?.startAt && (
                           <div className="text-xs font-semibold text-left tracking-wide text-red w-full mb-4">
@@ -429,6 +430,7 @@ export default function FormChallenge ({ challenge }: { challenge: ChallengeInpu
                           selected={formData.endAt ? new Date(formData.endAt) : null}
                           onChange={(date: Date) => { selectDate('endAt', date) }}
                           className={`p-1 border rounded-md pl-2 ${errors?.endAt ? 'border-red' : 'border-slate-gray-500'}`}
+                          preventOpenOnFocus={true}
                           />
                         {errors?.endAt && (
                           <div className="text-xs font-semibold text-left tracking-wide text-red w-full mb-4">

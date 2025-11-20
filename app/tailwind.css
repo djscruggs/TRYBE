@@ -10,7 +10,9 @@
     src: url("/fonts/ReklameScript-Regular.woff");
   }
 }
-
+button {
+  cursor: pointer;
+}
 @theme {
   --font-sans: "Source Sans 3", Roboto, Helvetica, Arial, sans-serif;
   --font-cursive: ReklameScript-Regular;
@@ -24,6 +26,7 @@
   --color-grey: #c4c4c4;
   --color-salmon: #eeaa94;
   --color-teal: #1a525c;
+  
 
   /* shadcn/ui theme variables */
   --background: 0 0% 100%;

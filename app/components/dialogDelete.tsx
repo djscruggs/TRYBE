@@ -1,6 +1,6 @@
 import React, { useState, JSX } from 'react'
 import { Button } from '~/components/ui/button'
-import { Dialog, DialogDescription, DialogFooter } from '~/components/ui/dialog'
+import { Dialog, DialogContent, DialogDescription, DialogFooter } from '~/components/ui/dialog'
 
 interface DeleteDialogProps {
   isOpen: boolean
@@ -19,10 +19,11 @@ export default function DialogDelete (props: DeleteDialogProps): JSX.Element {
     if (onCancel) onCancel(event)
   }
   return (
-    <Dialog open={open} onOpenChange={handleOpen} size='xs'>
-        <div>
+    <Dialog open={open} onOpenChange={handleOpen}>
+      <DialogContent className="sm:max-w-md bg-white">
+        <DialogDescription>
           {prompt}
-        </div>
+        </DialogDescription>
         <DialogFooter>
           <Button
             variant="text"
@@ -36,6 +37,7 @@ export default function DialogDelete (props: DeleteDialogProps): JSX.Element {
             <span>Confirm</span>
           </Button>
         </DialogFooter>
-      </Dialog>
+      </DialogContent>
+    </Dialog>
   )
 }

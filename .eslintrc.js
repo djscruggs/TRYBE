@@ -3,7 +3,7 @@ module.exports = {
     browser: true,
     es2021: true,
   },
-  extends: ["standard-with-typescript", "plugin:react/recommended"],
+  extends: ["standard-with-typescript", "plugin:react/recommended", "prettier"],
   overrides: [
     {
       env: {
@@ -20,6 +20,11 @@ module.exports = {
     sourceType: "module",
   },
   plugins: ["react"],
+  settings: {
+    react: {
+      version: "detect"
+    }
+  },
   rules: {
     quotes: "off",
     "@typescript-eslint/strict-boolean-expressions": 0,

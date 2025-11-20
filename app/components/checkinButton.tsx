@@ -2,7 +2,8 @@ import { useState, JSX } from 'react'
 import type { Challenge, MemberChallenge, CheckIn } from '~/utils/types'
 import FormCheckIn from './formCheckin'
 import { hasStarted, isExpired } from '~/utils/helpers/challenge'
-import { Dialog, DialogContent, DialogTitle,DialogHeader } from '~/components/ui/dialog'
+import { Dialog, DialogContent, DialogTitle, DialogHeader, DialogDescription } from '~/components/ui/dialog'
+import * as VisuallyHidden from '@radix-ui/react-visually-hidden'
 interface ChallengeMemberCheckinProps {
   challenge: Challenge
   label?: string
@@ -64,6 +65,11 @@ function DialogCheckIn ({ challengeId, onCancel, afterCheckIn, isOpen, cohortId 
       <DialogContent className="sm:max-w-md bg-white [&>button:last-child]:cursor-pointer">
         <DialogHeader>
           <DialogTitle>Check In</DialogTitle>
+          <VisuallyHidden.Root asChild>
+            <DialogDescription>
+              Record your daily check-in for this challenge.
+            </DialogDescription>
+          </VisuallyHidden.Root>
         </DialogHeader>
         <FormCheckIn challengeId={challengeId} cohortId={cohortId} onCancel={onCancel} afterCheckIn={afterCheckIn} />
       </DialogContent>

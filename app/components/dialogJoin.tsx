@@ -6,6 +6,7 @@ import { Button } from '~/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '~/components/ui/dialog'
 import DatePicker from 'react-datepicker'
 import axios from 'axios'
+import * as VisuallyHidden from '@radix-ui/react-visually-hidden'
 interface DeleteDialogProps {
   challenge: Challenge
   isOpen: boolean
@@ -82,17 +83,21 @@ export default function DialogJoin (props: DeleteDialogProps): JSX.Element {
     const notificationDate = new Date(formData.notificationTime)
     const notificationHour = notificationDate.getUTCHours()
     const notificationMinute = notificationDate.getUTCMinutes()
-    const data = new FormData()
-    data.append('notificationHour', notificationHour.toString())
-    data.append('notificationMinute', notificationMinute.toString())
-    data.append('startAt', formData.startAt.toString())
-    if (cohortId) {
-      data.append('cohortId', cohortId.toString())
+    const data = {
+      notificationHour,
+      notificationMinute,
+      startAt: formData.startAt.toISOString(),
+      ...(cohortId && { cohortId })
     }
 
+    console.log('Sending join request with data:', data)
     // return // Commented out to allow the function to proceed
     const url = `/api/challenges/join-unjoin/${challenge.id as string | number}`
-    const response = await axios.post(url, data)
+    const response = await axios.post(url, data, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
     if (response.data.result === 'joined') {
       afterJoin?.(true, response.data.data as MemberChallenge)
     } else {
@@ -103,9 +108,14 @@ export default function DialogJoin (props: DeleteDialogProps): JSX.Element {
   }
   return (
     <Dialog open={open} onOpenChange={handleOpen}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md bg-white">
         <DialogHeader>
           <DialogTitle>Join Challenge</DialogTitle>
+          <VisuallyHidden.Root asChild>
+            <DialogDescription>
+              Set your start date and daily notification time for this challenge.
+            </DialogDescription>
+          </VisuallyHidden.Root>
         </DialogHeader>
         <div>
           <div className='flex flex-col items-start'>
@@ -121,6 +131,7 @@ export default function DialogJoin (props: DeleteDialogProps): JSX.Element {
                   selected={formData.startAt ? new Date(formData.startAt) : null}
                   onChange={(date: Date) => { selectDate(date) }}
                   className={`p-1 border rounded-md pl-2 ${errors?.startAt ? 'border-red' : 'border-slate-gray-500'}`}
+                  preventOpenOnFocus={true}
                 />
               </>
             }
@@ -136,6 +147,7 @@ export default function DialogJoin (props: DeleteDialogProps): JSX.Element {
             selected={formData.notificationTime ? new Date(formData.notificationTime) : null}
             onChange={(time: Date) => { selectNotificationTime(time) }}
             className={`p-1 border rounded-md pl-2 ${errors?.notificationTime ? 'border-red' : 'border-slate-gray-500'}`}
+            preventOpenOnFocus={true}
           />
 
             </div>
@@ -148,7 +160,7 @@ export default function DialogJoin (props: DeleteDialogProps): JSX.Element {
           >
             <span>Cancel</span>
           </Button>
-          <Button className="bg-red" onClick={confirmJoin}>
+          <Button className="bg-red text-white cursor-pointer" onClick={confirmJoin}>
             Confirm
             {loading && <Spinner className='w-4 h-4 inline ml-2' />}
           </Button>

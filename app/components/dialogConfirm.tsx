@@ -24,9 +24,9 @@ export default function DialogConfirm (props: DeleteDialogProps): JSX.Element {
   return (
     <Dialog open={open} onOpenChange={handleOpen}>
       <DialogContent className="sm:max-w-md bg-white [&>button:last-child]:cursor-pointer">
-        <div>
+        <DialogDescription className='mt-3'>
           {prompt}
-        </div>
+        </DialogDescription>
         <DialogFooter>
           <Button
             variant="text"
@@ -35,7 +35,7 @@ export default function DialogConfirm (props: DeleteDialogProps): JSX.Element {
           >
             <span>Cancel</span>
           </Button>
-          <Button className="bg-red text-white cursor-pointer" onClick={onConfirm}>
+          <Button className="bg-red text-white " onClick={onConfirm}>
             <span>Confirm</span>
           </Button>
         </DialogFooter>

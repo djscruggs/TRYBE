@@ -4,6 +4,6 @@
   },
   "eslint.validate": ["javascript","typescript"],
   "[prisma]": {
-  "editor.defaultFormatter": "Prisma.prisma"
+  "editor.defaultFormatter": "vscode.typescript-language-features"
 },
 }

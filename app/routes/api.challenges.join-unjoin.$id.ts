@@ -41,7 +41,7 @@ export async function action(args: ActionFunctionArgs): Promise<Response> {
       if (!challenge) {
         throw new Error('Challenge with id ' + params.id + ' not found')
       }
-      let result: MemberChallenge
+      let memberChallenge: MemberChallenge
       const invitePath = pathToEmailUrl(`/challenges/v/${params.id}/about?i=1`)
       const tempData: Partial<
         ChallengeWelcomeMailerProps['dynamic_template_data']
@@ -51,18 +51,29 @@ export async function action(args: ActionFunctionArgs): Promise<Response> {
         description: textToHtml(challenge.description ?? '')
       }
       if (challenge?.type === 'SELF_LED') {
-        const formData = await args.request.formData()
-        if (
-          !formData.get('notificationHour') ||
-          !formData.get('notificationMinute') ||
-          !formData.get('startAt')
-        ) {
-          throw new Error('Missing required fields')
+        let body
+        try {
+          const text = await args.request.text()
+          if (!text) {
+            throw new Error('Request body is empty')
+          }
+          body = JSON.parse(text)
+        } catch (error) {
+          console.error('JSON parse error:', error)
+          throw new Error('Invalid request: expected JSON body with notificationHour, notificationMinute, and startAt')
         }
-        const notificationHour = formData.get('notificationHour') as string
-        const notificationMinute = formData.get('notificationMinute') as string
-        const startAt = formData.get('startAt') as string
-        const startAtDate = startAt ? new Date(startAt.toString()) : undefined
+        if (
+          (body.notificationHour == null || body.notificationHour === '') ||
+          (body.notificationMinute == null || body.notificationMinute === '') ||
+          !body.startAt
+        ) {
+          console.error('Missing fields in body:', body)
+          throw new Error('Missing required fields: notificationHour, notificationMinute, and startAt')
+        }
+        const notificationHour = body.notificationHour as string | number
+        const notificationMinute = body.notificationMinute as string | number
+        const startAt = body.startAt as string
+        const startAtDate = startAt ? new Date(startAt) : undefined
         const notificationHourNumber =
           notificationHour != null
             ? Number(notificationHour.toString())
@@ -71,13 +82,13 @@ export async function action(args: ActionFunctionArgs): Promise<Response> {
           notificationMinute != null
             ? Number(notificationMinute.toString())
             : undefined
-        let cohortId = Number(formData.get('cohortId') as string)
+        let cohortId = Number(body.cohortId)
         if (!cohortId) {
           // create a cohort first
           const cohort = await createCohort(Number(params.id))
           cohortId = cohort.id
         }
-        result = await joinChallenge({
+        memberChallenge = await joinChallenge({
           userId: Number(user.id),
           challengeId: Number(params.id),
           startAt: startAtDate,
@@ -93,7 +104,7 @@ export async function action(args: ActionFunctionArgs): Promise<Response> {
           ? `${challenge.numDays} days`
           : 'none'
       } else {
-        result = await joinChallenge({
+        memberChallenge = await joinChallenge({
           userId: Number(user.id),
           challengeId: Number(params.id)
         })
@@ -114,7 +125,7 @@ export async function action(args: ActionFunctionArgs): Promise<Response> {
       })
       return {
         result: 'joined',
-        data: result
+        data: memberChallenge
       } // 201 Created
     }
   } catch (error) {

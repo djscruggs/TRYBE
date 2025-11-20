@@ -286,6 +286,7 @@ export function EditMembership (props: EditMembershipProps): JSX.Element {
           timeIntervals={15}
           onChange={(date) => { selectNotificationTime(date) }}
           className={`p-1 border rounded-md pl-2 ${errors.notificationTime ? 'border-red' : ''}`}
+          preventOpenOnFocus={true}
         />
       }
       {which === 'startAt' &&
@@ -297,6 +298,7 @@ export function EditMembership (props: EditMembershipProps): JSX.Element {
         selected={formData.startAt ? new Date(formData.startAt) : null}
         onChange={(date: Date) => { selectDate(date) }}
         className={`p-1 border rounded-md pl-2 ${errors.startAt ? 'border-red' : ''}`}
+        preventOpenOnFocus={true}
         />
       }
       <div className='inline'>
