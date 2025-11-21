@@ -4,7 +4,7 @@
     "staging": "flyctl deploy --config ./fly.staging.toml",
     "generate": "npx prisma generate",
     "setup": "prisma generate && prisma migrate deploy",
-    "build": "react-router build && sentry-upload-sourcemaps --org dj-scruggs --project trybe",
+    "build": "react-router build && (sentry-upload-sourcemaps --org dj-scruggs --project trybe || echo 'Sentry sourcemap upload skipped')",
     "dev": "react-router dev",
     "start": "NODE_OPTIONS='--import ./instrumentation.server.mjs' react-router-serve ./build/server/index.js",
     "pretest": "npm run db:up && ./scripts/wait-for-db.sh && dotenv -e .env.test -- npx prisma migrate deploy",
