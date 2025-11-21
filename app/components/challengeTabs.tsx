@@ -23,7 +23,9 @@ export default function ChallengeTabs (props: ChallengeTabsProps): JSX.Element {
   const [isMember, setIsMember] = useState(Boolean(membership?.id ?? (challenge.type === 'SCHEDULED' && props.challenge.userId === currentUser?.id)))
   const gatedNavigate = useGatedNavigate()
   const location = useLocation()
-  const currentTab = location.pathname.split('/').pop()
+  const pathParts = location.pathname.split('/')
+  const lastPart = pathParts[pathParts.length - 1]
+  const currentTab = /^\d+$/.test(lastPart) ? pathParts[pathParts.length - 2] : lastPart
 
   const goTo = (path: string, gated: boolean = false): void => {
     if (!isMember) {
@@ -47,7 +49,7 @@ export default function ChallengeTabs (props: ChallengeTabsProps): JSX.Element {
   useEffect(() => {
     setIsMember(Boolean(membership?.id ?? (challenge.type === 'SCHEDULED' && props.challenge.userId === currentUser?.id)))
   }, [membership])
-
+  
   return (
     <>
     <div className='relative text-lg py-2 flex items-center justify-center w-full gap-4'>
