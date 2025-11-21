@@ -14,6 +14,7 @@ import { loadCheckIn, loadChallengeSummary } from '~/models/challenge.server'
 import { loadPost } from '~/models/post.server'
 import { loadThread } from '~/models/thread.server'
 import { prisma } from '~/models/prisma.server'
+import { broadcastNewMessage } from '~/services/pusher.server'
 
 export const action: ActionFunction = async (args) => {
   const currentUser = await requireCurrentUser(args)
@@ -165,6 +166,17 @@ export const action: ActionFunction = async (args) => {
     updated.id as number,
     updated.userId as number
   )
+
+  // Broadcast new message via Pusher for real-time updates
+  // Only broadcast for challenge comments (main chat)
+  if (comment.challengeId && comment.cohortId && !comment.replyToId) {
+    void broadcastNewMessage(
+      comment.challengeId,
+      comment.cohortId,
+      comment
+    )
+  }
+
   return comment
 }
 

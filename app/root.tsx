@@ -40,6 +40,8 @@ export interface RootLoaderData {
   ENV: {
     CLERK_PUBLISHABLE_KEY: string;
     NODE_ENV: string;
+    PUSHER_KEY?: string;
+    PUSHER_CLUSTER?: string;
   };
   user: CurrentUser | null;
   auth: typeof rootAuthLoader;
@@ -51,6 +53,8 @@ export const loader: LoaderFunction = async (args) => {
   const ENV = {
         CLERK_PUBLISHABLE_KEY: process.env.CLERK_PUBLISHABLE_KEY || "",
         NODE_ENV: process.env.NODE_ENV || "development",
+        PUSHER_KEY: process.env.PUSHER_KEY,
+        PUSHER_CLUSTER: process.env.PUSHER_CLUSTER || "us2",
       }
   const user = await getCurrentUser(args)
   if(user){
@@ -90,7 +94,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
         />
       </head>
       <body>
-        
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `window.ENV = ${JSON.stringify(data?.ENV)}`,
+          }}
+        />
         <ClerkProvider afterSignOutUrl="/logout" loaderData={data}>
           {children}
         </ClerkProvider>
