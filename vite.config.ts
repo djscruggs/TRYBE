@@ -27,6 +27,9 @@ export default defineConfig({
       'react-data-table-component'
     ]
   },
+  ssr: {
+    noExternal: ['react-icons']
+  },
   build: {
     commonjsOptions: {
       include: [/node_modules/]
