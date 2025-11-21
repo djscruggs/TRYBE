@@ -1,4 +1,5 @@
 {
+  "type": "module",
   "scripts": {
     "deploy": "flyctl deploy --config ./fly.production.toml",
     "staging": "flyctl deploy --config ./fly.staging.toml",

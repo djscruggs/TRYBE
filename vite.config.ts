@@ -1,13 +1,17 @@
 import { reactRouter } from '@react-router/dev/vite';
 import { defineConfig } from 'vite';
 import path from 'path';
+import { fileURLToPath } from 'url';
+import tailwindcss from '@tailwindcss/postcss';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
   plugins: [reactRouter()],
   css: {
     postcss: {
       plugins: [
-        require('@tailwindcss/postcss')
+        tailwindcss
       ]
     }
   },
