@@ -64,7 +64,7 @@ export default function ChallengeTabs (props: ChallengeTabsProps): JSX.Element {
       <DialogShare
         isOpen={sharing}
         prompt='Copy this link to invite your friends'
-        link={getShortUrl(challenge, props.membership, cohortId)}
+        link={getShortUrl(challenge, membership, cohortId ?? undefined)}
         onClose={() => { setSharing(false) }}
       />
 
