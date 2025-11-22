@@ -12,7 +12,7 @@ import { handleFormUpload, memoryUploadHandler } from '~/utils/uploadFile'
 
 export async function action(
   args: ActionFunctionArgs
-): Promise<prisma.checkIn> {
+): Promise<any> {
   const currentUser = await requireCurrentUser(args)
   if (!currentUser) {
     return {
@@ -91,9 +91,9 @@ export async function action(
     })
     await handleFormUpload({
       formData: rawData,
-      dataObj: result,
+      dataObj: result as any,
       nameSpace: 'checkin',
-      onUpdate: updateCheckin
+      onUpdate: updateCheckin as any
     })
     // reload membership and checkin
     const reloadedMemberChallenge = await prisma.memberChallenge.findFirst({

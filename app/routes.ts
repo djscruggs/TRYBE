@@ -32,6 +32,8 @@ export default [
   ]),
   route('login', 'routes/login.$.tsx'),
   route('logout', 'routes/logout.tsx'),
+  route('signup-cta', 'routes/signup-cta.tsx'),
+  route('signup', 'routes/signup.$.tsx'),
   route('profile', 'routes/profile.tsx'),
   route('landing', 'routes/landing.tsx'),
   route('feed', 'routes/feed.tsx'),

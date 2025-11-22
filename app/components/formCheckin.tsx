@@ -122,8 +122,9 @@ export default function FormCheckIn (props: FormCheckinProps): JSX.Element {
         navigate('/challenges/v/' + challengeId + '/checkins')
       }
     } catch (error) {
+      console.error(error)
       if (axios.isAxiosError(error)) {
-        toast.error(error.response?.statusText ?? 'An error occurred')
+        toast.error(error.message ?? 'An error occurred')
       } else {
         toast.error('An unexpected error occurred')
       }

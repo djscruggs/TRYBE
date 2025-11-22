@@ -74,6 +74,12 @@ type Pages = {
   "/logout": {
     params: {};
   };
+  "/signup-cta": {
+    params: {};
+  };
+  "/signup": {
+    params: {};
+  };
   "/profile": {
     params: {};
   };
@@ -263,7 +269,7 @@ type Pages = {
 type RouteFiles = {
   "root.tsx": {
     id: "root";
-    page: "/" | "/home" | "/challenges" | "/challenges/new" | "/challenges/all" | "/challenges/mine" | "/challenges/:range" | "/challenges/v/:id" | "/challenges/v/:id/about/:cohortId?" | "/challenges/v/:id/chat/:cohortId?" | "/challenges/v/:id/checkins/:cohortId?" | "/challenges/v/:id/members/:cohortId?" | "/challenges/v/:id/program" | "/login" | "/logout" | "/profile" | "/landing" | "/feed" | "/posts" | "/posts/new" | "/posts/:id" | "/community" | "/admin" | "/api/cron" | "/api/contact" | "/api/webhooks" | "/api/threads" | "/api/likes" | "/api/likes/:type/:id/comments" | "/api/likes/:type/:id" | "/api/comments" | "/api/comments/:id/replies" | "/api/comments/:type/:id" | "/api/notes" | "/api/notes/delete/:id" | "/api/notes/:id/repost" | "/api/posts" | "/api/posts/delete/:id" | "/api/posts/v/:id" | "/api/users/:id" | "/api/users/:id/likes" | "/api/clerk/:id" | "/api/categories" | "/api/memberchallenges/:id" | "/api/memberchallenges/:challengeId/:userId" | "/api/challenges" | "/api/challenges/:range" | "/api/challenges/delete/:id" | "/api/challenges/join-unjoin/:id" | "/api/challenges/:id/checkins/:cohortId" | "/api/challenges/v/:id" | "/api/challenges/v/:id/program" | "/api/challenges/v/:id/:userId" | "/api/challenges/v/:id/membership" | "/api/checkins/:challengeId/:userId/:cohortId?" | "/api/checkins/delete/:id" | "/*";
+    page: "/" | "/home" | "/challenges" | "/challenges/new" | "/challenges/all" | "/challenges/mine" | "/challenges/:range" | "/challenges/v/:id" | "/challenges/v/:id/about/:cohortId?" | "/challenges/v/:id/chat/:cohortId?" | "/challenges/v/:id/checkins/:cohortId?" | "/challenges/v/:id/members/:cohortId?" | "/challenges/v/:id/program" | "/login" | "/logout" | "/signup-cta" | "/signup" | "/profile" | "/landing" | "/feed" | "/posts" | "/posts/new" | "/posts/:id" | "/community" | "/admin" | "/api/cron" | "/api/contact" | "/api/webhooks" | "/api/threads" | "/api/likes" | "/api/likes/:type/:id/comments" | "/api/likes/:type/:id" | "/api/comments" | "/api/comments/:id/replies" | "/api/comments/:type/:id" | "/api/notes" | "/api/notes/delete/:id" | "/api/notes/:id/repost" | "/api/posts" | "/api/posts/delete/:id" | "/api/posts/v/:id" | "/api/users/:id" | "/api/users/:id/likes" | "/api/clerk/:id" | "/api/categories" | "/api/memberchallenges/:id" | "/api/memberchallenges/:challengeId/:userId" | "/api/challenges" | "/api/challenges/:range" | "/api/challenges/delete/:id" | "/api/challenges/join-unjoin/:id" | "/api/challenges/:id/checkins/:cohortId" | "/api/challenges/v/:id" | "/api/challenges/v/:id/program" | "/api/challenges/v/:id/:userId" | "/api/challenges/v/:id/membership" | "/api/checkins/:challengeId/:userId/:cohortId?" | "/api/checkins/delete/:id" | "/*";
   };
   "routes/_index.tsx": {
     id: "routes/_index";
@@ -324,6 +330,14 @@ type RouteFiles = {
   "routes/logout.tsx": {
     id: "routes/logout";
     page: "/logout";
+  };
+  "routes/signup-cta.tsx": {
+    id: "routes/signup-cta";
+    page: "/signup-cta";
+  };
+  "routes/signup.$.tsx": {
+    id: "routes/signup.$";
+    page: "/signup";
   };
   "routes/profile.tsx": {
     id: "routes/profile";
@@ -512,6 +526,8 @@ type RouteModules = {
   "routes/challenges.v.$id.program": typeof import("./app/routes/challenges.v.$id.program.tsx");
   "routes/login.$": typeof import("./app/routes/login.$.tsx");
   "routes/logout": typeof import("./app/routes/logout.tsx");
+  "routes/signup-cta": typeof import("./app/routes/signup-cta.tsx");
+  "routes/signup.$": typeof import("./app/routes/signup.$.tsx");
   "routes/profile": typeof import("./app/routes/profile.tsx");
   "routes/landing": typeof import("./app/routes/landing.tsx");
   "routes/feed": typeof import("./app/routes/feed.tsx");

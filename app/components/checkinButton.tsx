@@ -57,7 +57,6 @@ interface CheckinProps {
 function DialogCheckIn ({ challengeId, onCancel, afterCheckIn, isOpen, cohortId }: CheckinProps): JSX.Element {
   const [open, setOpen] = useState<boolean>(isOpen)
   const handleOpen = (event:any): void => {
-    console.log(event)
     onCancel()
   }
   return (
