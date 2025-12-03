@@ -20,6 +20,18 @@
               "icon": "lucide-file",
               "title": "realtime-chat-implementation-plan"
             }
+          },
+          {
+            "id": "83173a868266f3c9",
+            "type": "leaf",
+            "state": {
+              "type": "release-notes",
+              "state": {
+                "currentVersion": "1.10.6"
+              },
+              "icon": "lucide-book-up",
+              "title": "Release Notes 1.10.6"
+            }
           }
         ]
       }
