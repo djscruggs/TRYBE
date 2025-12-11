@@ -18,7 +18,7 @@ interface MenuChallengeProps {
 export default function MenuChallenge (props: MenuChallengeProps): JSX.Element {
   const { challenge } = props
   const isMobile = useMobileSize()
-  const placement: MenuProps['placement'] = isMobile ? 'bottom-end' : 'bottom-start'
+
   const navigate = useNavigate()
   const { currentUser } = useContext(CurrentUserContext)
   const [deleteDialog, setDeleteDialog] = useState(false)
@@ -51,22 +51,22 @@ export default function MenuChallenge (props: MenuChallengeProps): JSX.Element {
     <>
     {challenge?.userId === currentUser?.id && (
       <>
-        <DropdownMenu placement={placement}>
+        <DropdownMenu>
           <DropdownMenuTrigger>
-            <Button className='bg-red p-1 rounded-md focus-visible:outline-none'>
+            <Button className='bg-red p-1 text-white rounded-sm focus-visible:outline-none'>
               <GiHamburgerMenu className='h-5 w-5'/>
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuItem onClick={() => { navigate(`/posts/new/challenge/${challenge.id}`) }}>
+          <DropdownMenuContent align={isMobile ? 'end' : 'start'}>
+            <DropdownMenuItem className='cursor-pointer' onClick={() => { navigate(`/posts/new/challenge/${challenge.id}`) }}>
               Post an Update
             </DropdownMenuItem>
             {/* <DropdownMenuItem onClick={() => { navigate(`/threads/new/challenge/${challenge.id}`) }} >
               Start a Discussion
             </DropdownMenuItem> */}
-            <DropdownMenuItem onClick={() => { navigate(`/challenges/v/${challenge.id}/edit`) }}>Edit Challenge</DropdownMenuItem>
-            <DropdownMenuItem onClick={() => { navigate(`/challenges/v/${challenge.id}/schedule`) }}>Edit Schedule</DropdownMenuItem>
-            <DropdownMenuItem onClick={handleDeleteDialog}>
+            <DropdownMenuItem className='cursor-pointer' onClick={() => { navigate(`/challenges/v/${challenge.id}/edit`) }}>Edit Challenge</DropdownMenuItem>
+            <DropdownMenuItem className='cursor-pointer' onClick={() => { navigate(`/challenges/v/${challenge.id}/schedule`) }}>Edit Schedule</DropdownMenuItem>
+            <DropdownMenuItem className='cursor-pointer' onClick={handleDeleteDialog}>
               Delete
             </DropdownMenuItem>
           </DropdownMenuContent>
