@@ -23,18 +23,22 @@ import { differenceInCalendarDays } from 'date-fns'
 
 export async function action(args: ActionFunctionArgs): Promise<Response> {
   const currentUser = await requireCurrentUser(args)
+  
+  if (!currentUser) {
+    return Response.json({ error: 'Unauthorized', message: 'User not authenticated' }, { status: 401 })
+  }
   const { params } = args
-  const user = await loadUser(currentUser?.id)
+  const user = await loadUser(currentUser.id)
   const memberChallenge = user.memberChallenges.find(
     (c: MemberChallenge) => c.challengeId === Number(params.id)
   )
   try {
     if (memberChallenge) {
       const result = await unjoinChallenge(Number(user.id), Number(params.id))
-      return {
+      return Response.json({
         result: 'unjoined',
         data: result
-      } // 200 OK
+      }, { status: 200 })
     } else {
       // load the challenge
       const challenge = await loadChallenge(Number(params.id))
@@ -118,29 +122,34 @@ export async function action(args: ActionFunctionArgs): Promise<Response> {
             challenge.startAt ?? new Date()
           ).toString() + ' days'
       }
-      await sendChallengeWelcome({
+      // Send welcome email asynchronously (don't block the response)
+      void sendChallengeWelcome({
         to: user.email,
         dynamic_template_data:
           tempData as ChallengeWelcomeMailerProps['dynamic_template_data']
+      }).catch((emailError) => {
+        // Log email errors but don't fail the request
+        console.error('Failed to send challenge welcome email:', emailError)
       })
-      return {
+      
+      return Response.json({
         result: 'joined',
         data: memberChallenge
-      } // 201 Created
+      }, { status: 201 })
     }
   } catch (error) {
     console.error(
       'error in action',
       error instanceof Error ? error.message : error
     )
-    return {
+    return Response.json({
       result: 'error',
       message:
         error instanceof Error ? error.message : 'An unknown error occurred'
-    } // 400 Bad Request
+    }, { status: 400 })
   }
 }
 export const loader: LoaderFunction = async (args) => {
-  void requireCurrentUser(args)
+  await requireCurrentUser(args)
   return { message: 'This route does not accept GET requests' }
 }

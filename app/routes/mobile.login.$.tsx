@@ -20,7 +20,7 @@ export const action: ActionFunction = async ({ request }) => {
 export default function SignInPage (): JSX.Element {
   const [searchParams] = useSearchParams()
   const passwordUpdated = searchParams.get('passwordUpdated')
-  const actionData = useActionData<typeof action>()
+  const actionData = useActionData<{ error?: string; fields?: { email?: string; password?: string } }>()
   const [formData, setFormData] = useState({
     email: actionData?.fields?.email ?? '',
     password: actionData?.fields?.password ?? '',

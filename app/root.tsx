@@ -99,7 +99,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
             __html: `window.ENV = ${JSON.stringify(data?.ENV)}`,
           }}
         />
-        <ClerkProvider afterSignOutUrl="/logout" loaderData={data}>
+        <ClerkProvider 
+          afterSignOutUrl="/login" 
+          afterSignInUrl="/home"
+          signInUrl="/login"
+          loaderData={data}
+        >
           {children}
         </ClerkProvider>
         <ScrollRestoration />

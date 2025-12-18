@@ -151,14 +151,42 @@ export const updatePassword = async (
 export async function getCurrentUser(
   args: LoaderFunctionArgs
 ): Promise<CurrentUser | null> {
+  // First try Clerk authentication (works for web and API routes with Clerk tokens)
   const clerkUser = await getAuth(args)
   let dbUser
-  if (!clerkUser.userId) {
-    dbUser = await getUser(args.request)
-  } else {
+  if (clerkUser.userId) {
     dbUser = await getUserByClerkId(clerkUser.userId)
+    if (dbUser) {
+      return dbUser
+    }
   }
-  return dbUser
+  
+  // Try to get user from request (checks cookies and Authorization header with user ID)
+  dbUser = await getUser(args.request)
+  if (dbUser) {
+    return dbUser
+  }
+  
+  // If still no user, check Authorization header directly (for mobile apps sending user ID)
+  const userId = await getUserId(args.request)
+  if (userId) {
+    try {
+      dbUser = await prisma.user.findUnique({
+        where: { id: Number(userId) },
+        include: {
+          profile: true,
+          memberChallenges: true
+        }
+      })
+      if (dbUser) {
+        return dbUser
+      }
+    } catch (error) {
+      console.error('[getCurrentUser] Error looking up user by ID:', error)
+    }
+  }
+  
+  return null
 }
 export async function requireCurrentUser(
   args: LoaderFunctionArgs
@@ -181,6 +209,17 @@ export async function requireCurrentUser(
     path.startsWith(allowedPath)
   )
   if (!isAllowedPath) {
+    // For API routes, return 401 instead of redirecting
+    if (path.startsWith('/api/')) {
+      // eslint-disable-next-line @typescript-eslint/no-throw-literal
+      throw new Response(
+        JSON.stringify({ error: 'Unauthorized', message: 'Authentication required' }),
+        {
+          status: 401,
+          headers: { 'Content-Type': 'application/json' }
+        }
+      )
+    }
     const url = new URL(request.url)
     const redirectPath = new URL(request.url).pathname
     const urlWithoutPath = `${url.protocol}//${url.host}${url.search}${url.hash}`
@@ -229,10 +268,68 @@ export async function requireAdminOrValidCohortMembership(
 }
 
 async function getUserId(request: Request): Promise<string | null> {
+  // First try cookie-based session
   const session = await getUserSession(request)
   const currentUserId = session.get('userId')
-  if (!currentUserId) return null
-  return currentUserId
+  if (currentUserId) return currentUserId
+
+  // Fallback: Check for Authorization header (for mobile apps)
+  const authHeader = request.headers.get('Authorization')
+  if (authHeader) {
+    const token = authHeader.startsWith('Bearer ')
+      ? authHeader.slice(7).trim()
+      : authHeader.trim()
+    
+    if (token) {
+      // Check if it's a Clerk token (starts with "eyJ" for JWT) or a numeric user ID
+      if (token.startsWith('eyJ')) {
+        // This is a Clerk JWT token - verify it and extract userId
+        try {
+          const clerkClient = createClerkClient({
+            secretKey: process.env.CLERK_SECRET_KEY
+          })
+          const verifiedToken = await clerkClient.verifyToken(token)
+          const clerkUserId = verifiedToken.sub
+          
+          // Look up user by clerkId to get database user ID
+          const user = await getUserByClerkId(clerkUserId)
+          if (user) {
+            return String(user.id)
+          } else {
+            // Return null - user needs to be created in database first
+            return null
+          }
+        } catch (error) {
+          console.error('[getUserId] Error verifying Clerk token:', error)
+          return null
+        }
+      } else {
+        // Assume it's a numeric user ID
+        return token
+      }
+    }
+  }
+
+  // Fallback: Check for X-User-Id header (common mobile pattern)
+  const userIdHeader = request.headers.get('X-User-Id')
+  if (userIdHeader) {
+    return userIdHeader
+  }
+
+  // Fallback: Check for X-Session-Id header and extract userId from session
+  const sessionIdHeader = request.headers.get('X-Session-Id')
+  if (sessionIdHeader) {
+    try {
+      // Try to get session from the provided session ID
+      const session = await storage.getSession(sessionIdHeader)
+      const userId = session.get('userId')
+      if (userId) return userId
+    } catch {
+      // Invalid session ID, continue to return null
+    }
+  }
+
+  return null
 }
 
 export async function getUser(request: Request): Promise<CurrentUser | null> {
@@ -242,15 +339,17 @@ export async function getUser(request: Request): Promise<CurrentUser | null> {
   }
 
   try {
+    const userIdNumber = Number(userId)
     const user = await prisma.user.findUnique({
-      where: { id: Number(userId) },
+      where: { id: userIdNumber },
       include: {
         profile: true,
         memberChallenges: true
       }
     })
     return user
-  } catch {
+  } catch (error) {
+    console.error('[getUser] Error looking up user:', error)
     return null
   }
 }

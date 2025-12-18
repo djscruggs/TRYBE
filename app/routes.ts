@@ -30,7 +30,9 @@ export default [
       route('program', 'routes/challenges.v.$id.program.tsx')
     ])
   ]),
-  route('login', 'routes/login.$.tsx'),
+  route('login', 'routes/login.$.tsx', [
+    route('factor-one', 'routes/login.factor-one.tsx'),
+  ]),
   route('logout', 'routes/logout.tsx'),
   route('signup-cta', 'routes/signup-cta.tsx'),
   route('signup', 'routes/signup.$.tsx'),

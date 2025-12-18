@@ -3,12 +3,12 @@ import { type ActionFunction, type LoaderFunction } from 'react-router'
 import { requireCurrentUser } from '~/models/auth.server'
 
 export const loader: LoaderFunction = async (args) => {
-  void requireCurrentUser(args)
+  await requireCurrentUser(args)
   return { message: 'This route does not accept GET requests' }
 }
 
 export const action: ActionFunction = async (args) => {
-  void requireCurrentUser(args)
+  await requireCurrentUser(args)
   const { params, request } = args
   const memberChallenge = await prisma.memberChallenge.findUnique({
     where: { id: Number(params.id) }

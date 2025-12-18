@@ -95,7 +95,7 @@ export const action: ActionFunction = async (args: ActionFunctionArgs) => {
 }
 
 export const loader: LoaderFunction = async (args) => {
-  void requireCurrentUser(args)
+  await requireCurrentUser(args)
   return data({ message: 'This route does not accept GET requests' }, 200)
 }
 

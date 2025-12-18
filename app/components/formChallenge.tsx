@@ -1,7 +1,8 @@
 import { Button } from '~/components/ui/button'
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuItem, DropdownMenuContent } from '~/components/ui/dropdown-menu'
-import { Select, SelectItem } from '~/components/ui/select'
-import { Checkbox } from '~/components/ui/checkbox';
+import { Select, SelectItem, SelectTrigger, SelectValue, SelectContent } from '~/components/ui/select'
+import { Checkbox } from '~/components/ui/checkbox'
+import { Radio } from '~/components/ui/radio'
 import React, {
   useState,
   useContext,
@@ -323,16 +324,19 @@ export default function FormChallenge ({ challenge }: { challenge: ChallengeInpu
                   {/* material-tailwind <Select> element doesn't populate an actual HTML input element, so this hidden field captres the value for submission */}
                   <input type="hidden" name='frequency' value={formData.frequency} />
                   <Select
-                    label="Select frequency"
-                    placeholder='frequency'
-                    name="_frequency"
                     value={formData.frequency}
-                    onChange={handleSelect}
-                    >
-                    {frequencies.map((frequency: Challenge['frequency'], index: number) => (
-                        <SelectItem key={index} value={frequency}>{frequency.charAt(0).toUpperCase() + frequency.slice(1).toLowerCase()}</SelectItem>
-                    ))
-                    }
+                    onValueChange={handleSelect}
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select frequency" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {frequencies.map((frequency: Challenge['frequency'], index: number) => (
+                        <SelectItem key={index} value={frequency}>
+                          {frequency.charAt(0).toUpperCase() + frequency.slice(1).toLowerCase()}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
                   </Select>
                 </div>
 
