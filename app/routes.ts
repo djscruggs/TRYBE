@@ -90,7 +90,7 @@ export default [
       route('delete/:id', 'routes/api.challenges.delete.$id.ts'),
       route('join-unjoin/:id', 'routes/api.challenges.join-unjoin.$id.ts'),
       route(
-        ':id/checkins/:cohortId?',
+        ':id/checkins',
         'routes/api.challenges.$id.checkins.($cohortId).ts'
       ),
       ...prefix('v/:id', [

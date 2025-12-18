@@ -15,9 +15,7 @@ export async function action(
 ): Promise<any> {
   const currentUser = await requireCurrentUser(args)
   if (!currentUser) {
-    return {
-      result: 'not-logged-in'
-    }
+    return Response.json({ error: 'Unauthorized', message: 'User not authenticated' }, { status: 401 })
   }
   const request = args.request
 
@@ -125,10 +123,10 @@ export async function action(
         }
       }
     })
-    return {
+    return Response.json({
       checkIn: reloadedCheckin,
       memberChallenge: reloadedMemberChallenge
-    }
+    })
   } else {
     // eslint-disable-next-line @typescript-eslint/no-throw-literal
     throw new Response(null, {
