@@ -66,7 +66,7 @@ export default function ChallengeOverview (props: ChallengeOverviewProps): JSX.E
     await navigator.clipboard.writeText(getShortUrl(challenge, membership))
     toast.success('🎉 Link copied to clipboard!')
   }
-  const parsedDescription = textToJSX(challenge.description ?? '')
+  const parsedDescription = textToJSX(challenge.description ?? '', true)
   useEffect(() => {
     void fetchCheckIns()
   }, [challenge.id, currentUser?.id])

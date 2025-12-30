@@ -215,9 +215,11 @@ export function textToJSX (text: string | undefined, textOnly = false): React.Re
   const strippedLinks = links?.map((link) => {
     return link.replace(youtubeRegex, '')
   })
+  // Filter out empty lines to prevent excessive spacing
+  const lines = textWithoutLinks?.split('\n').filter((line: string) => line.trim() !== '') ?? []
   return (
     <div>
-      {textWithoutLinks?.split('\n').map((line: string, index: number) => (
+      {lines.map((line: string, index: number) => (
         <React.Fragment key={index}>
           <p style={{ marginTop: index > 0 ? '.25rem' : '0' }}>
             {convertTextToJSXAnchors(line)}
