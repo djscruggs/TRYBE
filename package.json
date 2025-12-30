@@ -78,6 +78,7 @@
     "open-graph-scraper": "^6.5.2",
     "pusher": "^5.2.0",
     "pusher-js": "^8.4.0",
+    "pkg-types": "1.1.0",
     "react": "^19.2.1",
     "react-circular-progressbar": "^2.1.0",
     "react-data-table-component": "^7.6.2",
