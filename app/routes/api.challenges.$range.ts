@@ -15,7 +15,6 @@ export const loader: LoaderFunction = async (args) => {
 
   const currentUser = await getCurrentUser(args)
   const userId = currentUser?.id ? Number(currentUser.id) : null
-
   let challenges
   let error = null
   if (range === 'mine') {
@@ -53,6 +52,19 @@ export const loader: LoaderFunction = async (args) => {
     return { loadingError: 'Unable to load challenges' }
   }
 
-  const memberships = (await fetchMemberChallenges(userId)) || ([] as number[])
-  return { challenges, memberships, error }
+  const memberChallenges = (await fetchMemberChallenges(userId)) || []
+  const membershipIds = memberChallenges.map((mc) => mc.challengeId)
+  // Add isMember boolean to each challenge
+  const challengesWithMembership = Array.isArray(challenges)
+    ? challenges.map((challenge: any) => ({
+        ...challenge,
+        isMember: userId ? membershipIds.includes(challenge.id) : false
+      }))
+    : challenges
+
+  return {
+    challenges: challengesWithMembership,
+    memberships: membershipIds,
+    error
+  }
 }
