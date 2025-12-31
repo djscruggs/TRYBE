@@ -277,5 +277,5 @@ type JsonValue =
   | number
   | boolean
   | { [key in string]?: JsonValue }
-  | JsonValue[]
+  | Array<JsonValue>
   | null
