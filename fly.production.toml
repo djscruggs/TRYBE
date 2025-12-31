@@ -4,7 +4,7 @@
 #
 
 app = "trybe-icy-smoke-8833"
-primary_region = "atl"
+primary_region = "dfw"
 
 ENV = { NODE_ENV = "production" }
 
