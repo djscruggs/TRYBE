@@ -5,19 +5,18 @@ import { type LoaderFunction, type LoaderFunctionArgs } from 'react-router'
 
 export const loader: LoaderFunction = async (
   args: LoaderFunctionArgs
-): Promise<ChallengeSummary | null | { error: string }> => {
+): Promise<Response> => {
   await requireCurrentUser(args)
   const { params } = args
   if (!params.id) {
-    return null
+    return Response.json({ error: 'Challenge ID is required' }, { status: 400 })
   }
-  const challenge: ChallengeSummary | undefined = await loadChallenge(
-    params.id,
-    params.userId
+  const challenge: ChallengeSummary | null = await loadChallenge(
+    Number(params.id),
+    params.userId ? Number(params.userId) : undefined
   )
   if (!challenge) {
-    const error = { error: 'Challenge not found' }
-    return error
+    return Response.json({ error: 'Challenge not found' }, { status: 404 })
   }
-  return challenge
+  return Response.json(challenge)
 }

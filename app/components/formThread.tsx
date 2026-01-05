@@ -1,11 +1,16 @@
-import { Button } from '~/components/ui/button';
-import React, { useState, useRef, useMemo, JSX } from 'react'
-import { Form, useNavigate } from 'react-router';
+import { Button } from '~/components/ui/button'
+import React, { useState, useRef, useMemo, type JSX } from 'react'
+import { Form, useNavigate } from 'react-router'
 import axios from 'axios'
 import { FormField } from './formField'
 import { handleFileUpload } from '~/utils/helpers'
 import CardChallenge from './cardChallenge'
-import { type Thread, type ThreadSummary, type Challenge, type ChallengeSummary } from '~/utils/types'
+import {
+  type Thread,
+  type ThreadSummary,
+  type Challenge,
+  type ChallengeSummary
+} from '~/utils/types'
 import { MdOutlineAddPhotoAlternate } from 'react-icons/md'
 import { TiDeleteOutline } from 'react-icons/ti'
 import VideoRecorder from './videoRecorder'
@@ -21,12 +26,14 @@ interface FormThreadProps {
   forwardRef?: React.RefObject<HTMLTextAreaElement>
 }
 
-export default function FormThread (props: FormThreadProps): JSX.Element {
+export default function FormThread(props: FormThreadProps): JSX.Element {
   let { afterSave, onCancel, thread, challenge, prompt } = props
   if (thread?.challenge) {
     challenge = thread.challenge
   }
-  const handleKeyDown = async (event: React.KeyboardEvent<HTMLFormElement>): Promise<void> => {
+  const handleKeyDown = async (
+    event: React.KeyboardEvent<HTMLFormElement>
+  ): Promise<void> => {
     if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) {
       event.preventDefault()
       await handleSubmit(event)
@@ -42,11 +49,15 @@ export default function FormThread (props: FormThreadProps): JSX.Element {
   const navigate = useNavigate()
   const imageRef = useRef<HTMLInputElement>(null)
   const [image, setImage] = useState<File | string | null>(null)
-  const [imageUrl, setImageUrl] = useState<string | null>(thread?.imageMeta?.secure_url ?? null)
+  const [imageUrl, setImageUrl] = useState<string | null>(
+    thread?.imageMeta?.secure_url ?? null
+  )
   const [videoUploadOnly, setVideoUploadOnly] = useState(false)
 
   const [video, setVideo] = useState<File | string | null>(null)
-  const [videoUrl, setVideoUrl] = useState<string | null>(thread?.videoMeta?.secure_url ?? null)
+  const [videoUrl, setVideoUrl] = useState<string | null>(
+    thread?.videoMeta?.secure_url ?? null
+  )
   const imageDialog = (): void => {
     if (imageRef.current) {
       imageRef.current.click()
@@ -85,7 +96,9 @@ export default function FormThread (props: FormThreadProps): JSX.Element {
     // }
     return true
   }
-  async function handleSubmit (ev: React.FormEvent<HTMLFormElement>): Promise<void> {
+  async function handleSubmit(
+    ev: React.FormEvent<HTMLFormElement>
+  ): Promise<void> {
     ev.preventDefault()
     if (!validate()) {
       return
@@ -95,10 +108,10 @@ export default function FormThread (props: FormThreadProps): JSX.Element {
       const formData = new FormData()
       formData.append('body', body)
       formData.append('title', title)
-      if (thread) {
+      if (thread?.id) {
         formData.append('id', thread.id.toString())
       }
-      if (challenge) {
+      if (challenge?.id) {
         formData.append('challengeId', challenge.id.toString())
       }
       if (image) {
@@ -126,7 +139,9 @@ export default function FormThread (props: FormThreadProps): JSX.Element {
       setBtnDisabled(false)
     }
   }
-  const handleCancel = (ev: React.MouseEvent<HTMLButtonElement, MouseEvent>): void => {
+  const handleCancel = (
+    ev: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ): void => {
     ev.preventDefault()
     setBody('')
     setImage(null)
@@ -140,28 +155,29 @@ export default function FormThread (props: FormThreadProps): JSX.Element {
     // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
     return Boolean(video || body || image || challenge)
   }
-  const renderVideo = useMemo(() => (
-    <VideoPreview video={video} onClear={deleteVideo} />
-  ), [video, videoUrl])
+  const renderVideo = useMemo(
+    () => <VideoPreview video={video} onClear={deleteVideo} />,
+    [video, videoUrl]
+  )
 
   return (
-    <div className='w-full'>
+    <div className="w-full">
       <Form method="post" onSubmit={handleSubmit} onKeyDown={handleKeyDown}>
-      <FormField
-        name='title'
-        type='text'
-        placeholder='Enter a Title'
-        required={true}
-        value={title}
-        onChange={(ev) => {
-          setTitle(String(ev.target.value))
-        }}
-      />
-      <FormField
-          name='body'
+        <FormField
+          name="title"
+          type="text"
+          placeholder="Enter a Title"
+          required={true}
+          value={title}
+          onChange={(ev) => {
+            setTitle(String(ev.target.value))
+          }}
+        />
+        <FormField
+          name="body"
           autoResize={true}
           placeholder={placeholder}
-          type='textarea'
+          type="textarea"
           rows={5}
           required={true}
           value={body}
@@ -171,43 +187,78 @@ export default function FormThread (props: FormThreadProps): JSX.Element {
             return ev.target.value
           }}
           error={error}
-          />
-        <input type="file" name="image" hidden ref={imageRef} onChange={handleImage} accept="image/*"/>
+        />
+        <input
+          type="file"
+          name="image"
+          hidden
+          ref={imageRef}
+          onChange={handleImage}
+          accept="image/*"
+        />
 
-        <VideoChooser recorderShowing={showVideoRecorder} showRecorder={videoChooserCallbackShow} hideRecorder={videoChooserCallbackHide} />
-        <MdOutlineAddPhotoAlternate onClick={imageDialog} className='text-2xl cursor-pointer float-right' />
+        <VideoChooser
+          recorderShowing={showVideoRecorder}
+          showRecorder={videoChooserCallbackShow}
+          hideRecorder={videoChooserCallbackHide}
+        />
+        <MdOutlineAddPhotoAlternate
+          onClick={imageDialog}
+          className="text-2xl cursor-pointer float-right"
+        />
 
-        {imageUrl &&
+        {imageUrl && (
           <div className="relative w-fit">
-            <img src={imageUrl} alt="image thumbnail" className='h-24 mb-2' />
-            <TiDeleteOutline onClick={deleteImage} className='text-lg bg-white rounded-full text-red cursor-pointer absolute top-1 right-1' />
+            <img src={imageUrl} alt="image thumbnail" className="h-24 mb-2" />
+            <TiDeleteOutline
+              onClick={deleteImage}
+              className="text-lg bg-white rounded-full text-red cursor-pointer absolute top-1 right-1"
+            />
           </div>
-        }
-        {videoUrl && !showVideoRecorder &&
+        )}
+        {videoUrl && !showVideoRecorder && (
           <div className="relative w-fit">
-            <video src={videoUrl} className='h-24 mb-2' />
-            <TiDeleteOutline onClick={deleteVideo} className='text-lg bg-white rounded-full text-red cursor-pointer absolute top-1 right-1' />
+            <video src={videoUrl} className="h-24 mb-2" />
+            <TiDeleteOutline
+              onClick={deleteVideo}
+              className="text-lg bg-white rounded-full text-red cursor-pointer absolute top-1 right-1"
+            />
           </div>
-        }
-        {video && !showVideoRecorder &&
-          renderVideo
-        }
-        {showVideoRecorder &&
-          <div className='mt-6'>
-            <VideoRecorder uploadOnly={videoUploadOnly} onStart={() => { setBtnDisabled(true) }} onStop={() => { setBtnDisabled(false) }} onSave={setVideo} onFinish={() => { setShowVideoRecorder(false) }} />
+        )}
+        {video && !showVideoRecorder && renderVideo}
+        {showVideoRecorder && (
+          <div className="mt-6">
+            <VideoRecorder
+              uploadOnly={videoUploadOnly}
+              onStart={() => {
+                setBtnDisabled(true)
+              }}
+              onStop={() => {
+                setBtnDisabled(false)
+              }}
+              onSave={setVideo}
+              onFinish={() => {
+                setShowVideoRecorder(false)
+              }}
+            />
           </div>
-        }
-        <Button type="submit" placeholder='Save' className="bg-red disabled:gray-400" disabled={btnDisabled || (showVideoRecorder && !video)}>
-          {btnDisabled
-            ? 'Saving...'
-            : 'Save'
-          }
+        )}
+        <Button
+          type="submit"
+          className="bg-red disabled:gray-400"
+          disabled={btnDisabled || (showVideoRecorder && !video)}
+        >
+          {btnDisabled ? 'Saving...' : 'Save'}
         </Button>
-        {showCancel() &&
-          <button onClick={handleCancel} className="mt-2 text-sm underline ml-2 hover:text-red">cancel</button>
-        }
+        {showCancel() && (
+          <button
+            onClick={handleCancel}
+            className="mt-2 text-sm underline ml-2 hover:text-red"
+          >
+            cancel
+          </button>
+        )}
       </Form>
-
     </div>
   )
 }

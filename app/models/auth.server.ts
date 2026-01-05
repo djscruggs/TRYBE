@@ -54,15 +54,21 @@ export async function getUserSession(request: Request): Promise<Session> {
 export async function register(user: RegisterForm): Promise<Response> {
   const exists = await prisma.user.count({ where: { email: user.email } })
   if (exists) {
-    return { error: 'User already exists with that email' }
+    return Response.json(
+      { error: 'User already exists with that email' },
+      { status: 400 }
+    )
   }
 
   const newUser = await createUser(user)
   if (!newUser) {
-    return {
-      error: 'Something went wrong trying to create a new currentUser.',
-      fields: { email: user.email, password: user.password }
-    }
+    return Response.json(
+      {
+        error: 'Something went wrong trying to create a new currentUser.',
+        fields: { email: user.email, password: user.password }
+      },
+      { status: 500 }
+    )
   }
   return await createUserSession(newUser.id, '/challenges')
 }
@@ -76,7 +82,7 @@ export async function login({
     where: { email }
   })
   if (!currentUser?.email) {
-    return { error: 'Incorrect login', status: 400 }
+    return Response.json({ error: 'Incorrect login' }, { status: 400 })
   }
   if (await bcrypt.compare(String(password), String(currentUser.password))) {
     const parsedUrl = new URL(request.url)
@@ -106,7 +112,10 @@ export async function login({
       }
     } catch (error: any) {
       if (currentUser.password) {
-        return { error: error.errors[0].shortMessage || 'Incorrect login' }
+        return Response.json(
+          { error: error.errors[0]?.shortMessage || 'Incorrect login' },
+          { status: 400 }
+        )
       }
     }
   }
@@ -134,7 +143,7 @@ export async function login({
     )
   }
 
-  return { error: 'Incorrect login', status: 400 }
+  return Response.json({ error: 'Incorrect login' }, { status: 400 })
 }
 
 export const updatePassword = async (
@@ -160,13 +169,13 @@ export async function getCurrentUser(
       return dbUser
     }
   }
-  
+
   // Try to get user from request (checks cookies and Authorization header with user ID)
   dbUser = await getUser(args.request)
   if (dbUser) {
     return dbUser
   }
-  
+
   // If still no user, check Authorization header directly (for mobile apps sending user ID)
   const userId = await getUserId(args.request)
   if (userId) {
@@ -185,7 +194,7 @@ export async function getCurrentUser(
       console.error('[getCurrentUser] Error looking up user by ID:', error)
     }
   }
-  
+
   return null
 }
 export async function requireCurrentUser(
@@ -213,7 +222,10 @@ export async function requireCurrentUser(
     if (path.startsWith('/api/')) {
       // eslint-disable-next-line @typescript-eslint/no-throw-literal
       throw new Response(
-        JSON.stringify({ error: 'Unauthorized', message: 'Authentication required' }),
+        JSON.stringify({
+          error: 'Unauthorized',
+          message: 'Authentication required'
+        }),
         {
           status: 401,
           headers: { 'Content-Type': 'application/json' }
@@ -279,7 +291,7 @@ async function getUserId(request: Request): Promise<string | null> {
     const token = authHeader.startsWith('Bearer ')
       ? authHeader.slice(7).trim()
       : authHeader.trim()
-    
+
     if (token) {
       // Check if it's a Clerk token (starts with "eyJ" for JWT) or a numeric user ID
       if (token.startsWith('eyJ')) {
@@ -290,7 +302,7 @@ async function getUserId(request: Request): Promise<string | null> {
           })
           const verifiedToken = await clerkClient.verifyToken(token)
           const clerkUserId = verifiedToken.sub
-          
+
           // Look up user by clerkId to get database user ID
           const user = await getUserByClerkId(clerkUserId)
           if (user) {

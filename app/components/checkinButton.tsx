@@ -1,8 +1,14 @@
-import { useState, JSX } from 'react'
+import { useState, type JSX } from 'react'
 import type { Challenge, MemberChallenge, CheckIn } from '~/utils/types'
 import FormCheckIn from './formCheckin'
 import { hasStarted, isExpired } from '~/utils/helpers/challenge'
-import { Dialog, DialogContent, DialogTitle, DialogHeader, DialogDescription } from '~/components/ui/dialog'
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogHeader,
+  DialogDescription
+} from '~/components/ui/dialog'
 import * as VisuallyHidden from '@radix-ui/react-visually-hidden'
 interface ChallengeMemberCheckinProps {
   challenge: Challenge
@@ -13,7 +19,15 @@ interface ChallengeMemberCheckinProps {
   className?: string
   disabled?: boolean
 }
-export function CheckInButton ({ challenge, membership, afterCheckIn, size, label = 'Check In', className, disabled }: ChallengeMemberCheckinProps): JSX.Element {
+export function CheckInButton({
+  challenge,
+  membership,
+  afterCheckIn,
+  size,
+  label = 'Check In',
+  className,
+  disabled
+}: ChallengeMemberCheckinProps): JSX.Element {
   if (!challenge?.id) {
     throw new Error('Challenge object with id is required')
   }
@@ -28,21 +42,40 @@ export function CheckInButton ({ challenge, membership, afterCheckIn, size, labe
       afterCheckIn(checkIn)
     }
   }
-  const minWidth = size === 'xs' ? 'min-w-20' : size === 'sm' ? 'min-w-32' : size === 'md' ? 'min-w-32' : 'min-w-40'
+  const minWidth =
+    size === 'xs'
+      ? 'min-w-20'
+      : size === 'sm'
+        ? 'min-w-32'
+        : size === 'md'
+          ? 'min-w-32'
+          : 'min-w-40'
   return (
     <>
       <div>
         <button
-            onClick={() => { setShowForm(true) } }
-            className={className ?? `w-fit cursor-pointer ${minWidth} bg-red hover:bg-green-500 text-white ${size === 'xs' ? 'text-xs p-1' : 'p-2'} rounded-full justify-center text-sm disabled:bg-gray-400 ${expired ? 'opacity-50 cursor-not-allowed px-2' : ''}`}
-            disabled={expired || !started || isDraft || disabled}
-          >
-            {expired ? 'Challenge Ended' : started ? label : 'Not Started'}
+          onClick={() => {
+            setShowForm(true)
+          }}
+          className={
+            className ??
+            `w-fit cursor-pointer ${minWidth} bg-red hover:bg-green-500 text-white ${size === 'xs' ? 'text-xs p-1' : 'p-2'} rounded-full justify-center text-sm disabled:bg-gray-400 ${expired ? 'opacity-50 cursor-not-allowed px-2' : ''}`
+          }
+          disabled={expired || !started || isDraft || disabled}
+        >
+          {expired ? 'Challenge Ended' : started ? label : 'Not Started'}
         </button>
       </div>
-      
-       <DialogCheckIn challengeId={challenge.id} open={showForm} cohortId={cohortId} onCancel={() => { setShowForm(false) }} afterCheckIn={handleAfterCheckIn} isOpen={showForm} />
-      
+
+      <DialogCheckIn
+        challengeId={challenge.id}
+        cohortId={cohortId}
+        onCancel={() => {
+          setShowForm(false)
+        }}
+        afterCheckIn={handleAfterCheckIn}
+        isOpen={showForm}
+      />
     </>
   )
 }
@@ -54,13 +87,19 @@ interface CheckinProps {
   onCancel: () => void
   afterCheckIn: (checkIn: CheckIn) => void
 }
-function DialogCheckIn ({ challengeId, onCancel, afterCheckIn, isOpen, cohortId }: CheckinProps): JSX.Element {
+function DialogCheckIn({
+  challengeId,
+  onCancel,
+  afterCheckIn,
+  isOpen,
+  cohortId
+}: CheckinProps): JSX.Element {
   const [open, setOpen] = useState<boolean>(isOpen)
-  const handleOpen = (event:any): void => {
+  const handleOpen = (event: any): void => {
     onCancel()
   }
   return (
-    <Dialog open={isOpen} onOpenChange={handleOpen} onClose >
+    <Dialog open={isOpen} onOpenChange={handleOpen}>
       <DialogContent className="sm:max-w-md bg-white [&>button:last-child]:cursor-pointer">
         <DialogHeader>
           <DialogTitle>Check In</DialogTitle>
@@ -70,9 +109,13 @@ function DialogCheckIn ({ challengeId, onCancel, afterCheckIn, isOpen, cohortId 
             </DialogDescription>
           </VisuallyHidden.Root>
         </DialogHeader>
-        <FormCheckIn challengeId={challengeId} cohortId={cohortId} onCancel={onCancel} afterCheckIn={afterCheckIn} />
+        <FormCheckIn
+          challengeId={challengeId}
+          cohortId={cohortId}
+          onCancel={onCancel}
+          afterCheckIn={afterCheckIn}
+        />
       </DialogContent>
     </Dialog>
-    
   )
 }

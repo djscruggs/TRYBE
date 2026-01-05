@@ -1,11 +1,16 @@
 import { Button } from '~/components/ui/button'
-import { Checkbox } from '~/components/ui/checkbox';
-import React, { useMemo, useState, useRef, useContext, JSX } from 'react'
-import { Form, useNavigate } from 'react-router';
+import { Checkbox } from '~/components/ui/checkbox'
+import { RadioGroup, RadioGroupItem } from '~/components/ui/radio-group'
+import React, { useMemo, useState, useRef, useContext, type JSX } from 'react'
+import { Form, useNavigate } from 'react-router'
 import axios from 'axios'
 import { FormField } from './formField'
 import { handleFileUpload } from '~/utils/helpers'
-import { type PostSummary, type ChallengeSummary, type Challenge } from '~/utils/types'
+import {
+  type PostSummary,
+  type ChallengeSummary,
+  type Challenge
+} from '~/utils/types'
 import { MdOutlineAddPhotoAlternate } from 'react-icons/md'
 import { TiDeleteOutline } from 'react-icons/ti'
 import VideoRecorder from './videoRecorder'
@@ -37,41 +42,58 @@ interface Errors {
   video?: string
 }
 
-export default function FormPost (props: FormPostProps): JSX.Element {
+export default function FormPost(props: FormPostProps): JSX.Element {
   const { currentUser } = useContext(CurrentUserContext)
-  const { afterSave, onCancel, post, publishAt, title, notifyMembers, dayNumber } = props
+  const {
+    afterSave,
+    onCancel,
+    post,
+    publishAt,
+    title,
+    notifyMembers,
+    dayNumber
+  } = props
   const challenge = props.challenge ?? post?.challenge
   const locale = currentUser?.locale ?? 'en-US'
   const [showVideoRecorder, setShowVideoRecorder] = useState(false)
   const [errors, setErrors] = useState<Errors>({})
   const [saving, setSaving] = useState(false)
   const [image, setImage] = useState<File | null | 'delete'>(null)
-  const [imageUrl, setImageUrl] = useState<string | null>(post?.imageMeta?.secure_url ?? null)
+  const [imageUrl, setImageUrl] = useState<string | null>(
+    post?.imageMeta?.secure_url ?? null
+  )
   const [video, setVideo] = useState<File | null | 'delete'>(null)
-  const [videoUrl, setVideoUrl] = useState<string | null>(post?.videoMeta?.secure_url ?? null)
+  const [videoUrl, setVideoUrl] = useState<string | null>(
+    post?.videoMeta?.secure_url ?? null
+  )
   const navigate = useNavigate()
-  const showPublishAt = (challenge?.type === 'SCHEDULED' || !challenge)
+  const showPublishAt = challenge?.type === 'SCHEDULED' || !challenge
   const showScheduleOptions = !challenge
   const imageRef = useRef<HTMLInputElement>(null)
   const [videoUploadOnly, setVideoUploadOnly] = useState(false)
-  const [showDatePicker, setShowDatePicker] = useState(Boolean(post?.publishAt) || Boolean(publishAt))
-  const [formData, setFormData] = useState(post ?? {
-    published: true,
-    publishAt: publishAt ? new Date(publishAt) : null,
-    public: true,
-    title: title ?? '',
-    body: '',
-    userId: currentUser?.id,
-    challengeId: challenge ? challenge.id : null,
-    embed: '',
-    video: '',
-    image: '',
-    notifyMembers,
-    notificationSentOn: null,
-    publishOnDayNumber: challenge?.type === 'SELF_LED' ? dayNumber : null
-  })
+  const [showDatePicker, setShowDatePicker] = useState(
+    Boolean(post?.publishAt) || Boolean(publishAt)
+  )
+  const [formData, setFormData] = useState(
+    post ?? {
+      published: true,
+      publishAt: publishAt ? new Date(publishAt) : null,
+      public: true,
+      title: title ?? '',
+      body: '',
+      userId: currentUser?.id,
+      challengeId: challenge ? challenge.id : null,
+      embed: '',
+      video: '',
+      image: '',
+      notifyMembers,
+      notificationSentOn: null,
+      publishOnDayNumber: challenge?.type === 'SELF_LED' ? dayNumber : null
+    }
+  )
   const [showPublishOnDayNumber] = useState(challenge?.type === 'SELF_LED')
-  const postDateTimeFormat = locale === 'en-US' ? 'M-dd-yyyy @ h:mm a' : 'dd-M-yyyy @ HH:MM'
+  const postDateTimeFormat =
+    locale === 'en-US' ? 'M-dd-yyyy @ h:mm a' : 'dd-M-yyyy @ HH:MM'
   const challengeDateFormat = locale === 'en-US' ? 'MMM d, yyyy' : 'd MMM, yyyy'
   // this triggers the browser's upload file dialog, not a modal
   const imageDialog = (): void => {
@@ -81,21 +103,21 @@ export default function FormPost (props: FormPostProps): JSX.Element {
   }
   const handleChange = (event: any): void => {
     const { name, value } = event.target
-    setFormData(prevFormData => ({
+    setFormData((prevFormData) => ({
       ...prevFormData,
       [name]: value
     }))
   }
   const handlePublishOnDayNumber = (event: any): void => {
     const { value } = event.target
-    setFormData(prevFormData => ({
+    setFormData((prevFormData) => ({
       ...prevFormData,
       publishOnDayNumber: value
     }))
   }
   const handleNotifyCheck = (event: any): void => {
     const { checked } = event.target
-    setFormData(prevFormData => ({
+    setFormData((prevFormData) => ({
       ...prevFormData,
       notifyMembers: checked
     }))
@@ -120,13 +142,13 @@ export default function FormPost (props: FormPostProps): JSX.Element {
     setShowVideoRecorder(false)
   }
   const handlePublish = (event: any): void => {
-    setFormData(prevFormData => ({
+    setFormData((prevFormData) => ({
       ...prevFormData,
       published: true
     }))
   }
   const handleDraft = (event: any): void => {
-    setFormData(prevFormData => ({
+    setFormData((prevFormData) => ({
       ...prevFormData,
       published: false
     }))
@@ -153,7 +175,9 @@ export default function FormPost (props: FormPostProps): JSX.Element {
     setVideo('delete')
     setVideoUrl(null)
   }
-  async function handleSubmit (event: React.FormEvent<HTMLFormElement>): Promise<void> {
+  async function handleSubmit(
+    event: React.FormEvent<HTMLFormElement>
+  ): Promise<void> {
     event.preventDefault()
     if (!validate()) {
       return
@@ -189,26 +213,28 @@ export default function FormPost (props: FormPostProps): JSX.Element {
 
   const handlePublishAt = (event: any): void => {
     if (event?.target?.value === 'immediately') {
-      setFormData(prevFormData => ({
+      setFormData((prevFormData) => ({
         ...prevFormData,
         publishAt: null
       }))
       setShowDatePicker(false)
     } else {
       setShowDatePicker(true)
-      setFormData(prevFormData => ({
+      setFormData((prevFormData) => ({
         ...prevFormData
       }))
     }
   }
 
   const setPublishAt = (value: any): void => {
-    setFormData(prevFormData => ({
+    setFormData((prevFormData) => ({
       ...prevFormData,
       publishAt: value
     }))
   }
-  const handleCancel = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>): void => {
+  const handleCancel = (
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ): void => {
     event.preventDefault()
     if (onCancel) {
       onCancel()
@@ -216,78 +242,113 @@ export default function FormPost (props: FormPostProps): JSX.Element {
       navigate(-1)
     }
   }
-  const renderVideo = useMemo(() => (
-    <VideoPreview video={videoUrl ?? video} onClear={deleteVideo} />
-  ), [video, videoUrl])
+  const renderVideo = useMemo(
+    () => <VideoPreview video={videoUrl ?? video} onClear={deleteVideo} />,
+    [video, videoUrl]
+  )
   return (
+    <div className="w-full">
+      {challenge && challenge.type === 'SELF_LED' && (
+        <div className="my-4 text-lg">
+          Content for Day {formData.publishOnDayNumber}
+        </div>
+      )}
 
-    <div className='w-full'>
-      {challenge && challenge.type === 'SELF_LED' &&
-          <div className='my-4 text-lg'>
-            Content for Day {formData.publishOnDayNumber}
-          </div>
-        }
-
-      <Form method="post" onSubmit={handleSubmit} className='pb-4'>
-      <label htmlFor='title' className='text-md'>Post Title</label>
-      <FormField
-        name='title'
-        type='text'
-        placeholder='Enter a Title'
-        autoFocus={true}
-        required={true}
-        value={formData.title}
-        onChange={handleChange}
-      />
-      <FormField
-          name='body'
+      <Form method="post" onSubmit={handleSubmit} className="pb-4">
+        <label htmlFor="title" className="text-md">
+          Post Title
+        </label>
+        <FormField
+          name="title"
+          type="text"
+          placeholder="Enter a Title"
+          autoFocus={true}
+          required={true}
+          value={formData.title}
+          onChange={handleChange}
+        />
+        <FormField
+          name="body"
           autoResize={true}
-          type='textarea'
-          placeholder='Enter the text of your post'
+          type="textarea"
+          placeholder="Enter the text of your post"
           rows={10}
           required={true}
           value={formData.body}
           onChange={handleChange}
           error={errors.body}
-          />
-        <input type="file" name="image" hidden ref={imageRef} onChange={handleImage} accept="image/*"/>
+        />
+        <input
+          type="file"
+          name="image"
+          hidden
+          ref={imageRef}
+          onChange={handleImage}
+          accept="image/*"
+        />
 
-        <VideoChooser recorderShowing={showVideoRecorder} showRecorder={videoChooserCallbackShow} hideRecorder={videoChooserCallbackHide} />
-        <MdOutlineAddPhotoAlternate onClick={imageDialog} className='text-2xl cursor-pointer float-right' />
+        <VideoChooser
+          recorderShowing={showVideoRecorder}
+          showRecorder={videoChooserCallbackShow}
+          hideRecorder={videoChooserCallbackHide}
+        />
+        <MdOutlineAddPhotoAlternate
+          onClick={imageDialog}
+          className="text-2xl cursor-pointer float-right"
+        />
 
-        {imageUrl &&
+        {imageUrl && (
           <div className="relative w-fit">
-            <img src={imageUrl} alt="image thumbnail" className='h-24 mb-2' />
-            <TiDeleteOutline onClick={deleteImage} className='text-lg bg-white rounded-full text-red cursor-pointer absolute top-1 right-1' />
+            <img src={imageUrl} alt="image thumbnail" className="h-24 mb-2" />
+            <TiDeleteOutline
+              onClick={deleteImage}
+              className="text-lg bg-white rounded-full text-red cursor-pointer absolute top-1 right-1"
+            />
           </div>
-        }
-        {(video ?? videoUrl) && !showVideoRecorder &&
-          renderVideo
-        }
-        {showVideoRecorder &&
-          <div className='w-full h-full my-6'>
-            <VideoRecorder uploadOnly={videoUploadOnly} onStart={() => { setSaving(true) }} onStop={() => { setSaving(false) }} onSave={setVideo} onFinish={() => { setShowVideoRecorder(false) }} />
+        )}
+        {(video ?? videoUrl) && !showVideoRecorder && renderVideo}
+        {showVideoRecorder && (
+          <div className="w-full h-full my-6">
+            <VideoRecorder
+              uploadOnly={videoUploadOnly}
+              onStart={() => {
+                setSaving(true)
+              }}
+              onStop={() => {
+                setSaving(false)
+              }}
+              onSave={setVideo}
+              onFinish={() => {
+                setShowVideoRecorder(false)
+              }}
+            />
           </div>
-        }
-        {challenge && ((challenge?.type === 'SCHEDULED' && formData.publishAt) ?? (challenge?.type === 'SELF_LED' && formData.publishOnDayNumber)) &&
-        <div className='my-4 mt-8 rounded-md p-2 border border-red'>
-          <label className="flex w-full  items-center p-0 text-red">
-            {challenge?.type === 'SCHEDULED'
-              ? 'Post will be sent to members on ' + format(formData.publishAt, challengeDateFormat)
-              : 'Post will be sent to members on Day ' + formData.publishOnDayNumber
-            }
-            </label>
-        </div>
-        }
-         {showPublishOnDayNumber &&
-          <div className='my-4 mt-8 rounded-md p-2 border items-center flex flex-row'>
-            <label className='mr-2'>
+        )}
+        {challenge &&
+          ((challenge?.type === 'SCHEDULED' && formData.publishAt) ??
+            (challenge?.type === 'SELF_LED' &&
+              formData.publishOnDayNumber)) && (
+            <div className="my-4 mt-8 rounded-md p-2 border border-red">
+              <label className="flex w-full  items-center p-0 text-red">
+                {challenge?.type === 'SCHEDULED'
+                  ? 'Post will be sent to members on ' +
+                    (formData.publishAt
+                      ? format(formData.publishAt, challengeDateFormat)
+                      : 'N/A')
+                  : 'Post will be sent to members on Day ' +
+                    formData.publishOnDayNumber}
+              </label>
+            </div>
+          )}
+        {showPublishOnDayNumber && (
+          <div className="my-4 mt-8 rounded-md p-2 border items-center flex flex-row">
+            <label className="mr-2">
               Day number that post will be shown to members
             </label>
-            <div className='w-[60px] '>
+            <div className="w-[60px] ">
               <FormField
-                name='publishOnDayNumber'
-                type='number'
+                name="publishOnDayNumber"
+                type="number"
                 required={true}
                 maxValue={challenge?.numDays ?? undefined}
                 minValue={1}
@@ -296,89 +357,142 @@ export default function FormPost (props: FormPostProps): JSX.Element {
               />
             </div>
           </div>
-         }
+        )}
 
-        {showScheduleOptions && showPublishAt &&
-          <div className='my-4'>
+        {showScheduleOptions && showPublishAt && (
+          <div className="my-4">
             <fieldset>
-            <legend>Publish:</legend>
-            { formData.publishAt && (
-              <div>
-                <label className="flex w-full cursor-pointer items-center p-0">Publish on {format(formData.publishAt, postDateTimeFormat)}</label>
+              <legend>Publish:</legend>
+              {formData.publishAt && (
+                <div>
+                  <label className="flex w-full cursor-pointer items-center p-0">
+                    Publish on {format(formData.publishAt, postDateTimeFormat)}
+                  </label>
+                </div>
+              )}
+              <RadioGroup
+                defaultValue={showDatePicker ? 'date' : 'immediately'}
+                onValueChange={(value) => {
+                  handlePublishAt({ target: { value } } as any)
+                }}
+                className="grid grid-cols-2 gap-2"
+              >
+                <label className="flex w-full cursor-pointer items-center p-0">
+                  <RadioGroupItem value="immediately" className="mr-2" />
+                  Immediately
+                </label>
+                <label className="flex w-full cursor-pointer items-center px-0 py-2">
+                  <RadioGroupItem value="date" className="mr-2" />
+                  On Date
+                </label>
+              </RadioGroup>
+            </fieldset>
+            {showDatePicker && (
+              <div className="w-full border border-gray-50 inline">
+                <DatePicker
+                  name="publishAt"
+                  required={true}
+                  dateFormat={postDateTimeFormat}
+                  showTimeSelect
+                  minDate={new Date()}
+                  selected={
+                    formData.publishAt ? new Date(formData.publishAt) : null
+                  }
+                  onChange={(date: Date) => {
+                    setPublishAt(date)
+                  }}
+                  className={`p-1 border rounded-md pl-2 w-full ${errors.publishAt ? 'border-red' : 'border-slate-gray-500'}`}
+                  preventOpenOnFocus={true}
+                />
               </div>
             )}
-            <label className="flex w-full cursor-pointer items-center p-0">
-              <Radio name="publishAt" value="immediately" onClick={handlePublishAt} defaultChecked={!showDatePicker} crossOrigin={undefined}/>
-              Immediately
-            </label>
-            <label className="flex w-full cursor-pointer items-center px-0 py-2">
-              <Radio name="publishAt" value="date" onClick={handlePublishAt} defaultChecked={showDatePicker} crossOrigin={undefined}/>
-              On Date
-            </label>
-            </fieldset>
-            {showDatePicker &&
-            <div className='w-full border border-gray-50 inline'>
-              <DatePicker
-                name='publishAt'
-                required={true}
-                dateFormat={postDateTimeFormat}
-                showTimeSelect
-                minDate={new Date()}
-                selected={formData.publishAt ? new Date(formData.publishAt) : null}
-                onChange={(date: Date) => { setPublishAt(date) }}
-                className={`p-1 border rounded-md pl-2 w-full ${errors.publishAt ? 'border-red' : 'border-slate-gray-500'}`}
-                preventOpenOnFocus={true}
-              />
-            </div>
-            }
-            {formData.challengeId &&
-              <div className='my-4'>
-                {!formData.notificationSentOn
-                  ? (
+            {formData.challengeId && (
+              <div className="my-4">
+                {!formData.notificationSentOn ? (
                   <>
-                  <Checkbox defaultChecked={formData.notifyMembers ?? false} color="green" onClick={handleNotifyCheck} crossOrigin={undefined} label={'Email this post to challenge members.'}/>
-                  {formData.notifyMembers && currentUser &&
-                  <p className='ml-12 text-xs'>Replies will go to {currentUser.email}</p>
-                  }
-                  </>
-                    )
-                  : (
-                    <Checkbox defaultChecked={true} disabled={true} color="green" onClick={handleNotifyCheck} crossOrigin={undefined} label={`Emailed to members on ${format(formData.notificationSentOn, postDateTimeFormat)}`}/>
+                    <label className="flex items-center gap-2">
+                      <Checkbox
+                        defaultChecked={formData.notifyMembers ?? false}
+                        onClick={handleNotifyCheck}
+                      />
+                      <span>Email this post to challenge members.</span>
+                    </label>
+                    {formData.notifyMembers && currentUser && (
+                      <p className="ml-12 text-xs">
+                        Replies will go to {currentUser.email}
+                      </p>
                     )}
+                  </>
+                ) : (
+                  <label className="flex items-center gap-2">
+                    <Checkbox
+                      defaultChecked={true}
+                      disabled={true}
+                      onClick={handleNotifyCheck}
+                    />
+                    <span>
+                      {formData.notificationSentOn
+                        ? `Emailed to members on ${format(formData.notificationSentOn, postDateTimeFormat)}`
+                        : ''}
+                    </span>
+                  </label>
+                )}
               </div>
-
-            }
+            )}
           </div>
-        }
+        )}
 
-        {challenge &&
-          <Button type="submit" onClick={handlePublish} className="bg-red hover:bg-green-500 disabled:bg-gray-400" disabled={saving}>
-          {saving
-            ? 'Saving...'
-            : challenge?.type === 'SELF_LED' ? 'Save' : 'Schedule'
-          }
+        {challenge && (
+          <Button
+            type="submit"
+            onClick={handlePublish}
+            className="bg-red hover:bg-green-500 disabled:bg-gray-400"
+            disabled={saving}
+          >
+            {saving
+              ? 'Saving...'
+              : challenge?.type === 'SELF_LED'
+                ? 'Save'
+                : 'Schedule'}
           </Button>
-        }
-        {!challenge &&
+        )}
+        {!challenge && (
           <>
-            <Button type="submit" onClick={handlePublish} className="bg-red hover:bg-green-500 disabled:bg-gray-400" disabled={saving}>
+            <Button
+              type="submit"
+              onClick={handlePublish}
+              className="bg-red hover:bg-green-500 disabled:bg-gray-400"
+              disabled={saving}
+            >
               {saving
                 ? 'Publishing...'
-                : challenge?.type === 'SELF_LED' ? 'Save' : formData.publishAt ? 'Schedule' : 'Publish Now'
-              }
+                : challenge?.type === 'SELF_LED'
+                  ? 'Save'
+                  : formData.publishAt
+                    ? 'Schedule'
+                    : 'Publish Now'}
             </Button>
-            <Button type="submit" onClick={handleDraft} className="bg-grey text-white ml-2 hover:bg-green-500 disabled:bg-gray-400" disabled={saving}>
+            <Button
+              type="submit"
+              onClick={handleDraft}
+              className="bg-grey text-white ml-2 hover:bg-green-500 disabled:bg-gray-400"
+              disabled={saving}
+            >
               {saving
                 ? 'Saving'
-                : post?.id && post?.published ? 'Unpublish' : 'Save Draft'
-              }
+                : post?.id && post?.published
+                  ? 'Unpublish'
+                  : 'Save Draft'}
             </Button>
           </>
-        }
-        <button onClick={handleCancel} className="mt-2 text-sm underline ml-4 hover:text-red">cancel</button>
-
+        )}
+        <button
+          onClick={handleCancel}
+          className="mt-2 text-sm underline ml-4 hover:text-red"
+        >
+          cancel
+        </button>
       </Form>
-
     </div>
   )
 }

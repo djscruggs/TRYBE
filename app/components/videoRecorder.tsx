@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, JSX } from 'react'
+import { useState, useRef, useEffect, type JSX } from 'react'
 import { handleFileUpload, isMobileDevice } from '~/utils/helpers'
 import { TiDeleteOutline } from 'react-icons/ti'
 
@@ -19,7 +19,13 @@ declare global {
     audioStream: MediaStream | null
   }
 }
-const VideoRecorder = ({ onStart, onStop, onSave, onFinish, uploadOnly }: VideoRecorderProps): JSX.Element => {
+const VideoRecorder = ({
+  onStart,
+  onStop,
+  onSave,
+  onFinish,
+  uploadOnly
+}: VideoRecorderProps): JSX.Element => {
   const [permission, setPermission] = useState(true)
   const videoUpload = useRef<HTMLInputElement>(null)
   const liveVideoFeed = useRef<HTMLVideoElement>(null)
@@ -33,12 +39,14 @@ const VideoRecorder = ({ onStart, onStop, onSave, onFinish, uploadOnly }: VideoR
     if (isMobileDevice() || uploadOnly) {
       return
     }
-    getCameraPermission().then(() => {
-      setPermission(true)
-    }).catch((err) => {
-      console.error(err.message)
-      setPermission(false)
-    })
+    getCameraPermission()
+      .then(() => {
+        setPermission(true)
+      })
+      .catch((err) => {
+        console.error(err.message)
+        setPermission(false)
+      })
   }, [])
 
   // need this to handle setting video file during upload on mobile device
@@ -55,12 +63,10 @@ const VideoRecorder = ({ onStart, onStop, onSave, onFinish, uploadOnly }: VideoR
         const audioConstraints = { audio: true, video: false }
 
         if (!window.audioStream || !window.videoStream) {
-          window.audioStream = await navigator.mediaDevices.getUserMedia(
-            audioConstraints
-          )
-          window.videoStream = await navigator.mediaDevices.getUserMedia(
-            videoConstraints
-          )
+          window.audioStream =
+            await navigator.mediaDevices.getUserMedia(audioConstraints)
+          window.videoStream =
+            await navigator.mediaDevices.getUserMedia(videoConstraints)
           const combinedStream = new MediaStream([
             ...window.videoStream.getVideoTracks(),
             ...window.audioStream.getAudioTracks()
@@ -98,7 +104,9 @@ const VideoRecorder = ({ onStart, onStop, onSave, onFinish, uploadOnly }: VideoR
     await getCameraPermission()
 
     if (!mediaRecorder.current) {
-      const media = new MediaRecorder(stream as unknown as MediaStream, { mimeType })
+      const media = new MediaRecorder(stream as unknown as MediaStream, {
+        mimeType
+      })
       mediaRecorder.current = media
     }
 
@@ -132,8 +140,14 @@ const VideoRecorder = ({ onStart, onStop, onSave, onFinish, uploadOnly }: VideoR
     }
     mediaRecorder.current?.stop()
   }
-  const handleVideoUpload = (event: React.ChangeEvent<HTMLInputElement>): void => {
-    handleFileUpload({ event, setFile: setVideoFile, setFileURL: setLocalVideoUrl })
+  const handleVideoUpload = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ): void => {
+    handleFileUpload({
+      event,
+      setFile: setVideoFile,
+      setFileURL: setLocalVideoUrl
+    })
   }
   const saveVideo = (): void => {
     onSave(videoFile as unknown as File)
@@ -147,7 +161,7 @@ const VideoRecorder = ({ onStart, onStop, onSave, onFinish, uploadOnly }: VideoR
       liveVideoFeed.current.srcObject = null
     }
     if (tracks) {
-      tracks.forEach(track => {
+      tracks.forEach((track) => {
         track.stop()
         track.enabled = false
       })
@@ -163,101 +177,122 @@ const VideoRecorder = ({ onStart, onStop, onSave, onFinish, uploadOnly }: VideoR
 
   return (
     <>
-    {isMobileDevice() || uploadOnly
-      ? (
+      {isMobileDevice() || uploadOnly ? (
         <>
-          {localVideoUrl
-            ? (
-                  <div className="relative mt-8 mb-2">
-                    <video className="recorded" src={localVideoUrl} controls></video>
-                    <TiDeleteOutline onClick={reset} className='text-lg bg-white rounded-full text-red cursor-pointer absolute top-3 right-2' />
-                  </div>
-              )
-            : null
-          }
+          {localVideoUrl ? (
+            <div className="relative mt-8 mb-2">
+              <video className="recorded" src={localVideoUrl} controls></video>
+              <TiDeleteOutline
+                onClick={reset}
+                className="text-lg bg-white rounded-full text-red cursor-pointer absolute top-3 right-2"
+              />
+            </div>
+          ) : null}
           <div className="flex flex-col items-center justify-end">
             <p className="text-2xl text-blue-gray-500 text-center">
               {/* On a mobile device it always gives the option to record or upload, so prompt text reflects that */}
-              {localVideoUrl ? 'Choose a different video' : isMobileDevice() ? 'Record or upload a video' : 'Upload a video'}
+              {localVideoUrl
+                ? 'Choose a different video'
+                : isMobileDevice()
+                  ? 'Record or upload a video'
+                  : 'Upload a video'}
             </p>
             <div className={`${localVideoUrl ? 'mt-2' : 'mt-10'} ml-36`}>
-              <FileInput passedRef={videoUpload} onChange={handleVideoUpload} immediateTrigger={uploadOnly} />
+              <FileInput
+                passedRef={videoUpload}
+                onChange={handleVideoUpload}
+                immediateTrigger={uploadOnly}
+              />
             </div>
           </div>
-
         </>
-        )
-      : (
-      <>
-        {!permission
-          ? (
-                  <p>Allow access to your camera to record a video</p>
-            )
-          : null}
-      <div className="block min-h-[310px] relative justify-center">
-
-            {!localVideoUrl &&
-              <div className='h-full min-h-[310px]'>
+      ) : (
+        <>
+          {!permission ? (
+            <p>Allow access to your camera to record a video</p>
+          ) : null}
+          <div className="block min-h-[310px] relative justify-center">
+            {!localVideoUrl && (
+              <div className="h-full min-h-[310px]">
                 <video ref={liveVideoFeed} autoPlay></video>
               </div>
-            }
-            {localVideoUrl
-              ? (
-
-                  <video className="h-full" src={localVideoUrl} controls></video>
-
-                )
-              : null}
-
-      </div>
-      <div className='w-full flex justify-center mt-4'>
-        {recordingStatus === 'inactive' &&
-          <>
-          <button className='bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded' onClick={startRecording} type="button">
-              Start Recording
-          </button>
-          <button className='bg-red hover:bg-green-700 text-white font-bold py-2 px-4 rounded ml-2' onClick={cleanUp} type="button">
-            Never Mind
-          </button>
-
-          </>
-        }
-        {recordingStatus === 'recording' &&
-            <button className='bg-red hover:bg-green-700 text-white font-bold py-2 px-4 rounded' onClick={stopRecording} type="button">
-              Stop Recording
-            </button>
-        }
-        {recordingStatus === 'recorded' &&
-          <>
-          <button className='bg-red text-white font-bold py-2 px-4 rounded' onClick={reset} type="button">
-            Discard
-          </button>
-          <button className='bg-green-700 text-white font-bold py-2 px-4 rounded ml-2' onClick={saveVideo} type="button">
-            Looks Good 👍
-          </button>
-          </>
-        }
-      </div>
-      </>
-        )}
+            )}
+            {localVideoUrl ? (
+              <video className="h-full" src={localVideoUrl} controls></video>
+            ) : null}
+          </div>
+          <div className="w-full flex justify-center mt-4">
+            {recordingStatus === 'inactive' && (
+              <>
+                <button
+                  className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+                  onClick={startRecording}
+                  type="button"
+                >
+                  Start Recording
+                </button>
+                <button
+                  className="bg-red hover:bg-green-700 text-white font-bold py-2 px-4 rounded ml-2"
+                  onClick={cleanUp}
+                  type="button"
+                >
+                  Never Mind
+                </button>
+              </>
+            )}
+            {recordingStatus === 'recording' && (
+              <button
+                className="bg-red hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+                onClick={stopRecording}
+                type="button"
+              >
+                Stop Recording
+              </button>
+            )}
+            {recordingStatus === 'recorded' && (
+              <>
+                <button
+                  className="bg-red text-white font-bold py-2 px-4 rounded"
+                  onClick={reset}
+                  type="button"
+                >
+                  Discard
+                </button>
+                <button
+                  className="bg-green-700 text-white font-bold py-2 px-4 rounded ml-2"
+                  onClick={saveVideo}
+                  type="button"
+                >
+                  Looks Good 👍
+                </button>
+              </>
+            )}
+          </div>
+        </>
+      )}
     </>
   )
 }
 
 interface FileInputProps {
-  passedRef: HTMLInputElement
+  passedRef: React.RefObject<HTMLInputElement | null>
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void
   immediateTrigger?: boolean
 }
-const FileInput = ({ passedRef, onChange, immediateTrigger }: FileInputProps): JSX.Element => {
+const FileInput = ({
+  passedRef,
+  onChange,
+  immediateTrigger
+}: FileInputProps): JSX.Element => {
   const textColor = 'white'
   useEffect(() => {
-    if (immediateTrigger) {
+    if (immediateTrigger && passedRef.current) {
       passedRef.current.click()
     }
   }, [])
   return (
-    <input type="file"
+    <input
+      type="file"
       name="video"
       ref={passedRef}
       onChange={onChange}

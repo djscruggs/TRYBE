@@ -7,12 +7,18 @@ export async function action(args: ActionFunctionArgs): Promise<Response> {
   await requireCurrentUser(args)
   try {
     await deleteCheckIn(Number(params?.id))
-    return { message: `Deleted checkin ${params?.id}` }
+    return Response.json({ message: `Deleted checkin ${params?.id}` })
   } catch (error) {
-    return { message: `Error deleting checkin ${params?.id}` }
+    return Response.json(
+      { message: `Error deleting checkin ${params?.id}` },
+      { status: 500 }
+    )
   }
 }
 
 export const loader: LoaderFunction = async (args) => {
-  return { message: 'This route does not accept GET requests' }
+  return Response.json(
+    { message: 'This route does not accept GET requests' },
+    { status: 405 }
+  )
 }

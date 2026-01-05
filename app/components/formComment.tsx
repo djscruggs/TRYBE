@@ -1,11 +1,11 @@
-import React, { useState, useContext, useRef, useMemo, JSX } from 'react'
-import { Form } from 'react-router';
+import React, { useState, useContext, useRef, useMemo, type JSX } from 'react'
+import { Form } from 'react-router'
 import axios from 'axios'
 import { FormField } from './formField'
 import type { Comment } from '~/utils/types'
 import { toast } from 'react-hot-toast'
 import { Button } from '~/components/ui/button'
-import { Avatar, AvatarImage, AvatarFallback } from '~/components/ui/avatar';
+import { Avatar, AvatarImage, AvatarFallback } from '~/components/ui/avatar'
 import { CurrentUserContext } from '~/contexts/CurrentUserContext'
 import VideoRecorder from './videoRecorder'
 import VideoChooser from './videoChooser'
@@ -27,7 +27,7 @@ interface FormCommentProps {
   prompt?: string
 }
 
-export default function FormComment (props: FormCommentProps): JSX.Element {
+export default function FormComment(props: FormCommentProps): JSX.Element {
   let { comment, challengeId, postId, replyToId, threadId, checkInId } = props
   if (comment) {
     challengeId = comment.challengeId
@@ -42,7 +42,9 @@ export default function FormComment (props: FormCommentProps): JSX.Element {
   const [recording, setRecording] = useState(false)
   const [image, setImage] = useState<File | string | null>(null)
   const [video, setVideo] = useState<File | string | null>(null)
-  const [videoUrl, setVideoUrl] = useState<string | null>(comment?.videoMeta?.secure_url ? comment?.videoMeta?.secure_url : null)
+  const [videoUrl, setVideoUrl] = useState<string | null>(
+    comment?.videoMeta?.secure_url ? comment?.videoMeta?.secure_url : null
+  )
   const imageRef = useRef<HTMLInputElement>(null)
   const [videoUploadOnly, setVideoUploadOnly] = useState(false)
   const [showVideoRecorder, setShowVideoRecorder] = useState(false)
@@ -92,10 +94,13 @@ export default function FormComment (props: FormCommentProps): JSX.Element {
     setVideo('delete')
     setVideoUrl(null)
   }
-  const renderVideo = useMemo(() => (
-    <VideoPreview video={videoUrl ?? video} onClear={deleteVideo} />
-  ), [video, videoUrl])
-  async function handleSubmit (ev: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement>): Promise<void> {
+  const renderVideo = useMemo(
+    () => <VideoPreview video={videoUrl ?? video} onClear={deleteVideo} />,
+    [video, videoUrl]
+  )
+  async function handleSubmit(
+    ev: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement>
+  ): Promise<void> {
     ev.preventDefault()
     if (body.length < 10) {
       setError('Comment must be at least 10 characters long')
@@ -139,7 +144,10 @@ export default function FormComment (props: FormCommentProps): JSX.Element {
       toast.success('Comment saved')
     } catch (error: any) {
       console.error(error)
-      const errorMessage = typeof error?.response.data.message === 'string' ? error.message : 'An unexpected error occurred'
+      const errorMessage =
+        typeof error?.response.data.message === 'string'
+          ? error.message
+          : 'An unexpected error occurred'
       toast.error(errorMessage as string)
     }
   }
@@ -150,52 +158,100 @@ export default function FormComment (props: FormCommentProps): JSX.Element {
     }
   }
   return (
-    <div className='w-full flex'>
-      <div className='w-md pt-1'>
-      {currentUser?.profile &&
-        <Avatar src={currentUser.profile.profileImage} className='mr-2' size='sm'/>
-      }
-      </div>
-      <div className='w-full ml-4'>
-      <Form method="post" onSubmit={handleSubmit}>
-      <FormField
-          name='comment'
-          placeholder={props.prompt ?? 'Enter comment'}
-          type='textarea'
-          rows={3}
-          required={true}
-          autoFocus={true}
-          value={body}
-          onChange={(ev) => {
-            setBody(String(ev.target.value))
-            return ev.target.value
-          }}
-          error={error}
-          />
-        <input type="file" name="image" hidden ref={imageRef} onChange={handleImage} accept="image/*"/>
-        <VideoChooser recorderShowing={showVideoRecorder} showRecorder={videoChooserCallbackShow} hideRecorder={videoChooserCallbackHide} />
-        <MdOutlineAddPhotoAlternate onClick={imageDialog} className='text-2xl cursor-pointer float-right' />
-
-        {correctImageUrl() &&
-          <div className="relative w-fit">
-            <img src={correctImageUrl()} alt="image thumbnail" className='h-24 mb-2' />
-            <TiDeleteOutline onClick={deleteCorrectImage} className='text-lg bg-white rounded-full text-red cursor-pointer absolute top-1 right-1' />
-          </div>
-        }
-        {(video ?? videoUrl) && !showVideoRecorder &&
-          renderVideo
-        }
-        {showVideoRecorder &&
-          <div className='w-full h-full my-6'>
-            <VideoRecorder uploadOnly={videoUploadOnly} onStart={() => { setRecording(true) }} onStop={() => { setRecording(false) }} onSave={setVideo} onFinish={() => { setShowVideoRecorder(false) }} />
-          </div>
-        }
-        <Button type="submit" onClick={handleSubmit} placeholder='Save' className="bg-red hover:bg-green-500" disabled={recording}>Save</Button>
-        {props.onCancel && (
-          <button onClick={handleCancel} className="mt-2 text-sm underline ml-4 hover:text-red">cancel</button>
+    <div className="w-full flex">
+      <div className="w-md pt-1">
+        {currentUser?.profile && (
+          <Avatar className="mr-2 size-8">
+            <AvatarImage src={currentUser.profile.profileImage || undefined} />
+            <AvatarFallback>
+              {currentUser.profile.firstName?.[0]}
+              {currentUser.profile.lastName?.[0]}
+            </AvatarFallback>
+          </Avatar>
         )}
+      </div>
+      <div className="w-full ml-4">
+        <Form method="post" onSubmit={handleSubmit}>
+          <FormField
+            name="comment"
+            placeholder={props.prompt ?? 'Enter comment'}
+            type="textarea"
+            rows={3}
+            required={true}
+            autoFocus={true}
+            value={body}
+            onChange={(ev) => {
+              setBody(String(ev.target.value))
+              return ev.target.value
+            }}
+            error={error}
+          />
+          <input
+            type="file"
+            name="image"
+            hidden
+            ref={imageRef}
+            onChange={handleImage}
+            accept="image/*"
+          />
+          <VideoChooser
+            recorderShowing={showVideoRecorder}
+            showRecorder={videoChooserCallbackShow}
+            hideRecorder={videoChooserCallbackHide}
+          />
+          <MdOutlineAddPhotoAlternate
+            onClick={imageDialog}
+            className="text-2xl cursor-pointer float-right"
+          />
 
-      </Form>
+          {correctImageUrl() && (
+            <div className="relative w-fit">
+              <img
+                src={correctImageUrl()}
+                alt="image thumbnail"
+                className="h-24 mb-2"
+              />
+              <TiDeleteOutline
+                onClick={deleteCorrectImage}
+                className="text-lg bg-white rounded-full text-red cursor-pointer absolute top-1 right-1"
+              />
+            </div>
+          )}
+          {(video ?? videoUrl) && !showVideoRecorder && renderVideo}
+          {showVideoRecorder && (
+            <div className="w-full h-full my-6">
+              <VideoRecorder
+                uploadOnly={videoUploadOnly}
+                onStart={() => {
+                  setRecording(true)
+                }}
+                onStop={() => {
+                  setRecording(false)
+                }}
+                onSave={setVideo}
+                onFinish={() => {
+                  setShowVideoRecorder(false)
+                }}
+              />
+            </div>
+          )}
+          <Button
+            type="submit"
+            onClick={handleSubmit}
+            className="bg-red hover:bg-green-500"
+            disabled={recording}
+          >
+            Save
+          </Button>
+          {props.onCancel && (
+            <button
+              onClick={handleCancel}
+              className="mt-2 text-sm underline ml-4 hover:text-red"
+            >
+              cancel
+            </button>
+          )}
+        </Form>
       </div>
     </div>
   )

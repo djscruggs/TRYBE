@@ -1,7 +1,13 @@
-import { JSX } from 'react'
-import { formatDistanceToNowStrict, format, differenceInDays, differenceInHours, isPast } from 'date-fns'
+import { type JSX } from 'react'
+import {
+  formatDistanceToNowStrict,
+  format,
+  differenceInDays,
+  differenceInHours,
+  isPast
+} from 'date-fns'
 import type { Challenge, MemberChallenge, CheckIn } from '~/utils/types'
-import { Link, useLocation } from 'react-router';
+import { Link, useLocation } from 'react-router'
 import { CheckInButton } from '~/components/checkinButton'
 
 import { hasStarted, isExpired } from '~/utils/helpers/challenge'
@@ -13,7 +19,12 @@ interface ChallengeMemberCheckinProps {
   showDetails?: boolean
   afterCheckIn?: (checkIn: CheckIn) => void
 }
-export function ChallengeMemberCheckin ({ challenge, memberChallenge, showDetails, afterCheckIn }: ChallengeMemberCheckinProps): JSX.Element {
+export function ChallengeMemberCheckin({
+  challenge,
+  memberChallenge,
+  showDetails,
+  afterCheckIn
+}: ChallengeMemberCheckinProps): JSX.Element {
   const isMember = Boolean(memberChallenge?.id)
   if (!challenge?.id) {
     throw new Error('Challenge object with id is required')
@@ -68,30 +79,38 @@ export function ChallengeMemberCheckin ({ challenge, memberChallenge, showDetail
 
       {!expired && (
         <div className="text-xs my-2">
-          <CheckInButton challenge={challenge} memberChallenge={memberChallenge} afterCheckIn={handleAfterCheckIn} />
+          <CheckInButton
+            challenge={challenge}
+            membership={memberChallenge}
+            afterCheckIn={handleAfterCheckIn}
+          />
         </div>
       )}
       {isMember && showDetails && (
         <div className="text-xs my-2">
-            <>
-              {!linkToMyCheckins &&
-                <>
-                  { membership?.lastCheckIn &&
-                    <p>Last: {formatDistanceToNowStrict(membership.lastCheckIn)} ago </p>
-                  }
-                  {!expired && membership?.nextCheckIn && <p>Next: {formatNextCheckin()}</p>}
-                </>
-              }
+          <>
+            {!linkToMyCheckins && (
+              <>
+                {membership?.lastCheckIn && (
+                  <p>
+                    Last: {formatDistanceToNowStrict(membership.lastCheckIn)}{' '}
+                    ago{' '}
+                  </p>
+                )}
+                {!expired && membership?.nextCheckIn && (
+                  <p>Next: {formatNextCheckin()}</p>
+                )}
+              </>
+            )}
 
-              {linkToMyCheckins &&
-                <div className='underline'>
-                  <Link to={`/challenges/v/${challenge.id}/checkins`}>
-                    View Progress
-                  </Link>
-                </div>
-              }
-            </>
-
+            {linkToMyCheckins && (
+              <div className="underline">
+                <Link to={`/challenges/v/${challenge.id}/checkins`}>
+                  View Progress
+                </Link>
+              </div>
+            )}
+          </>
         </div>
       )}
     </div>
