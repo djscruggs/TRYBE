@@ -1,10 +1,15 @@
 // import * as pkg from '~/utils/material-tailwind';
-import { useNavigate, useLocation, useRevalidator } from 'react-router';
-import { useState, useContext, JSX } from 'react'
+import { useNavigate, useLocation, useRevalidator } from 'react-router'
+import { useState, useContext, type JSX } from 'react'
 import { CurrentUserContext } from '~/contexts/CurrentUserContext'
 import { type Challenge, type ChallengeSummary } from '~/utils/types'
 import { Button } from '~/components/ui/button'
-import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '~/components/ui/dropdown-menu';
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem
+} from '~/components/ui/dropdown-menu'
 import DialogDelete from './dialogDelete'
 import { GiHamburgerMenu } from 'react-icons/gi'
 import axios from 'axios'
@@ -15,7 +20,7 @@ import { useMobileSize } from '~/hooks/useMobileSize'
 interface MenuChallengeProps {
   challenge: Challenge | ChallengeSummary
 }
-export default function MenuChallenge (props: MenuChallengeProps): JSX.Element {
+export default function MenuChallenge(props: MenuChallengeProps): JSX.Element {
   const { challenge } = props
   const isMobile = useMobileSize()
 
@@ -49,31 +54,63 @@ export default function MenuChallenge (props: MenuChallengeProps): JSX.Element {
   }
   return (
     <>
-    {challenge?.userId === currentUser?.id && (
-      <>
-        <DropdownMenu>
-          <DropdownMenuTrigger>
-            <Button className='bg-red p-1 text-white rounded-sm focus-visible:outline-none'>
-              <GiHamburgerMenu className='h-5 w-5'/>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align={isMobile ? 'end' : 'start'}>
-            <DropdownMenuItem className='cursor-pointer' onClick={() => { navigate(`/posts/new/challenge/${challenge.id}`) }}>
-              Post an Update
-            </DropdownMenuItem>
-            {/* <DropdownMenuItem onClick={() => { navigate(`/threads/new/challenge/${challenge.id}`) }} >
+      {challenge?.userId === currentUser?.id && (
+        <>
+          <DropdownMenu>
+            <DropdownMenuTrigger>
+              <Button className="bg-red p-1 text-white rounded-sm focus-visible:outline-none">
+                <GiHamburgerMenu className="h-5 w-5" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              className="bg-white"
+              align={isMobile ? 'end' : 'start'}
+            >
+              <DropdownMenuItem
+                className="cursor-pointer bg-white"
+                onClick={() => {
+                  navigate(`/posts/new/challenge/${challenge.id}`)
+                }}
+              >
+                Post an Update
+              </DropdownMenuItem>
+              {/* <DropdownMenuItem onClick={() => { navigate(`/threads/new/challenge/${challenge.id}`) }} >
               Start a Discussion
             </DropdownMenuItem> */}
-            <DropdownMenuItem className='cursor-pointer' onClick={() => { navigate(`/challenges/v/${challenge.id}/edit`) }}>Edit Challenge</DropdownMenuItem>
-            <DropdownMenuItem className='cursor-pointer' onClick={() => { navigate(`/challenges/v/${challenge.id}/schedule`) }}>Edit Schedule</DropdownMenuItem>
-            <DropdownMenuItem className='cursor-pointer' onClick={handleDeleteDialog}>
-              Delete
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      {deleteDialog && <DialogDelete prompt='Are you sure you want to delete this challenge?' isOpen={deleteDialog} deleteCallback={handleDelete} onCancel={cancelDialog}/>}
-      </>
-    )}
+              <DropdownMenuItem
+                className="cursor-pointer"
+                onClick={() => {
+                  navigate(`/challenges/v/${challenge.id}/edit`)
+                }}
+              >
+                Edit Challenge
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className="cursor-pointer"
+                onClick={() => {
+                  navigate(`/challenges/v/${challenge.id}/schedule`)
+                }}
+              >
+                Edit Schedule
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className="cursor-pointer"
+                onClick={handleDeleteDialog}
+              >
+                Delete
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          {deleteDialog && (
+            <DialogDelete
+              prompt="Are you sure you want to delete this challenge?"
+              isOpen={deleteDialog}
+              deleteCallback={handleDelete}
+              onCancel={cancelDialog}
+            />
+          )}
+        </>
+      )}
     </>
   )
 }

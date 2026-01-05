@@ -4,12 +4,17 @@ import {
   useLoaderData,
   useNavigate,
   useLocation,
-  type MetaFunction
-} from 'react-router';
-import { useEffect, useState, JSX, useCallback } from 'react'
+  type MetaFunction,
+  type LoaderFunction,
+  type LoaderFunctionArgs
+} from 'react-router'
+import { useEffect, type JSX } from 'react'
 import { requireAdminOrValidCohortMembership } from '~/models/auth.server'
-import type { MemberChallenge, Challenge, ChallengeSummary } from '~/utils/types'
-import { type LoaderFunction, type LoaderFunctionArgs } from 'react-router';
+import type {
+  MemberChallenge,
+  Challenge,
+  ChallengeSummary
+} from '~/utils/types'
 import { FaChevronCircleLeft } from 'react-icons/fa'
 import { prisma } from '~/models/prisma.server'
 import ChallengeHeader from '~/components/challengeHeader'
@@ -30,7 +35,9 @@ interface ChallengeSummaryWithCounts extends ChallengeSummary {
   }
 }
 
-export const loader: LoaderFunction = async (args: LoaderFunctionArgs): Promise<ViewChallengeData | null | Response | { loadingError: string }> => {
+export const loader: LoaderFunction = async (
+  args: LoaderFunctionArgs
+): Promise<ViewChallengeData | null | Response | { loadingError: string }> => {
   const currentUser = await requireAdminOrValidCohortMembership(args)
   // Check if currentUser is a redirect response
   if (currentUser instanceof Response) {
@@ -43,14 +50,15 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs): Promise<
     if (!params.id) {
       return null
     }
-    const challenge: ChallengeSummaryWithCounts | undefined = await loadChallengeSummary(params.id)
+    const challenge: ChallengeSummaryWithCounts | undefined =
+      await loadChallengeSummary(params.id)
     if (!challenge) {
       const error = { loadingError: 'Challenge not found' }
       return error
     }
     let membership
     if (currentUser) {
-      membership = await prisma.memberChallenge.findFirst({
+      membership = (await prisma.memberChallenge.findFirst({
         where: {
           userId: currentUser ? Number(currentUser.id) : 0,
           challengeId: Number(params.id)
@@ -61,7 +69,7 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs): Promise<
           },
           challenge: true
         }
-      }) as MemberChallenge | null
+      })) as MemberChallenge | null
     }
     return { challenge, membership: membership ?? null, cohortId }
   } catch (error) {
@@ -69,14 +77,12 @@ export const loader: LoaderFunction = async (args: LoaderFunctionArgs): Promise<
     return { loadingError: 'Error loading challenge' }
   }
 }
-export const meta: MetaFunction<typeof loader> = ({
-  data
-}) => {
+export const meta: MetaFunction<typeof loader> = ({ data }) => {
   return [{ title: data?.challenge?.name ?? 'Challenge' }]
 }
-export default function ViewChallenge (): JSX.Element {
+export default function ViewChallenge(): JSX.Element {
   const data = useLoaderData<ViewChallengeData>()
-  
+
   // Dummy setters to satisfy the context
   const setMembership = () => {}
   const setChallenge = () => {}
@@ -89,11 +95,9 @@ export default function ViewChallenge (): JSX.Element {
   // force redirect to about tab if no tab is selected
   useEffect(() => {
     const currentPath = location.pathname
-    const hasTab = currentPath.includes('/about') || currentPath.includes('/chat') ||
-                   currentPath.includes('/checkins') || currentPath.includes('/members') ||
-                   currentPath.includes('/program')
+    const validTabs = ['about', 'chat', 'checkins', 'members', 'program', 'edit', 'contact', 'comments', 'posts', 'schedule', 'share']
+    const hasTab = validTabs.some(tab => currentPath.includes(`/${tab}`))
 
-    
     // Only redirect if we're exactly on /challenges/v/:id without a tab
     if (!hasTab && data?.challenge?.id) {
       const url = `/challenges/v/${data.challenge.id}/about`
@@ -101,30 +105,39 @@ export default function ViewChallenge (): JSX.Element {
     }
   }, [location.pathname])
   return (
-    <MemberContextProvider membership={data.membership as MemberChallenge | null} setMembership={setMembership} challenge={data.challenge as Challenge | null} setChallenge={setChallenge}>
-      { !data?.challenge && !data.loadingError && <p>Loading...</p>}
+    <MemberContextProvider
+      membership={data.membership as MemberChallenge | null}
+      setMembership={setMembership}
+      challenge={data.challenge as Challenge | null}
+      setChallenge={setChallenge}
+    >
+      {!data?.challenge && !data.loadingError && <p>Loading...</p>}
 
-      { data?.loadingError && <h1 className='mt-10 text-2xl text-red'>{data.loadingError}</h1>}
+      {data?.loadingError && (
+        <h1 className="mt-10 text-2xl text-red">{data.loadingError}</h1>
+      )}
 
-      { !data?.loadingError && data?.challenge && (
+      {!data?.loadingError && data?.challenge && (
         <div className={`w-full ${isEdit ? '' : ' relative'}`}>
           {/* make wider on chat tab */}
-          <div className={`fixed top-0 z-10 bg-white w-full max-w-xl ${currentTab === 'chat' ? 'md:max-w-2xl' : ''} bg-opacity-80 rounded-br-lg`}>
-            <ChallengeHeader challenge={data.challenge!} size='small' />
-            {!isEdit &&
-              <ChallengeTabs challenge={data.challenge as ChallengeSummary} />
-            }
+          <div
+            className={`fixed top-0 z-10 bg-white w-full max-w-xl ${currentTab === 'chat' ? 'md:max-w-2xl' : ''} bg-opacity-80 rounded-br-lg`}
+          >
+            <ChallengeHeader challenge={data.challenge} size="small" />
+            {!isEdit && <ChallengeTabs challenge={data.challenge} />}
           </div>
-          <div className='mb-16 mt-24'>
+          <div className="mb-16 mt-24">
             <Outlet />
           </div>
-          <div className='flex items-center md:hidden justify-center w-full my-1'>
-            {currentTab !== 'chat' &&
+          <div className="flex items-center md:hidden justify-center w-full my-1">
+            {currentTab !== 'chat' && (
               <FaChevronCircleLeft
-                className='w-6 h-6 text-grey cursor-pointer'
-                onClick={() => { navigate('/challenges/') }}
+                className="w-6 h-6 text-grey cursor-pointer"
+                onClick={() => {
+                  navigate('/challenges/')
+                }}
               />
-            }
+            )}
           </div>
         </div>
       )}
