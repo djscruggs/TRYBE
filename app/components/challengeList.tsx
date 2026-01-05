@@ -16,7 +16,7 @@ export default function ChallengeList ({ challenges, memberships, isLoading }: C
   // Merge challenges with those in memberships
   const mergedChallenges = [
     ...challenges,
-    ...memberships.map((membership: MemberChallenge) => membership.challenge)
+    ...memberships.map((membership: MemberChallenge) => membership.challenge).filter(Boolean)
   ].reduce<ChallengeSummary[]>((acc, challenge) => {
     if (!acc.some((c) => c.id === challenge.id)) {
       acc.push(challenge as ChallengeSummary)

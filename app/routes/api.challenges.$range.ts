@@ -64,7 +64,7 @@ export const loader: LoaderFunction = async (args) => {
 
   return {
     challenges: challengesWithMembership,
-    memberships: membershipIds,
+    memberships: memberChallenges,
     error
   }
 }
