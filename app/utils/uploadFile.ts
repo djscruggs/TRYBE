@@ -24,7 +24,7 @@ export const memoryUploadHandler = async (file: FileUpload) => {
     chunks.push(chunk)
   }
   const buffer = Buffer.concat(chunks)
-  return new File([buffer], file.name, { type: file.type })
+  return new File([buffer], file.filename, { type: file.contentType })
 }
 
 export const saveBufferToCloudinary = async (

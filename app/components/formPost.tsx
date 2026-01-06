@@ -1,9 +1,15 @@
 import { Button } from '~/components/ui/button'
 import { Checkbox } from '~/components/ui/checkbox'
 import { RadioGroup, RadioGroupItem } from '~/components/ui/radio-group'
-import React, { useMemo, useState, useRef, useContext, type JSX } from 'react'
-import { Form, useNavigate } from 'react-router'
-import axios from 'axios'
+import React, {
+  useMemo,
+  useState,
+  useRef,
+  useContext,
+  useEffect,
+  type JSX
+} from 'react'
+import { Form, useNavigate, useFetcher } from 'react-router'
 import { FormField } from './formField'
 import { handleFileUpload } from '~/utils/helpers'
 import {
@@ -67,6 +73,24 @@ export default function FormPost(props: FormPostProps): JSX.Element {
     post?.videoMeta?.secure_url ?? null
   )
   const navigate = useNavigate()
+  const fetcher = useFetcher()
+
+  // Handle fetcher response
+  useEffect(() => {
+    if (fetcher.state === 'idle' && fetcher.data) {
+      setSaving(false)
+      if (fetcher.data.error) {
+        toast.error(fetcher.data.error)
+      } else {
+        toast.success('Post saved')
+        if (afterSave) {
+          afterSave(fetcher.data as PostSummary)
+        } else {
+          navigate('/posts/' + fetcher.data.id)
+        }
+      }
+    }
+  }, [fetcher.state, fetcher.data, afterSave, navigate])
   const showPublishAt = challenge?.type === 'SCHEDULED' || !challenge
   const showScheduleOptions = !challenge
   const imageRef = useRef<HTMLInputElement>(null)
@@ -175,40 +199,35 @@ export default function FormPost(props: FormPostProps): JSX.Element {
     setVideo('delete')
     setVideoUrl(null)
   }
-  async function handleSubmit(
-    event: React.FormEvent<HTMLFormElement>
-  ): Promise<void> {
+  function handleSubmit(event: React.FormEvent<HTMLFormElement>): void {
     event.preventDefault()
     if (!validate()) {
       return
     }
-    try {
-      setSaving(true)
-      const toSubmit = new FormData()
-      Object.entries(formData).forEach(([key, value]) => {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-        toSubmit.set(String(key), value)
-      })
+    setSaving(true)
 
-      // these are blob objects  to upload
-      if (image) {
-        toSubmit.set('image', image)
-      }
-      if (video) {
-        toSubmit.set('video', video)
-      }
-      const result = await axios.post('/api/posts', toSubmit)
-      toast.success('Post saved')
-      if (afterSave) {
-        afterSave(result.data as PostSummary)
-      } else {
-        navigate('/posts/' + result.data.id)
-      }
-    } catch (error) {
-      toast.error(String(error))
-    } finally {
-      setSaving(false)
+    const form = event.currentTarget
+    const formData = new FormData(form)
+
+    // Add the file inputs to FormData
+    if (image && image !== 'delete') {
+      formData.set('image', image)
+    } else if (image === 'delete') {
+      formData.set('image', 'delete')
     }
+
+    if (video && video !== 'delete') {
+      formData.set('video', video)
+    } else if (video === 'delete') {
+      formData.set('video', 'delete')
+    }
+
+    // Submit using fetcher which properly handles multipart/form-data
+    fetcher.submit(formData, {
+      method: 'post',
+      action: '/api/posts',
+      encType: 'multipart/form-data'
+    })
   }
 
   const handlePublishAt = (event: any): void => {
@@ -254,7 +273,12 @@ export default function FormPost(props: FormPostProps): JSX.Element {
         </div>
       )}
 
-      <Form method="post" onSubmit={handleSubmit} className="pb-4">
+      <Form
+        method="post"
+        encType="multipart/form-data"
+        onSubmit={handleSubmit}
+        className="pb-4"
+      >
         <label htmlFor="title" className="text-md">
           Post Title
         </label>
