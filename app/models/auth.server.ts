@@ -370,14 +370,15 @@ export async function logout(args: {
   request: Request
   redirectUrl?: string
 }): Promise<Response> {
+  // Destroy local session cookie
   const session = await getUserSession(args.request)
-  await storage.destroySession(session)
-  if (!args.redirectUrl) {
-    args.redirectUrl = '/login'
-  }
-  return redirect(args.redirectUrl, {
+  const destroyedSession = await storage.destroySession(session)
+
+  // Redirect to login
+  // Note: Clerk session is cleared client-side via signOut() in the component
+  return redirect(args.redirectUrl ?? '/login', {
     headers: {
-      'Set-Cookie': await storage.destroySession(session)
+      'Set-Cookie': destroyedSession
     }
   })
 }
