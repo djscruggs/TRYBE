@@ -415,10 +415,14 @@ function FormChallenge({
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Select frequency" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="border-none">
                     {frequencies.map(
                       (frequency: Challenge['frequency'], index: number) => (
-                        <SelectItem key={index} value={frequency}>
+                        <SelectItem
+                          key={index}
+                          value={frequency}
+                          className="hover:bg-gray-100"
+                        >
                           {frequency.charAt(0).toUpperCase() +
                             frequency.slice(1).toLowerCase()}
                         </SelectItem>
