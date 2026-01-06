@@ -1,5 +1,5 @@
 // app/components/form-field.tsx
-import React, { useEffect, useState, useRef, JSX } from 'react'
+import React, { useEffect, useState, useRef, type JSX } from 'react'
 import ShowPasswordButton from './showPasswordButton'
 
 interface FormFieldProps {
@@ -23,7 +23,7 @@ interface FormFieldProps {
   inputRef?: React.RefObject<HTMLTextAreaElement | HTMLInputElement>
 }
 
-export function FormField ({
+export function FormField({
   name,
   placeholder = '',
   label = '',
@@ -31,8 +31,8 @@ export function FormField ({
   maxValue,
   minValue,
   value = '',
-  onChange = () => { },
-  onKeyDown = () => { },
+  onChange = () => {},
+  onKeyDown = () => {},
   error = '',
   required = false,
   autoComplete = '',
@@ -42,7 +42,6 @@ export function FormField ({
   rows = 10,
   disabled = false,
   inputRef
-
 }: FormFieldProps): JSX.Element {
   const [errorText, setErrorText] = useState(error)
   useEffect(() => {
@@ -53,7 +52,9 @@ export function FormField ({
   if (type === 'password' && passwordVisible) {
     localType = 'text'
   }
-  const textRef = inputRef ?? useRef<HTMLTextAreaElement | HTMLInputElement | HTMLDivElement>(null)
+  const textRef =
+    inputRef ??
+    useRef<HTMLTextAreaElement | HTMLInputElement | HTMLDivElement>(null)
   useEffect(() => {
     if (textRef.current && autoResize) {
       textRef.current.style.height = `${rows * 2}rem`
@@ -66,34 +67,35 @@ export function FormField ({
       }
     }
   }, [value])
-  return <>
-      <label htmlFor={name} className="block text-blue-600">{label}</label>
-      {localType === 'textarea'
-        ? (
+  return (
+    <>
+      <label htmlFor={name} className="block text-red">
+        {label}
+      </label>
+      {localType === 'textarea' ? (
         <textarea
-            onChange={(e) => {
-              onChange(e)
-              setErrorText('')
-            }}
-            id={name}
-            name={name}
-            placeholder={placeholder}
-            className={`w-full p-2 rounded-sm my-1 border ${(errorText.length > 0) ? ' border-red' : ''} ${disabled ? 'bg-gray-50' : ''}`}
-            cols={cols}
-            rows={rows}
-            value={value}
-            onKeyDown={onKeyDown}
-            autoComplete={autoComplete}
-            required={required}
-            autoFocus = {autoFocus}
-            maxLength={65535}
-            ref={inputRef as React.RefObject<HTMLTextAreaElement>}
-            disabled={disabled}
-          />
-          )
-        : (
-      <input
-          onChange={e => {
+          onChange={(e) => {
+            onChange(e)
+            setErrorText('')
+          }}
+          id={name}
+          name={name}
+          placeholder={placeholder}
+          className={`w-full p-2 rounded-sm my-1 border ${errorText.length > 0 ? ' border-red' : ''} ${disabled ? 'bg-gray-50' : ''}`}
+          cols={cols}
+          rows={rows}
+          value={value}
+          onKeyDown={onKeyDown}
+          autoComplete={autoComplete}
+          required={required}
+          autoFocus={autoFocus}
+          maxLength={65535}
+          ref={inputRef as React.RefObject<HTMLTextAreaElement>}
+          disabled={disabled}
+        />
+      ) : (
+        <input
+          onChange={(e) => {
             onChange(e)
             setErrorText('')
           }}
@@ -103,24 +105,29 @@ export function FormField ({
           onKeyDown={onKeyDown}
           placeholder={placeholder}
           required={required}
-          className={`w-full p-2 rounded-md my-1 border ${(errorText.length > 0) ? ' border-red' : ''}`}
+          className={`w-full p-2 rounded-md my-1 border ${errorText.length > 0 ? ' border-red' : ''}`}
           value={value}
           max={maxValue}
           min={minValue}
           autoComplete={autoComplete}
-          autoFocus = {autoFocus}
+          autoFocus={autoFocus}
           ref={inputRef as React.RefObject<HTMLInputElement>}
-      />
+        />
+      )}
 
-          )}
-
-      {type === 'password' &&
-        <ShowPasswordButton passwordVisible={passwordVisible} clickHandler={() => { setPasswordVisible(!passwordVisible) }} />
-      }
-      {(errorText.length > 0) &&
+      {type === 'password' && (
+        <ShowPasswordButton
+          passwordVisible={passwordVisible}
+          clickHandler={() => {
+            setPasswordVisible(!passwordVisible)
+          }}
+        />
+      )}
+      {errorText.length > 0 && (
         <div className="text-xs font-semibold text-left tracking-wide text-red w-full mb-4 ">
-            {errorText}
+          {errorText}
         </div>
-      }
-  </>
+      )}
+    </>
+  )
 }

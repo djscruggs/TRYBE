@@ -69,9 +69,7 @@ function FormChallenge({
   const [errors, setErrors] = useState<Errors>()
   const [image, setImage] = useState<File | null>(null)
   const memberCount = challenge?._count?.members
-  if (challenge?._count) {
-    delete challenge._count
-  }
+
   const defaults = {
     deleteImage: false,
     numDays: 30,
@@ -80,11 +78,19 @@ function FormChallenge({
     categories: [],
     status: 'DRAFT' as ChallengeStatus
   }
-  delete challenge.user
+
+  // Create a clean copy without _count and user (don't mutate props)
+  const cleanChallenge =
+    typeof challenge === 'object' && challenge !== null
+      ? (() => {
+          const { _count, user, ...rest } = challenge as any
+          return rest
+        })()
+      : {}
+
   const [formData, setFormData] = useState<Partial<ChallengeInputs>>({
-    ...(typeof challenge === 'object' && challenge !== null
-      ? { ...defaults, ...challenge }
-      : { ...defaults })
+    ...defaults,
+    ...cleanChallenge
   })
   const { currentUser } = useContext(CurrentUserContext)
   const localDateFormat =
@@ -196,7 +202,7 @@ function FormChallenge({
 
   function handleCancel(event: React.FormEvent): void {
     event.preventDefault()
-    navigate(-1)
+    void navigate(-1)
   }
   function parseErrors(errors: any, path: string = ''): Record<string, string> {
     let result: Record<string, string> = {}
@@ -326,6 +332,7 @@ function FormChallenge({
       }))
     }
   }
+
   return (
     <>
       <div className="w-full flex justify-center md:justify-start">
@@ -335,9 +342,9 @@ function FormChallenge({
           encType="multipart/form-data"
           onSubmit={handleSubmit}
         >
-          <div className="w-full max-w-[600px] md:max-w-[1200px] px-2 grid grid-cols-1 md:grid-cols-2  ">
+          <div className="w-full max-w-150 md:max-w-300 px-2 grid grid-cols-1 md:grid-cols-2  ">
             <div className="col-span-2 w-full lg:col-span-1">
-              <div className="relative mb-2 max-w-[400px]">
+              <div className="relative mb-2 max-w-100">
                 <FormField
                   name="name"
                   placeholder="Give your challenge a catchy name"
@@ -348,7 +355,7 @@ function FormChallenge({
                   label="Name of Challenge"
                 />
               </div>
-              <div className="relative max-w-[400px]">
+              <div className="relative max-w-100">
                 <FormField
                   name="description"
                   placeholder="Share a short description of what this challenge is all about"
@@ -397,7 +404,7 @@ function FormChallenge({
                   ))}
                 </div>
               </fieldset>
-              <div className="max-w-[400px] relative flex mb-4">
+              <div className="max-w-100 relative flex mb-4">
                 {/* material-tailwind <Select> element doesn't populate an actual HTML input element, so this hidden field captres the value for submission */}
                 <input
                   type="hidden"
@@ -421,7 +428,7 @@ function FormChallenge({
                 </Select>
               </div>
 
-              <fieldset className="border-grey border rounded-md p-2 pb-4 mb-4 max-w-[400px]">
+              <fieldset className="border-grey border rounded-md p-2 pb-4 mb-4 max-w-100">
                 {currentUser?.role === 'ADMIN' && (
                   <>
                     <legend className="text-md">
@@ -549,7 +556,7 @@ function FormChallenge({
                 )}
               </fieldset>
 
-              <div className="relative mb-2 max-w-[400px] text-sm">
+              <div className="relative mb-2 max-w-100 text-sm">
                 <label htmlFor="public">Who can join?</label>
                 <div className="flex items-center space-x-2">
                   <Radio
@@ -570,7 +577,7 @@ function FormChallenge({
                   />
                 </div>
               </div>
-              <div className="relative mb-2 max-w-[400px] text-sm">
+              <div className="relative mb-2 max-w-100 text-sm">
                 <label htmlFor="status">Publication Status</label>
                 {!canMakeDraft() && (
                   <div className="text-xs text-red">
@@ -603,12 +610,12 @@ function FormChallenge({
                   <CoverPhotoHandler formData={formData} setFormData={setFormData} image={image} setImage={setImage} />
                 </div> */}
             </div>
-            <div className="max-w-[400px] sm:col-span-2 md:ml-4 lg:col-span-1">
+            <div className="max-w-100 sm:col-span-2 md:ml-4 lg:col-span-1">
               <div className="mb-4">
                 <label>Preview</label>
                 <Preview data={formData} />
               </div>
-              <div className="max-w-[400px] relative flex flex-wrap">
+              <div className="max-w-100 relative flex flex-wrap">
                 <label className="w-full block mb-2 text-left">Color</label>
                 {colorOptions.map((option, index) => (
                   <div
@@ -620,7 +627,7 @@ function FormChallenge({
                   ></div>
                 ))}
               </div>
-              <div className="mt-4 max-w-[400px]">
+              <div className="mt-4 max-w-100">
                 {errors?.icon && (
                   <div className="text-xs font-semibold text-left tracking-wide text-red w-full mb-4">
                     {errors?.icon}
@@ -662,7 +669,7 @@ function FormChallenge({
             <Button
               type="submit"
               onClick={handleSubmit}
-              className="bg-red hover:bg-green-500 rounded-full"
+              className="bg-red hover:bg-green-500 rounded-full text-white"
             >
               Save Challenge
             </Button>
@@ -678,6 +685,8 @@ function FormChallenge({
     </>
   )
 }
+
+export default FormChallenge
 
 const Preview = ({ data }: { data: any }): JSX.Element => {
   return (
@@ -787,5 +796,3 @@ const CoverPhotoHandler = ({
     </>
   )
 }
-
-export default FormChallenge

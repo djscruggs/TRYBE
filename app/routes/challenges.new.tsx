@@ -1,9 +1,8 @@
-import { useContext, JSX } from 'react'
+import { useContext, type JSX } from 'react'
 import ChallengeForm from '~/components/formChallenge'
-import { getCurrentUser, requireCurrentUser } from '~/models/auth.server'
-import { type LoaderFunction } from 'react-router';
+import { requireCurrentUser } from '~/models/auth.server'
+import { type LoaderFunction, type MetaFunction } from 'react-router'
 import { CurrentUserContext } from '~/contexts/CurrentUserContext'
-import type { MetaFunction } from 'react-router';
 import type { ChallengeInputs } from '~/utils/types'
 export const meta: MetaFunction = () => {
   return [
@@ -22,10 +21,19 @@ export const loader: LoaderFunction = async (args): Promise<LoaderData> => {
   return {}
 }
 
-export default function NewChallenge (): JSX.Element {
+export default function NewChallenge(): JSX.Element {
   const { currentUser } = useContext(CurrentUserContext)
-  const formData = { userId: currentUser?.id }
+  const formData: Partial<ChallengeInputs> = {
+    userId: currentUser?.id || 0,
+    categories: [],
+    type: 'SCHEDULED',
+    status: 'DRAFT',
+    frequency: 'DAILY',
+    public: true
+  }
   return (
-    <ChallengeForm challenge={formData as ChallengeInputs}/>
+    <div className="mt-12">
+      <ChallengeForm challenge={formData as ChallengeInputs} />
+    </div>
   )
 }
