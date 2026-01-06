@@ -53,7 +53,7 @@ interface Errors {
   numDays?: string
 }
 
-export default function FormChallenge({
+function FormChallenge({
   challenge
 }: {
   challenge: ChallengeInputs
@@ -787,3 +787,5 @@ const CoverPhotoHandler = ({
     </>
   )
 }
+
+export default FormChallenge
