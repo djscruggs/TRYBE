@@ -378,13 +378,11 @@ export default function FormChallenge({
                         checked={formData.categories?.some(
                           (c) => c?.id === category?.id
                         )}
-                        onCheckedChange={() => {
+                        onCheckedChange={(checked) => {
                           handleCategoryChange({
                             target: {
                               value: String(category?.id),
-                              checked: !formData.categories?.some(
-                                (c) => c?.id === category?.id
-                              )
+                              checked: checked === true
                             }
                           } as ChangeEvent<HTMLInputElement>)
                         }}

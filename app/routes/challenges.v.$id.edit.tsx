@@ -2,16 +2,51 @@ import ChallengeForm from '~/components/formChallenge'
 import { useEffect, useState, JSX } from 'react'
 import axios from 'axios'
 import { type ChallengeSummary } from '~/utils/types'
-import { type MetaFunction, useParams } from 'react-router';
+import { type MetaFunction, useParams, type LoaderFunction, redirect } from 'react-router';
+import { getCurrentUser } from '~/models/auth.server'
+import { prisma } from '~/models/prisma.server'
+
 interface ChallengeInputs extends ChallengeSummary {
   deleteImage: boolean
 }
+
+export const loader: LoaderFunction = async (args) => {
+  const currentUser = await getCurrentUser(args)
+  if (!currentUser) {
+    return redirect('/login')
+  }
+
+  const { params } = args
+  if (!params.id) {
+    return redirect('/challenges')
+  }
+
+  // Check if user is owner or admin
+  const challenge = await prisma.challenge.findUnique({
+    where: { id: Number(params.id) },
+    select: { userId: true }
+  })
+
+  if (!challenge) {
+    return redirect('/challenges')
+  }
+
+  const isOwner = challenge.userId === currentUser.id
+  const isAdmin = currentUser.role === 'ADMIN'
+
+  if (!isOwner && !isAdmin) {
+    return redirect(`/challenges/v/${params.id}`)
+  }
+
+  return null
+}
+
 export const meta: MetaFunction = () => {
   return [
     { title: 'Edit Challenge' },
     {
       property: 'og:title',
-      content: 'Create Challenge'
+      content: 'Edit Challenge'
     }
   ]
 }

@@ -27,7 +27,13 @@ export default [
         'members/:cohortId?',
         'routes/challenges.v.$id.members.($cohortId).tsx'
       ),
-      route('program', 'routes/challenges.v.$id.program.tsx')
+      route('program', 'routes/challenges.v.$id.program.tsx'),
+      route('edit', 'routes/challenges.v.$id.edit.tsx'),
+      route('contact', 'routes/challenges.v.$id.contact.tsx'),
+      route('comments', 'routes/challenges.v.$id.comments.tsx'),
+      route('posts', 'routes/challenges.v.$id.posts.tsx'),
+      route('schedule', 'routes/challenges.v.$id.schedule.tsx'),
+      route('share', 'routes/challenges.v.$id.share.tsx')
     ])
   ]),
   route('login', 'routes/login.$.tsx', [
@@ -42,6 +48,7 @@ export default [
   ...prefix('posts', [
     index('routes/posts.tsx'),
     route('new', 'routes/posts_.new.tsx'),
+    route('new/challenge/:challengeId', 'routes/posts_.new.challenge.$challengeId.tsx'),
     route(':id', 'routes/posts.$id.tsx')
   ]),
   route('community', 'routes/community.tsx'),

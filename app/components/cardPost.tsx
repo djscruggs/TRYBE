@@ -1,111 +1,111 @@
-import React, { useContext, useState, JSX } from "react";
-import { Card } from '~/components/ui/card';
-import type { PostSummary } from "~/utils/types";
+import React, { useContext, useState, type JSX } from 'react'
+import { Card } from '~/components/ui/card'
+import type { PostSummary } from '~/utils/types'
 // import { AiOutlineRetweet } from 'react-icons/ai'
 // import { GoComment } from 'react-icons/go'
-import { textToJSX, removeYouTubeLinks } from "~/utils/helpers";
+import { textToJSX, removeYouTubeLinks } from '~/utils/helpers'
 
-import { CurrentUserContext } from "~/contexts/CurrentUserContext";
-import AvatarLoader from "./avatarLoader";
-import { useNavigate, useLocation } from "react-router";
-import { toast } from "react-hot-toast";
-import FormPost from "./formPost";
-import axios from "axios";
-import ShareMenu from "./shareMenu";
-import { FaRegComment } from "react-icons/fa";
-import Liker from "./liker";
-import DialogDelete from "./dialogDelete";
-import { format } from "date-fns";
-import ChatDrawer from "~/components/chatDrawer";
-import LinkRenderer from "./linkRenderer";
+import { CurrentUserContext } from '~/contexts/CurrentUserContext'
+import AvatarLoader from './avatarLoader'
+import { useNavigate, useLocation } from 'react-router'
+import { toast } from 'react-hot-toast'
+import FormPost from './formPost'
+import axios from 'axios'
+import ShareMenu from './shareMenu'
+import { FaRegComment } from 'react-icons/fa'
+import Liker from './liker'
+import DialogDelete from './dialogDelete'
+import { format } from 'date-fns'
+import ChatDrawer from '~/components/chatDrawer'
+import LinkRenderer from './linkRenderer'
 interface CardPostProps {
-  post: PostSummary | null;
-  isShare?: boolean;
-  fullPost?: boolean;
-  hideMeta?: boolean;
-  revalidator?: Revalidator;
-  isChat?: boolean;
-  highlightedObject?: string | null;
-  highlightedId?: number | null;
+  post: PostSummary | null
+  isShare?: boolean
+  fullPost?: boolean
+  hideMeta?: boolean
+  revalidator?: Revalidator
+  isChat?: boolean
+  highlightedObject?: string | null
+  highlightedId?: number | null
 }
 interface Revalidator {
-  revalidate: () => void;
+  revalidate: () => void
 }
 
 export default function CardPost(props: CardPostProps): JSX.Element {
-  const { currentUser } = useContext(CurrentUserContext);
-  const { fullPost, isShare, hideMeta, revalidator, isChat } = props;
+  const { currentUser } = useContext(CurrentUserContext)
+  const { fullPost, isShare, hideMeta, revalidator, isChat } = props
   const dateTimeFormat = currentUser?.dateTimeFormat
     ? currentUser.dateTimeFormat
-    : "M-dd-yyyy @ h:mm a";
-  const [post, setPost] = useState(props.post);
+    : 'M-dd-yyyy @ h:mm a'
+  const [post, setPost] = useState(props.post)
   const [showComments, setShowComments] = useState(
-    props.highlightedObject === "post" && props.highlightedId === post?.id
-  );
-  if (!post) return <></>;
-  const [showLightbox, setShowLightbox] = useState(false);
-  const [editing, setEditing] = useState(false);
-  const location = useLocation();
-  const isOwnRoute = location.pathname === `/posts/${post.id}`;
-  const navigate = useNavigate();
-  const [deleteDialog, setDeleteDialog] = useState(false);
+    props.highlightedObject === 'post' && props.highlightedId === post?.id
+  )
+  if (!post) return <></>
+  const [showLightbox, setShowLightbox] = useState(false)
+  const [editing, setEditing] = useState(false)
+  const location = useLocation()
+  const isOwnRoute = location.pathname === `/posts/${post.id}`
+  const navigate = useNavigate()
+  const [deleteDialog, setDeleteDialog] = useState(false)
   const canEdit =
-    (currentUser?.role === "ADMIN" || currentUser?.id === post.userId) &&
-    !isShare;
+    (currentUser?.role === 'ADMIN' || currentUser?.id === post.userId) &&
+    !isShare
   const goToPost = (): void => {
-    if (isOwnRoute) return;
-    navigate(`/posts/${post.id}`);
-  };
+    if (isOwnRoute) return
+    navigate(`/posts/${post.id}`)
+  }
   const handlePhotoClick = (event: any): void => {
-    event.preventDefault();
-    event.stopPropagation();
-    setShowLightbox(true);
-  };
+    event.preventDefault()
+    event.stopPropagation()
+    setShowLightbox(true)
+  }
   const handleEdit = (event: any): void => {
-    if (!canEdit) return;
-    event.preventDefault();
-    event.stopPropagation();
-    setEditing(true);
-  };
+    if (!canEdit) return
+    event.preventDefault()
+    event.stopPropagation()
+    setEditing(true)
+  }
   const handleDeleteDialog = (event: any): void => {
-    event.preventDefault();
-    event.stopPropagation();
-    setDeleteDialog(true);
-  };
+    event.preventDefault()
+    event.stopPropagation()
+    setDeleteDialog(true)
+  }
   const cancelDialog = (event: any): void => {
-    event.preventDefault();
-    event.stopPropagation();
-    setDeleteDialog(false);
-  };
+    event.preventDefault()
+    event.stopPropagation()
+    setDeleteDialog(false)
+  }
   const handleDelete = (event: any): void => {
-    event.preventDefault();
-    event.stopPropagation();
+    event.preventDefault()
+    event.stopPropagation()
     axios
       .delete(`/api/posts/delete/${post.id}`)
       .then(() => {
-        toast.success("Post deleted");
+        toast.success('Post deleted')
         if (revalidator) {
-          revalidator.revalidate();
+          revalidator.revalidate()
         }
         if (post.challengeId) {
-          navigate(`/challenges/${post.challengeId}`);
+          navigate(`/challenges/${post.challengeId}`)
         } else {
-          navigate("/challenges");
+          navigate('/challenges')
         }
       })
       .catch((error) => {
-        toast.error("Error deleting post");
-        console.error("Error deleting post:", error);
-      });
-  };
+        toast.error('Error deleting post')
+        console.error('Error deleting post:', error)
+      })
+  }
 
   const afterSave = (post: PostSummary): void => {
-    setPost(post);
-    setEditing(false);
-  };
+    setPost(post)
+    setEditing(false)
+  }
   const getFullUrl = (): string => {
-    return `${window.location.origin}/posts/${post.id}`;
-  };
+    return `${window.location.origin}/posts/${post.id}`
+  }
   return (
     <>
       {editing ? (
@@ -114,24 +114,24 @@ export default function CardPost(props: CardPostProps): JSX.Element {
             post={post}
             challenge={post.challenge}
             onCancel={() => {
-              setEditing(false);
+              setEditing(false)
             }}
             afterSave={afterSave}
           />
         </>
       ) : (
-        <div className={"mt-2 w-full border-0  drop-shadow-none mr-2"}>
+        <div className={'mt-2 w-full border-0  drop-shadow-none mr-2'}>
           <div
-            className={`drop-shadow-none ${!isOwnRoute ? "cursor-pointer" : ""}`}
+            className={`drop-shadow-none ${!isOwnRoute ? 'cursor-pointer' : ''}`}
           >
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Card
-                className={`md:col-span-2 p-2  relative ${isChat ? "shadow-none bg-yellow" : "border drop-shadow-lg border-gray rounded-md"}`}
+                className={`md:col-span-2 p-2  relative ${isChat ? 'shadow-none bg-yellow' : 'border drop-shadow-lg border-gray rounded-md'}`}
               >
-                {post.challenge?.type === "SELF_LED" ? (
+                {post.challenge?.type === 'SELF_LED' ? (
                   <>
                     <div className="bg-yellow w-full p-0 text-center absolute left-0 top-0 b-4 rounded-t-md">
-                      This post is sent to members on Day{" "}
+                      This post is sent to members on Day{' '}
                       {post.publishOnDayNumber}
                     </div>
                     <div className="h-6"> </div>
@@ -181,10 +181,10 @@ export default function CardPost(props: CardPostProps): JSX.Element {
                 </PostContent>
                 {deleteDialog && (
                   <DialogDelete
-                    prompt="Are you sure you want to delete this note?"
+                    prompt="Are you sure you want to delete this post?"
                     isOpen={deleteDialog}
                     deleteCallback={(event: any) => {
-                      handleDelete(event);
+                      handleDelete(event)
                     }}
                     onCancel={cancelDialog}
                   />
@@ -195,14 +195,14 @@ export default function CardPost(props: CardPostProps): JSX.Element {
           </div>
           {!isShare && !hideMeta && (
             <>
-              <hr className={`${isChat ? "border-0 none" : "border-gray"}`} />
+              <hr className={`${isChat ? 'border-0 none' : 'border-gray'}`} />
               <div
-                className={`grid grid-cols-3 text-center ${isChat ? "pt-2" : "py-2"} cursor-pointer w-full`}
+                className={`grid grid-cols-3 text-center ${isChat ? 'pt-2' : 'py-2'} cursor-pointer w-full`}
               >
                 <div
                   className="ml-6 flex justify-center items-center"
                   onClick={() => {
-                    setShowComments(true);
+                    setShowComments(true)
                   }}
                 >
                   <FaRegComment className="text-grey mr-1 inline" />
@@ -236,7 +236,7 @@ export default function CardPost(props: CardPostProps): JSX.Element {
         isOpen={showComments}
         placement="right"
         onClose={() => {
-          setShowComments(false);
+          setShowComments(false)
         }}
         size={500}
         id={post.id ?? 0}
@@ -249,30 +249,30 @@ export default function CardPost(props: CardPostProps): JSX.Element {
         />
       </ChatDrawer>
     </>
-  );
+  )
 }
 
 export const PostContent = (props: {
-  post: PostSummary;
-  fullPost: boolean;
-  children?: React.ReactNode;
-  handlePhotoClick: (event: any) => void;
+  post: PostSummary
+  fullPost: boolean
+  children?: React.ReactNode
+  handlePhotoClick: (event: any) => void
 }): JSX.Element => {
-  const { post, fullPost, children, handlePhotoClick } = props;
-  const maxLength = 300;
-  const fullBodyStripped = removeYouTubeLinks(post.body ?? "");
-  let shortBodyStripped = removeYouTubeLinks(post.body ?? "");
-  let isTruncated = false;
+  const { post, fullPost, children, handlePhotoClick } = props
+  const maxLength = 300
+  const fullBodyStripped = removeYouTubeLinks(post.body ?? '')
+  let shortBodyStripped = removeYouTubeLinks(post.body ?? '')
+  let isTruncated = false
   if (shortBodyStripped.length > maxLength) {
-    shortBodyStripped = shortBodyStripped.slice(0, maxLength) + "...";
-    isTruncated = true;
+    shortBodyStripped = shortBodyStripped.slice(0, maxLength) + '...'
+    isTruncated = true
   }
-  const finalBody = fullPost ? fullBodyStripped : shortBodyStripped;
-  const [showFullBody, setShowFullBody] = useState(fullPost);
+  const finalBody = fullPost ? fullBodyStripped : shortBodyStripped
+  const [showFullBody, setShowFullBody] = useState(fullPost)
 
   return (
     <div className="flex items-start w-full">
-      <AvatarLoader object={post} marginClass="mr-2" size="md"/>
+      <AvatarLoader object={post} marginClass="mr-2" size="md" />
       <div className="flex flex-col w-full h-full">
         <div className="font-bold my-2">{post.title}</div>
         <div>
@@ -284,13 +284,13 @@ export const PostContent = (props: {
           <span
             className="text-xs underline text-blue cursor-pointer mr-1 mb-4 text-right italic"
             onClick={() => {
-              setShowFullBody(!showFullBody);
+              setShowFullBody(!showFullBody)
             }}
           >
-            {showFullBody ? "less" : "more"}
+            {showFullBody ? 'less' : 'more'}
           </span>
         )}
-        <LinkRenderer text={post.body ?? ""} />
+        <LinkRenderer text={post.body ?? ''} />
 
         <div className="mt-4">
           {post.videoMeta?.secure_url && (
@@ -298,7 +298,7 @@ export const PostContent = (props: {
               className="recorded"
               src={post.videoMeta.secure_url}
               onClick={(event) => {
-                event?.stopPropagation();
+                event?.stopPropagation()
               }}
               controls
             />
@@ -316,5 +316,5 @@ export const PostContent = (props: {
         {children}
       </div>
     </div>
-  );
-};
+  )
+}
