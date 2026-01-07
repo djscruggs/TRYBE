@@ -28,9 +28,9 @@ export async function loader(args: LoaderFunctionArgs) {
     return redirect('/')
   }
   // Call the function directly instead of making an API fetch
-  const data = await fetchChallengeSummaries({ range: 'all' })
+  const challenges = await fetchChallengeSummaries({ range: 'all' })
   return {
-    challenges: data.challenges as ChallengeSummary[],
+    challenges,
     memberships: []
   }
 }
