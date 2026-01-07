@@ -1,48 +1,47 @@
-import { JSX } from 'react'
-import { Spinner } from "~/components/ui/spinner";
-import ChallengeList from "~/components/challengeList";
+import { type JSX } from 'react'
+import { Spinner } from '~/components/ui/spinner'
+import ChallengeList from '~/components/challengeList'
 import {
   type MetaFunction,
   type LoaderFunctionArgs,
   useLoaderData,
-  redirect,
-} from "react-router";
-import type { ChallengeSummary } from "~/utils/types";
-import { getCurrentUser } from "~/models/auth.server";
+  redirect
+} from 'react-router'
+import type { ChallengeSummary } from '~/utils/types'
+import { getCurrentUser } from '~/models/auth.server'
+import { fetchChallengeSummaries } from '~/models/challenge.server'
 
 export const meta: MetaFunction = () => {
   return [
-    { title: "All Challenges" },
+    { title: 'All Challenges' },
     {
-      property: "og:title",
-      content: "Challenge Templates",
-    },
-  ];
-};
-
-export async function loader(args: LoaderFunctionArgs) {
-  const currentUser = await getCurrentUser(args);
-
-  if (currentUser?.role !== "ADMIN") {
-    return redirect("/");
-  }
-  const response = await fetch(
-    new URL("/api/challenges/all", args.request.url)
-  );
-  const data = await response.json();
-  return {
-    challenges: data.challenges as ChallengeSummary[],
-    memberships: data.memberships || [],
-  };
+      property: 'og:title',
+      content: 'Challenge Templates'
+    }
+  ]
 }
 
-type LoaderData = {
-  challenges: ChallengeSummary[];
-  memberships: any[];
-};
+export async function loader(args: LoaderFunctionArgs) {
+  const currentUser = await getCurrentUser(args)
+
+  if (currentUser?.role !== 'ADMIN') {
+    return redirect('/')
+  }
+  // Call the function directly instead of making an API fetch
+  const data = await fetchChallengeSummaries({ range: 'all' })
+  return {
+    challenges: data.challenges as ChallengeSummary[],
+    memberships: []
+  }
+}
+
+interface LoaderData {
+  challenges: ChallengeSummary[]
+  memberships: any[]
+}
 
 export default function ChallengesAll(): JSX.Element {
-  const { challenges, memberships } = useLoaderData<LoaderData>();
+  const { challenges, memberships } = useLoaderData<LoaderData>()
 
   return (
     <>
@@ -64,5 +63,5 @@ export default function ChallengesAll(): JSX.Element {
         </div>
       </div>
     </>
-  );
+  )
 }

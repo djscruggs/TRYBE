@@ -20,7 +20,13 @@ export const action: ActionFunction = async (args) => {
   const currentUser = (await requireCurrentUser(args))!
   const request = args.request
 
-  const formData = await parseFormData(request, memoryUploadHandler)
+  let formData
+  try {
+    formData = await request.formData()
+  } catch (error) {
+    console.error('[api.posts] Error parsing FormData:', error)
+    throw error
+  }
   const rawData = formData
 
   const textData = Object.fromEntries(formData)

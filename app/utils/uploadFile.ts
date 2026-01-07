@@ -20,11 +20,16 @@ export async function writeFile(file: File): Promise<string> {
 
 export const memoryUploadHandler = async (file: FileUpload) => {
   const chunks = []
-  for await (const chunk of file.data) {
-    chunks.push(chunk)
+  try {
+    for await (const chunk of file.data) {
+      chunks.push(chunk)
+    }
+    const buffer = Buffer.concat(chunks)
+    return new File([buffer], file.filename, { type: file.contentType })
+  } catch (error) {
+    console.error('[memoryUploadHandler] Error processing file:', error)
+    throw error
   }
-  const buffer = Buffer.concat(chunks)
-  return new File([buffer], file.filename, { type: file.contentType })
 }
 
 export const saveBufferToCloudinary = async (

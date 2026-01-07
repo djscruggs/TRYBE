@@ -9,7 +9,7 @@ import React, {
   useEffect,
   type JSX
 } from 'react'
-import { Form, useNavigate, useFetcher } from 'react-router'
+import { useNavigate } from 'react-router'
 import { FormField } from './formField'
 import { handleFileUpload } from '~/utils/helpers'
 import {
@@ -72,25 +72,8 @@ export default function FormPost(props: FormPostProps): JSX.Element {
   const [videoUrl, setVideoUrl] = useState<string | null>(
     post?.videoMeta?.secure_url ?? null
   )
-  const navigate = useNavigate()
-  const fetcher = useFetcher()
 
-  // Handle fetcher response
-  useEffect(() => {
-    if (fetcher.state === 'idle' && fetcher.data) {
-      setSaving(false)
-      if (fetcher.data.error) {
-        toast.error(fetcher.data.error)
-      } else {
-        toast.success('Post saved')
-        if (afterSave) {
-          afterSave(fetcher.data as PostSummary)
-        } else {
-          navigate('/posts/' + fetcher.data.id)
-        }
-      }
-    }
-  }, [fetcher.state, fetcher.data, afterSave, navigate])
+  const navigate = useNavigate()
   const showPublishAt = challenge?.type === 'SCHEDULED' || !challenge
   const showScheduleOptions = !challenge
   const imageRef = useRef<HTMLInputElement>(null)
@@ -199,35 +182,78 @@ export default function FormPost(props: FormPostProps): JSX.Element {
     setVideo('delete')
     setVideoUrl(null)
   }
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>): void {
+  async function handleSubmit(
+    event: React.FormEvent<HTMLFormElement>
+  ): Promise<void> {
     event.preventDefault()
     if (!validate()) {
       return
     }
     setSaving(true)
 
-    const form = event.currentTarget
-    const formData = new FormData(form)
+    // Build FormData manually to avoid issues with file inputs
+    const toSubmit = new FormData()
+
+    // Add all form fields from formData state
+    for (const key in formData) {
+      const value = formData[key as keyof typeof formData]
+      if (value !== null && value !== undefined) {
+        if (value instanceof Date) {
+          toSubmit.append(key, value.toISOString())
+        } else if (typeof value === 'boolean') {
+          toSubmit.append(key, String(value))
+        } else if (typeof value === 'number') {
+          toSubmit.append(key, String(value))
+        } else if (typeof value === 'string') {
+          toSubmit.append(key, value)
+        }
+      }
+    }
+
+    // Add post ID if editing
+    if (post?.id) {
+      toSubmit.append('id', String(post.id))
+    }
 
     // Add the file inputs to FormData
     if (image && image !== 'delete') {
-      formData.set('image', image)
+      toSubmit.append('image', image)
     } else if (image === 'delete') {
-      formData.set('image', 'delete')
+      toSubmit.append('image', 'delete')
     }
 
     if (video && video !== 'delete') {
-      formData.set('video', video)
+      toSubmit.append('video', video)
     } else if (video === 'delete') {
-      formData.set('video', 'delete')
+      toSubmit.append('video', 'delete')
     }
 
-    // Submit using fetcher which properly handles multipart/form-data
-    fetcher.submit(formData, {
-      method: 'post',
-      action: '/api/posts',
-      encType: 'multipart/form-data'
-    })
+    try {
+      // Use fetch instead of axios for proper FormData handling
+      const response = await fetch('/api/posts', {
+        method: 'POST',
+        body: toSubmit
+      })
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+
+      const data = await response.json()
+
+      setSaving(false)
+      toast.success('Post saved')
+
+      if (afterSave) {
+        afterSave(data as PostSummary)
+      } else {
+        navigate('/posts/' + data.id)
+      }
+    } catch (error) {
+      console.error('Error saving post:', error)
+      setSaving(false)
+      toast.error('Error saving post')
+    }
   }
 
   const handlePublishAt = (event: any): void => {
@@ -273,7 +299,7 @@ export default function FormPost(props: FormPostProps): JSX.Element {
         </div>
       )}
 
-      <Form
+      <form
         method="post"
         encType="multipart/form-data"
         onSubmit={handleSubmit}
@@ -516,7 +542,7 @@ export default function FormPost(props: FormPostProps): JSX.Element {
         >
           cancel
         </button>
-      </Form>
+      </form>
     </div>
   )
 }
