@@ -19,17 +19,17 @@ export async function writeFile(file: File): Promise<string> {
 }
 
 export const memoryUploadHandler = async (file: FileUpload) => {
-  const chunks = []
-  try {
-    for await (const chunk of file.data) {
-      chunks.push(chunk)
-    }
-    const buffer = Buffer.concat(chunks)
-    return new File([buffer], file.filename, { type: file.contentType })
-  } catch (error) {
-    console.error('[memoryUploadHandler] Error processing file:', error)
-    throw error
+  // If it's not a file upload (e.g., regular form field), return the value as-is
+  if (!file.data) {
+    return file
   }
+
+  const chunks = []
+  for await (const chunk of file.data) {
+    chunks.push(chunk)
+  }
+  const buffer = Buffer.concat(chunks)
+  return new File([buffer], file.filename, { type: file.contentType })
 }
 
 export const saveBufferToCloudinary = async (

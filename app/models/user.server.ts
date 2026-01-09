@@ -63,12 +63,12 @@ export const getUserByClerkId = async (
   if (!prisma.user) {
     throw new Error('Prisma user not found')
   }
-  
+
   const user = await prisma.user.findFirst({
     where: { clerkId },
     include: { profile: true }
   })
-  
+
   return user
 }
 export const updateUser = async (
