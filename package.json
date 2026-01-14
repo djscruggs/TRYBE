@@ -69,6 +69,7 @@
     "date-fns-tz": "^3.2.0",
     "dotenv": "^16.4.7",
     "escape-html": "^1.0.3",
+    "expo-server-sdk": "^4.0.0",
     "framer-motion": "^11.2.4",
     "get-user-locale": "^2.3.2",
     "intl": "^1.2.5",

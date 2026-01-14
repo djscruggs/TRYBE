@@ -30,6 +30,7 @@ model User {
   posts            Post[]
   profile          Profile?
   passwordResetTokens PasswordResetToken[]
+  pushTokens       PushToken[]
   @@index([clerkId])
 }
 model PasswordResetToken {
@@ -40,6 +41,22 @@ model PasswordResetToken {
   user      User     @relation(fields: [userId], references: [id])
   @@index([userId])
 }
+
+model PushToken {
+  id         Int      @id @default(autoincrement())
+  userId     Int      @map("user_id")
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token      String   @unique
+  deviceInfo Json?    @map("device_info")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+  lastUsedAt DateTime @default(now()) @map("last_used_at")
+
+  @@index([userId])
+  @@index([token])
+  @@map("push_tokens")
+}
+
 model Profile {
   id           Int     @id @default(autoincrement())
   userId       Int     @unique

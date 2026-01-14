@@ -10,6 +10,7 @@ import {
   convertYouTubeLinksToImages,
   pathToEmailUrl
 } from '~/utils/helpers'
+import { sendPushNotification } from '~/services/pushNotifications.server'
 
 export const sendScheduledPosts = async (): Promise<number> => {
   const posts = await prisma.post.findMany({
@@ -135,7 +136,8 @@ export const sendDayNumberPosts = async (): Promise<{
         include: {
           user: {
             include: {
-              profile: true
+              profile: true,
+              pushTokens: true
             }
           }
         }
@@ -200,8 +202,26 @@ export const sendDayNumberPosts = async (): Promise<{
             }
           }
           try {
+            // Send email
             await sendCheckinReminder(props)
             nonPostNotifications++
+
+            // Send push notifications to all user's devices
+            if (member.user.pushTokens && member.user.pushTokens.length > 0) {
+              await Promise.all(
+                member.user.pushTokens.map(async (pushToken: any) => {
+                  await sendPushNotification(pushToken.token, {
+                    title: member.challenge.name,
+                    body: `Day ${member.dayNumber}: Time to check in!`,
+                    data: {
+                      challengeId: member.challenge.id,
+                      membershipId: member.id,
+                      type: 'daily_reminder'
+                    }
+                  })
+                })
+              )
+            }
           } catch (err) {
             console.error('Error sending reminder email', err)
           }
@@ -245,7 +265,26 @@ export const sendDayNumberPosts = async (): Promise<{
                 }
               }
               try {
+                // Send email
                 await mailChallengeContent(props)
+
+                // Send push notifications to all user's devices
+                if (member.user.pushTokens && member.user.pushTokens.length > 0) {
+                  await Promise.all(
+                    member.user.pushTokens.map(async (pushToken: any) => {
+                      await sendPushNotification(pushToken.token, {
+                        title: post.challenge?.name ?? 'New Post',
+                        body: post.title,
+                        data: {
+                          challengeId: post.challengeId,
+                          postId: post.id,
+                          membershipId: member.id,
+                          type: 'challenge_post'
+                        }
+                      })
+                    })
+                  )
+                }
               } catch (err) {
                 console.error('Error sending notification', err)
               }
